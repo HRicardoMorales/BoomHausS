@@ -7,14 +7,14 @@ import Navbar from './components/navbar.jsx';
 import Footer from './components/Footer.jsx';
 
 // Páginas
-import Home from './pages/Home.jsx';
+import Home from './pages/home.jsx';
 import Products from './pages/products.jsx';
 import ProductDetail from './pages/ProductDetail.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/checkout.jsx';
 
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
+import Login from './pages/login.jsx';
+import Register from './pages/register.jsx';
 
 import MyOrders from './pages/myOrders.jsx';
 
