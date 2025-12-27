@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://boom-haus-2pbt3so0z-ricardo-morales-projects.vercel.app
