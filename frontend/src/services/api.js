@@ -2,8 +2,12 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-// ✅ Siempre por defecto a /api (Vercel lo proxya a Render con vercel.json)
-export const baseURL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
+const DEV_FALLBACK = "http://localhost:4000/api";
+
+const baseURL =
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? PROD_FALLBACK : DEV_FALLBACK);
 
 const api = axios.create({
     baseURL,

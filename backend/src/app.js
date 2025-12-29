@@ -31,42 +31,59 @@ app.use(
   })
 );
 
-// ✅ CORS (Render/Vercel + Local)
-// - FRONTEND_URL: 1 solo origen (ej: https://tu-front.vercel.app)
-// - CORS_ORIGINS: varios separados por coma (ej: https://a.com,https://b.com)
-const baseClient =
-  process.env.FRONTEND_URL ||
-  process.env.CLIENT_URL ||
-  'http://localhost:5173';
+// ✅ CORS (permite frontend: local + Vercel prod + previews)
+const allowedExact = new Set(
+  [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    process.env.CLIENT_URL, // por si lo usás
+  ].filter(Boolean)
+);
 
-const allowedOrigins = new Set([
-  baseClient,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173'
-]);
+// Opcional: agregar varios por env separados por coma
+if (process.env.CLIENT_URLS) {
+  process.env.CLIENT_URLS.split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+    .forEach((o) => allowedExact.add(o));
+}
 
-const extra =
-  process.env.CORS_ORIGINS ||
-  process.env.CLIENT_URLS ||
-  '';
+// ✅ Permitir previews de Vercel del proyecto (evita que se rompa cuando cambia el deploy URL)
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // Postman/curl
 
-extra
-  .split(',')
-  .map(s => s.trim())
-  .filter(Boolean)
-  .forEach(o => allowedOrigins.add(o));
+  // exactos
+  if (allowedExact.has(origin)) return true;
+
+  // por hostname (para Vercel previews)
+  try {
+    const { hostname, protocol } = new URL(origin);
+
+    // solo http/https
+    if (protocol !== 'http:' && protocol !== 'https:') return false;
+
+    // ✅ permite cualquier dominio de Vercel que empiece con boom-haus-
+    // ej: boom-haus-xxxxx-ricardo-morales-projects.vercel.app
+    if (hostname.startsWith('boom-haus-') && hostname.endsWith('.vercel.app')) return true;
+
+    // ✅ si tenés el dominio production estable (recomendado)
+    if (hostname === 'boom-haus.vercel.app') return true;
+
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 app.use(
   cors({
-    origin: function (origin, cb) {
-      // Permite requests sin origin (Postman, curl)
-      if (!origin) return cb(null, true);
-
-      if (allowedOrigins.has(origin)) return cb(null, true);
-
+    origin: (origin, cb) => {
+      if (isAllowedOrigin(origin)) return cb(null, true);
       return cb(new Error('CORS bloqueado para este origen: ' + origin));
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
