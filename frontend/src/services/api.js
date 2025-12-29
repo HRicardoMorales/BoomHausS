@@ -16,7 +16,7 @@ function ensureApiSuffix(url) {
 
 // ✅ Named export (así no vuelve a fallar "baseURL is not exported")
 export const baseURL = ensureApiSuffix(
-    import.meta.env.VITE_API_URL || "http://localhost:4000/api"
+    import.meta.env.VITE_API_URL || "https://boomhauss.onrender.com/api"
 );
 
 const api = axios.create({
