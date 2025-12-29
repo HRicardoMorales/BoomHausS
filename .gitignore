@@ -10,3 +10,5 @@ frontend/.env
 # Vite
 dist
 .vite
+frontend/.env.example
+frontend/.env.production
