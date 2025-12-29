@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { baseURL } from "../services/api";
+import api from "../services/api";
+
 
 export default function Products() {
     const navigate = useNavigate();
