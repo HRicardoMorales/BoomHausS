@@ -2,18 +2,8 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-function normalizeBase(url) {
-    if (!url) return "";
-    return String(url).trim().replace(/\/+$/, ""); // saca slash final
-}
-
-const FALLBACK_DEV = "http://localhost:4000/api";
-const FALLBACK_PROD = "https://boomhauss.onrender.com/api";
-
-// 1) intenta VITE_API_URL
-// 2) si no existe, en PROD usa Render, en DEV usa localhost
-const baseURL = normalizeBase(import.meta.env.VITE_API_URL) ||
-    (import.meta.env.PROD ? FALLBACK_PROD : FALLBACK_DEV);
+// ✅ Siempre por defecto a /api (Vercel lo proxya a Render con vercel.json)
+export const baseURL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
 
 const api = axios.create({
     baseURL,
@@ -50,4 +40,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-export { baseURL }; // 👈 opcional (si querés loguearlo en pantalla)
