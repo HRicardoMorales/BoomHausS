@@ -2,22 +2,14 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-function normalizeBase(url) {
-    if (!url) return "";
-    return String(url).trim().replace(/\/+$/, ""); // saca slash final
-}
+// ✅ Si Vercel NO inyecta la env en build, esto evita que producción use localhost.
+const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
+const DEV_FALLBACK = "http://localhost:4000/api";
 
-// Si te pasan "https://dominio.com" lo convertimos a "https://dominio.com/api"
-function ensureApiSuffix(url) {
-    const base = normalizeBase(url);
-    if (!base) return base;
-    return base.endsWith("/api") ? base : `${base}/api`;
-}
-
-// ✅ Named export (así no vuelve a fallar "baseURL is not exported")
-export const baseURL = ensureApiSuffix(
-    import.meta.env.VITE_API_URL || "https://boomhauss.onrender.com/api"
-);
+// Vite define import.meta.env.DEV true solo en dev (npm run dev)
+export const baseURL =
+    (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
+    (import.meta.env.DEV ? DEV_FALLBACK : PROD_FALLBACK);
 
 const api = axios.create({
     baseURL,
@@ -28,12 +20,10 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const { token } = getStoredAuth();
-
         if (token) {
             config.headers = config.headers || {};
             config.headers.Authorization = `Bearer ${token}`;
         }
-
         return config;
     },
     (error) => Promise.reject(error)
@@ -47,6 +37,7 @@ api.interceptors.response.use(
 
         if (status === 401) {
             clearAuth();
+
             const current = window.location.pathname || "";
             if (!current.startsWith("/login")) {
                 window.location.href = "/login";
