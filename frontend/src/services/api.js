@@ -2,12 +2,22 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
-const DEV_FALLBACK = "http://localhost:4000/api";
+function normalizeBase(url) {
+    if (!url) return "";
+    return String(url).trim().replace(/\/+$/, ""); // saca slash final
+}
 
-const baseURL =
-    import.meta.env.VITE_API_URL ||
-    (import.meta.env.PROD ? PROD_FALLBACK : DEV_FALLBACK);
+// Si te pasan "https://dominio.com" lo convertimos a "https://dominio.com/api"
+function ensureApiSuffix(url) {
+    const base = normalizeBase(url);
+    if (!base) return base;
+    return base.endsWith("/api") ? base : `${base}/api`;
+}
+
+// ✅ Named export (así no vuelve a fallar "baseURL is not exported")
+export const baseURL = ensureApiSuffix(
+    import.meta.env.VITE_API_URL || "http://localhost:4000/api"
+);
 
 const api = axios.create({
     baseURL,
@@ -18,10 +28,12 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const { token } = getStoredAuth();
+
         if (token) {
             config.headers = config.headers || {};
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => Promise.reject(error)
@@ -36,7 +48,9 @@ api.interceptors.response.use(
         if (status === 401) {
             clearAuth();
             const current = window.location.pathname || "";
-            if (!current.startsWith("/login")) window.location.href = "/login";
+            if (!current.startsWith("/login")) {
+                window.location.href = "/login";
+            }
         }
 
         return Promise.reject(error);

@@ -45,8 +45,7 @@ function Home() {
 
     // 👉 Si querés poner una imagen fija como miaqualys (persona usando el producto),
     // ponela en /public y seteá en .env:
-    // VITE_HERO_BG_URL=/hero.jpg
-    const heroBgUrl = import.meta.env.VITE_HERO_BG_URL || heroImages?.[0] || "";
+    const heroBgUrl = import.meta.env.VITE_HERO_BG_URL || "";
 
     return (
         <main className="section">
