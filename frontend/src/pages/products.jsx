@@ -1,6 +1,4 @@
 // frontend/src/pages/products.jsx
-// "Tienda" en modo one-product: busca el producto único y redirige al detalle.
-
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api, { baseURL } from "../services/api";
@@ -27,7 +25,7 @@ export default function Products() {
                 return;
             }
 
-            // ✅ redirige al detalle
+            // ✅ Éxito: redirige al detalle inmediatamente
             navigate(`/products/${product._id}`, { replace: true });
         } catch (err) {
             const msg =
@@ -44,38 +42,50 @@ export default function Products() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // 🎨 RENDERIZADO CONDICIONAL
+
+    // 1. Si está cargando, mostramos una pantalla limpia y simple.
+    if (loading) {
+        return (
+            <main className="section">
+                <div className="container" style={{ textAlign: "center", padding: "4rem 0" }}>
+                    <h1 className="reveal">Cargando tienda...</h1>
+                    <p className="muted">Estamos preparando tus productos.</p>
+                </div>
+            </main>
+        );
+    }
+
+    // 2. Si llegamos aquí, es porque loading es false.
+    // Si no redirigió, significa que hubo un ERROR. Mostramos el panel de debug.
     return (
         <main className="section">
             <div className="container">
                 <section className="card reveal" style={{ padding: "1.2rem" }}>
-                    <span className="badge">Tienda</span>
+                    <span className="badge" style={{ background: "#ff4d4d", color: "white" }}>Error</span>
                     <h1 style={{ marginTop: ".6rem" }}>
-                        {loading ? "Cargando tienda..." : "No se pudo abrir la tienda"}
+                        No se pudo abrir la tienda
                     </h1>
 
-                    {errMsg ? (
-                        <p style={{ marginTop: ".35rem", fontWeight: 900 }}>
-                            Error: {errMsg}
-                        </p>
-                    ) : (
-                        <p className="muted" style={{ marginTop: ".35rem" }}>
-                            Estamos buscando el producto...
-                        </p>
-                    )}
+                    <p style={{ marginTop: ".35rem", fontWeight: 900, color: "#ff4d4d" }}>
+                        {errMsg}
+                    </p>
 
+                    {/* Panel de Debug (Solo visible si hay error) */}
                     <div
                         className="card"
                         style={{
-                            marginTop: "1rem",
+                            marginTop: "2rem",
                             padding: "1rem",
                             borderRadius: 16,
                             border: "1px solid var(--border)",
+                            background: "rgba(0,0,0,0.02)"
                         }}
                     >
                         <div style={{ fontWeight: 950, marginBottom: ".35rem" }}>
                             Debug rápido
                         </div>
-                        <div className="muted" style={{ wordBreak: "break-all" }}>
+                        <div className="muted" style={{ wordBreak: "break-all", fontSize: "0.9rem" }}>
                             <div>API base: {baseURL}</div>
                             <div>URL llamada: {calledUrl}</div>
                         </div>
@@ -86,15 +96,15 @@ export default function Products() {
                             display: "flex",
                             gap: ".6rem",
                             flexWrap: "wrap",
-                            marginTop: "1rem",
+                            marginTop: "1.5rem",
                         }}
                     >
-                        <button className="btnPrimary" onClick={load} disabled={loading}>
-                            {loading ? "Cargando..." : "Reintentar →"}
+                        <button className="btnPrimary" onClick={load}>
+                            Reintentar →
                         </button>
 
                         <a className="btn" href={calledUrl} target="_blank" rel="noreferrer">
-                            Abrir /products/single →
+                            Abrir API Directa →
                         </a>
 
                         <Link className="btn" to="/">

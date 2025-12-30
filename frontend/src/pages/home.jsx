@@ -1,4 +1,3 @@
-// frontend/src/pages/Home.jsx
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
@@ -15,8 +14,14 @@ function Home() {
         )}`
         : null;
 
-    // ✅ Traemos el producto único para usar su imagen como fondo del HERO (si no hay imagen, queda con gradiente)
     const [product, setProduct] = useState(null);
+    const [heroIndex, setHeroIndex] = useState(0);
+
+    // Estado para detectar el inicio del toque o clic
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
+    const minSwipeDistance = 50;
 
     useEffect(() => {
         (async () => {
@@ -43,90 +48,226 @@ function Home() {
         return arr;
     }, [product]);
 
-    // 👉 Si querés poner una imagen fija como miaqualys (persona usando el producto),
-    // ponela en /public y seteá en .env:
+    const nextImage = () => {
+        if (heroImages.length > 0) {
+            setHeroIndex((prev) => (prev + 1) % heroImages.length);
+        }
+    };
+
+    const prevImage = () => {
+        if (heroImages.length > 0) {
+            setHeroIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+        }
+    };
+
+    // --- Lógica de Swipe ---
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) nextImage();
+        if (isRightSwipe) prevImage();
+    };
+
+    // --- Lógica de Mouse ---
+    const onMouseDown = (e) => {
+        setTouchStart(e.clientX);
+    };
+
+    const onMouseUp = (e) => {
+        if (!touchStart) return;
+        const distance = touchStart - e.clientX;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) nextImage();
+        if (isRightSwipe) prevImage();
+        setTouchStart(null);
+    };
+
     const heroBgUrl = import.meta.env.VITE_HERO_BG_URL || "";
 
     return (
         <main className="section">
             <div className="container">
                 {/* =========================
-            HERO (estilo Miaqualys)
-           ========================= */}
+                    HERO
+                   ========================= */}
                 <section
                     className="homeHeroBanner reveal"
-                    style={{ ["--hero-bg"]: heroBgUrl ? `url(${heroBgUrl})` : "none" }}
+                    style={{
+                        ["--hero-bg"]: heroBgUrl ? `url(${heroBgUrl})` : "none",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center"
+                    }}
                 >
-                    {/* capa oscura suave para contraste */}
                     <div className="homeHeroShade" />
 
-                    {/* Card blanca encima (como la referencia) */}
-                    <div className="homeHeroCard">
-                        <div className="homeHeroBadge">Oferta limitada</div>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                            gap: "1.5rem",
+                            alignItems: "stretch",
+                            position: "relative",
+                            zIndex: 2,
+                            width: "100%"
+                        }}
+                    >
 
-                        <h1 className="homeHeroTitle">
-                            {product?.heroTitle || "El producto ideal"}
-                        </h1>
+                        {/* CAJA IZQUIERDA: TEXTO */}
+                        <div className="homeHeroCard" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                            {/* 🔍 CAMBIO 1: width: "fit-content" para que no se alargue */}
+                            <div
+                                className="homeHeroBadge"
+                                style={{
+                                    fontSize: "1.1rem",
+                                    padding: "0.6rem 1.2rem",
+                                    fontWeight: "bold",
+                                    width: "fit-content"
+                                }}
+                            >
+                                Oferta limitada
+                            </div>
 
-                        <p className="homeHeroText">
-                            {product?.heroSubtitle ||
-                                "Comprá en 1 minuto. Pagás por transferencia y subís el comprobante. Y Listo!! Te lo enviamos."}
-                        </p>
+                            <h1 className="homeHeroTitle">
+                                {product?.heroTitle || "El producto ideal"}
+                            </h1>
 
-                        <div className="homeHeroButtons">
-                            <Link className="homeHeroBtnPrimary" to="/products">
-                                IR A LA PÁGINA DEL PRODUCTO
-                            </Link>
+                            <p className="homeHeroText">
+                                {product?.heroSubtitle ||
+                                    "Comprá en 1 minuto. Pagás por transferencia y subís el comprobante. Y Listo!! Te lo enviamos."}
+                            </p>
 
-                            <Link className="homeHeroBtnGhost" to="/cart">
-                                Ir al carrito
-                            </Link>
+                            <div className="homeHeroButtons">
+                                <Link className="homeHeroBtnPrimary" to="/products">
+                                    IR A LA PÁGINA DEL PRODUCTO
+                                </Link>
 
-                            {waLink ? (
-                                <a className="homeHeroBtnGhost" href={waLink} target="_blank" rel="noreferrer">
-                                    WhatsApp →
-                                </a>
-                            ) : null}
-                        </div>
+                                <Link className="homeHeroBtnGhost" to="/cart">
+                                    Ir al carrito
+                                </Link>
 
-                        <div className="homeHeroChips">
-                            <span className="homeHeroChip">Transferencia</span>
-                            <span className="homeHeroChip">Comprobante</span>
-                            <span className="homeHeroChip">Envíos</span>
-                            <span className="homeHeroChip">Soporte</span>
-                        </div>
-                    </div>
+                                {waLink ? (
+                                    <a className="homeHeroBtnGhost" href={waLink} target="_blank" rel="noreferrer">
+                                        WhatsApp →
+                                    </a>
+                                ) : null}
+                            </div>
 
-                    {/* Mini “preview” a la derecha (queda pro como tu 1er screenshot) */}
-                    <div className="homeHeroPreview">
-                        <div className="homeHeroPreviewTop">
-                            <div className="homeHeroPreviewTitle">Galería</div>
-                            <div className="homeHeroPreviewSub">Deslizá o usá las flechas</div>
-                        </div>
-
-                        <div className="homeHeroPreviewMedia">
-                            {heroImages?.[1] ? (
-                                <img src={heroImages[0]} alt="Producto" loading="lazy" />
-                            ) : (
-                                <div className="homeHeroPreviewEmpty">Agregá imágenes del producto</div>
-                            )}
-
-                            <div className="homeHeroPreviewCount">
-                                1/{Math.max(1, heroImages.length || 1)}
+                            <div className="homeHeroChips">
+                                <span className="homeHeroChip">Transferencia</span>
+                                <span className="homeHeroChip">Comprobante</span>
+                                <span className="homeHeroChip">Envíos</span>
+                                <span className="homeHeroChip">Soporte</span>
                             </div>
                         </div>
 
-                        <div className="homeHeroDots" aria-hidden="true">
-                            <span className="dot on" />
-                            <span className="dot" />
-                            <span className="dot" />
-                            <span className="dot" />
-                            <span className="dot" />
+                        {/* CAJA DERECHA: MINI GALERÍA */}
+                        <div className="homeHeroPreview" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column" }}>
+                            <div className="homeHeroPreviewTop">
+                                <div className="homeHeroPreviewTitle">Galería</div>
+                                <div className="homeHeroPreviewSub">Deslizá o usá las flechas</div>
+                            </div>
+
+                            <div
+                                className="homeHeroPreviewMedia"
+                                style={{
+                                    position: "relative",
+                                    flex: 1,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    overflow: "hidden",
+                                    cursor: "grab",
+                                    touchAction: "pan-y"
+                                }}
+                                onTouchStart={onTouchStart}
+                                onTouchMove={onTouchMove}
+                                onTouchEnd={onTouchEnd}
+                                onMouseDown={onMouseDown}
+                                onMouseUp={onMouseUp}
+                                onMouseLeave={() => setTouchStart(null)}
+                            >
+                                {heroImages.length > 0 ? (
+                                    <>
+                                        {/* 🔍 CAMBIO 2: objectFit: "cover" para llenar todo el contenedor sin bordes */}
+                                        <img
+                                            src={heroImages[heroIndex]}
+                                            alt="Producto"
+                                            onDragStart={(e) => e.preventDefault()}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                // Quitamos maxHeight para que llene el alto total de la columna
+                                                objectFit: "cover",
+                                                pointerEvents: "auto",
+                                                userSelect: "none"
+                                            }}
+                                        />
+
+                                        {/* Flechas */}
+                                        {heroImages.length > 1 && (
+                                            <>
+                                                <button
+                                                    onClick={prevImage}
+                                                    style={{
+                                                        position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)",
+                                                        background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
+                                                        width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
+                                                    }}
+                                                >
+                                                    ‹
+                                                </button>
+                                                <button
+                                                    onClick={nextImage}
+                                                    style={{
+                                                        position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
+                                                        background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
+                                                        width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
+                                                    }}
+                                                >
+                                                    ›
+                                                </button>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="homeHeroPreviewEmpty">Agregá imágenes del producto</div>
+                                )}
+
+                                <div className="homeHeroPreviewCount">
+                                    {heroIndex + 1}/{Math.max(1, heroImages.length || 1)}
+                                </div>
+                            </div>
+
+                            <div className="homeHeroDots">
+                                {heroImages.slice(0, 5).map((_, idx) => (
+                                    <span
+                                        key={idx}
+                                        className={`dot ${idx === heroIndex ? "on" : ""}`}
+                                        onClick={() => setHeroIndex(idx)}
+                                        style={{ cursor: "pointer", padding: "5px" }}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* HOW IT WORKS */}
+                {/* SECCIONES RESTANTES */}
                 <section id="benefits" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">Cómo comprar</span>
@@ -186,7 +327,6 @@ function Home() {
                     </div>
                 </section>
 
-                {/* GALLERY */}
                 <section id="gallery" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">Galería</span>
@@ -203,7 +343,6 @@ function Home() {
                     </div>
                 </section>
 
-                {/* PRODUCT CTA */}
                 <section id="product" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">Producto</span>
@@ -225,7 +364,6 @@ function Home() {
                     </div>
                 </section>
 
-                {/* REVIEWS */}
                 <section id="reviews" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">Opiniones</span>
@@ -242,7 +380,6 @@ function Home() {
                     </div>
                 </section>
 
-                {/* FAQ */}
                 <section id="faq" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">FAQ</span>
@@ -294,7 +431,6 @@ function Home() {
                     </div>
                 </section>
 
-                {/* FINAL CTA */}
                 <section className="card reveal" style={{ marginTop: "1.1rem", padding: "1.2rem" }}>
                     <span className="badge">Listo</span>
                     <h2 style={{ margin: "0.65rem 0 0.25rem", letterSpacing: "-0.04em" }}>
