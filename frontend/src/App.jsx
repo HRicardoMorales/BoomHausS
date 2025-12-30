@@ -23,7 +23,7 @@ import Returns from './pages/Returns.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
 
-// ✅ Componente Popup de Carrito (Toast) - ESTILOS INLINE PARA FORZAR VISIBILIDAD
+// ✅ Componente Popup de Carrito (Toast) - RESPONSIVE MEJORADO
 function CartToast() {
   const [show, setShow] = useState(false);
   const [productName, setProductName] = useState('');
@@ -31,10 +31,9 @@ function CartToast() {
 
   useEffect(() => {
     const handleAdd = (e) => {
-      // console.log("Evento cart:added recibido:", e.detail); // Debug si es necesario
       setProductName(e.detail?.name || 'Producto');
       setShow(true);
-      const timer = setTimeout(() => setShow(false), 4000); // 4 segundos
+      const timer = setTimeout(() => setShow(false), 4000);
       return () => clearTimeout(timer);
     };
 
@@ -45,31 +44,18 @@ function CartToast() {
   if (!show) return null;
 
   return (
-    <div
-      className="cart-toast"
-      style={{
-        position: 'fixed',
-        bottom: '25px',
-        right: '25px',
-        zIndex: 999999, /* 🔥 Z-index extremo para que nada lo tape */
-        background: '#ffffff',
-        border: '2px solid #0B5CFF',
-        borderRadius: '16px',
-        padding: '16px 20px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-        animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        maxWidth: '90vw',
-        color: '#0B1220'
-      }}
-    >
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <div className="cart-toast">
+      <div className="cart-toast-info">
         <div style={{ fontSize: '1.4rem' }}>✅</div>
-        <div>
+        <div style={{ minWidth: 0, flex: 1 }}> {/* minWidth 0 ayuda a truncar texto flex */}
           <div style={{ fontWeight: 950, fontSize: '1rem', lineHeight: 1.2 }}>¡Agregado!</div>
-          <div style={{ fontSize: '0.85rem', opacity: 0.8, maxWidth: '180px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{
+            fontSize: '0.85rem',
+            opacity: 0.8,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
             {productName}
           </div>
         </div>
@@ -77,28 +63,10 @@ function CartToast() {
 
       <button
         onClick={() => { setShow(false); navigate('/cart'); }}
-        style={{
-          background: '#0B5CFF',
-          color: 'white',
-          border: 'none',
-          padding: '10px 16px',
-          borderRadius: '10px',
-          fontWeight: 800,
-          cursor: 'pointer',
-          fontSize: '0.9rem',
-          whiteSpace: 'nowrap',
-          marginLeft: '8px'
-        }}
+        className="cart-toast-btn"
       >
         Ver Carrito →
       </button>
-
-      <style>{`
-        @keyframes slideUp { 
-          from { transform: translateY(120%); opacity: 0; } 
-          to { transform: translateY(0); opacity: 1; } 
-        }
-      `}</style>
     </div>
   );
 }
@@ -168,6 +136,80 @@ export default function App() {
       <style>{`
         .app-shell{ min-height: 100vh; display: flex; flex-direction: column; }
         .app-body{ flex: 1; }
+
+        /* === ESTILOS DEL POPUP (TOAST) === */
+        .cart-toast {
+          position: fixed;
+          bottom: 25px;
+          right: 25px;
+          z-index: 999999;
+          background: #ffffff;
+          border: 2px solid #0B5CFF;
+          border-radius: 16px;
+          padding: 16px 20px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          max-width: 90vw; /* Límite de seguridad */
+          color: #0B1220;
+        }
+
+        .cart-toast-info {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          /* Asegura que el texto no rompa el layout */
+          min-width: 0;
+          flex: 1; 
+        }
+
+        .cart-toast-btn {
+          background: #0B5CFF;
+          color: white;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 10px;
+          font-weight: 800;
+          cursor: pointer;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          transition: background 0.2s;
+        }
+        .cart-toast-btn:hover { background: #0046d5; }
+
+        @keyframes slideUp { 
+          from { transform: translateY(120%); opacity: 0; } 
+          to { transform: translateY(0); opacity: 1; } 
+        }
+
+        /* === RESPONSIVE PARA CELULARES === */
+        /* Si la pantalla es chica, apilamos verticalmente */
+        @media (max-width: 600px) {
+          .cart-toast {
+            flex-direction: column; /* Apilar */
+            align-items: stretch;   /* Estirar botón */
+            gap: 12px;
+            /* Centrar en pantalla */
+            right: 5vw;
+            left: 5vw;
+            width: 90vw;
+            bottom: 20px;
+            padding: 14px;
+          }
+          
+          .cart-toast-info {
+            justify-content: center; /* Centrar texto */
+            text-align: center;
+          }
+
+          .cart-toast-btn {
+            width: 100%; /* Botón ancho completo */
+            padding: 12px;
+            font-size: 1rem;
+          }
+        }
       `}</style>
     </div>
   );
