@@ -2,14 +2,20 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-// ✅ Si Vercel NO inyecta la env en build, esto evita que producción use localhost.
-const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
-const DEV_FALLBACK = "http://localhost:4000/api";
+// 🔍 DEBUG: Esto nos dirá la verdad en la consola del navegador (F12)
+console.log("--- DEBUGGING API ---");
+console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("MODO DEV:", import.meta.env.DEV);
 
-// Vite define import.meta.env.DEV true solo en dev (npm run dev)
-export const baseURL =
+const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
+
+// ⚠️ CAMBIO FUERTE: Quitamos la opción de localhost del fallback temporalmente.
+// Si esto falla, debería intentar conectar a Render, NO a localhost.
+const baseURL =
     (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
-    (import.meta.env.DEV ? DEV_FALLBACK : PROD_FALLBACK);
+    PROD_FALLBACK; // 👈 Forzamos Render si falla la variable
+
+console.log("BaseURL final usada:", baseURL);
 
 const api = axios.create({
     baseURL,
@@ -34,16 +40,13 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error?.response?.status;
-
         if (status === 401) {
             clearAuth();
-
             const current = window.location.pathname || "";
             if (!current.startsWith("/login")) {
                 window.location.href = "/login";
             }
         }
-
         return Promise.reject(error);
     }
 );
