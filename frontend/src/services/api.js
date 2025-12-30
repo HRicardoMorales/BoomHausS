@@ -2,18 +2,18 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-// 🔍 DEBUG: Esto nos dirá la verdad en la consola del navegador (F12)
+// 🔍 DEBUG: Logs para ver qué pasa en Vercel
 console.log("--- DEBUGGING API ---");
 console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
 console.log("MODO DEV:", import.meta.env.DEV);
 
 const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
 
-// ⚠️ CAMBIO FUERTE: Quitamos la opción de localhost del fallback temporalmente.
-// Si esto falla, debería intentar conectar a Render, NO a localhost.
-const baseURL =
+// ⚠️ CORREGIDO: Agregué 'export' aquí, que era lo que faltaba.
+// Quitamos localhost temporalmente para forzar Render.
+export const baseURL =
     (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
-    PROD_FALLBACK; // 👈 Forzamos Render si falla la variable
+    PROD_FALLBACK; 
 
 console.log("BaseURL final usada:", baseURL);
 
@@ -22,7 +22,7 @@ const api = axios.create({
     timeout: 15000,
 });
 
-// ✅ Request interceptor: agrega token si existe
+// ✅ Request interceptor
 api.interceptors.request.use(
     (config) => {
         const { token } = getStoredAuth();
@@ -35,7 +35,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// ✅ Response interceptor: si 401, desloguea y manda a login
+// ✅ Response interceptor
 api.interceptors.response.use(
     (response) => response,
     (error) => {
