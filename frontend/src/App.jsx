@@ -23,7 +23,7 @@ import Returns from './pages/Returns.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
 
-// ✅ Componente Popup de Carrito (Toast) - RESPONSIVE MEJORADO
+// ✅ Componente Popup de Carrito (Toast)
 function CartToast() {
   const [show, setShow] = useState(false);
   const [productName, setProductName] = useState('');
@@ -47,22 +47,22 @@ function CartToast() {
     <div className="cart-toast">
       <div className="cart-toast-info">
         <div style={{ fontSize: '1.4rem' }}>✅</div>
-        <div style={{ minWidth: 0, flex: 1 }}> {/* minWidth 0 ayuda a truncar texto flex */}
+        <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontWeight: 950, fontSize: '1rem', lineHeight: 1.2 }}>¡Agregado!</div>
-          <div style={{
-            fontSize: '0.85rem',
-            opacity: 0.8,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
+          <div style={{ 
+            fontSize: '0.85rem', 
+            opacity: 0.8, 
+            whiteSpace: 'nowrap', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis' 
           }}>
             {productName}
           </div>
         </div>
       </div>
-
-      <button
-        onClick={() => { setShow(false); navigate('/cart'); }}
+      
+      <button 
+        onClick={() => { setShow(false); navigate('/cart'); }} 
         className="cart-toast-btn"
       >
         Ver Carrito →
@@ -83,6 +83,13 @@ function PrivateRoute({ children }) {
 export default function App() {
   const location = useLocation();
 
+  // 🔥 NUEVO: Scroll Top Automático
+  // Cada vez que cambia la ruta (pathname), sube al inicio de la página.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Animación Reveal (existente)
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll('.reveal'));
     if (!nodes.length) return;
@@ -107,8 +114,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <Navbar />
-
-      {/* 🔥 Componente del aviso */}
+      
       <CartToast />
 
       <div className="app-body">
@@ -137,7 +143,7 @@ export default function App() {
         .app-shell{ min-height: 100vh; display: flex; flex-direction: column; }
         .app-body{ flex: 1; }
 
-        /* === ESTILOS DEL POPUP (TOAST) === */
+        /* Estilos Toast */
         .cart-toast {
           position: fixed;
           bottom: 25px;
@@ -152,63 +158,29 @@ export default function App() {
           align-items: center;
           gap: 16px;
           animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-          max-width: 90vw; /* Límite de seguridad */
+          max-width: 90vw;
           color: #0B1220;
         }
-
-        .cart-toast-info {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-          /* Asegura que el texto no rompa el layout */
-          min-width: 0;
-          flex: 1; 
-        }
-
+        .cart-toast-info { display: flex; gap: 12px; align-items: center; min-width: 0; flex: 1; }
         .cart-toast-btn {
-          background: #0B5CFF;
-          color: white;
-          border: none;
-          padding: 10px 16px;
-          border-radius: 10px;
-          font-weight: 800;
-          cursor: pointer;
-          font-size: 0.9rem;
-          white-space: nowrap;
-          transition: background 0.2s;
+          background: #0B5CFF; color: white; border: none; padding: 10px 16px;
+          border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.9rem;
+          white-space: nowrap; transition: background 0.2s;
         }
         .cart-toast-btn:hover { background: #0046d5; }
+        @keyframes slideUp { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        @keyframes slideUp { 
-          from { transform: translateY(120%); opacity: 0; } 
-          to { transform: translateY(0); opacity: 1; } 
-        }
-
-        /* === RESPONSIVE PARA CELULARES === */
-        /* Si la pantalla es chica, apilamos verticalmente */
+        /* Responsive Móvil */
         @media (max-width: 600px) {
           .cart-toast {
-            flex-direction: column; /* Apilar */
-            align-items: stretch;   /* Estirar botón */
+            flex-direction: column; 
+            align-items: stretch;
             gap: 12px;
-            /* Centrar en pantalla */
-            right: 5vw;
-            left: 5vw;
-            width: 90vw;
-            bottom: 20px;
-            padding: 14px;
+            right: 5vw; left: 5vw; width: 90vw;
+            bottom: 20px; padding: 14px;
           }
-          
-          .cart-toast-info {
-            justify-content: center; /* Centrar texto */
-            text-align: center;
-          }
-
-          .cart-toast-btn {
-            width: 100%; /* Botón ancho completo */
-            padding: 12px;
-            font-size: 1rem;
-          }
+          .cart-toast-info { justify-content: center; text-align: center; }
+          .cart-toast-btn { width: 100%; padding: 12px; font-size: 1rem; }
         }
       `}</style>
     </div>
