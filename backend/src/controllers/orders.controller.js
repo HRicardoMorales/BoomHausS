@@ -1,16 +1,17 @@
-// backend/src/controllers/orders.controller.js (CommonJS limpio y statuses correctos)
+// backend/src/controllers/orders.controller.js
 
 const mongoose = require("mongoose");
 const fs = require("fs");
 
 const Order = require("../models/order.js");
-const User = require("../models/User");
+const User = require("../models/User"); // Asegúrate que tu modelo se llame así (User o user)
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
 
-// ✅ según tu Order model (enum)
-const allowedPaymentStatuses = ["pending", "proof_uploaded", "approved", "rejected"];
-const allowedShippingStatuses = ["pending", "shipped", "delivered"];
+// ✅ CORRECCIÓN: Agregamos 'confirmed' y 'cancelled' para que coincida con el Frontend
+// TIENE QUE TENER 'confirmed' y 'cancelled'
+const allowedPaymentStatuses = ["pending", "proof_uploaded", "approved", "confirmed", "rejected", "cancelled"];
+const allowedShippingStatuses = ["pending", "shipped", "delivered", "cancelled"];
 
 /* =============================
    CREATE ORDER
@@ -51,6 +52,7 @@ async function createOrder(req, res, next) {
         if (!name) throw badReq("Falta customerName.");
         if (!email) throw badReq("Falta customerEmail.");
         if (!isEmailValid(email)) throw badReq("Email inválido.");
+        // address opcional si es retiro en tienda, pero validamos si lo envían
         if (!address) throw badReq("Falta shippingAddress.");
 
         if (!Array.isArray(items) || items.length === 0) throw badReq("El carrito no puede estar vacío.");
@@ -116,6 +118,7 @@ async function createOrder(req, res, next) {
             notes: userNotes || "",
         });
 
+        // Intentar enviar email (no bloqueante)
         try {
             await sendOrderConfirmationEmail(newOrder);
         } catch (e) {
@@ -151,7 +154,7 @@ async function getOrders(req, res, next) {
 }
 
 /* =============================
-   UPDATE ORDER (admin)
+   UPDATE ORDER (admin) - Manual Update
 ============================= */
 async function updateOrderStatus(req, res, next) {
     try {
@@ -168,7 +171,7 @@ async function updateOrderStatus(req, res, next) {
 
         if (paymentStatus !== undefined) {
             if (!allowedPaymentStatuses.includes(paymentStatus)) {
-                const err = new Error(`paymentStatus inválido. Permitidos: ${allowedPaymentStatuses.join(", ")}`);
+                const err = new Error(`paymentStatus inválido ('${paymentStatus}'). Permitidos: ${allowedPaymentStatuses.join(", ")}`);
                 err.statusCode = 400;
                 throw err;
             }
@@ -210,6 +213,7 @@ async function getMyOrders(req, res, next) {
             throw err;
         }
 
+        // Podrías buscar directo en Order por userId si lo guardas, o por email
         const user = await User.findById(userId);
         if (!user) {
             const err = new Error("Usuario no encontrado.");
@@ -226,7 +230,6 @@ async function getMyOrders(req, res, next) {
 
 /* =============================
    UPLOAD PAYMENT PROOF (user)
-   POST /api/orders/:id/payment-proof
 ============================= */
 async function uploadPaymentProofController(req, res, next) {
     try {
@@ -245,8 +248,7 @@ async function uploadPaymentProofController(req, res, next) {
             throw err;
         }
 
-        // Si ya está aprobado, no permitimos re-subir
-        if (order.paymentStatus === "approved") {
+        if (order.paymentStatus === "confirmed" || order.paymentStatus === "approved") {
             const err = new Error("Este pedido ya fue aprobado. No se puede subir otro comprobante.");
             err.statusCode = 400;
             throw err;
@@ -265,7 +267,6 @@ async function uploadPaymentProofController(req, res, next) {
 
         await order.save();
 
-        // Limpieza local
         try { fs.unlinkSync(localPath); } catch (_) { }
 
         return res.json({ ok: true, data: order });
@@ -276,7 +277,6 @@ async function uploadPaymentProofController(req, res, next) {
 
 /* =============================
    VERIFY / APPROVE PROOF (admin)
-   PATCH /api/orders/:id/verify
 ============================= */
 async function verifyPaymentProofController(req, res, next) {
     try {
@@ -301,12 +301,8 @@ async function verifyPaymentProofController(req, res, next) {
             throw err;
         }
 
-        // Idempotente
-        if (order.paymentStatus === "approved") {
-            return res.json({ ok: true, data: order });
-        }
-
-        order.paymentStatus = "approved";
+        // ✅ CORRECCIÓN: Usamos 'confirmed' para estandarizar con el frontend
+        order.paymentStatus = "confirmed"; 
         order.paymentRejectionReason = null;
         order.paymentReviewedAt = new Date();
         order.paymentReviewedBy = req.user?.id || req.userId || null;
@@ -321,7 +317,6 @@ async function verifyPaymentProofController(req, res, next) {
 
 /* =============================
    REJECT PROOF (admin)
-   PATCH /api/orders/:id/reject
 ============================= */
 async function rejectPaymentProofController(req, res, next) {
     try {
@@ -347,7 +342,7 @@ async function rejectPaymentProofController(req, res, next) {
             throw err;
         }
 
-        if (order.paymentStatus === "approved") {
+        if (order.paymentStatus === "confirmed" || order.paymentStatus === "approved") {
             const err = new Error("El pedido ya está aprobado. No se puede rechazar.");
             err.statusCode = 400;
             throw err;

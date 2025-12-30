@@ -4,15 +4,15 @@ const nodemailer = require('nodemailer');
 // Configuración del transporte
 // RECOMENDACIÓN: Para Gmail usá puerto 465 y secure: true
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: Number(process.env.SMTP_PORT) || 465,
-    secure: process.env.SMTP_SECURE === 'true' || true, // true para puerto 465, false para otros
+    host: 'smtp.gmail.com',
+    port: 465,       // PUERTO FIJO
+    secure: true,    // SEGURIDAD ACTIVADA SIEMPRE
     auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS // ¡OJO! Aquí va la "Contraseña de Aplicación", no tu clave normal
+        pass: process.env.SMTP_PASS
     },
     tls: {
-        rejectUnauthorized: false // Ayuda a evitar errores de certificados en algunos hostings
+        rejectUnauthorized: false
     }
 });
 
