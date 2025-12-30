@@ -2,27 +2,21 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-// 🔍 DEBUG: Logs para ver qué pasa en Vercel
-console.log("--- DEBUGGING API ---");
-console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-console.log("MODO DEV:", import.meta.env.DEV);
+// ------------------------------------------------------------------
+// SOLUCIÓN DEFINITIVA:
+// Forzamos la URL de Render directamente.
+// Al poner 'export' aquí, solucionamos el error de build de products.jsx
+// ------------------------------------------------------------------
+export const baseURL = "https://boomhauss.onrender.com/api";
 
-const PROD_FALLBACK = "https://boomhauss.onrender.com/api";
-
-// ⚠️ CORREGIDO: Agregué 'export' aquí, que era lo que faltaba.
-// Quitamos localhost temporalmente para forzar Render.
-export const baseURL =
-    (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
-    PROD_FALLBACK; 
-
-console.log("BaseURL final usada:", baseURL);
+console.log("🔥 FORZANDO CONEXIÓN A:", baseURL);
 
 const api = axios.create({
     baseURL,
     timeout: 15000,
 });
 
-// ✅ Request interceptor
+// ✅ Request interceptor: agrega token si existe
 api.interceptors.request.use(
     (config) => {
         const { token } = getStoredAuth();
@@ -35,11 +29,12 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// ✅ Response interceptor
+// ✅ Response interceptor: si 401, desloguea y manda a login
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error?.response?.status;
+
         if (status === 401) {
             clearAuth();
             const current = window.location.pathname || "";
@@ -47,6 +42,7 @@ api.interceptors.response.use(
                 window.location.href = "/login";
             }
         }
+
         return Promise.reject(error);
     }
 );
