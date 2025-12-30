@@ -1,4 +1,3 @@
-// frontend/src/context/CartContext.jsx
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
@@ -58,10 +57,14 @@ export function CartProvider({ children }) {
     }, [items]);
 
     // ✅ Agregar / sumar
-    // options: { promo?: { type:'bundle2', discountPct:number } }
     function addItem(product, qty = 1, options = {}) {
         const q = Math.max(1, Number(qty) || 1);
         const promo = options?.promo || null;
+
+        // 🔥 NUEVO: Disparamos evento para que App.jsx muestre el Popup
+        window.dispatchEvent(new CustomEvent('cart:added', {
+            detail: { name: product.name, qty: q }
+        }));
 
         setItems((prev) => {
             const copy = [...prev];
@@ -71,7 +74,7 @@ export function CartProvider({ children }) {
                 const prevItem = copy[idx];
                 const nextQty = (Number(prevItem.quantity) || 0) + q;
 
-                // ✅ Auto promo si llega a 2 o más, salvo que venga promo explícita null
+                // ✅ Auto promo si llega a 2 o más
                 const nextPromo =
                     promo
                         ? promo
@@ -87,7 +90,7 @@ export function CartProvider({ children }) {
                 return copy;
             }
 
-            // ✅ Nuevo item: si qty>=2 auto promo, o si viene promo explícita la usamos
+            // ✅ Nuevo item
             const initialPromo =
                 promo
                     ? promo
@@ -113,7 +116,6 @@ export function CartProvider({ children }) {
         setItems((prev) => prev.filter((x) => x.productId !== productId));
     }
 
-    // ✅ Cambiar cantidad + auto promo
     function updateQty(productId, qty) {
         const q = Number(qty);
         if (!Number.isFinite(q)) return;
@@ -122,14 +124,11 @@ export function CartProvider({ children }) {
             prev
                 .map((x) => {
                     if (x.productId !== productId) return x;
-
                     const nextQty = Math.max(0, Math.round(q));
-
                     const nextPromo =
                         nextQty >= 2
                             ? { type: "bundle2", discountPct: BUNDLE2_DISCOUNT_PCT }
                             : null;
-
                     return { ...x, quantity: nextQty, promo: nextPromo };
                 })
                 .filter((x) => (Number(x.quantity) || 0) > 0)
