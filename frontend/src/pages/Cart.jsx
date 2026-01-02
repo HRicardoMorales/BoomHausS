@@ -1,4 +1,3 @@
-// frontend/src/pages/Cart.jsx
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
@@ -11,7 +10,6 @@ function money(n) {
 
 function Cart() {
     const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal } = useCart();
-
     const isEmpty = !Array.isArray(items) || items.length === 0;
 
     const totalItems = useMemo(() => {
@@ -57,7 +55,6 @@ function Cart() {
                             alignItems: 'start'
                         }}
                     >
-                        {/* LISTA */}
                         <div className="card" style={{ padding: '1.2rem' }}>
                             <span className="badge">Productos</span>
 
@@ -65,11 +62,8 @@ function Cart() {
                                 {items.map((it) => {
                                     const qty = Number(it.quantity) || 1;
                                     const price = Number(it.price) || 0;
-
-                                    // ✅ total de línea con promo incluida
                                     const lineTotal = typeof calcItemTotal === 'function' ? calcItemTotal(it) : qty * price;
 
-                                    // ✅ detectar promo “Lleva 2”
                                     const hasBundle2 = it?.promo?.type === 'bundle2';
                                     const discountPct = Number(it?.promo?.discountPct) || 0;
 
@@ -128,7 +122,6 @@ function Cart() {
                                                     </button>
                                                 </div>
 
-                                                {/* ✅ cartel promo */}
                                                 {hasBundle2 ? (
                                                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                                                         <span className="badge">Promo x2</span>
@@ -167,9 +160,6 @@ function Cart() {
                                                     >
                                                         +
                                                     </button>
-
-                                                    <span className="badge">Transferencia</span>
-                                                    <span className="badge">Comprobante</span>
                                                 </div>
                                             </div>
                                         </article>
@@ -184,7 +174,6 @@ function Cart() {
                             </div>
                         </div>
 
-                        {/* RESUMEN STICKY */}
                         <aside
                             className="card"
                             style={{
@@ -225,25 +214,7 @@ function Cart() {
                                     Seguir viendo →
                                 </Link>
                             </div>
-
-                            <div style={{ marginTop: '0.9rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                <span className="badge">Sin tarjeta</span>
-                                <span className="badge">Transferencia</span>
-                                <span className="badge">Subís comprobante</span>
-                            </div>
                         </aside>
-
-                        <style>{`
-              @media (max-width: 980px){
-                section.reveal[style*="grid-template-columns: 1.2fr 0.8fr"]{
-                  grid-template-columns: 1fr !important;
-                }
-                aside.card[style*="position: sticky"]{
-                  position: relative !important;
-                  top: auto !important;
-                }
-              }
-            `}</style>
                     </section>
                 )}
             </div>

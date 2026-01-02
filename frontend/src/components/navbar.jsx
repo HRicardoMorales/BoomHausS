@@ -45,7 +45,7 @@ export default function Navbar() {
         navigate('/login');
     }
 
-    const storeName = import.meta.env.VITE_STORE_NAME || 'Encontratodo';
+    const storeName = import.meta.env.VITE_STORE_NAME || 'BoomHausS';
     const linkBase = ({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`;
 
     return (

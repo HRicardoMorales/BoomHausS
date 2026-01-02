@@ -1,10 +1,11 @@
 // frontend/src/pages/Checkout.jsx
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { getStoredAuth } from '../utils/auth';
 import { useCart } from '../context/CartContext.jsx';
+import { track } from '../lib/metaPixel';
 
 function money(n) {
     const num = Number(n);
@@ -17,10 +18,7 @@ function sanitizePhone(phone) {
 }
 
 /**
- * ✅ Idempotencia (anti-duplicados):
- * Generamos un id único por "intento de compra" y lo guardamos en localStorage.
- * - Si el usuario recarga o hace doble click, reutiliza el mismo id.
- * - El backend lo tiene unique y NO crea 2 órdenes iguales.
+ * ✅ Idempotencia (anti-duplicados)
  */
 function getOrCreateClientOrderId() {
     const KEY = 'clientOrderId';
@@ -41,6 +39,7 @@ function getOrCreateClientOrderId() {
     return id;
 }
 
+
 function clearClientOrderId() {
     localStorage.removeItem('clientOrderId');
 }
@@ -49,9 +48,41 @@ function Checkout() {
     const { user } = getStoredAuth();
     const isLogged = Boolean(user?.email);
 
+    useEffect(() => {
+        if (!isCartEmpty) {
+            const numItems = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+
+            track("InitiateCheckout", {
+                value: Number(totalPrice) || 0,
+                currency: "ARS",
+                num_items: numItems,
+                content_ids: items.map(i => String(i.productId)),
+                contents: items.map(i => ({
+                    id: String(i.productId),
+                    quantity: Number(i.quantity) || 1,
+                    item_price: Number(i.price) || 0
+                }))
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
     // ✅ Carrito (única fuente)
     const { items, totalPrice, clearCart } = useCart();
     const isCartEmpty = !Array.isArray(items) || items.length === 0;
+
+    const totalItems = useMemo(() => {
+        return (items || []).reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+    }, [items]);
+
+    // content_ids para Meta (usa productId)
+    const contentIds = useMemo(() => {
+        return (items || [])
+            .map((it) => it?.productId)
+            .filter(Boolean)
+            .map(String);
+    }, [items]);
 
     // ✅ Env del negocio
     const storeName = import.meta.env.VITE_STORE_NAME || 'Encontratodo';
@@ -107,6 +138,22 @@ function Checkout() {
             .catch(() => { });
     }
 
+    // ✅ Pixel: InitiateCheckout al entrar a /checkout (una sola vez)
+    const firedCheckoutRef = useRef(false);
+    useEffect(() => {
+        if (isCartEmpty) return;
+        if (firedCheckoutRef.current) return;
+        firedCheckoutRef.current = true;
+
+        track('InitiateCheckout', {
+            value: Number(totalPrice) || 0,
+            currency: 'ARS',
+            num_items: Number(totalItems) || 0,
+            content_ids: contentIds,
+            content_type: 'product',
+        });
+    }, [isCartEmpty, totalPrice, totalItems, contentIds]);
+
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -119,15 +166,23 @@ function Checkout() {
             return;
         }
 
+        // ✅ Pixel: AddPaymentInfo al apretar "Crear pedido"
+        track('AddPaymentInfo', {
+            value: Number(totalPrice) || 0,
+            currency: 'ARS',
+            num_items: Number(totalItems) || 0,
+            content_ids: contentIds,
+            content_type: 'product',
+        });
+
         setLoading(true);
         setError('');
 
         try {
-            // ✅ clave anti-duplicados: mismo id aunque recargue o reintente
             const clientOrderId = getOrCreateClientOrderId();
 
             const body = {
-                clientOrderId, // ✅ NUEVO
+                clientOrderId,
                 customerName: customerName.trim(),
                 customerEmail: customerEmail.trim(),
                 customerPhone: customerPhone.trim(),
@@ -145,12 +200,37 @@ function Checkout() {
             const res = await api.post('/orders', body);
 
             if (res.data?.ok) {
-                // ✅ ya quedó creada (o reutilizada) -> limpiamos el id para la próxima compra
                 clearClientOrderId();
 
                 setOrderData(res.data.data);
 
-                // ✅ vaciar carrito (y por persistencia se limpia storage)
+                // ✅ Pixel: como es transferencia, recomiendo "Lead" cuando se crea la orden
+                const total = Number(res.data.data?.totalAmount ?? totalPrice) || 0;
+                track('Lead', {
+                    value: total,
+                    currency: 'ARS',
+                    content_ids: contentIds,
+                    content_type: 'product',
+                });
+
+                const orderValue = Number(res.data.data?.totalAmount ?? totalPrice) || 0;
+                const numItems = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+
+                track("Purchase", {
+                    value: orderValue,
+                    currency: "ARS",
+                    num_items: numItems,
+                    content_ids: items.map(i => String(i.productId)),
+                    contents: items.map(i => ({
+                        id: String(i.productId),
+                        quantity: Number(i.quantity) || 1,
+                        item_price: Number(i.price) || 0
+                    }))
+                });
+
+                // Si algún día querés optimizar directo a Purchase (ojo: acá NO está pagado):
+                // track('Purchase', { value: total, currency: 'ARS', content_ids: contentIds, content_type: 'product' });
+
                 clearCart();
             } else {
                 setError('No se pudo crear la orden. Probá de nuevo.');
@@ -162,9 +242,6 @@ function Checkout() {
                 err.response?.data?.error ||
                 'Error al crear el pedido.';
             setError(msg);
-
-            // ⚠️ no borramos clientOrderId acá:
-            // si fue un error temporal, el usuario reintenta y no duplica la orden
         } finally {
             setLoading(false);
         }
