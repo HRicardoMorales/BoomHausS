@@ -155,10 +155,20 @@ export default function ProductDetail() {
   const rating = product?.rating ?? 4.8;
   const reviewCount = product?.reviewCount ?? 1168;
 
-  const bullets =
+  // --- MODIFICACIÓN: Lógica de Bullets inteligente ---
+  const dbBullets =
     Array.isArray(product?.highlights) && product.highlights.length
-      ? product.highlights.slice(0, 3)
-      : [product?.bullet1, product?.bullet2, product?.bullet3].filter(Boolean).slice(0, 3);
+      ? product.highlights
+      : [product?.bullet1, product?.bullet2, product?.bullet3].filter(Boolean);
+
+  const defaultBullets = [
+    "Excelente Calidad Garantizada",
+    "Compra Protegida 100%",
+    "Envío Rápido y Seguro"
+  ];
+
+  const bullets = dbBullets.length > 0 ? dbBullets : defaultBullets;
+  // ----------------------------------------------------
 
   // Promo x2
   const pack2Discount = 18;
@@ -197,7 +207,7 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
-  // ✅ CLICK: AddToCart - Ahora activa el aviso NO intrusivo
+  // Click: AddToCart
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -475,11 +485,20 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              <ul className="hero-bullets">
-                {bullets.map((b, idx) => (
-                  <li key={idx}>✅ {b}</li>
+              {/* --- MODIFICACIÓN: Ticks visuales --- */}
+              <div className="pd-ticks-container">
+                {bullets.slice(0, 3).map((b, idx) => (
+                  <div key={idx} className="pd-tick-row">
+                    <div className="pd-tick-icon">
+                      {/* Icono Check SVG */}
+                      <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 5L4.14286 8.14286L11 1.28571" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <span className="pd-tick-text">{b}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
             <div className="pd-trust">
@@ -615,7 +634,7 @@ export default function ProductDetail() {
       </div>
 
       {/* ============================================================
-          AVISO FLOTANTE (TOAST): NO INTRUSIVO
+          AVISO FLOTANTE (TOAST)
           ============================================================ */}
       {showToast && (
         <div className="pd-toast-wrapper">
@@ -645,9 +664,39 @@ export default function ProductDetail() {
         </div>
       )}
 
-      {/* Estilos específicos para la notificación flotante */}
+      {/* Estilos específicos */}
       <style>{`
-        /* Contenedor Principal */
+        /* ESTILOS DE LOS TICKS NUEVOS */
+        .pd-ticks-container {
+          margin: 14px 0 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .pd-tick-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .pd-tick-icon {
+          width: 22px;
+          height: 22px;
+          min-width: 22px;
+          background: #25D366; /* Verde Éxito */
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 5px rgba(37, 211, 102, 0.3);
+        }
+        .pd-tick-text {
+          font-weight: 600;
+          color: #334155;
+          font-size: 0.95rem;
+          line-height: 1.3;
+        }
+
+        /* Contenedor Toast */
         .pd-toast-wrapper {
           position: fixed;
           z-index: 10000;

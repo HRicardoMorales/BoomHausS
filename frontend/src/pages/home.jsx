@@ -1,3 +1,4 @@
+// frontend/src/pages/Home.jsx
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
@@ -17,10 +18,9 @@ function Home() {
     const [product, setProduct] = useState(null);
     const [heroIndex, setHeroIndex] = useState(0);
 
-    // Estado para detectar el inicio del toque o clic
+    // Swipe
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
-
     const minSwipeDistance = 50;
 
     useEffect(() => {
@@ -49,50 +49,29 @@ function Home() {
     }, [product]);
 
     const nextImage = () => {
-        if (heroImages.length > 0) {
-            setHeroIndex((prev) => (prev + 1) % heroImages.length);
-        }
+        if (heroImages.length > 0) setHeroIndex((prev) => (prev + 1) % heroImages.length);
     };
-
     const prevImage = () => {
-        if (heroImages.length > 0) {
-            setHeroIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
-        }
+        if (heroImages.length > 0) setHeroIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
     };
 
-    // --- Lógica de Swipe ---
     const onTouchStart = (e) => {
         setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientX);
     };
-
-    const onTouchMove = (e) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
+    const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
     const onTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
         const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe) nextImage();
-        if (isRightSwipe) prevImage();
+        if (distance > minSwipeDistance) nextImage();
+        if (distance < -minSwipeDistance) prevImage();
     };
-
-    // --- Lógica de Mouse ---
-    const onMouseDown = (e) => {
-        setTouchStart(e.clientX);
-    };
-
+    const onMouseDown = (e) => setTouchStart(e.clientX);
     const onMouseUp = (e) => {
         if (!touchStart) return;
         const distance = touchStart - e.clientX;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe) nextImage();
-        if (isRightSwipe) prevImage();
+        if (distance > minSwipeDistance) nextImage();
+        if (distance < -minSwipeDistance) prevImage();
         setTouchStart(null);
     };
 
@@ -101,173 +80,163 @@ function Home() {
     return (
         <main className="section">
             <div className="container">
+                
+                {/* 🔧 FIX: Botón blanco al hover + Grid simétrico */}
+                <style>{`
+                    .homeHeroBtnPrimary:hover {
+                        color: #ffffff !important;
+                        opacity: 0.95;
+                    }
+                    /* Forzamos simetría en PC */
+                    @media (min-width: 981px) {
+                        .homeHeroBanner {
+                            grid-template-columns: 1fr 1fr !important; /* Mismo ancho */
+                            align-items: stretch !important; /* Misma altura */
+                        }
+                    }
+                    /* Arreglo pasos en mobile */
+                    @media (max-width: 980px){
+                        section#benefits .card > div[style*="grid-template-columns: repeat(3, 1fr)"]{
+                            grid-template-columns: 1fr !important;
+                        }
+                    }
+                `}</style>
+
                 {/* =========================
                     HERO
                    ========================= */}
                 <section
                     className="homeHeroBanner reveal"
                     style={{
-                        ["--hero-bg"]: heroBgUrl ? `url(${heroBgUrl})` : "none",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center"
+                        ["--hero-bg"]: heroBgUrl ? `url(${heroBgUrl})` : "none"
                     }}
                 >
                     <div className="homeHeroShade" />
 
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                            gap: "1.5rem",
-                            alignItems: "stretch",
-                            position: "relative",
-                            zIndex: 2,
-                            width: "100%"
-                        }}
-                    >
+                    {/* 🚨 CAMBIO IMPORTANTE:
+                        Eliminé el <div className="homeHeroContent"> que causaba el error.
+                        Ahora las cards son hijas directas del grid .homeHeroBanner
+                    */}
 
-                        {/* CAJA IZQUIERDA: TEXTO */}
-                        <div className="homeHeroCard" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                            {/* 🔍 CAMBIO 1: width: "fit-content" para que no se alargue */}
-                            <div
-                                className="homeHeroBadge"
-                                style={{
-                                    fontSize: "1.1rem",
-                                    padding: "0.6rem 1.2rem",
-                                    fontWeight: "bold",
-                                    width: "fit-content"
-                                }}
+                    {/* CAJA IZQUIERDA: TEXTO */}
+                    <div className="homeHeroCard" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div className="homeHeroBadge" style={{ width: "fit-content" }}>
+                            Oferta limitada
+                        </div>
+
+                        <h1 className="homeHeroTitle">
+                            {product?.heroTitle || "El producto ideal"}
+                        </h1>
+
+                        <p className="homeHeroText">
+                            {product?.heroSubtitle ||
+                                "Comprá en 1 minuto. Pagás por transferencia y subís el comprobante. Y Listo!! Te lo enviamos."}
+                        </p>
+
+                        <div className="homeHeroButtons">
+                            <Link 
+                                className="homeHeroBtnPrimary" 
+                                to="/products"
+                                style={{ color: '#ffffff', textDecoration: 'none' }} 
                             >
-                                Oferta limitada
-                            </div>
+                                IR A LA PÁGINA DEL PRODUCTO
+                            </Link>
 
-                            <h1 className="homeHeroTitle">
-                                {product?.heroTitle || "El producto ideal"}
-                            </h1>
+                            <Link className="homeHeroBtnGhost" to="/cart">
+                                Ir al carrito
+                            </Link>
 
-                            <p className="homeHeroText">
-                                {product?.heroSubtitle ||
-                                    "Comprá en 1 minuto. Pagás por transferencia y subís el comprobante. Y Listo!! Te lo enviamos."}
-                            </p>
+                            {waLink ? (
+                                <a className="homeHeroBtnGhost" href={waLink} target="_blank" rel="noreferrer">
+                                    WhatsApp →
+                                </a>
+                            ) : null}
+                        </div>
 
-                            <div className="homeHeroButtons">
-                                <Link className="homeHeroBtnPrimary" to="/products">
-                                    IR A LA PÁGINA DEL PRODUCTO
-                                </Link>
+                        <div className="homeHeroChips">
+                            <span className="homeHeroChip">Transferencia</span>
+                            <span className="homeHeroChip">Comprobante</span>
+                            <span className="homeHeroChip">Envíos</span>
+                            <span className="homeHeroChip">Soporte</span>
+                        </div>
+                    </div>
 
-                                <Link className="homeHeroBtnGhost" to="/cart">
-                                    Ir al carrito
-                                </Link>
+                    {/* CAJA DERECHA: MINI GALERÍA */}
+                    <div className="homeHeroPreview" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column" }}>
+                        <div className="homeHeroPreviewTop">
+                            <div className="homeHeroPreviewTitle">Galería</div>
+                            <div className="homeHeroPreviewSub">Deslizá o usá las flechas</div>
+                        </div>
 
-                                {waLink ? (
-                                    <a className="homeHeroBtnGhost" href={waLink} target="_blank" rel="noreferrer">
-                                        WhatsApp →
-                                    </a>
-                                ) : null}
-                            </div>
+                        {/* Contenedor cuadrado de imagen */}
+                        <div
+                            className="homeHeroPreviewMedia"
+                            style={{ cursor: "grab", touchAction: "pan-y", flex: 1 }} // Flex 1 ayuda a llenar el alto
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                            onMouseDown={onMouseDown}
+                            onMouseUp={onMouseUp}
+                            onMouseLeave={() => setTouchStart(null)}
+                        >
+                            {heroImages.length > 0 ? (
+                                <>
+                                    <img
+                                        src={heroImages[heroIndex]}
+                                        alt="Producto"
+                                        onDragStart={(e) => e.preventDefault()}
+                                        style={{ pointerEvents: "auto", userSelect: "none" }}
+                                    />
 
-                            <div className="homeHeroChips">
-                                <span className="homeHeroChip">Transferencia</span>
-                                <span className="homeHeroChip">Comprobante</span>
-                                <span className="homeHeroChip">Envíos</span>
-                                <span className="homeHeroChip">Soporte</span>
+                                    {/* Flechas */}
+                                    {heroImages.length > 1 && (
+                                        <>
+                                            <button
+                                                onClick={prevImage}
+                                                style={{
+                                                    position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)",
+                                                    background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
+                                                    width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
+                                                }}
+                                            >
+                                                ‹
+                                            </button>
+                                            <button
+                                                onClick={nextImage}
+                                                style={{
+                                                    position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
+                                                    background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
+                                                    width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
+                                                }}
+                                            >
+                                                ›
+                                            </button>
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="homeHeroPreviewEmpty">Agregá imágenes del producto</div>
+                            )}
+
+                            <div className="homeHeroPreviewCount">
+                                {heroIndex + 1}/{Math.max(1, heroImages.length || 1)}
                             </div>
                         </div>
 
-                        {/* CAJA DERECHA: MINI GALERÍA */}
-                        <div className="homeHeroPreview" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column" }}>
-                            <div className="homeHeroPreviewTop">
-                                <div className="homeHeroPreviewTitle">Galería</div>
-                                <div className="homeHeroPreviewSub">Deslizá o usá las flechas</div>
-                            </div>
-
-                            <div
-                                className="homeHeroPreviewMedia"
-                                style={{
-                                    position: "relative",
-                                    flex: 1,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    overflow: "hidden",
-                                    cursor: "grab",
-                                    touchAction: "pan-y"
-                                }}
-                                onTouchStart={onTouchStart}
-                                onTouchMove={onTouchMove}
-                                onTouchEnd={onTouchEnd}
-                                onMouseDown={onMouseDown}
-                                onMouseUp={onMouseUp}
-                                onMouseLeave={() => setTouchStart(null)}
-                            >
-                                {heroImages.length > 0 ? (
-                                    <>
-                                        {/* 🔍 CAMBIO 2: objectFit: "cover" para llenar todo el contenedor sin bordes */}
-                                        <img
-                                            src={heroImages[heroIndex]}
-                                            alt="Producto"
-                                            onDragStart={(e) => e.preventDefault()}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                // Quitamos maxHeight para que llene el alto total de la columna
-                                                objectFit: "cover",
-                                                pointerEvents: "auto",
-                                                userSelect: "none"
-                                            }}
-                                        />
-
-                                        {/* Flechas */}
-                                        {heroImages.length > 1 && (
-                                            <>
-                                                <button
-                                                    onClick={prevImage}
-                                                    style={{
-                                                        position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)",
-                                                        background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
-                                                        width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
-                                                    }}
-                                                >
-                                                    ‹
-                                                </button>
-                                                <button
-                                                    onClick={nextImage}
-                                                    style={{
-                                                        position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
-                                                        background: "rgba(0,0,0,0.4)", color: "white", border: "none", borderRadius: "50%",
-                                                        width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", zIndex: 10
-                                                    }}
-                                                >
-                                                    ›
-                                                </button>
-                                            </>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="homeHeroPreviewEmpty">Agregá imágenes del producto</div>
-                                )}
-
-                                <div className="homeHeroPreviewCount">
-                                    {heroIndex + 1}/{Math.max(1, heroImages.length || 1)}
-                                </div>
-                            </div>
-
-                            <div className="homeHeroDots">
-                                {heroImages.slice(0, 5).map((_, idx) => (
-                                    <span
-                                        key={idx}
-                                        className={`dot ${idx === heroIndex ? "on" : ""}`}
-                                        onClick={() => setHeroIndex(idx)}
-                                        style={{ cursor: "pointer", padding: "5px" }}
-                                    />
-                                ))}
-                            </div>
+                        <div className="homeHeroDots">
+                            {heroImages.slice(0, 5).map((_, idx) => (
+                                <span
+                                    key={idx}
+                                    className={`dot ${idx === heroIndex ? "on" : ""}`}
+                                    onClick={() => setHeroIndex(idx)}
+                                    style={{ cursor: "pointer", padding: "5px" }}
+                                />
+                            ))}
                         </div>
                     </div>
                 </section>
 
-                {/* SECCIONES RESTANTES */}
+                {/* SECCIONES RESTANTES (Igual que antes) */}
                 <section id="benefits" className="reveal" style={{ marginTop: "1.1rem" }}>
                     <div className="card" style={{ padding: "1.2rem" }}>
                         <span className="badge">Cómo comprar</span>
@@ -316,14 +285,6 @@ function Home() {
                                 </p>
                             </div>
                         </div>
-
-                        <style>{`
-              @media (max-width: 980px){
-                section#benefits .card > div[style*="grid-template-columns: repeat(3, 1fr)"]{
-                  grid-template-columns: 1fr !important;
-                }
-              }
-            `}</style>
                     </div>
                 </section>
 

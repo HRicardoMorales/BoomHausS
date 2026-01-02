@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+// frontend/src/pages/Cart.jsx
+import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 
@@ -12,13 +13,42 @@ function Cart() {
     const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal } = useCart();
     const isEmpty = !Array.isArray(items) || items.length === 0;
 
+    // ✅ 1. Scroll al inicio siempre que se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const totalItems = useMemo(() => {
         return items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
     }, [items]);
 
     return (
-        <main className="section">
+        <main className="section" style={{ paddingBottom: '4rem' }}>
             <div className="container">
+
+                {/* Estilos responsivos inyectados */}
+                <style>{`
+                    .cart-grid {
+                        margin-top: 1rem;
+                        display: grid;
+                        grid-template-columns: 1fr; /* Celular: 1 columna */
+                        gap: 1.5rem;
+                        align-items: start;
+                    }
+                    /* PC: 2 columnas */
+                    @media (min-width: 900px) {
+                        .cart-grid {
+                            grid-template-columns: 1.2fr 0.8fr;
+                        }
+                    }
+                    /* Ajuste para inputs en celular */
+                    .qty-input {
+                        width: 50px;
+                        text-align: center;
+                        padding: 5px;
+                    }
+                `}</style>
+
                 <section className="card reveal" style={{ padding: '1.2rem' }}>
                     <span className="badge">Carrito</span>
                     <h1 style={{ margin: '0.65rem 0 0.25rem', letterSpacing: '-0.05em' }}>
@@ -45,20 +75,14 @@ function Cart() {
                         </div>
                     </section>
                 ) : (
-                    <section
-                        className="reveal"
-                        style={{
-                            marginTop: '1rem',
-                            display: 'grid',
-                            gridTemplateColumns: '1.2fr 0.8fr',
-                            gap: '1rem',
-                            alignItems: 'start'
-                        }}
-                    >
+                    // ✅ 2. Usamos la clase .cart-grid definida arriba para responsive
+                    <section className="reveal cart-grid">
+
+                        {/* COLUMNA IZQUIERDA: PRODUCTOS */}
                         <div className="card" style={{ padding: '1.2rem' }}>
                             <span className="badge">Productos</span>
 
-                            <div style={{ marginTop: '0.9rem', display: 'grid', gap: '0.75rem' }}>
+                            <div style={{ marginTop: '0.9rem', display: 'grid', gap: '1rem' }}>
                                 {items.map((it) => {
                                     const qty = Number(it.quantity) || 1;
                                     const price = Number(it.price) || 0;
@@ -74,15 +98,16 @@ function Cart() {
                                             style={{
                                                 padding: '1rem',
                                                 display: 'grid',
-                                                gridTemplateColumns: '96px 1fr',
-                                                gap: '0.9rem',
+                                                gridTemplateColumns: '80px 1fr', // Imagen un poco más chica en mobile para dar espacio
+                                                gap: '1rem',
                                                 alignItems: 'center'
                                             }}
                                         >
+                                            {/* Imagen */}
                                             <div
                                                 style={{
-                                                    width: 96,
-                                                    height: 72,
+                                                    width: 80,
+                                                    height: 80, // Cuadrada para mejor consistencia
                                                     borderRadius: 14,
                                                     overflow: 'hidden',
                                                     border: '1px solid var(--border)',
@@ -97,46 +122,47 @@ function Cart() {
                                                         loading="lazy"
                                                     />
                                                 ) : (
-                                                    <div className="muted" style={{ padding: '0.9rem' }}>Sin imagen</div>
+                                                    <div className="muted" style={{ padding: '0.9rem', fontSize: '0.7rem' }}>Sin foto</div>
                                                 )}
                                             </div>
 
-                                            <div style={{ display: 'grid', gap: '0.35rem' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                                                    <div style={{ fontWeight: 950, letterSpacing: '-0.02em' }}>
+                                            {/* Info */}
+                                            <div style={{ display: 'grid', gap: '0.5rem' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                    <div style={{ fontWeight: 700, lineHeight: 1.2 }}>
                                                         {it.name}
                                                     </div>
-                                                    <div style={{ fontWeight: 950 }}>
+                                                    <div style={{ fontWeight: 900 }}>
                                                         {money(lineTotal)}
                                                     </div>
                                                 </div>
 
-                                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', fontSize: '0.9rem' }}>
                                                     <span>{money(price)} c/u</span>
                                                     <button
                                                         type="button"
                                                         className="btn btn-ghost"
+                                                        style={{ padding: '2px 8px', fontSize: '0.8rem', height: 'auto' }}
                                                         onClick={() => removeItem(it.productId)}
                                                     >
                                                         Quitar
                                                     </button>
                                                 </div>
 
-                                                {hasBundle2 ? (
+                                                {hasBundle2 && (
                                                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                                                        <span className="badge">Promo x2</span>
-                                                        <span className="muted">-{discountPct}% por cada 2 unidades</span>
+                                                        <span className="badge" style={{ fontSize: '0.7rem' }}>Promo x2</span>
+                                                        <span className="muted" style={{ fontSize: '0.8rem' }}>-{discountPct}% llevando 2</span>
                                                     </div>
-                                                ) : null}
+                                                )}
 
-                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                                                    <span className="muted">Cantidad</span>
-
+                                                {/* Controles de Cantidad */}
+                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '5px' }}>
                                                     <button
                                                         type="button"
                                                         className="btn btn-ghost"
+                                                        style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
                                                         onClick={() => updateQty(it.productId, Math.max(1, qty - 1))}
-                                                        aria-label="Restar"
                                                     >
                                                         −
                                                     </button>
@@ -149,14 +175,14 @@ function Cart() {
                                                             updateQty(it.productId, v);
                                                         }}
                                                         inputMode="numeric"
-                                                        style={{ width: 70, textAlign: 'center' }}
+                                                        className="qty-input input" // Clase añadida arriba
                                                     />
 
                                                     <button
                                                         type="button"
                                                         className="btn btn-ghost"
+                                                        style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
                                                         onClick={() => updateQty(it.productId, qty + 1)}
-                                                        aria-label="Sumar"
                                                     >
                                                         +
                                                     </button>
@@ -167,13 +193,14 @@ function Cart() {
                                 })}
                             </div>
 
-                            <div style={{ marginTop: '1rem', display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-                                <button className="btn btn-ghost" type="button" onClick={clearCart}>
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <button className="btn btn-ghost" type="button" onClick={clearCart} style={{ width: '100%' }}>
                                     Vaciar carrito
                                 </button>
                             </div>
                         </div>
 
+                        {/* COLUMNA DERECHA/ABAJO: RESUMEN */}
                         <aside
                             className="card"
                             style={{
@@ -188,30 +215,30 @@ function Cart() {
                             <span className="badge">Resumen</span>
 
                             <div style={{ marginTop: '0.85rem', display: 'grid', gap: '0.45rem' }}>
-                                <div className="muted">
-                                    Productos: <strong>{totalItems}</strong>
+                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span>Productos:</span> <strong>{totalItems}</strong>
                                 </div>
-                                <div className="muted">
-                                    Subtotal: <strong>{money(totalPrice)}</strong>
+                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span>Subtotal:</span> <strong>{money(totalPrice)}</strong>
                                 </div>
-                                <div className="muted">
-                                    Envío: <strong>A coordinar</strong>
+                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span>Envío:</span> <strong>A coordinar</strong>
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: '0.9rem', display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                            <div style={{ marginTop: '0.9rem', paddingTop: '0.9rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div className="muted" style={{ fontWeight: 900 }}>Total</div>
                                 <div style={{ fontWeight: 950, fontSize: '1.6rem', letterSpacing: '-0.04em' }}>
                                     {money(totalPrice)}
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: '1rem', display: 'grid', gap: '0.55rem' }}>
-                                <Link className="btn btn-primary" to="/checkout">
+                            <div style={{ marginTop: '1.2rem', display: 'grid', gap: '0.8rem' }}>
+                                <Link className="btn btn-primary" to="/checkout" style={{ textAlign: 'center', padding: '12px' }}>
                                     Ir a checkout →
                                 </Link>
-                                <Link className="btn btn-ghost" to="/products">
-                                    Seguir viendo →
+                                <Link className="btn btn-ghost" to="/products" style={{ textAlign: 'center' }}>
+                                    Seguir comprando
                                 </Link>
                             </div>
                         </aside>
