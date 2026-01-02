@@ -68,6 +68,9 @@ export default function ProductDetail() {
   const [error, setError] = useState("");
   const [product, setProduct] = useState(null);
 
+  // NUEVO: Estado para la Notificación Flotante
+  const [showToast, setShowToast] = useState(false);
+
   // Galería
   const [activeImgIndex, setActiveImgIndex] = useState(0);
 
@@ -170,7 +173,6 @@ export default function ProductDetail() {
     ? Math.round(pairsQty * unitPrice * (1 - pack2Discount / 100) + remQty * unitPrice)
     : Math.round(totalQty * unitPrice);
 
-  // ID estable para Meta (mejor SKU/ID real)
   const contentId = useMemo(() => {
     return (
       product?.sku ||
@@ -182,7 +184,6 @@ export default function ProductDetail() {
     );
   }, [product, id]);
 
-  // ✅ TRACK: ViewContent cuando ya hay product (una sola vez por producto)
   useEffect(() => {
     if (!product) return;
     if (lastViewedRef.current === contentId) return;
@@ -196,7 +197,7 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
-  // ✅ CLICK: AddToCart
+  // ✅ CLICK: AddToCart - Ahora activa el aviso NO intrusivo
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -211,13 +212,19 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    // (tu toast ya escucha este evento)
+    // Mostrar Notificación Flotante
+    setShowToast(true);
+
+    // Auto-cerrar después de 5 segundos
+    setTimeout(() => {
+      setShowToast(false);
+    }, 5000);
+
     window.dispatchEvent(
       new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } })
     );
   };
 
-  // ✅ CLICK: BuyNow (inicia checkout)
   const handleBuyNow = () => {
     if (!product) return;
 
@@ -606,6 +613,171 @@ export default function ProductDetail() {
           </div>
         </section>
       </div>
+
+      {/* ============================================================
+          AVISO FLOTANTE (TOAST): NO INTRUSIVO
+          ============================================================ */}
+      {showToast && (
+        <div className="pd-toast-wrapper">
+          <div className="pd-toast-content">
+            {/* Foto y texto */}
+            <div className="pd-toast-main">
+              <img src={images[0]} alt="" className="pd-toast-img" />
+              <div className="pd-toast-info">
+                <span className="pd-toast-status">✓ ¡Agregado!</span>
+                <span className="pd-toast-name">{product.name}</span>
+              </div>
+              <button className="pd-toast-close" onClick={() => setShowToast(false)}>✕</button>
+            </div>
+
+            {/* Botones de acción */}
+            <div className="pd-toast-actions">
+              <button className="pd-toast-btn-secondary" onClick={() => navigate('/cart')}>
+                IR AL CARRITO
+              </button>
+              <button className="pd-toast-btn-primary" onClick={() => navigate('/checkout')}>
+                FINALIZAR COMPRA
+              </button>
+            </div>
+            {/* Barra de progreso de auto-cierre */}
+            <div className="pd-toast-progress"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Estilos específicos para la notificación flotante */}
+      <style>{`
+        /* Contenedor Principal */
+        .pd-toast-wrapper {
+          position: fixed;
+          z-index: 10000;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          animation: toastSlideIn 0.5s ease-out;
+        }
+
+        /* Posicionamiento Responsivo */
+        @media (min-width: 768px) {
+          .pd-toast-wrapper {
+            bottom: 24px;
+            right: 24px;
+            width: 350px;
+          }
+        }
+        @media (max-width: 767px) {
+          .pd-toast-wrapper {
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            width: auto;
+          }
+        }
+
+        .pd-toast-content {
+          background: white;
+          border-radius: 18px;
+          padding: 12px;
+          box-shadow: 0 10px 30px rgba(6, 55, 165, 0.15);
+          border: 1px solid #DDF5FF;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .pd-toast-main {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .pd-toast-img {
+          width: 45px;
+          height: 45px;
+          border-radius: 10px;
+          object-fit: cover;
+        }
+
+        .pd-toast-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .pd-toast-status {
+          color: #22C3FF;
+          font-weight: 800;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+        }
+
+        .pd-toast-name {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #0637A5;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .pd-toast-close {
+          background: none;
+          border: none;
+          color: #ccc;
+          cursor: pointer;
+          font-size: 1rem;
+          padding: 4px;
+        }
+
+        .pd-toast-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+
+        .pd-toast-btn-primary {
+          background: #0B5CFF;
+          color: white;
+          border: none;
+          padding: 8px;
+          border-radius: 10px;
+          font-weight: bold;
+          font-size: 0.75rem;
+          cursor: pointer;
+        }
+
+        .pd-toast-btn-secondary {
+          background: #DDF5FF;
+          color: #0637A5;
+          border: none;
+          padding: 8px;
+          border-radius: 10px;
+          font-weight: bold;
+          font-size: 0.75rem;
+          cursor: pointer;
+        }
+
+        .pd-toast-progress {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 3px;
+          background: #22C3FF;
+          width: 100%;
+          animation: toastProgress 5s linear forwards;
+        }
+
+        @keyframes toastSlideIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastProgress {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
     </main>
   );
 }

@@ -6,6 +6,7 @@ import api from '../services/api';
 import { getStoredAuth } from '../utils/auth';
 import { useCart } from '../context/CartContext.jsx';
 import { track } from '../lib/metaPixel';
+import { warmUpApi } from "../services/api";
 
 function money(n) {
     const num = Number(n);
@@ -153,6 +154,9 @@ function Checkout() {
             content_type: 'product',
         });
     }, [isCartEmpty, totalPrice, totalItems, contentIds]);
+    useEffect(() => {
+        warmUpApi();
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault();
