@@ -7,7 +7,7 @@ import Footer from './components/Footer.jsx';
 import Home from './pages/home.jsx';
 import Products from './pages/products.jsx';
 import ProductDetail from './pages/ProductDetail.jsx';
-import Cart from './pages/cart.jsx';
+import Cart from './pages/Cart.jsx';
 import Checkout from './pages/checkout.jsx';
 import Login from './pages/login.jsx';
 import Register from './pages/register.jsx';
