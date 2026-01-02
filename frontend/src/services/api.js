@@ -2,25 +2,23 @@
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
 
-// ✅ Backend de producción (Render)
-const PROD_API = "https://boomhauss.onrender.com/api";
+// 🚀 CONFIGURACIÓN ÚNICA (Backend en Render)
+// Esta es la única URL que usará el sistema, sin importar dónde estés.
+export const baseURL = "https://boomhauss.onrender.com/api";
 
-// ✅ Si VITE_API_URL existe, úsala. Si no existe:
-// - en PROD => Render
-// - en DEV  => localhost
-export const baseURL =
-    (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
-
-// (opcional) log útil
-console.log("API base:", baseURL);
+console.log("🔗 API Conectada exclusivamente a:", baseURL);
 
 const api = axios.create({
     baseURL,
-    // ✅ Render puede tardar por cold-start. Subimos timeout.
-    timeout: 30000,
+    // Aumentamos el tiempo de espera a 45s porque Render gratuito se "duerme"
+    timeout: 45000, 
 });
 
-// ✅ Request interceptor: agrega token si existe
+// ----------------------------------------------------------------------
+// INTERCEPTORES (Seguridad)
+// ----------------------------------------------------------------------
+
+// 1. Request: Inyectar Token si existe
 api.interceptors.request.use(
     (config) => {
         const { token } = getStoredAuth();
@@ -33,39 +31,39 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// ✅ Response interceptor: si 401, desloguea y manda a login
+// 2. Response: Manejar sesión expirada (Error 401)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error?.response?.status;
 
         if (status === 401) {
+            console.warn("🔒 Sesión expirada. Redirigiendo a login...");
             clearAuth();
             const current = window.location.pathname || "";
-            if (!current.startsWith("/login")) {
+            // Evitamos recargas infinitas si ya estamos en login
+            if (!current.startsWith("/login") && !current.startsWith("/admin")) {
                 window.location.href = "/login";
             }
         }
-
         return Promise.reject(error);
     }
 );
 
-// ✅ Warm-up para Render (evita 1er request lento / cold start)
+// ----------------------------------------------------------------------
+// WARM-UP (Despertar servidor de Render)
+// ----------------------------------------------------------------------
 export async function warmUpApi() {
     try {
-        // endpoint liviano (si existe health mejor)
-        await api.get("/health");
+        console.log("⏳ Contactando a Render para despertar el servidor...");
+        // Intentamos un endpoint ligero
+        await api.get("/products?limit=1"); 
+        console.log("✅ Servidor Render respondió.");
         return true;
-    } catch {
-        try {
-            await api.get("/products/single");
-            return true;
-        } catch {
-            return false;
-        }
+    } catch (e) {
+        console.error("⚠️ El servidor de Render parece apagado o lento:", e.message);
+        return false;
     }
 }
-
 
 export default api;
