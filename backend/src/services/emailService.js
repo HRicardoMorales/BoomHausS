@@ -2,24 +2,30 @@
 const nodemailer = require('nodemailer');
 
 // Configuración del transporte
-// RECOMENDACIÓN: Para Gmail usá puerto 465 y secure: true
+// Usamos las variables de entorno para flexibilidad, con valores por defecto seguros para Gmail
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,       // PUERTO FIJO
-    secure: true,    // SEGURIDAD ACTIVADA SIEMPRE
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT) || 465, // Aseguramos que sea número
+    secure: process.env.SMTP_SECURE === 'true',   // Convertimos string 'true' a booleano true
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
     },
+    // Opciones adicionales para evitar timeouts en redes restrictivas como Render
     tls: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false // Acepta certificados auto-firmados si fuera necesario
+    },
+    // Aumentar timeouts por si la red está lenta
+    connectionTimeout: 10000, // 10 segundos
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 // Verificamos la conexión al iniciar el servidor
 transporter.verify(function (error, success) {
     if (error) {
         console.error('❌ Error de conexión SMTP (Correos):', error.message);
+        // No mates el proceso, solo avisa
     } else {
         console.log('✅ Servidor de correos listo para enviar mensajes.');
     }
@@ -32,25 +38,26 @@ async function sendOrderConfirmationEmail(order) {
     }
 
     try {
-        const subject = `🥩 Confirmación de pedido #${order._id} - Tres Jotas`;
+        const storeName = process.env.STORE_NAME || "BoomHausS"; // Usar nombre dinámico si quieres
+        const subject = `🥩 Confirmación de pedido #${order._id} - ${storeName}`;
 
         // Formato de lista de productos para HTML
         const itemsHtml = (order.items || [])
             .map(item => `<li><strong>${item.name}</strong> x ${item.quantity} - $${item.price} c/u</li>`)
             .join('');
 
-        // Datos bancarios (Configurarlos en el .env es más seguro, o edítalos aquí)
+        // Datos bancarios
         const bankInfo = {
-            bank: process.env.BANK_NAME || 'TU BANCO (Edita esto en .env)',
+            bank: process.env.BANK_NAME || 'TU BANCO',
             alias: process.env.BANK_ALIAS || 'TU.ALIAS.BANCARIO',
             cbu: process.env.BANK_CBU || '000000000000000000',
             holder: process.env.BANK_HOLDER || 'Nombre del Titular'
         };
 
-        // Cuerpo del correo en HTML (Diseño limpio)
+        // Cuerpo del correo en HTML
         const htmlContent = `
             <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
-                <h2 style="color: #d32f2f; text-align: center;">¡Gracias por tu compra en Carnicería Tres Jotas! 🥩</h2>
+                <h2 style="color: #0B5CFF; text-align: center;">¡Gracias por tu compra en ${storeName}! 🚀</h2>
                 
                 <p>Hola <strong>${order.customerName || 'Cliente'}</strong>,</p>
                 <p>Hemos recibido tu pedido correctamente. A continuación te dejamos los detalles:</p>
@@ -75,17 +82,17 @@ async function sendOrderConfirmationEmail(order) {
                 </div>
 
                 <p style="margin-top: 30px; text-align: center; color: #777; font-size: 12px;">
-                    Carnicería Tres Jotas - Saavedra, CABA<br>
+                    ${storeName}<br>
                     Si tienes dudas, contáctanos por WhatsApp.
                 </p>
             </div>
         `;
 
         await transporter.sendMail({
-            from: `"Carnicería Tres Jotas" <${process.env.SMTP_USER}>`,
+            from: `"${storeName}" <${process.env.SMTP_USER}>`,
             to: order.customerEmail,
             subject,
-            html: htmlContent // Usamos HTML en lugar de text
+            html: htmlContent
         });
 
         console.log(`📧 Email enviado a ${order.customerEmail} (Orden ${order._id})`);
