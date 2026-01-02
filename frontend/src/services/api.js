@@ -10,7 +10,6 @@ const PROD_API = "https://boomhauss.onrender.com/api";
 // - en DEV  => localhost
 export const baseURL =
     (import.meta.env.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
-    (import.meta.env.PROD ? PROD_API : "http://localhost:4000/api");
 
 // (opcional) log útil
 console.log("API base:", baseURL);
