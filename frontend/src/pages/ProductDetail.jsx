@@ -214,7 +214,7 @@ export default function ProductDetail() {
 
     // Mostrar Notificación Flotante
     setShowToast(true);
-
+    
     // Auto-cerrar después de 5 segundos
     setTimeout(() => {
       setShowToast(false);
@@ -629,7 +629,7 @@ export default function ProductDetail() {
               </div>
               <button className="pd-toast-close" onClick={() => setShowToast(false)}>✕</button>
             </div>
-
+            
             {/* Botones de acción */}
             <div className="pd-toast-actions">
               <button className="pd-toast-btn-secondary" onClick={() => navigate('/cart')}>
