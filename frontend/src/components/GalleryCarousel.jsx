@@ -18,11 +18,11 @@ function GalleryCarousel({
                 ? imagesProp
                 : [
                     // TIP: reemplazá por tus fotos reales (URLs o /assets)
-                    'https://acdn-us.mitiendanube.com/stores/001/329/380/products/whatsapp-image-2025-04-03-at-18-32-59-3a19a2980755dc02eb17437160133774-1024-1024.webp',
-                    'https://acdn-us.mitiendanube.com/stores/001/329/380/products/whatsapp-image-2025-04-03-at-18-46-35-1-e31729731ebcc1cc5f17437171321309-1024-1024.webp',
-                    'https://acdn-us.mitiendanube.com/stores/001/329/380/products/whatsapp-image-2025-04-03-at-18-33-50-129776ca6a5d5dc53217437161147332-1024-1024.webp',
-                    'https://acdn-us.mitiendanube.com/stores/001/329/380/products/whatsapp-image-2025-03-05-at-18-31-56-c96281331ba1ac080b17412104928802-1024-1024.webp',
-                    'https://acdn-us.mitiendanube.com/stores/001/329/380/products/whatsapp-image-2025-03-05-at-18-31-34-6048565541efb8ef8f17412104933651-1024-1024.webp'
+                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F580b030c-8cbc-4a0d-bc9a-baefff606c27.png&w=960&q=75',
+                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F7f7e071a-5d88-45bd-9fc8-727ff4209355.png&w=960&q=75',
+                    'https://acdn-us.mitiendanube.com/stores/001/662/318/products/airpods-3-c68e4869eab18d768e17520213046616-640-0.webp',
+                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F9a2df311-e1ba-4b22-b33b-b3a0853d227b.png&w=960&q=75',
+                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F28e94d65-6360-4343-88c8-98fab2b08804.png&w=960&q=75'
                 ],
         [imagesProp]
     );
