@@ -127,6 +127,8 @@ async function makeAdmin(req, res, next) {
 }
 
 // POST /api/auth/forgot-password
+// En auth.controller.js
+
 async function forgotPassword(req, res, next) {
     try {
         const { email } = req.body;
@@ -139,13 +141,16 @@ async function forgotPassword(req, res, next) {
         // Generar token aleatorio
         const token = crypto.randomBytes(20).toString('hex');
 
-        // Guardar token y expiración (1 hora = 3600000 ms)
+        // Guardar token y expiración (1 hora)
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; 
         await user.save();
 
-        // Crear link. IMPORTANTE: Esto debe apuntar a tu Frontend
-        const frontendUrl = process.env.FRONTEND_URL || "https://boomhauss.com.ar";
+        // 🔴 AQUÍ ESTABA EL ERROR. 
+        // Vamos a forzar tu dominio real para que no falle nunca más.
+        const frontendUrl = "https://boomhauss.com.ar"; 
+        
+        // El link final quedará: https://boomhauss.com.ar/reset-password/TOKEN
         const resetUrl = `${frontendUrl}/reset-password/${token}`;
 
         // Enviar email
