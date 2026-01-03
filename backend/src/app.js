@@ -75,18 +75,21 @@ function isAllowedOrigin(origin) {
   }
 }
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (isAllowedOrigin(origin)) return cb(null, true);
-      return cb(new Error('CORS bloqueado para este origen: ' + origin));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+// Busca donde tengas configurado 'cors' y cámbialo por esto:
 
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",                 // Tu PC local
+    "https://boomhauss-frontend.vercel.app", // Tu link viejo de Vercel
+    "https://boomhauss.com.ar",              // 👈 ESTE ES EL NUEVO QUE FALTABA
+    "https://www.boomhauss.com.ar"           // El mismo con www
+  ],
+  credentials: true, 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
