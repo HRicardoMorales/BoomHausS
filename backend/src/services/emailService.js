@@ -8,56 +8,67 @@ const resend = process.env.RESEND_API_KEY
 
 async function sendOrderConfirmationEmail(order) {
     if (!resend) {
-        console.error("⚠️ FALTA LA VARIABLE RESEND_API_KEY. El correo no se enviará.");
+        console.error("⚠️ FALTA RESEND_API_KEY. No se envió el correo.");
         return false;
     }
 
     if (!order.customerEmail) return;
 
     try {
-        const storeName = "BoomHausS";
-        const whatsappNumber = "5491123915075"; // 🔴 CAMBIA ESTO por tu número real
+        const whatsappNumber = "5491112345678"; // 🔴 CAMBIA ESTO POR TU NÚMERO
 
-        // 1. Generamos la lista de productos (HTML dinámico)
-        // Asumimos que order.items es un array con { title, quantity, price }
+        // 1. Lista de productos (Diseño limpio y técnico)
         const productsHtml = order.items.map(item => `
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 10px 0;">
-                <span style="color: #e0e0e0;">${item.quantity}x ${item.title || item.name}</span>
-                <span style="color: #fff; font-weight: bold;">$${item.price}</span>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 12px 0;">
+                <span style="color: #333; font-weight: 500;">
+                    <span style="color: #0B5CFF; font-weight: bold;">${item.quantity}x</span> 
+                    ${item.title || item.name}
+                </span>
+                <span style="color: #333; font-weight: bold;">$${item.price}</span>
             </div>
         `).join('');
 
-        // 2. HTML PROFESIONAL CON ESTILO "DARK PREMIUM"
+        // 2. HTML CON TU PALETA DE COLORES (#0B5CFF)
         const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
                 <style>
-                    body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #000000; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #1a1a1a; color: #ffffff; border-radius: 8px; overflow: hidden; }
-                    .header { background-color: #000; padding: 30px; text-align: center; border-bottom: 3px solid #d4af37; }
-                    .logo { font-size: 28px; font-weight: bold; color: #fff; letter-spacing: 2px; text-decoration: none; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+                    
+                    /* TUS COLORES */
+                    .header { background-color: #0B5CFF; padding: 35px 20px; text-align: center; }
+                    .logo { font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; }
+                    
                     .content { padding: 40px 30px; }
-                    .h1 { color: #d4af37; font-size: 24px; margin-bottom: 10px; text-align: center; }
-                    .text { color: #cccccc; line-height: 1.6; font-size: 16px; margin-bottom: 20px; text-align: center; }
-                    .order-box { background-color: #252525; padding: 20px; border-radius: 8px; margin: 30px 0; }
-                    .total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px solid #d4af37; font-size: 20px; font-weight: bold; color: #d4af37; }
-                    .btn { display: block; width: 80%; margin: 30px auto; padding: 15px; background-color: #25D366; color: white; text-align: center; text-decoration: none; font-weight: bold; border-radius: 50px; font-size: 18px; }
-                    .footer { background-color: #111; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+                    .h1 { color: #0B5CFF; font-size: 24px; margin-bottom: 10px; text-align: center; font-weight: 700; }
+                    .subtitle { color: #666; text-align: center; margin-bottom: 30px; font-size: 16px; }
+                    
+                    /* CAJA DEL PEDIDO CON COLOR SECONDARY SOFT */
+                    .order-box { background-color: #DDF5FF; padding: 25px; border-radius: 12px; border: 1px solid #22C3FF; margin-bottom: 30px; }
+                    .order-id { font-size: 13px; color: #0637A5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: bold; }
+                    
+                    .total { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 2px solid #fff; font-size: 20px; font-weight: 800; color: #0B5CFF; }
+                    
+                    .btn { display: block; width: 80%; margin: 30px auto; padding: 16px; background-color: #25D366; color: white; text-align: center; text-decoration: none; font-weight: bold; border-radius: 50px; font-size: 16px; transition: background 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+                    
+                    .footer { background-color: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; }
+                    .footer a { color: #0B5CFF; text-decoration: none; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <span class="logo">BOOMHAUSS</span>
+                        <div class="logo">BOOMHAUSS AUDIO</div>
                     </div>
 
                     <div class="content">
-                        <h1 class="h1">¡Gracias por tu compra, ${order.customerName || 'Cliente'}! 🥩</h1>
-                        <p class="text">Hemos recibido tu pedido correctamente. A continuación te dejamos el detalle de tu selección premium.</p>
+                        <h1 class="h1">¡Gracias por tu compra! 🎧</h1>
+                        <p class="subtitle">Hola <strong>${order.customerName || 'Cliente'}</strong>, tu audio premium está un paso más cerca. Aquí tienes el detalle de tu pedido.</p>
 
                         <div class="order-box">
-                            <p style="margin-top:0; color:#888; font-size:14px;">Orden #${order._id}</p>
+                            <div class="order-id">Orden #${order._id}</div>
                             
                             ${productsHtml}
 
@@ -67,34 +78,30 @@ async function sendOrderConfirmationEmail(order) {
                             </div>
                         </div>
 
-                        <div style="text-align: center; margin-top: 40px;">
-                            <p class="text">👇 <strong>Para finalizar tu pedido:</strong><br>Envíanos el comprobante de pago o coordina el envío por WhatsApp.</p>
+                        <div style="text-align: center;">
+                            <p style="color: #555; font-size: 15px;">👇 <strong>Para finalizar y coordinar el envío:</strong><br>Por favor envíanos el comprobante de pago por WhatsApp.</p>
                             
-                            <a href="https://wa.me/${whatsappNumber}?text=Hola%20BoomHausS,%20aquí%20mi%20pedido%20#${order._id}" class="btn">
+                            <a href="https://wa.me/${whatsappNumber}?text=Hola%20BoomHauss,%20te%20envío%20mi%20comprobante%20del%20pedido%20#${order._id}" class="btn">
                                 📱 Enviar Comprobante
                             </a>
                         </div>
                     </div>
 
                     <div class="footer">
-                        <p>BoomHausS - Carnes Premium</p>
-                        <p>Si tienes alguna duda, responde a este correo.</p>
-                        <p>© ${new Date().getFullYear()} Todos los derechos reservados.</p>
+                        <p><strong>BoomHausS</strong> - Sonido de Alta Fidelidad</p>
+                        <p>¿Necesitas ayuda? Responde a este correo.</p>
+                        <p>© ${new Date().getFullYear()} BoomHausS. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        // 3. ENVIAR EL CORREO (Configuración Final)
+        // 3. ENVIAR EL CORREO
         const data = await resend.emails.send({
-            // ✅ AHORA SÍ: Usamos tu dominio real
             from: 'BoomHausS <pedidos@boomhauss.com.ar>', 
-            
-            // ✅ Enviamos al cliente real
             to: order.customerEmail, 
-            
-            subject: `🥩 Confirmación de Pedido #${order._id} - BoomHausS`,
+            subject: `🎧 Confirmación de Pedido #${order._id} - BoomHausS`,
             html: htmlContent
         });
 
