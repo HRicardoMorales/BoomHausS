@@ -133,4 +133,9 @@ app.use('/api/auth', authRoutes);
 // ✅ errors al final
 app.use(errorHandler);
 
+// Ruta para mantener vivo el servidor (Ping)
+app.get("/ping", (req, res) => {
+  res.status(200).send("Pong! El backend esta despierto 🥩");
+});
+
 module.exports = app;
