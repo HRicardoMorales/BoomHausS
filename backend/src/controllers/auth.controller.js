@@ -3,8 +3,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-// const jwt = require('jsonwebtoken'); // si ya lo usás para login, lo dejás
+const crypto = require('crypto');
+const { sendPasswordResetEmail } = require('../services/emailService');
 
 // POST /api/auth/login
 async function login(req, res, next) {
@@ -66,7 +66,6 @@ async function login(req, res, next) {
 }
 
 // POST /api/auth/register
-// Crea un nuevo usuario "customer"
 async function register(req, res, next) {
     try {
         const { name, email, password } = req.body;
@@ -117,18 +116,87 @@ async function register(req, res, next) {
     }
 }
 
-// PUT /api/auth/make-admin/:id (o como lo tengas)
+// PUT /api/auth/make-admin/:id
 async function makeAdmin(req, res, next) {
     try {
-        // ... tu lógica actual para convertir en admin ...
+        // Tu lógica actual para convertir en admin (o dejar vacío si no se usa aun)
+        res.json({ message: "Función makeAdmin (pendiente de implementar)" });
     } catch (error) {
         next(error);
     }
 }
 
+// POST /api/auth/forgot-password
+async function forgotPassword(req, res, next) {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "No existe cuenta con ese email" });
+        }
+
+        // Generar token aleatorio
+        const token = crypto.randomBytes(20).toString('hex');
+
+        // Guardar token y expiración (1 hora = 3600000 ms)
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000; 
+        await user.save();
+
+        // Crear link. IMPORTANTE: Esto debe apuntar a tu Frontend
+        const frontendUrl = process.env.FRONTEND_URL || "https://boomhauss.com.ar";
+        const resetUrl = `${frontendUrl}/reset-password/${token}`;
+
+        // Enviar email
+        await sendPasswordResetEmail(user.email, resetUrl);
+
+        res.json({ message: "Correo de recuperación enviado" });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// POST /api/auth/reset-password/:token
+async function resetPassword(req, res, next) {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        // Buscar usuario por token y verificar que no haya expirado
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() } // $gt = Mayor que ahora
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: "El token es inválido o ha expirado" });
+        }
+
+        // 🟢 IMPORTANTE: Encriptar la contraseña antes de guardar
+        // Usamos la misma lógica que en Register para mantener consistencia
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.passwordHash = hashedPassword;
+        
+        // Limpiar el token usado
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        res.json({ message: "Contraseña actualizada correctamente" });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// ✅ AQUÍ ESTABA EL ERROR: Faltaba exportar las funciones nuevas
 module.exports = {
     login,
     register,
-    makeAdmin
+    makeAdmin,
+    forgotPassword,
+    resetPassword
 };
-

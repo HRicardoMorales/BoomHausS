@@ -1,201 +1,223 @@
-// frontend/src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { saveAuth, normalizeAuthResponse } from "../utils/auth";
 
 export default function Login() {
-    const navigate = useNavigate();
-    const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const storeName = import.meta.env.VITE_STORE_NAME || "Encontratodo";
+  const storeName = import.meta.env.VITE_STORE_NAME || "Encontratodo";
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const [showPass, setShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-        try {
-            const res = await api.post("/auth/login", { email, password });
+    try {
+      const res = await api.post("/auth/login", { email, password });
 
-            // ✅ soporta múltiples formatos
-            const auth =
-                normalizeAuthResponse(res.data) || normalizeAuthResponse(res.data?.data) || {
-                    token: "",
-                    user: null,
-                };
+      // ✅ soporta múltiples formatos
+      const auth =
+        normalizeAuthResponse(res.data) || normalizeAuthResponse(res.data?.data) || {
+          token: "",
+          user: null,
+        };
 
-            const okSaved = saveAuth(auth); // ✅ saveAuth acepta objeto {token,user}
+      const okSaved = saveAuth(auth); // ✅ saveAuth acepta objeto {token,user}
 
-            if (!okSaved) {
-                setError(res.data?.message || "No se pudo iniciar sesión (no vino token).");
-                return;
-            }
+      if (!okSaved) {
+        setError(res.data?.message || "No se pudo iniciar sesión (no vino token).");
+        return;
+      }
 
-            const from = location.state?.from?.pathname || "/my-orders";
-            navigate(from, { replace: true });
-        } catch (err) {
-            console.error(err);
+      const from = location.state?.from?.pathname || "/my-orders";
+      navigate(from, { replace: true });
+    } catch (err) {
+      console.error(err);
 
-            const msg =
-                err?.response?.data?.message ||
-                err?.response?.data?.error ||
-                (err?.response?.status === 401 ? "Email o contraseña incorrectos." : null) ||
-                "Error al iniciar sesión.";
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        (err?.response?.status === 401 ? "Email o contraseña incorrectos." : null) ||
+        "Error al iniciar sesión.";
 
-            setError(msg);
-        } finally {
-            setLoading(false);
-        }
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    return (
-        <main className="section">
-            <div className="container">
-                {/* Header compacto */}
-                <section className="card reveal authHeader">
-                    <div className="authHeaderTop">
-                        <span className="badge">Acceso</span>
-                        <div className="authHeaderBrand">
-                            <div className="authDot" aria-hidden="true" />
-                            <div>
-                                <div className="authBrandName">{storeName}</div>
-                                <div className="authBrandSub">Ingresá para ver pedidos y subir comprobantes.</div>
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <main className="section">
+      <div className="container">
+        {/* Header compacto */}
+        <section className="card reveal authHeader">
+          <div className="authHeaderTop">
+            <span className="badge">Acceso</span>
+            <div className="authHeaderBrand">
+              <div className="authDot" aria-hidden="true" />
+              <div>
+                <div className="authBrandName">{storeName}</div>
+                <div className="authBrandSub">Ingresá para ver pedidos y subir comprobantes.</div>
+              </div>
+            </div>
+          </div>
 
-                    <h1 className="authTitle">Iniciar sesión</h1>
-                    <p className="muted authSubtitle">
-                        Entrás en 10 segundos. Tu cuenta te permite ver el estado del pedido y adjuntar el comprobante.
-                    </p>
-                </section>
+          <h1 className="authTitle">Iniciar sesión</h1>
+          <p className="muted authSubtitle">
+            Entrás en 10 segundos. Tu cuenta te permite ver el estado del pedido y adjuntar el comprobante.
+          </p>
+        </section>
 
-                {/* Layout pro (2 columnas) */}
-                <section className="reveal authGrid">
-                    {/* FORM */}
-                    <div className="card authCard">
-                        {error ? (
-                            <div className="authAlert" role="alert">
-                                <div className="authAlertIcon">!</div>
-                                <div className="authAlertText">{error}</div>
-                            </div>
-                        ) : null}
+        {/* Layout pro (2 columnas) */}
+        <section className="reveal authGrid">
+          {/* FORM */}
+          <div className="card authCard">
+            {error ? (
+              <div className="authAlert" role="alert">
+                <div className="authAlertIcon">!</div>
+                <div className="authAlertText">{error}</div>
+              </div>
+            ) : null}
 
-                        <form onSubmit={handleSubmit} className="authForm">
-                            <label className="authLabel">
-                                Email
-                                <div className="authField">
-                                    <span className="authFieldIcon" aria-hidden="true">✉</span>
-                                    <input
-                                        className="authInput"
-                                        type="email"
-                                        autoComplete="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="tuemail@gmail.com"
-                                        required
-                                    />
-                                </div>
-                            </label>
+            <form onSubmit={handleSubmit} className="authForm">
+              <label className="authLabel">
+                Email
+                <div className="authField">
+                  <span className="authFieldIcon" aria-hidden="true">✉</span>
+                  <input
+                    className="authInput"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tuemail@gmail.com"
+                    required
+                  />
+                </div>
+              </label>
 
-                            <label className="authLabel">
-                                Contraseña
-                                <div className="authField">
-                                    <span className="authFieldIcon" aria-hidden="true">🔒</span>
-                                    <input
-                                        className="authInput"
-                                        type={showPass ? "text" : "password"}
-                                        autoComplete="current-password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Tu contraseña"
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        className="authPassBtn"
-                                        onClick={() => setShowPass((s) => !s)}
-                                        aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
-                                    >
-                                        {showPass ? "Ocultar" : "Mostrar"}
-                                    </button>
-                                </div>
-                            </label>
+              <label className="authLabel">
+                Contraseña
+                <div className="authField">
+                  <span className="authFieldIcon" aria-hidden="true">🔒</span>
+                  <input
+                    className="authInput"
+                    type={showPass ? "text" : "password"}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Tu contraseña"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="authPassBtn"
+                    onClick={() => setShowPass((s) => !s)}
+                    aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    {showPass ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+              </label>
 
-                            <button className="authPrimaryBtn" type="submit" disabled={loading}>
-                                {loading ? "Ingresando..." : "Ingresar →"}
-                            </button>
+              {/* 👇 AQUÍ AGREGUÉ EL LINK DE RECUPERAR CONTRASEÑA */}
+              <Link to="/forgot-password" className="authForgot">
+                ¿Olvidaste tu contraseña?
+              </Link>
 
-                            <div className="authMetaRow">
-                                <div className="muted">
-                                    ¿No tenés cuenta?{" "}
-                                    <Link to="/register" className="authLink">
-                                        Registrate
-                                    </Link>
-                                </div>
+              <button className="authPrimaryBtn" type="submit" disabled={loading}>
+                {loading ? "Ingresando..." : "Ingresar →"}
+              </button>
 
-                                <Link to="/" className="authBack">
-                                    ← Volver al inicio
-                                </Link>
-                            </div>
-                        </form>
-                    </div>
+              <div className="authMetaRow">
+                <div className="muted">
+                  ¿No tenés cuenta?{" "}
+                  <Link to="/register" className="authLink">
+                    Registrate
+                  </Link>
+                </div>
 
-                    {/* INFO / BENEFICIOS */}
-                    <aside className="card authSide">
-                        <div className="authSideTop">
-                            <div className="authSideBadge">Compra segura</div>
-                            <div className="authSideTitle">Tu cuenta te da control total</div>
-                            <div className="muted authSideText">
-                                Seguís el estado del pedido y subís el comprobante en segundos.
-                            </div>
-                        </div>
+                <Link to="/" className="authBack">
+                  ← Volver al inicio
+                </Link>
+              </div>
+            </form>
+          </div>
 
-                        <div className="authBenefits">
-                            <div className="authBenefit">
-                                <div className="authBenefitIco">✅</div>
-                                <div>
-                                    <div className="authBenefitT">Mis pedidos</div>
-                                    <div className="muted authBenefitP">Ves el estado, total y datos del envío.</div>
-                                </div>
-                            </div>
+          {/* INFO / BENEFICIOS */}
+          <aside className="card authSide">
+            <div className="authSideTop">
+              <div className="authSideBadge">Compra segura</div>
+              <div className="authSideTitle">Tu cuenta te da control total</div>
+              <div className="muted authSideText">
+                Seguís el estado del pedido y subís el comprobante en segundos.
+              </div>
+            </div>
 
-                            <div className="authBenefit">
-                                <div className="authBenefitIco">📎</div>
-                                <div>
-                                    <div className="authBenefitT">Subir comprobante</div>
-                                    <div className="muted authBenefitP">Adjuntás la captura y confirmamos.</div>
-                                </div>
-                            </div>
+            <div className="authBenefits">
+              <div className="authBenefit">
+                <div className="authBenefitIco">✅</div>
+                <div>
+                  <div className="authBenefitT">Mis pedidos</div>
+                  <div className="muted authBenefitP">Ves el estado, total y datos del envío.</div>
+                </div>
+              </div>
 
-                            <div className="authBenefit">
-                                <div className="authBenefitIco">💬</div>
-                                <div>
-                                    <div className="authBenefitT">Soporte rápido</div>
-                                    <div className="muted authBenefitP">Te ayudamos por WhatsApp si hace falta.</div>
-                                </div>
-                            </div>
-                        </div>
+              <div className="authBenefit">
+                <div className="authBenefitIco">📎</div>
+                <div>
+                  <div className="authBenefitT">Subir comprobante</div>
+                  <div className="muted authBenefitP">Adjuntás la captura y confirmamos.</div>
+                </div>
+              </div>
 
-                        <div className="authChips">
-                            <span className="badge">Transferencia</span>
-                            <span className="badge">Comprobante</span>
-                            <span className="badge">Envíos</span>
-                            <span className="badge">Soporte</span>
-                        </div>
-                    </aside>
-                </section>
+              <div className="authBenefit">
+                <div className="authBenefitIco">💬</div>
+                <div>
+                  <div className="authBenefitT">Soporte rápido</div>
+                  <div className="muted authBenefitP">Te ayudamos por WhatsApp si hace falta.</div>
+                </div>
+              </div>
+            </div>
 
-                <style>{`
+            <div className="authChips">
+              <span className="badge">Transferencia</span>
+              <span className="badge">Comprobante</span>
+              <span className="badge">Envíos</span>
+              <span className="badge">Soporte</span>
+            </div>
+          </aside>
+        </section>
+
+        <style>{`
+          /* ... ESTILOS NUEVOS PARA EL ENLACE DE RECUPERAR ... */
+          .authForgot {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: -0.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+          }
+          .authForgot:hover {
+            opacity: 1;
+            text-decoration: underline;
+          }
+
+          /* ... TUS ESTILOS EXISTENTES ... */
           .authHeader{
             padding: 1.2rem;
             position: relative;
@@ -414,7 +436,7 @@ export default function Login() {
             flex-wrap:wrap;
           }
         `}</style>
-            </div>
-        </main>
-    );
+      </div>
+    </main>
+  );
 }

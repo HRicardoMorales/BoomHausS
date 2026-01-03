@@ -118,7 +118,48 @@ async function sendOrderConfirmationEmail(order) {
         return false;
     }
 }
+async function sendPasswordResetEmail(email, resetUrl) {
+    if (!resend) return false;
+
+    try {
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f6f8; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background-color: #0B5CFF; padding: 20px; text-align: center;">
+                        <h2 style="color: white; margin: 0;">Restablecer Contraseña 🔐</h2>
+                    </div>
+                    <div style="padding: 30px; text-align: center;">
+                        <p style="color: #666; font-size: 16px;">Hola,</p>
+                        <p style="color: #666; font-size: 16px;">Recibimos una solicitud para cambiar tu contraseña en <strong>BoomHausS</strong>.</p>
+                        <p style="color: #666;">Haz clic en el botón de abajo para crear una nueva (este enlace expira en 1 hora):</p>
+                        
+                        <a href="${resetUrl}" style="display: inline-block; background-color: #0B5CFF; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0;">
+                            Cambiar mi Contraseña
+                        </a>
+                        
+                        <p style="font-size: 12px; color: #999;">Si no fuiste tú, ignora este correo.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        await resend.emails.send({
+            from: 'BoomHausS Security <seguridad@boomhauss.com.ar>',
+            to: email,
+            subject: '🔐 Recupera tu acceso a BoomHausS',
+            html: htmlContent
+        });
+        return true;
+    } catch (error) {
+        console.error("Error enviando email password:", error);
+        return false;
+    }
+}
 
 module.exports = {
-    sendOrderConfirmationEmail
+    sendOrderConfirmationEmail,
+    sendPasswordResetEmail
 };

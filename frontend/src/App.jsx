@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/navbar.jsx';
 import Footer from './components/Footer.jsx';
 
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
 import Home from './pages/home.jsx';
 import Products from './pages/products.jsx';
 import ProductDetail from './pages/ProductDetail.jsx';
@@ -138,6 +141,8 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/returns" element={<Returns />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>
 

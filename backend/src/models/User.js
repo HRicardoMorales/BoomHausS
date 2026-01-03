@@ -38,7 +38,9 @@ const userSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true
-        }
+        },
+        resetPasswordToken: String,
+        resetPasswordExpires: Date
     },
     {
         // 2) Opciones del esquema
