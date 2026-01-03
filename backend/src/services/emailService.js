@@ -16,7 +16,7 @@ async function sendOrderConfirmationEmail(order) {
 
     try {
         const storeName = "BoomHausS";
-        const whatsappNumber = "5491112345678"; // 🔴 CAMBIA ESTO por tu número real
+        const whatsappNumber = "5491123915075"; // 🔴 CAMBIA ESTO por tu número real
 
         // 1. Generamos la lista de productos (HTML dinámico)
         // Asumimos que order.items es un array con { title, quantity, price }
