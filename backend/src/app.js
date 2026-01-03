@@ -85,7 +85,7 @@ const corsOptions = {
     "https://www.boomhauss.com.ar"           // El mismo con www
   ],
   credentials: true, 
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
 };
 
