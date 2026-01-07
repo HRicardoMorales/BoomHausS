@@ -148,7 +148,7 @@ export default function ProductDetail() {
 
   // Datos producto
   const price = Number(product?.price) || 0;
-  const compareAt = Number(product?.compareAtPrice) || (price ? Math.round(price * 1.34) : 0);
+  const compareAt = Number(product?.compareAtPrice) || (price ? Math.round(price * 2) : 0);
   const discountPct = calcDiscountPercent(price, compareAt) || 0;
 
   const soldCount = product?.soldCount ?? product?.socialProofCount ?? 4766;
@@ -224,7 +224,7 @@ export default function ProductDetail() {
 
     // Mostrar Notificación Flotante
     setShowToast(true);
-    
+
     // Auto-cerrar después de 5 segundos
     setTimeout(() => {
       setShowToast(false);
@@ -492,7 +492,7 @@ export default function ProductDetail() {
                     <div className="pd-tick-icon">
                       {/* Icono Check SVG */}
                       <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 5L4.14286 8.14286L11 1.28571" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M1 5L4.14286 8.14286L11 1.28571" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <span className="pd-tick-text">{b}</span>
@@ -553,11 +553,15 @@ export default function ProductDetail() {
                     <div className="pd-bundleTitle">
                       Lleva 2 <span className="pd-miniTag">Envío gratis</span>
                     </div>
-                    <div className="pd-bundleSub">Ahorrás un {pack2Discount}%</div>
+                    {/* Aquí está tu texto personalizado */}
+                    <div className="pd-bundleSub"><b>ahorra</b> {pack2Discount}% mas!!</div>
                   </div>
                   <div className="pd-bundleRight">
+                    {/* Precio final con descuento */}
                     {moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}
-                    <div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div>
+                    
+                    {/* ESTA ES LA LÍNEA QUE FALTABA (PRECIO TACHADO) */}
+                    <div className="pd-bundleCompare">{moneyARS(unitPrice * 4)}</div>
                   </div>
                 </div>
                 <div className="pd-popular">Más popular</div>
@@ -648,7 +652,7 @@ export default function ProductDetail() {
               </div>
               <button className="pd-toast-close" onClick={() => setShowToast(false)}>✕</button>
             </div>
-            
+
             {/* Botones de acción */}
             <div className="pd-toast-actions">
               <button className="pd-toast-btn-secondary" onClick={() => navigate('/cart')}>
