@@ -1488,7 +1488,7 @@ header {
   width: 100%;
   height: 100%;
   /* COVER hace que la imagen rellene todo el espacio sin deformarse */
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 

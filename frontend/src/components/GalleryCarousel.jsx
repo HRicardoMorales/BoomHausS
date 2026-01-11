@@ -18,11 +18,11 @@ function GalleryCarousel({
                 ? imagesProp
                 : [
                     // TIP: reemplazá por tus fotos reales (URLs o /assets)
-                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F580b030c-8cbc-4a0d-bc9a-baefff606c27.png&w=960&q=75',
-                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F7f7e071a-5d88-45bd-9fc8-727ff4209355.png&w=960&q=75',
-                    'https://acdn-us.mitiendanube.com/stores/001/662/318/products/airpods-3-c68e4869eab18d768e17520213046616-640-0.webp',
-                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F9a2df311-e1ba-4b22-b33b-b3a0853d227b.png&w=960&q=75',
-                    'https://maximstore.com/_next/image?url=https%3A%2F%2Fback.maximstore.com%2Fstatic%2Fimages%2F28e94d65-6360-4343-88c8-98fab2b08804.png&w=960&q=75'
+                    'https://pbs.twimg.com/media/G-WQpJZWoAAEAAf?format=jpg&name=small',
+                    'https://pbs.twimg.com/media/G-WN-OoWsAAyAzb?format=jpg&name=large',
+                    'https://pbs.twimg.com/media/G-WOIkaX0AA5Emt?format=jpg&name=large',
+                    'https://pbs.twimg.com/media/G-WOMndXAAAmHow?format=jpg&name=360x360',
+                    'https://pbs.twimg.com/media/G-WOIkdWcAAfVBZ?format=jpg&name=360x360'
                 ],
         [imagesProp]
     );
@@ -212,7 +212,7 @@ function GalleryCarousel({
                                 style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'cover',
+                                    objectFit: 'contain',
                                     display: 'block',
                                     userSelect: 'none'
                                 }}

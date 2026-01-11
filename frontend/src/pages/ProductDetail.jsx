@@ -4,68 +4,75 @@ import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 
-
 /* ========================================================================
-   CONFIGURACIÓN DE MARKETING
+   MARKETING CONTENT
    ======================================================================== */
 const MARKETING_CONTENT = {
-  miniDescription: "Disfrutá de sonido Hi-Fi envolvente, cancelación de ruido y un diseño ergonómico pensado para acompañarte todo el día.",
+  miniDescription: "Tu lipoescultura en casa. Tecnología clínica 3-en-1 (Cavitación + RF + LED) para disolver grasa rebelde, eliminar celulitis y tensar la piel flácida en 4 semanas.",
+  
+  stats: [
+    { pct: "97%", text: "Piel más firme y tensa" },
+    { pct: "85%", text: "Reducción de celulitis" },
+    { pct: "92%", text: "Menos centímetros" }
+  ],
+
+  whatsIncluded: [
+    { name: "Dispositivo BodySculpt", icon: "💎" },
+    { name: "Gel Conductor (Regalo)", icon: "💧" },
+    { name: "Cable de Carga", icon: "🔌" },
+    { name: "Manual en Español", icon: "📖" }
+  ],
+
+  whyChoose: [
+    { title: "Tecnología de Clínica Real", desc: "Los mismos 1MHz que usan los profesionales." },
+    { title: "Resultados Permanentes", desc: "Destruye la grasa, no solo drena líquidos." },
+    { title: "Seguro para Uso Diario", desc: "Sensores de calor y apagado automático." },
+    { title: "Soporte en Español", desc: "Equipo de esteticistas a tu disposición." }
+  ],
+
   slider: {
-    title: "Redescubrí tu música con calidad premium",
-    text: "Notarás la diferencia al instante. Dejás atrás el sonido plano y metálico de los genéricos para pasar a graves profundos y voces claras.",
-    labelBefore: "Estándar / Genérico",
-    labelAfter: "Experiencia BoomHausS",
-    imgBefore: "https://images.pexels.com/photos/3945667/pexels-photo-3945667.jpeg?auto=compress&cs=tinysrgb&w=800",
-    imgAfter: "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=800"
+    title: "Resultados en 30 Días",
+    text: "Cambios reales usando el dispositivo 3 veces por semana.",
+    labelBefore: "Día 1",
+    labelAfter: "Día 30",
+    imgBefore: "https://pbs.twimg.com/media/G-WN-OSXsAAfdSc?format=jpg&name=360x360",
+    imgAfter: "https://pbs.twimg.com/media/G-WOIkaXoAAPSeN?format=jpg&name=360x360"
   },
+
   comparison: {
-    title: "Elegí calidad y respaldo",
-    text: "BoomHausS combina tecnología de audio avanzada con materiales duraderos. No pagues de más por una marca, pagá por el producto.",
+    title: "BodySculpt vs. Clínicas",
+    text: "La misma tecnología, pero en la comodidad de tu casa.",
     brandName: "BoomHausS",
-    competitorName: "Otros Genéricos",
+    competitorName: "Clínica",
     features: [
-      { name: "Sonido de Alta Fidelidad (Hi-Fi)", us: true, others: false },
-      { name: "Cancelación de Ruido (ANC)", us: true, others: false },
-      { name: "Batería de +24hs totales", us: true, others: false },
-      { name: "Sujeción firme y cómoda", us: true, others: false },
-      { name: "Garantía escrita de 30 días", us: true, others: false },
+      { name: "Reducción de Grasa", us: true, others: true },
+      { name: "Sin Dolor ni Cirugía", us: true, others: false },
+      { name: "Trata Celulitis", us: true, others: false },
+      { name: "Pago Único", us: true, others: false },
+      { name: "Uso ilimitado", us: true, others: false },
     ]
   },
-  problemSolution: {
-    title: "¿Cansado de auriculares que fallan al poco tiempo?",
-    text: "Es común encontrar opciones que prometen mucho y duran poco. Nosotros priorizamos la durabilidad y la fidelidad de sonido para que tu inversión valga la pena.",
-    bullets: [
-      "✅ Construcción sólida y materiales de calidad.",
-      "✅ Conexión inmediata y estable.",
-      "✅ Resistentes al uso diario e intensivo."
-    ],
-    media: "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=800"
+
+bigMedia: {
+    title: "Resultados de Clínica en tu Sofá",
+    subtitle: "Así de fácil es usarlo: Mira cómo funciona en segundos.",
+    src: "https://res.cloudinary.com/duyth9azk/video/upload/v1768099056/945f381d97174efb885363c4955a257d.HD-720p-2.1Mbps-54457348_duh0wz.mp4", 
+    isVideo: true 
   },
-  bigMedia: {
-    title: "Diseño sofisticado, rendimiento potente",
-    src: "https://res.cloudinary.com/duyth9azk/video/upload/v1767851440/Agent_video_Pippit_20260108054656_skdj2p.mp4",
-    isVideo: true
-  },
+
   authority: {
-    title: "Calidad probada y recomendada",
-    quote: "En este segmento, es la mejor relación precio-calidad del mercado local. El equilibrio de frecuencias es notable y la construcción se siente muy sólida.",
-    name: "Martín L.",
-    job: "Productor Musical & Audio",
-    img: "https://pbs.twimg.com/media/G-HOmkUWIAE-T0J?format=jpg&name=small"
+    title: "Tecnología Aprobada",
+    quote: "La sinergia de Cavitación y Radiofrecuencia es el 'estándar de oro' en modelado corporal no quirúrgico. Es seguro y eficaz.",
+    name: "Dra. Carolina M.",
+    job: "Médica Estética",
+    img: "https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=600"
   },
-  steps: {
-    title: "Conectalos en segundos",
-    items: [
-      "Abrí el estuche para activar el emparejamiento.",
-      "Seleccionalos desde el Bluetooth de tu celular.",
-      "¡Listo! Disfrutá de tu música sin interrupciones."
-    ]
-  },
+
   faq: [
-    { q: "¿Tienen garantía?", a: "Sí, comprá con confianza. Ofrecemos 30 días de garantía por cualquier falla de fábrica. Si tenés un problema, te lo solucionamos." },
-    { q: "¿Son compatibles con iPhone y Android?", a: "Totalmente. Funcionan perfecto con cualquier dispositivo que tenga Bluetooth (Celulares, Tablets, PC)." },
-    { q: "¿Realizan envíos al interior?", a: "Sí, llegamos a cualquier punto del país. Una vez despachado, te enviamos el código de seguimiento para que sepas dónde está tu pedido." },
-    { q: "¿Cuánto dura la batería?", a: "Tienen una autonomía de 5-6 horas continuas, y el estuche te brinda cargas extra para llegar a más de 24 horas de uso total." },
+    { q: "¿Sirve para el abdomen?", a: "¡Sí! Es ideal para abdomen, flancos (cintura), muslos, glúteos y brazos." },
+    { q: "¿Es obligatorio usar gel?", a: "SÍ. El dispositivo NO funciona sin gel conductor. Incluimos uno de regalo." },
+    { q: "¿Duele?", a: "No. Sentirás calor (RF) y un leve zumbido (Cavitación), pero es seguro y cómodo." },
+    { q: "¿Tiene garantía?", a: "Sí, 90 días de garantía de satisfacción. Compra sin riesgos." },
   ]
 };
 
@@ -73,40 +80,91 @@ const MARKETING_CONTENT = {
    COMPONENTES UI
 ========================= */
 
-// NUEVO: NAVBAR MÓVIL ESTILO AQUALYS
-// NUEVO: NAVBAR MÓVIL (CORREGIDO)
-function MobileNavbar() {
-  const context = useCart();
-  // PROTECCIÓN: Si el contexto o el carrito son undefined, usamos un array vacío []
-  const cart = context?.cart || [];
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState("");
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const difference = endOfDay - now;
+      if (difference > 0) {
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+        return `${hours}h ${minutes}m ${seconds}s`;
+      }
+      return "00h 00m 00s";
+    };
+    const timer = setInterval(() => { setTimeLeft(calculateTimeLeft()); }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return <span style={{fontVariantNumeric: 'tabular-nums'}}>{timeLeft}</span>;
+}
 
-  // Ahora es seguro usar reduce porque cart siempre será al menos un array vacío
-  const cartCount = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
-
+function ClinicalStatsSection() {
+  const { stats } = MARKETING_CONTENT;
   return (
-    <nav className="mobile-nav">
-      <div className="mn-left">
-        {/* Aquí podrías poner una función para abrir un menú lateral si tuvieras */}
-        <button className="mn-btn" type="button">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
-      </div>
-      <div className="mn-center">
-        <span className="mn-brand">BoomHausS</span>
-      </div>
-      <div className="mn-right">
-        {/* Botón Mis Pedidos / Usuario */}
-        <Link to="/orders" className="mn-btn">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-        </Link>
-        {/* Botón Carrito */}
-        <Link to="/cart" className="mn-btn mn-cart-btn">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-          {cartCount > 0 && <span className="mn-badge">{cartCount}</span>}
-        </Link>
-      </div>
-    </nav>
-  );
+    <div className="landing-section fade-in-section">
+       <div className="landing-container">
+          <h3 className="landing-center-title">Eficacia Comprobada</h3>
+          <div className="stats-grid">
+             {stats.map((s, i) => (
+                <div key={i} className="stat-card hover-scale">
+                   <div className="stat-circle">
+                      <svg viewBox="0 0 36 36" className="circular-chart">
+                        <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path className="circle" strokeDasharray={`${parseInt(s.pct)}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" className="percentage">{s.pct}</text>
+                      </svg>
+                   </div>
+                   <p className="stat-text">{s.text}</p>
+                </div>
+             ))}
+          </div>
+       </div>
+    </div>
+  )
+}
+
+function WhyChooseSection() {
+    const { whyChoose } = MARKETING_CONTENT;
+    return (
+        <div className="landing-section fade-in-section" style={{padding: '40px 0'}}>
+            <div className="landing-container">
+                <div className="why-choose-grid">
+                    {whyChoose.map((item, i) => (
+                        <div key={i} className="why-item">
+                            <div className="why-check">✓</div>
+                            <div className="why-text">
+                                <strong>{item.title}</strong>
+                                <p>{item.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function WhatsIncludedSection() {
+    const { whatsIncluded } = MARKETING_CONTENT;
+    return (
+        <div className="landing-section fade-in-section" style={{background: '#f8fafc', borderRadius: '24px'}}>
+            <div className="landing-container">
+                <h3 className="landing-center-title">¿Qué incluye la caja?</h3>
+                <div className="included-grid">
+                    {whatsIncluded.map((item, i) => (
+                        <div key={i} className="included-item hover-lift">
+                            <div className="included-icon spin-on-hover">{item.icon}</div>
+                            <div className="included-name">{item.name}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function BeforeAfterSlider() {
@@ -121,18 +179,22 @@ function BeforeAfterSlider() {
     setSliderPos(Math.min(100, Math.max(0, pos)));
   };
   return (
-    <div className="landing-section">
+    <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
-        <div className="split-text"><h3 className="landing-title">{slider.title}</h3><p className="landing-p">{slider.text}</p></div>
+        <div className="split-text">
+            <span className="badge-pill">Evidencia Visual</span>
+            <h3 className="landing-title">{slider.title}</h3>
+            <p className="landing-p">{slider.text}</p>
+        </div>
         <div className="split-media">
-          <div className="ba-slider-container" ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove}>
-            <img src={slider.imgAfter} alt="Despues" className="ba-img" />
+          <div className="ba-slider-container shadow-hover" ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onTouchStart={handleMove}>
+            <img src={slider.imgAfter} alt="Después" className="ba-img" />
             <div className="ba-label ba-after">{slider.labelAfter}</div>
             <div className="ba-overlay" style={{ width: `${sliderPos}%` }}>
-              <img src={slider.imgBefore} alt="Antes" className="ba-img" style={{ filter: "grayscale(50%) contrast(0.8)" }} />
+              <img src={slider.imgBefore} alt="Antes" className="ba-img" style={{ filter: "grayscale(30%) contrast(1.1)" }} />
               <div className="ba-label ba-before">{slider.labelBefore}</div>
             </div>
-            <div className="ba-handle" style={{ left: `${sliderPos}%` }}><div className="ba-line"></div><div className="ba-circle">◄ ►</div></div>
+            <div className="ba-handle" style={{ left: `${sliderPos}%` }}><div className="ba-line"></div><div className="ba-circle">⟷</div></div>
           </div>
         </div>
       </div>
@@ -143,16 +205,14 @@ function BeforeAfterSlider() {
 function ComparisonTable() {
   const { comparison } = MARKETING_CONTENT;
   return (
-    <div className="landing-section">
-      <div className="landing-container split-layout">
-        <div className="split-text"><h3 className="landing-title">{comparison.title}</h3><p className="landing-p">{comparison.text}</p></div>
-        <div className="split-media">
-          <div className="comp-table">
+    <div className="landing-section fade-in-section">
+      <div className="landing-container">
+        <h3 className="landing-center-title">{comparison.title}</h3>
+        <div className="comp-table shadow-hover">
             <div className="comp-header"><div className="comp-col-empty"></div><div className="comp-col-us">{comparison.brandName}</div><div className="comp-col-others">{comparison.competitorName}</div></div>
             {comparison.features.map((f, i) => (
-              <div key={i} className="comp-row"><div className="comp-feature-name">{f.name}</div><div className="comp-check-us">{f.us ? <span className="check-icon">✔</span> : <span>✘</span>}</div><div className="comp-check-others">{f.others ? <span className="check-icon">✔</span> : <span className="cross-icon">✕</span>}</div></div>
+              <div key={i} className="comp-row"><div className="comp-feature-name">{f.name}</div><div className="comp-check-us">✔</div><div className="comp-check-others" style={{opacity:0.3}}>✕</div></div>
             ))}
-          </div>
         </div>
       </div>
     </div>
@@ -162,18 +222,18 @@ function ComparisonTable() {
 function BigMediaSection() {
   const { bigMedia } = MARKETING_CONTENT;
   return (
-    <div className="landing-section full-width-bg">
+    <div className="landing-section full-width-bg fade-in-section">
       <div className="landing-container text-center">
-        <h3 className="landing-center-title" style={{ color: 'white', marginBottom: '1rem' }}>{bigMedia.title}</h3>
+        {/* Título y Subtítulo Pro */}
+        <h2 className="video-title-pro">{bigMedia.title}</h2>
+        <p className="video-subtitle-pro">{bigMedia.subtitle}</p>
+        
         <div className="video-placeholder-container">
-          {bigMedia.isVideo ? (<video
-            src={bigMedia.src}
-            autoPlay
-            loop
-            muted  // <--- ESTO ES CLAVE
-            playsInline // <--- NECESARIO PARA IPHONE
-            className="landing-video-real"
-          />) : (<><div className="video-overlay"><span className="play-button">▶</span></div><img src={bigMedia.src} alt="Demo" className="landing-video-cover" /></>)}
+          {bigMedia.isVideo ? (
+             <video src={bigMedia.src} autoPlay loop muted playsInline className="landing-video-real" />
+          ) : (
+             <img src={bigMedia.src} alt="Demo" className="landing-video-cover" />
+          )}
         </div>
       </div>
     </div>
@@ -181,12 +241,29 @@ function BigMediaSection() {
 }
 
 function ProblemSolutionSection() {
-  const { problemSolution } = MARKETING_CONTENT;
   return (
-    <div className="landing-section">
+    <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
-        <div className="split-text"><h3 className="landing-title">{problemSolution.title}</h3><p className="landing-p">{problemSolution.text}</p><ul className="landing-list">{problemSolution.bullets.map((b, i) => <li key={i}>{b}</li>)}</ul></div>
-        <div className="split-media"><img src={problemSolution.media} alt="Solución" className="landing-img-rounded" /></div>
+        <div className="split-text">
+            <span className="badge-pill">Tecnología 3-en-1</span>
+            <h3 className="landing-title">El poder de 3 tecnologías</h3>
+            <p className="landing-p">La combinación más potente para esculpir tu cuerpo.</p>
+            <div className="tech-list">
+                <div className="tech-item hover-lift">
+                    <div className="tech-icon">💥</div>
+                    <div><strong>Cavitación (Rompe Grasa)</strong><p>Ataca adipocitos difíciles.</p></div>
+                </div>
+                <div className="tech-item hover-lift">
+                    <div className="tech-icon">🔥</div>
+                    <div><strong>Radiofrecuencia (Tensa)</strong><p>Genera colágeno y firmeza.</p></div>
+                </div>
+                <div className="tech-item hover-lift">
+                    <div className="tech-icon">🔴</div>
+                    <div><strong>LED Rojo (Rejuvenece)</strong><p>Mejora la textura de la piel.</p></div>
+                </div>
+            </div>
+        </div>
+        <div className="split-media"><img src="https://images.pexels.com/photos/3823063/pexels-photo-3823063.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Solución" className="landing-img-rounded shadow-hover" /></div>
       </div>
     </div>
   );
@@ -195,21 +272,15 @@ function ProblemSolutionSection() {
 function AuthoritySection() {
   const { authority } = MARKETING_CONTENT;
   return (
-    <div className="landing-section authority-bg">
+    <div className="landing-section authority-bg fade-in-section">
       <div className="landing-container authority-flex">
-        <div className="authority-img-box"><img src={authority.img} alt="Experto" className="authority-img-fixed" /></div>
-        <div className="authority-text"><h3 className="landing-title" style={{ fontSize: "1.4rem" }}>{authority.title}</h3><p className="landing-p" style={{ marginBottom: "0.5rem" }}>"{authority.quote}"</p><div className="authority-sign"><strong>{authority.name}</strong><span>{authority.job}</span></div></div>
+        <div className="authority-img-box"><img src={authority.img} alt="Experto" className="authority-img-fixed shadow-hover" /></div>
+        <div className="authority-text">
+            <div className="authority-stars">★★★★★</div>
+            <p className="landing-p" style={{marginBottom:"0.5rem", fontStyle:'italic'}}>"{authority.quote}"</p>
+            <div className="authority-sign"><strong>{authority.name}</strong><span>{authority.job}</span></div>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function HowToUseSection() {
-  const { steps } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section">
-      <h3 className="landing-center-title">{steps.title}</h3>
-      <div className="landing-container steps-grid-fixed">{steps.items.map((step, i) => (<div key={i} className="step-item"><div className="step-num">{i + 1}</div><p style={{ margin: 0 }}>{step}</p></div>))}</div>
     </div>
   );
 }
@@ -219,27 +290,27 @@ function FaqSection() {
   const { faq } = MARKETING_CONTENT;
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
   return (
-    <div className="landing-section">
+    <div className="landing-section fade-in-section">
       <h3 className="landing-center-title">Preguntas Frecuentes</h3>
-      <div className="landing-container faq-container">{faq.map((item, i) => (<div key={i} className="faq-item"><button className={`faq-question ${openIndex === i ? "active" : ""}`} onClick={() => toggle(i)}>{item.q}<span className="faq-icon">{openIndex === i ? "−" : "+"}</span></button><div className="faq-answer" style={{ maxHeight: openIndex === i ? "200px" : "0" }}><p>{item.a}</p></div></div>))}</div>
+      <div className="landing-container faq-container">{faq.map((item, i) => (<div key={i} className="faq-item"><button className={`faq-question ${openIndex === i ? "active" : ""}`} onClick={() => toggle(i)}>{item.q}<span className="faq-icon">{openIndex === i ? "−" : "+"}</span></button><div className="faq-answer" style={{ maxHeight: openIndex === i ? "300px" : "0" }}><p style={{paddingTop: '15px'}}>{item.a}</p></div></div>))}</div>
     </div>
   );
 }
 
 function TestimonialsSection() {
   const reviews = [
-    { title: "El sonido es increíble", author: "Sofía G. · CABA", text: "Me sorprendió la calidad de los graves. Se escuchan súper nítidos.", image: "https://pbs.twimg.com/media/G-Hf4tiXwAA2fdM?format=jpg&name=small" },
-    { title: "Muy cómodos", author: "Nicolás R. · Zona Norte", text: "Los uso para entrenar y no se caen para nada. La batería dura un montón.", image: "https://pbs.twimg.com/media/G-HgooxWgAAaixg?format=jpg&name=small" },
-    { title: "Compra sin vueltas", author: "Camila P. · La Plata", text: "Hice la transferencia y llegaron al día siguiente. La presentación es excelente.", image: "https://pbs.twimg.com/media/G-Hf0gJW0AAYBFx?format=jpg&name=small" },
-    { title: "Me encanta", author: "Martina L. · Córdoba", text: "Al principio dudaba, pero cuando los probé me quedé loca. Un viaje de ida." },
-    { title: "Llegó impecable", author: "Lucas M. · Mendoza", text: "El envío fue rápido y el paquete llegó súper protegido." },
-    { title: "Excelente servicio", author: "Valentina S. · Rosario", text: "Tuve una duda y me ayudaron por WhatsApp al toque. Un 10." }
+    { title: "¡Adiós celulitis!", author: "Mariana R.", text: "Después de 4 semanas noto la piel muchísimo más lisa.", image: "https://d3g5hqndtiniji.cloudfront.net/images/53b5c235-d817-4ded-b020-4408426b6e2b/f971c307-6b0c-40fd-8d90-33d093ce5829.jpg?d=300x400&crop=center" },
+    { title: "Mi abdomen cambió", author: "Laura G.", text: "Me ayudó a tensar la piel mucho mejor que cualquier crema.", image: null },
+    { title: "Potente y eficaz", author: "Sofía P.", text: "Se siente el calor de la radiofrecuencia trabajando.", image: "https://d3g5hqndtiniji.cloudfront.net/images/53b5c235-d817-4ded-b020-4408426b6e2b/e7960110-9e02-4be7-8d98-5dacf6279d4f.jpg?d=300x400&crop=center" },
+    { title: "Envío rápido", author: "Valentina S.", text: "Llegó en perfecto estado y muy rápido.", image: "https://d3g5hqndtiniji.cloudfront.net/images/53b5c235-d817-4ded-b020-4408426b6e2b/2a5d89ca-a45a-4c5e-9862-e0cb97d0cf55.jpg?d=300x400&crop=center" },
+    { title: "Súper fácil", author: "Micaela T.", text: "Lo uso mientras miro una serie. Es cómodo.", image: null },
+    { title: "Excelente atención", author: "Andrea L.", text: "Me asesoraron muy bien por WhatsApp.", image: null }
   ];
   return (
-    <div className="landing-section" style={{ background: "transparent", padding: "20px 0" }}>
+    <div id="reviews-section" className="landing-section fade-in-section" style={{ background: "#f8fafc", padding: "60px 0" }}>
       <div className="landing-container">
-        <div style={{ marginBottom: "25px", textAlign: "center" }}><span className="tm-badge">Opiniones</span><h3 className="tm-main-title">Lo que dicen nuestros clientes</h3><p className="tm-subtitle">Testimonios reales de compras verificadas.</p></div>
-        <div className="reviews-grid">{reviews.map((r, i) => (<div key={i} className="tm-card"><div className="tm-card-top"><span className="tm-card-title">{r.title}</span><span className="tm-stars">★★★★★</span></div><div className="tm-author">{r.author}</div><p className="tm-text">“{r.text}”</p>{r.image && (<div className="tm-review-img-box"><img src={r.image} alt="Review" className="tm-review-img" loading="lazy" /></div>)}<div className="tm-tags"><div className="tm-tag">Verificado</div><div className="tm-tag">Entrega OK</div></div></div>))}</div>
+        <div style={{ marginBottom: "40px", textAlign: "center" }}><h3 className="tm-main-title">Historias Reales</h3><p className="tm-subtitle">Más de 800 clientas felices.</p></div>
+        <div className="reviews-grid">{reviews.map((r, i) => (<div key={i} className="tm-card hover-lift"><div className="tm-card-top"><span className="tm-card-title">{r.title}</span><span className="tm-stars">★★★★★</span></div><p className="tm-text">“{r.text}”</p>{r.image && (<div className="tm-review-img-box"><img src={r.image} alt="Review" className="tm-review-img" loading="lazy" /></div>)}<div className="tm-author"><span style={{fontWeight:'800'}}>{r.author}</span></div></div>))}</div>
       </div>
     </div>
   );
@@ -249,16 +320,14 @@ function TestimonialsSection() {
    HELPERS & MAIN
 ========================= */
 function formatARS(n) { try { return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n); } catch { return `$${n}`; } }
-function calcDiscountPercent(price, compareAt) { const p = Number(price); const c = Number(compareAt); if (!Number.isFinite(p) || !Number.isFinite(c) || c <= p || c <= 0) return null; return Math.round(((c - p) / c) * 100); }
-function Stars({ value = 4.8 }) { const v = Number(value); const full = Math.round(Number.isFinite(v) ? v : 4.8); const stars = Array.from({ length: 5 }, (_, i) => i < full); return (<div className="hero-stars">{stars.map((on, i) => (<span key={i} className={`hero-star ${on ? "on" : ""}`}>★</span>))} <span className="hero-ratingText">{Number.isFinite(v) ? v.toFixed(1) : "4.8"}</span></div>); }
+function Stars({ value = 4.9 }) { return (<div className="hero-stars"><span className="hero-star on">★</span><span className="hero-star on">★</span><span className="hero-star on">★</span><span className="hero-star on">★</span><span className="hero-star on">★</span> <span className="hero-ratingText">4.9/5</span></div>); }
 function moneyARS(n) { const num = Number(n); if (Number.isNaN(num)) return "$0"; return `$${Math.round(num).toLocaleString("es-AR")}`; }
-function clampInt(v, min, max) { const n = Number(v); if (!Number.isFinite(n)) return min; return Math.min(max, Math.max(min, Math.round(n))); }
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
-  const storeName = import.meta.env.VITE_STORE_NAME || "Encontratodo";
+  const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -268,6 +337,9 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [bundle, setBundle] = useState(1);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [isShippingExpanded, setIsShippingExpanded] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 40;
@@ -286,119 +358,205 @@ export default function ProductDetail() {
   const onTouchStart = (e) => { setTouchEnd(null); setTouchStart(e.targetTouches[0].clientX); };
   const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
   const onTouchEnd = () => { if (!touchStart || !touchEnd) return; const distance = touchStart - touchEnd; if (distance > minSwipeDistance) nextImage(); if (distance < -minSwipeDistance) prevImage(); };
-  const onMouseDown = (e) => setTouchStart(e.clientX);
-  const onMouseUp = (e) => { if (!touchStart) return; const distance = touchStart - e.clientX; if (distance > minSwipeDistance) nextImage(); if (distance < -minSwipeDistance) prevImage(); setTouchStart(null); };
 
   const price = Number(product?.price) || 0;
   const compareAt = Number(product?.compareAtPrice) || (price ? Math.round(price * 2) : 0);
-  const discountPct = calcDiscountPercent(price, compareAt) || 0;
-  const soldCount = product?.soldCount ?? product?.socialProofCount ?? 4766;
-  const rating = product?.rating ?? 4.8;
-  const reviewCount = product?.reviewCount ?? 1168;
-  const dbBullets = Array.isArray(product?.highlights) && product.highlights.length ? product.highlights : [product?.bullet1, product?.bullet2, product?.bullet3].filter(Boolean);
-  const defaultBullets = ["Excelente Calidad Garantizada", "Compra Protegida 100%", "Envío Rápido y Seguro"];
-  const bullets = dbBullets.length > 0 ? dbBullets : defaultBullets;
-
-  const pack2Discount = 18;
+  const soldCount = product?.soldCount ?? product?.socialProofCount ?? 894;
+  
+  const pack2Discount = 20;
   const unitPrice = price;
   const totalQty = qty;
   const promoOn = bundle === 2;
   const pairsQty = promoOn ? Math.floor(totalQty / 2) * 2 : 0;
   const remQty = totalQty - pairsQty;
   const displayTotal = promoOn ? Math.round(pairsQty * unitPrice * (1 - pack2Discount / 100) + remQty * unitPrice) : Math.round(totalQty * unitPrice);
+  const transferPrice = Math.round(displayTotal * 0.90); 
 
-  const contentId = useMemo(() => product?.sku || product?.productId || product?._id || (product?.id ? String(product.id) : null) || id || "SPEAKER_1", [product, id]);
+  const contentId = useMemo(() => product?.sku || product?.productId || product?._id || (product?.id ? String(product.id) : null) || id || "BODY_SCULPT_1", [product, id]);
 
   useEffect(() => { if (!product) return; if (lastViewedRef.current === contentId) return; lastViewedRef.current = contentId; track("ViewContent", { content_ids: [String(contentId)], content_type: "product", value: Number(price) || 0, currency: "ARS" }); }, [product, contentId, price]);
 
-  const handleAddToCart = () => { if (!product) return; track("AddToCart", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null; addItem(product, totalQty, promo ? { promo } : undefined); setShowToast(true); setTimeout(() => setShowToast(false), 5000); window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } })); };
-  const handleBuyNow = () => { if (!product) return; track("InitiateCheckout", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null; addItem(product, totalQty, promo ? { promo } : undefined); navigate("/checkout"); };
+  const handleBuyNow = () => { 
+    if (!product) return; 
+    setRedirecting(true);
+    track("InitiateCheckout", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); 
+    const linkMercadoPago = "https://link.mercadopago.com.ar/TU_LINK"; 
+    setTimeout(() => { window.location.href = linkMercadoPago; }, 1500);
+  };
 
-  const arrowStyle = { position: "absolute", top: "50%", transform: "translateY(-50%)", width: "36px", height: "36px", borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "1px solid rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", cursor: "pointer", zIndex: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.15)" };
+  const handleAddToCart = () => { 
+      if (!product) return; 
+      track("AddToCart", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); 
+      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null; 
+      addItem(product, totalQty, promo ? { promo } : undefined); 
+      setShowToast(true); setTimeout(() => setShowToast(false), 5000); 
+      window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } })); 
+  };
+
+  const scrollToReviews = (e) => { e.preventDefault(); document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+
+  const arrowStyle = { position: "absolute", top: "50%", transform: "translateY(-50%)", width: "40px", height: "40px", borderRadius: "50%", background: "rgba(255,255,255,0.95)", border: "1px solid rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", cursor: "pointer", zIndex: 20, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", color: "#1e293b" };
 
   if (loading) return (<main className="section"><div className="container"><div className="pd-skeleton card"><div className="pd-skel-left" /><div className="pd-skel-right" /></div></div></main>);
   if (error || !product) return (<main className="section"><div className="container"><div className="card" style={{ padding: "1.1rem" }}><div className="pd-badge">Error</div><p className="pd-error" style={{ marginTop: "0.75rem" }}>{error || "Producto no encontrado."}</p><div style={{ marginTop: "0.9rem" }}><Link className="btn btn-ghost" to="/products">← Volver</Link></div></div></div></main>);
 
   return (
     <main className="section main-wrapper">
+      <div className="container" style={{ marginTop: "20px" }}>
+        
+        {/* CORRECCIÓN: align-items: flex-start (CRUCIAL PARA ELIMINAR EL ESPACIO EN BLANCO) */}
+        <div className="pd-grid" style={{ alignItems: "flex-start" }}>
+          
+          {/* MEDIA COLUMN: position: sticky PARA PC + height: auto PARA MÓVIL */}
+          <section className="pd-media card shadow-hover" style={{ padding: 0, display: "flex", flexDirection: "column", border: 'none', position: 'sticky', top: '20px', zIndex: 90, height: 'auto' }}>
+            <div className="pd-mediaMain" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "#f8fbff", cursor: "grab", touchAction: "pan-y" }} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+              <div className="pd-discount" style={{ zIndex: 10 }}>50% <span>OFF</span></div>
+              
+              {/* === SOLUCIÓN PARA QUE NO SE CORTE LA IMAGEN === */}
+              {images.length > 0 ? (
+                <img 
+                    className="pd-mainImg" 
+                    src={images[activeImgIndex]} 
+                    alt={product.name} 
+                    loading="lazy" 
+                    onDragStart={(e) => e.preventDefault()} 
+                    style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "contain", /* OBLIGA A QUE ENTRE TODA */
+                        position: "absolute", 
+                        inset: 0, 
+                        pointerEvents: "none",
+                        background: "white" /* Rellena huecos con blanco */
+                    }} 
+                />
+              ) : (<div className="pd-empty">Sin imagen</div>)}
+              {/* ============================================== */}
 
-
-      <div className="container" style={{ marginTop: "10px" }}>
-        <div className="pd-grid" style={{ alignItems: "stretch" }}>
-          <section className="pd-media card" style={{ padding: 0, display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-            <div className="pd-mediaMain" style={{ flex: 1, position: "relative", width: "100%", overflow: "hidden", background: "#f8fbff", cursor: "grab", touchAction: "pan-y" }} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseLeave={() => setTouchStart(null)}>
-              <div className="pd-discount" style={{ zIndex: 10 }}>{discountPct ? `${discountPct}%` : "OFERTA"} <span>OFF</span></div>
-              {images.length > 0 ? (<><img className="pd-mainImg" src={images[activeImgIndex]} alt={product.name} loading="lazy" onDragStart={(e) => e.preventDefault()} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0, pointerEvents: "none" }} />{images.length > 1 && (<><button type="button" style={{ ...arrowStyle, left: "10px" }} onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button><button type="button" style={{ ...arrowStyle, right: "10px" }} onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button><div style={{ position: "absolute", bottom: "10px", right: "10px", background: "rgba(0,0,0,0.6)", color: "white", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: "bold", pointerEvents: "none" }}>{activeImgIndex + 1}/{images.length}</div></>)}</>) : (<div className="pd-empty" style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>Sin imagen</div>)}
+              {/* FLECHAS DE NAVEGACIÓN */}
+              {images.length > 1 && (
+                <>
+                  <button type="button" style={{ ...arrowStyle, left: "15px" }} onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button>
+                  <button type="button" style={{ ...arrowStyle, right: "15px" }} onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button>
+                </>
+              )}
+              
+              {/* DOTS */}
+              {images.length > 1 && (
+                  <div className="pd-dots-container">
+                      {images.map((_, idx) => (
+                          <div key={idx} className={`pd-dot ${idx === activeImgIndex ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setActiveImgIndex(idx); }} />
+                      ))}
+                  </div>
+              )}
             </div>
-            {images.length > 1 && (<div className="pd-thumbs" style={{ padding: "10px", background: "#fff", borderTop: "1px solid #eee" }}>{images.slice(0, 8).map((img, idx) => (<button key={img} type="button" className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`} onClick={() => setActiveImgIndex(idx)} style={{ minWidth: "60px", height: "60px" }}><img src={img} alt="thumb" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></button>))}</div>)}
+            {/* THUMBS */}
+            <div className="pd-thumbs-desktop">
+               {images.slice(0, 5).map((img, idx) => (<button key={img} type="button" className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`} onClick={() => setActiveImgIndex(idx)}><img src={img} alt="thumb" /></button>))}
+            </div>
           </section>
 
-          <aside className="pd-info">
+          {/* INFORMACIÓN DEL PRODUCTO */}
+          <aside className="pd-info fade-in-section">
             <div className="hero-top">
-              <div className="hero-proof" style={{ marginBottom: "10px" }}><div className="hero-avatars" aria-hidden="true"><span className="av"></span><span className="av"></span><span className="av"></span></div><div className="hero-proofText"><b>{Number(soldCount).toLocaleString("es-AR")}</b> personas compraron</div></div>
+              <div className="hero-proof" style={{marginBottom: "8px"}}>
+                  <span className="hero-pill-hot pulse-animation">🔥 Viral en TikTok</span>
+                  <div className="hero-proofText"><b>{Number(soldCount).toLocaleString("es-AR")}</b> unidades vendidas</div>
+              </div>
               <h1 className="hero-title">{product.name}</h1>
+              <div className="hero-ratingRow"><Stars /> <a href="#reviews-section" onClick={scrollToReviews} className="hero-reviews" style={{textDecoration:'underline', cursor:'pointer'}}>Ver 894 opiniones</a></div>
               <p className="hero-mini-desc">{MARKETING_CONTENT.miniDescription}</p>
-              <div className="hero-ratingRow"><Stars value={rating} /> <span className="hero-reviews">({Number(reviewCount).toLocaleString("es-AR")} reseñas)</span></div>
-              <div className="hero-priceRow"><span className="hero-price">{formatARS(price || 0)}</span>{compareAt > price && (<><span className="hero-compare">{formatARS(compareAt)}</span><span className="hero-pill">{discountPct}% OFF</span></>)}</div>
-              <div className="pd-ticks-container">{bullets.slice(0, 3).map((b, idx) => (<div key={idx} className="pd-tick-row"><div className="pd-tick-icon"><svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 5L4.14286 8.14286L11 1.28571" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></div><span className="pd-tick-text">{b}</span></div>))}</div>
-              <div className="pd-trust"><div className="pd-trustItem"><div className="pd-ico">❤</div><div>Pago 100%<br />protegido</div></div><div className="pd-trustItem"><div className="pd-ico">↩</div><div>Devolución sin<br />vueltas</div></div><div className="pd-trustItem"><div className="pd-ico">🚚</div><div>Envío gratis a<br />todo el país</div></div></div>
+              
+              <div className="price-block-container shadow-hover">
+                  <div className="main-price-row">
+                      <span className="hero-price">{formatARS(displayTotal)}</span>
+                      {compareAt > price && (<><span className="hero-compare">{formatARS(compareAt * totalQty)}</span><span className="hero-pill-off">50% OFF</span></>)}
+                  </div>
+                  
+                  <div className="transfer-card">
+                      <div className="transfer-icon">⚡</div>
+                      <div className="transfer-text">
+                          <div className="transfer-label">O pagando con Transferencia:</div>
+                          <div className="transfer-amount">{formatARS(transferPrice)} <span className="transfer-tag">AHORRÁ 10% EXTRA</span></div>
+                      </div>
+                  </div>
+              </div>
+
+              <div className="pd-trust-icons">
+                 <div className="trust-icon-item"><span>🛡️</span> Garantía 90 días</div>
+                 <div className="trust-icon-item"><span>🚚</span> Envío Gratis</div>
+                 <div className="trust-icon-item"><span>✅</span> Tecnología Segura</div>
+              </div>
             </div>
-            <div className="pd-divider">Compra en combo y ahorrá 🔥</div>
+            
+            <div className="pd-divider" style={{marginTop:'1.5rem'}}>Elegí tu opción</div>
             <div className="pd-bundles">
-              <label className={`pd-bundle ${bundle === 1 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 1} onChange={() => setBundle(1)} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">Lleva 1 <span className="pd-miniTag">Envío gratis</span></div><div className="pd-bundleSub">Precio normal</div></div><div className="pd-bundleRight">{moneyARS(unitPrice)}</div></div></label>
-              <label className={`pd-bundle ${bundle === 2 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 2} onChange={() => { setBundle(2); setQty((q) => (q < 2 ? 2 : q)); }} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">Lleva 2 <span className="pd-miniTag">Envío gratis</span></div><div className="pd-bundleSub"><b>ahorra</b> {pack2Discount}% mas!!</div></div><div className="pd-bundleRight">{moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}<div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div></div></div><div className="pd-popular">Más popular</div></label>
+              <label className={`pd-bundle hover-lift ${bundle === 1 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 1} onChange={() => { setBundle(1); setQty(1); }} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">1 Dispositivo BodySculpt <span className="pd-miniTag">Kit Esencial</span></div><div className="pd-bundleSub">Incluye gel conductor de regalo</div></div><div className="pd-bundleRight">{moneyARS(unitPrice)}</div></div></label>
+              <label className={`pd-bundle hover-lift ${bundle === 2 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 2} onChange={() => { setBundle(2); setQty((q) => (q < 2 ? 2 : q)); }} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">Pack Doble (2 u.) <span className="pd-miniTag highlight">Mejor Valor</span></div><div className="pd-bundleSub"><b>Ahorrá</b> {pack2Discount}% + Envío Prioritario</div></div><div className="pd-bundleRight">{moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}<div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div></div></div></label>
             </div>
-            <div className="pd-qtyRow"><div className="pd-qtyLabel">Cantidad</div><div className="pd-qty"><button type="button" className="pd-qtyBtn" onClick={() => setQty((q) => clampInt(q - 1, 1, 20))}>−</button><div className="pd-qtyVal">{qty}</div><button type="button" className="pd-qtyBtn" onClick={() => setQty((q) => clampInt(q + 1, 1, 20))}>+</button></div><div className="pd-qtyHint">Total: {totalQty} u.</div></div>
-            <div className="scarcity-text"><span className="scarcity-icon">🔥</span> ¡ATENCIÓN! Quedan las últimas 3 unidades</div>
-            <button className="pd-ctaPrimary" type="button" onClick={handleAddToCart}>AGREGAR AL CARRITO <span className="pd-ctaSub">Total: {moneyARS(displayTotal)}</span></button>
-            <button className="pd-ctaSecondary btn-breathing" type="button" onClick={handleBuyNow}>COMPRAR AHORA</button>
-            <a className="pd-detailsLink" href="#details" onClick={(e) => { e.preventDefault(); document.getElementById("details")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>Ver todos los detalles →</a>
-            <div className="pd-miniNav"><Link className="btn btn-ghost" to="/cart">Carrito</Link><Link className="btn btn-ghost" to="/checkout">Checkout</Link><Link className="btn btn-ghost" to="/products">Tienda</Link></div>
+            
+            <div className="scarcity-text" style={{marginTop: '20px', marginBottom: '10px'}}>
+                <span className="scarcity-icon">⚠️</span> ¡Atención! Quedan solo 3 unidades disponibles
+            </div>
+
+            <div>
+                <button className="pd-ctaSecondary btn-breathing-intense" type="button" onClick={handleBuyNow} disabled={redirecting}>
+                    {redirecting ? "PROCESANDO PAGO..." : "COMPRAR AHORA - ENVÍO GRATIS"}
+                </button>
+                <div style={{textAlign:'center', marginTop:'15px'}}>
+                     <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">Agregar al carrito</button>
+                </div>
+            </div>
+
+            <div className="accordion-wrapper" style={{marginTop: '30px'}}>
+                 <div className="accordion-item">
+                    <button className="accordion-header" onClick={() => setIsDescExpanded(!isDescExpanded)}>
+                        <span>Especificaciones y Tecnología</span>
+                        <span>{isDescExpanded ? '−' : '+'}</span>
+                    </button>
+                    {isDescExpanded && (
+                        <div className="accordion-content fade-in-section">
+                             <p>{product.description || MARKETING_CONTENT.miniDescription}</p>
+                             <ul style={{paddingLeft:'20px', marginTop:'15px', color:'#555', display:'flex', flexDirection:'column', gap:'8px'}}>
+                                 <li><strong>Cavitación Ultrasónica:</strong> 1 MHz.</li>
+                                 <li><strong>Radiofrecuencia (RF):</strong> 1 MHz multipolar.</li>
+                                 <li><strong>LED Rojo:</strong> 625nm.</li>
+                                 <li><strong>Uso:</strong> Corporal (No facial).</li>
+                             </ul>
+                        </div>
+                    )}
+                 </div>
+                 <div className="accordion-item">
+                    <button className="accordion-header" onClick={() => setIsShippingExpanded(!isShippingExpanded)}>
+                        <span>Envíos y Garantía</span>
+                        <span>{isShippingExpanded ? '−' : '+'}</span>
+                    </button>
+                    {isShippingExpanded && (
+                        <div className="accordion-content fade-in-section">
+                             <ul style={{paddingLeft:'20px', marginTop:'15px', color:'#555', display:'flex', flexDirection:'column', gap:'10px'}}>
+                                 <li><strong>Envío Gratis:</strong> A todo el país.</li>
+                                 <li><strong>Despacho Rápido:</strong> Procesamos en 24hs.</li>
+                                 <li><strong>Garantía de 90 días:</strong> Por fallas de fábrica.</li>
+                                 <li><strong>Compra Protegida:</strong> Vía Mercado Pago.</li>
+                             </ul>
+                        </div>
+                    )}
+                 </div>
+            </div>
+
           </aside>
         </div>
 
-        <section id="details" className="pd-details card" style={{ marginTop: "1.1rem" }}>
-          <div className="pd-detailsHead"><div className="pd-badge">Detalles</div><div className="pd-detailsTitle">Todo lo que incluye tu compra</div></div>
-          <div className="pd-detailsGrid"><div className="pd-detailBlock">
-            <div className="pd-detailT">Descripción</div>
-            <div className="pd-detailP" style={{ position: 'relative' }}>
-
-              {isDescExpanded
-                ? (product.description || `Producto premium de ${storeName}.`)
-                : (product.description || `Producto premium de ${storeName}.`).slice(0, 150) + (product.description?.length > 150 ? '...' : '')}
-
-              {/* Solo mostramos el botón si el texto es largo */}
-              {(product.description?.length > 150 || !product.description) && (
-                <button
-                  type="button"
-                  onClick={() => setIsDescExpanded(!isDescExpanded)}
-                  style={{
-                    display: 'block',
-                    marginTop: '8px',
-                    background: 'none',
-                    border: 'none',
-                    color: '#0B5CFF',
-                    fontWeight: 'bold',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    padding: 0,
-                    textDecoration: 'underline'
-                  }}
-                >
-                  {isDescExpanded ? 'Ver menos' : 'Ver más'}
-                </button>
-              )}
-            </div>
-          </div><div className="pd-detailBlock"><div className="pd-detailT">Envío</div><p className="pd-detailP">Envío gratis a todo el país. Coordinamos por WhatsApp apenas se confirme el pago.</p></div><div className="pd-detailBlock"><div className="pd-detailT">Pago</div><p className="pd-detailP">Mercado Pago / Transferencia. Compra rápida y segura.</p></div></div>
-        </section>
-
-        <div style={{ marginTop: "3rem", display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "80px" }}>
-          <AuthoritySection />
+        {/* === RESTO DE SECCIONES === */}
+        <div style={{ marginTop: "4rem", display: "flex", flexDirection: "column", gap: "5rem", paddingBottom: "100px" }}>
+          <ClinicalStatsSection />
           <BeforeAfterSlider />
+          <AuthoritySection />
+          <WhyChooseSection />
           <ComparisonTable />
           <ProblemSolutionSection />
+          <WhatsIncludedSection />
           <BigMediaSection />
-          <HowToUseSection />
           <TestimonialsSection />
           <FaqSection />
         </div>
@@ -406,301 +564,319 @@ export default function ProductDetail() {
 
       {showToast && (<div className="pd-toast-wrapper"><div className="pd-toast-content"><div className="pd-toast-main"><img src={images[0]} alt="" className="pd-toast-img" /><div className="pd-toast-info"><span className="pd-toast-status">✓ ¡Agregado!</span><span className="pd-toast-name">{product.name}</span></div><button className="pd-toast-close" onClick={() => setShowToast(false)}>✕</button></div><div className="pd-toast-actions"><button className="pd-toast-btn-secondary" onClick={() => navigate('/cart')}>IR AL CARRITO</button><button className="pd-toast-btn-primary" onClick={() => navigate('/checkout')}>FINALIZAR COMPRA</button></div><div className="pd-toast-progress"></div></div></div>)}
 
-      {/* 2. STICKY BAR PRO (Solo móvil) */}
-      <div className="sticky-mobile-bar-pro">
-        <div className="sticky-pro-info">
-          <span className="sticky-pro-title">{product.name}</span>
-          <div className="sticky-pro-prices">
-            <span className="sticky-pro-price">{formatARS(price)}</span>
-            {discountPct > 0 && <span className="sticky-pro-off">{discountPct}% OFF</span>}
-          </div>
+      {/* STICKY BAR */}
+      <div className="sticky-mobile-bar-pro fade-in-section">
+        <div className="sticky-pro-left">
+            <span className="sticky-pro-label">Envío Gratis termina en:</span>
+            <div className="sticky-pro-price-row">
+               <span style={{fontWeight:'800', color:'#dc2626'}}><CountdownTimer /></span>
+            </div>
         </div>
-        <button className="sticky-pro-btn" onClick={handleBuyNow}>COMPRAR AHORA</button>
+        <button className="sticky-pro-btn btn-breathing" onClick={handleBuyNow} disabled={redirecting}>
+            {redirecting ? "..." : "COMPRAR AHORA"}
+        </button>
       </div>
 
       <style>{`
-        /* === MOBILE NAVBAR ESTILO AQUALYS === */
-        .mobile-nav {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 16px;
-          background: #fff;
-          border-bottom: 1px solid #eee;
-          position: sticky;
-          top: 0;
-          z-index: 9000;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        }
-        @media (min-width: 768px) { .mobile-nav { display: none; } } /* Solo visible en móvil */
-
-        .mn-left, .mn-right { flex: 1; display: flex; align-items: center; }
-        .mn-center { flex: 2; text-align: center; }
-        .mn-right { justify-content: flex-end; gap: 12px; }
-
-        .mn-brand {
-          font-size: 1.3rem;
-          font-weight: 800;
-          color: #000;
-          letter-spacing: -0.5px;
-        }
-
-        .mn-btn {
-          background: none;
-          border: none;
-          padding: 4px;
-          color: #333;
-          cursor: pointer;
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+/* === ARREGLO PRO ANIMADO (BIG MEDIA SECTION) === */
+        
+        /* Fondo con degradado radial y elementos animados */
+        .full-width-bg { 
+            /* Base: Degradado radial profundo para dar foco */
+            background: radial-gradient(circle at 70% 30%, #0B5CFF 0%, #002a7a 100%);
+            width: 100vw; 
+            position: relative; 
+            left: 50%; 
+            right: 50%; 
+            margin-left: -50vw; 
+            margin-right: -50vw; 
+            padding: 90px 0; /* Un poco más de aire */
+            color: white;
+            overflow: hidden; /* IMPORTANTE: Para contener las animaciones */
         }
         
-        .mn-cart-btn { color: #000; }
-        .mn-badge {
-          position: absolute;
-          top: 0;
-          right: 0;
-          background: #E11D48;
-          color: white;
-          font-size: 0.65rem;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          transform: translate(25%, -25%);
-        }
-
-        /* === STICKY BAR PRO (FLOTANTE) === */
-        .sticky-mobile-bar-pro {
-          position: fixed;
-          bottom: 20px; /* Flotando un poco arriba del borde */
-          left: 15px;
-          right: 15px;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(0,0,0,0.05);
-          padding: 10px 15px;
-          z-index: 9999;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-radius: 16px; /* Bordes redondeados modernos */
-          box-shadow: 0 8px 30px rgba(0,0,0,0.12); /* Sombra difusa y elegante */
-          transform: translateY(150%);
-          animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          animation-delay: 1.5s;
-        }
-
-        @media (min-width: 768px) { .sticky-mobile-bar-pro { display: none; } }
-
-        .sticky-pro-info { display: flex; flex-direction: column; gap: 2px; }
-        .sticky-pro-title { font-size: 0.75rem; color: #666; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sticky-pro-prices { display: flex; align-items: center; gap: 6px; }
-        .sticky-pro-price { font-size: 1.1rem; font-weight: 800; color: #000; letter-spacing: -0.5px; }
-        .sticky-pro-off { font-size: 0.65rem; background: #000; color: #fff; padding: 2px 4px; border-radius: 4px; font-weight: 700; }
-
-        .sticky-pro-btn {
-          background: #0B5CFF;
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 12px;
-          font-weight: 800;
-          font-size: 0.9rem;
-          letter-spacing: 0.5px;
-          box-shadow: 0 4px 15px rgba(11, 92, 255, 0.3);
-          transition: transform 0.2s;
-        }
-        .sticky-pro-btn:active { transform: scale(0.96); }
-
-        @keyframes slideUp { to { transform: translateY(0); } }
-
-        /* Ajustes Toast para que no tape */
-        @media (max-width: 767px) { 
-           .pd-toast-wrapper { top: 70px !important; bottom: auto !important; } /* Mover toast arriba en movil */
-        }
-
-        /* --- ESTILOS GENERALES (Mantenidos) --- */
-        .authority-img-fixed { width: 100px !important; height: 100px !important; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: block; }
-        .steps-grid-fixed { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center; width: 100%; }
-        .step-item { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; }
-        
-        .hero-title { font-size: 1.8rem; font-weight: 800; line-height: 1.2; color: #111827; margin-bottom: 0.5rem; }
-        .hero-mini-desc { font-size: 1rem; color: #4B5563; line-height: 1.4; margin-bottom: 12px; font-weight: 500; }
-        .hero-price { font-size: 2rem; font-weight: 800; color: #0B5CFF; letter-spacing: -0.5px; } 
-        .hero-compare { font-size: 1.1rem; color: #9CA3AF; text-decoration: line-through; font-weight: 500; margin-left: 10px; }
-        .hero-pill { background: #374151; color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; margin-left: 8px; text-transform: uppercase; vertical-align: middle; }
-        .hero-priceRow { display: flex; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
-        .scarcity-text { color: #dc2626; font-weight: 800; font-size: 0.85rem; margin: 0 0 12px 0; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; animation: textFade 2s ease-in-out infinite; }
-
-        .pd-trust { display: flex; justify-content: space-between; gap: 10px; margin: 20px 0; padding-top: 15px; border-top: 1px solid #f3f4f6; text-align: center; }
-        .pd-trustItem { display: flex; flex-direction: column; align-items: center; font-size: 0.8rem; color: #333; flex: 1; line-height: 1.3; font-weight: 600; }
-        .pd-ico { font-size: 1.4rem; margin-bottom: 6px; color: #0B5CFF; }
-
-        .landing-section { padding: 40px 0; margin-bottom: 20px; }
-        .landing-container { max-width: 900px; margin: 0 auto; padding: 0 15px; }
-        .full-width-bg { background: #111827; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 60px 0; }
-        .split-layout { display: flex; align-items: center; gap: 40px; }
-        .split-text { flex: 1; }
-        .split-media { flex: 1; }
-        .landing-img-rounded { width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .landing-title { font-size: 1.6rem; margin-bottom: 1rem; color: #1e293b; font-weight: 700; line-height: 1.2; }
-        .landing-center-title { text-align: center; font-size: 1.8rem; margin-bottom: 2rem; font-weight: 800; color: #0f172a; }
-        .landing-p { font-size: 1rem; line-height: 1.6; color: #475569; margin-bottom: 1.5rem; }
-        .landing-list { list-style: none; padding: 0; display: flex; flexDirection: column; gap: 10px; }
-        .landing-list li { font-size: 1rem; color: #334155; font-weight: 500; }
-        .landing-video-cover { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.3s; }
-        .landing-video-real { width: 100%; height: 100%; object-fit: cover; }
-        .video-placeholder-container { position: relative; width: 100%; max-width: 800px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); aspect-ratio: 16/9; background: #000; cursor: pointer; }
-        .video-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 2; }
-        .play-button { font-size: 4rem; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
-        @media (max-width: 768px) {
-          .split-layout { flex-direction: column; }
-          .reverse-mobile { flex-direction: column-reverse; }
-          .landing-title { font-size: 1.4rem; text-align: center; }
-          .landing-p { text-align: center; }
-          .landing-center-title { font-size: 1.5rem; }
-          .reviews-grid { grid-template-columns: 1fr; } 
-        }
-        
-        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; align-items: start; }
-        @media (max-width: 900px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
-        .tm-card { background: #fff; border: 1px solid #f1f1f1; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 100%; }
-        .tm-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .tm-card-title { font-weight: 800; color: #000; font-size: 1rem; }
-        .tm-stars { color: #6c757d; font-size: 0.9rem; letter-spacing: 2px; }
-        .tm-author { font-size: 0.85rem; color: #6c757d; margin-bottom: 14px; }
-        .tm-text { font-size: 0.95rem; line-height: 1.5; color: #495057; font-style: italic; margin-bottom: 16px; flex: 1; }
-        .tm-review-img-box { margin-bottom: 16px; border-radius: 12px; overflow: hidden; border: 1px solid #f0f0f0; }
-        .tm-review-img { width: 100%; height: auto; max-height: 200px; object-fit: cover; display: block; }
-        .tm-tags { display: flex; gap: 10px; }
-        .tm-tag { background-color: #0d6efd; color: white; font-weight: 700; font-size: 0.75rem; padding: 6px 14px; border-radius: 50px; }
-        .tm-badge { display: inline-block; background-color: #0d6efd; color: white; font-weight: 700; font-size: 0.8rem; padding: 6px 16px; border-radius: 50px; margin-bottom: 12px; }
-        .tm-main-title { font-size: 1.8rem; color: #0d6efd; font-weight: 800; margin: 0 0 8px 0; line-height: 1.2; }
-        .tm-subtitle { color: #6c757d; font-size: 0.95rem; margin: 0; }
-
-        .ba-slider-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; overflow: hidden; border-radius: 16px; cursor: col-resize; box-shadow: 0 10px 25px rgba(0,0,0,0.1); user-select: none; }
-        .ba-img { width: 100%; display: block; height: auto; pointer-events: none; }
-        .ba-overlay { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; border-right: 2px solid white; }
-        .ba-overlay .ba-img { width: auto; height: 100%; max-width: none; }
-        .ba-handle { position: absolute; top: 0; bottom: 0; width: 40px; margin-left: -20px; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
-        .ba-line { position: absolute; top: 0; bottom: 0; width: 2px; background: white; left: 50%; transform: translateX(-50%); box-shadow: 0 0 5px rgba(0,0,0,0.3); }
-        .ba-circle { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-weight: bold; position: relative; z-index: 2; }
-        .ba-label { position: absolute; top: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; pointer-events: none; }
-        .ba-before { left: 10px; }
-        .ba-after { right: 10px; }
-
-        .comp-table { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #eee; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .comp-header { display: flex; background: #fff; padding: 15px; border-bottom: 2px solid #f3f4f6; align-items: flex-end; }
-        .comp-col-empty { flex: 1.5; }
-        .comp-col-us { flex: 1; text-align: center; font-weight: 800; font-size: 1.1rem; color: #000; }
-        .comp-col-others { flex: 1; text-align: center; font-weight: 600; font-size: 1rem; color: #6b7280; }
-        .comp-row { display: flex; padding: 15px; border-bottom: 1px solid #f3f4f6; align-items: center; }
-        .comp-row:last-child { border-bottom: none; }
-        .comp-feature-name { flex: 1.5; font-weight: 600; color: #1f2937; font-size: 0.95rem; }
-        .comp-check-us { flex: 1; text-align: center; color: #10b981; font-weight: bold; font-size: 1.2rem; background: #ecfdf5; border-radius: 8px; padding: 4px; margin: 0 5px; }
-        .comp-check-others { flex: 1; text-align: center; color: #ef4444; font-weight: bold; font-size: 1.2rem; opacity: 0.5; }
-        .check-icon { display: inline-block; }
-        .cross-icon { display: inline-block; }
-
-/* === CORRECCIÓN FAQ === */
-        .faq-container { 
-            display: flex; 
-            flex-direction: column; /* IMPORTANTE: con guion, no camelCase */
-            gap: 15px; 
-            width: 100%;
-        }
-        
-        .faq-item { 
-            width: 100%;
-            border: 1px solid #e2e8f0; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            background: white; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); /* Sombrita suave para que no se vea plano */
-        }
-        
-        .faq-question { 
+        .landing-video-real { 
             width: 100%; 
-            text-align: left; 
-            padding: 16px 20px; 
-            background: #fff; 
-            border: none; 
-            font-weight: 700; 
-            color: #334155;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            cursor: pointer; 
-            font-size: 0.95rem;
+            height: 100%; 
+            object-fit: contain !important; /* Clave: Contener en vez de cubrir */
+            background: #000; /* Fondo negro elegante para los espacios sobrantes */
+            display: block;
         }
-        
-        .faq-question.active { 
-            background: #f0f9ff; 
-            color: #0B5CFF; 
-        }
-        
-        .faq-answer { 
-            padding: 0 20px; 
-            overflow: hidden; 
-            background: white; 
-            color: #475569;
-            line-height: 1.5;
-            transition: all 0.3s ease;
-        }
-        
-        .faq-question.active + .faq-answer { 
-            padding: 0 20px 20px 20px; 
-        }
-        
-        .faq-icon {
-            font-size: 1.2rem;
-            line-height: 1;
-            color: #94a3b8;
-        }
-        .faq-question.active .faq-icon {
-            color: #0B5CFF;
-        }
-        
-        @keyframes textFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .btn-breathing { animation: breathe 4s ease-in-out infinite; transform-origin: center; position: relative; z-index: 2; }
-        @keyframes breathe { 0% { transform: scale(1); box-shadow: 0 4px 6px rgba(0,0,0,0.1); } 50% { transform: scale(1.03); box-shadow: 0 10px 15px rgba(6, 55, 165, 0.2); } 100% { transform: scale(1); box-shadow: 0 4px 6px rgba(0,0,0,0.1); } }
-        
-        .pd-tick-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .pd-tick-icon { width: 22px; height: 22px; min-width: 22px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(37, 211, 102, 0.3); }
-        .pd-tick-text { font-weight: 600; color: #334155; font-size: 0.95rem; }
-        
-        .authority-bg { background: #f0f9ff; border-left: 4px solid #0B5CFF; border-radius: 12px; padding: 30px; }
-        .authority-flex { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-        .authority-sign strong { display: block; color: #0f172a; }
-        .authority-sign span { font-size: 0.9rem; color: #64748b; }
-        .authority-img-box { flex: 0 0 100px; }
-        
-        .step-num { width: 40px; height: 40px; background: #0B5CFF; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin: 0 auto 15px; }
 
-        .pd-toast-wrapper { position: fixed; z-index: 10000; animation: toastSlideIn 0.5s ease-out; }
-        @media (min-width: 768px) { .pd-toast-wrapper { bottom: 24px; right: 24px; width: 350px; } }
-        @media (max-width: 767px) { .pd-toast-wrapper { top: 12px; left: 12px; right: 12px; width: auto; } }
-        .pd-toast-content { background: white; border-radius: 18px; padding: 12px; box-shadow: 0 10px 30px rgba(6, 55, 165, 0.15); border: 1px solid #DDF5FF; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
-        .pd-toast-main { display: flex; align-items: center; gap: 12px; }
-        .pd-toast-img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; }
-        .pd-toast-info { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .pd-toast-status { color: #22C3FF; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
-        .pd-toast-name { font-size: 0.85rem; font-weight: 600; color: #0637A5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pd-toast-close { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1rem; padding: 4px; }
-        .pd-toast-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .pd-toast-btn-primary { background: #0B5CFF; color: white; border: none; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
-        .pd-toast-btn-secondary { background: #DDF5FF; color: #0637A5; border: none; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
-        .pd-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: #22C3FF; width: 100%; animation: toastProgress 5s linear forwards; }
-        @keyframes toastSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
+        /* Elemento animado 1 (Luz superior izquierda) */
+        .full-width-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.1); /* Luz blanca sutil */
+            border-radius: 50%;
+            filter: blur(120px); /* Difuminado intenso */
+            animation: floatBubble1 15s infinite alternate ease-in-out;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Elemento animado 2 (Luz inferior derecha) */
+        .full-width-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(11, 92, 255, 0.3); /* Luz azul más intensa */
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: floatBubble2 18s infinite alternate-reverse ease-in-out;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Asegurar que el contenido (texto y video) esté por encima del fondo animado */
+        .landing-container.text-center {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Animaciones de flotación */
+        @keyframes floatBubble1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+        @keyframes floatBubble2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-60px, -40px) scale(1.05); }
+        }
+
+        /* Tipografía del Título (Centrado asegurado) */
+        .video-title-pro {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            color: white;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Sombra sutil al texto */
+        }
+
+        /* Tipografía del Subtítulo (Centrado asegurado) */
+        .video-subtitle-pro {
+            text-align: center;
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 50px;
+            font-weight: 500;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Contenedor del video con sombra "Glow" intensa */
+        .video-placeholder-container {
+            border-radius: 24px;
+            overflow: hidden;
+            /* Sombra profunda + Borde translúcido brillante */
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            max-width: 980px;
+            margin: 0 auto;
+            aspect-ratio: 16/9;
+            background: #000;
+            position: relative;
+            transform: translateZ(0); /* Mejora rendimiento en algunos navegadores */
+        }
+
+        /* Ajuste para móvil */
+        @media (max-width: 768px) {
+            .full-width-bg { padding: 60px 0; }
+            .full-width-bg::before, .full-width-bg::after { width: 300px; height: 300px; filter: blur(60px); } /* Orbes más pequeños */
+            .video-title-pro { font-size: 2rem; }
+            .video-subtitle-pro { font-size: 1.1rem; padding: 0 20px; margin-bottom: 35px; }
+            .video-placeholder-container { border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
+        }
+        /* === ESTILOS ORIGINALES === */
+        
+        /* Animaciones & Helpers */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in-section { animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes pulseIntense { 0% { box-shadow: 0 0 0 0 rgba(11, 92, 255, 0.7); transform: scale(1); } 70% { box-shadow: 0 0 0 15px rgba(11, 92, 255, 0); transform: scale(1.02); } 100% { box-shadow: 0 0 0 0 rgba(11, 92, 255, 0); transform: scale(1); } }
+        .btn-breathing-intense { animation: pulseIntense 2s infinite; }
+        .btn-breathing { animation: breathe 3s ease-in-out infinite; }
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .hover-lift { transition: all 0.3s ease; } .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+        .shadow-hover { transition: box-shadow 0.3s ease; } .shadow-hover:hover { box-shadow: 0 15px 40px rgba(0,0,0,0.1) !important; }
+        .spin-on-hover { transition: transform 0.5s ease; } .included-item:hover .spin-on-hover { transform: rotateY(360deg); }
+        .pulse-animation { animation: breathe 2s infinite; }
+
+        /* Layout Principal */
+        .section.main-wrapper { background: #fff; overflow-x: hidden; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* GRID: align-items: flex-start para que la imagen no se estire */
+        .pd-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: flex-start; }
+        @media (max-width: 990px) { .pd-grid { grid-template-columns: 1fr; gap: 30px; } }
+        
+        /* Media (Sticky en Desktop, Normal en Móvil) */
+        @media (max-width: 990px) { .pd-media { position: relative !important; top: 0 !important; } }
+
+        /* Galería (Dots & Thumbs) */
+        .pd-dots-container { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 10; pointer-events: none; }
+        .pd-dot { width: 10px; height: 10px; background: rgba(0,0,0,0.2); border-radius: 50%; cursor: pointer; transition: all 0.3s; pointer-events: auto; border: 1px solid rgba(255,255,255,0.5); }
+        .pd-dot.active { background: #0B5CFF; transform: scale(1.2); border-color: #0B5CFF; }
+        .pd-thumbs-desktop { padding: 15px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; gap: 12px; overflow-x: auto; }
+        @media (max-width: 768px) { .pd-thumbs-desktop { display: none; } }
+        .pd-thumb { min-width: 70px; height: 70px; border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; padding: 0; cursor: pointer; transition: all 0.2s; }
+        .pd-thumb.is-active { border-color: #0B5CFF; box-shadow: 0 0 0 2px rgba(11, 92, 255, 0.2); }
+        .pd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Badges */
+        .badge-pill { background: #e0f2fe; color: #0284c7; padding: 6px 14px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 15px; }
+        .hero-pill-hot { background: #FFF1F2; color: #E11D48; font-weight: 800; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; border: 1px solid #FECDD3; display: inline-flex; align-items: center; }
+        .hero-pill-off { background: #111; color: white; font-size: 0.8rem; font-weight: 700; padding: 5px 10px; border-radius: 6px; margin-left: 10px; vertical-align: middle; }
+
+        /* Pricing */
+        .price-block-container { background: #f8fafc; padding: 25px; border-radius: 20px; margin: 25px 0; border: 1px solid #e2e8f0; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .main-price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .hero-price { font-size: 2.4rem; font-weight: 900; color: #111827; letter-spacing: -0.5px; line-height: 1; }
+        .hero-compare { font-size: 1.3rem; color: #9CA3AF; text-decoration: line-through; margin-left: 5px; }
+        .transfer-card { background: #ecfdf5; border: 2px dashed #10b981; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .transfer-icon { font-size: 1.8rem; }
+        .transfer-label { font-size: 0.9rem; color: #065f46; font-weight: 700; margin-bottom: 4px; }
+        .transfer-amount { font-size: 1.35rem; color: #059669; font-weight: 900; display: flex; flex-direction: column; line-height: 1; }
+        .transfer-tag { font-size: 0.75rem; background: #059669; color: white; padding: 4px 10px; border-radius: 20px; margin-top: 6px; width: fit-content; font-weight: 800; letter-spacing: 0.5px; }
+
+        /* Scarcity */
+        .scarcity-text { color: #dc2626; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; animation: textFade 2s ease-in-out infinite; background: #fef2f2; padding: 10px; border-radius: 8px; border: 1px solid #fee2e2; }
+        @keyframes textFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px; }
+        .stat-card { text-align: center; padding: 20px; background: white; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .stat-circle { width: 100px; height: 100px; margin: 0 auto 15px; }
+        .circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #eee; stroke-width: 2; }
+        .circle { fill: none; stroke-width: 2.5; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: #0B5CFF; }
+        .percentage { fill: #0B5CFF; font-family: sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; }
+        .stat-text { font-size: 1rem; color: #334155; font-weight: 700; line-height: 1.4; }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; gap: 20px; } .stat-card { display: flex; align-items: center; text-align: left; gap: 20px; padding: 15px; } .stat-circle { margin: 0; width: 70px; height: 70px; } }
+
+        /* Checklist Section */
+        .why-choose-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        @media (max-width: 600px) { .why-choose-grid { grid-template-columns: 1fr; gap: 20px; } }
+        .why-item { display: flex; gap: 15px; align-items: flex-start; }
+        .why-check { background: #ecfdf5; color: #10b981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 1.1rem; }
+        .why-text strong { display: block; color: #1e293b; font-size: 1.05rem; margin-bottom: 4px; }
+        .why-text p { margin: 0; color: #64748b; font-size: 0.95rem; line-height: 1.5; }
+
+        /* Included */
+        .included-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-top: 30px; }
+        .included-item { background: white; padding: 25px 15px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .included-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .included-name { font-size: 0.95rem; font-weight: 700; color: #334155; }
+
+        /* Tech List */
+        .tech-list { margin-top: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .tech-item { display: flex; gap: 15px; align-items: flex-start; background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .tech-icon { font-size: 1.8rem; background: #f0f9ff; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
+        .tech-item strong { display: block; color: #1e293b; font-size: 1rem; margin-bottom: 5px; }
+        .tech-item p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+
+        /* Accordions */
+        .accordion-item { border-bottom: 1px solid #e2e8f0; }
+        .accordion-header { width: 100%; display: flex; justify-content: space-between; padding: 20px 0; background: none; border: none; font-weight: 800; color: #1e293b; cursor: pointer; font-size: 1.05rem; align-items: center; }
+        .accordion-content { padding-bottom: 25px; color: #475569; font-size: 0.95rem; line-height: 1.7; }
+
+        /* Comparison Table */
+        .comp-table { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-top: 25px; }
+        .comp-header { display: flex; background: #f8fafc; padding: 20px 25px; border-bottom: 2px solid #e2e8f0; align-items: center; }
+        .comp-col-empty { flex: 1.5; }
+        .comp-col-us { flex: 1; text-align: center; font-weight: 900; font-size: 1.2rem; color: #0B5CFF; }
+        .comp-col-others { flex: 1; text-align: center; font-weight: 700; font-size: 1rem; color: #94a3b8; }
+        .comp-row { display: flex; padding: 18px 25px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+        .comp-row:last-child { border-bottom: none; }
+        .comp-feature-name { flex: 1.5; font-weight: 600; color: #334155; font-size: 1rem; }
+        .comp-check-us { flex: 1; text-align: center; color: #10b981; font-weight: 900; font-size: 1.4rem; }
+        .comp-check-others { flex: 1; text-align: center; color: #ef4444; font-weight: 900; font-size: 1.4rem; opacity: 0.3; }
+        .landing-center-subtitle { text-align: center; font-size: 1.1rem; color: #64748b; margin-bottom: 35px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+        /* Slider Antes/Después */
+        .ba-slider-container { position: relative; width: 100%; max-width: 650px; margin: 0 auto; overflow: hidden; border-radius: 20px; cursor: ew-resize; box-shadow: 0 15px 35px rgba(0,0,0,0.1); user-select: none; aspect-ratio: 4/3; }
+        .ba-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+        .ba-overlay { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; border-right: 3px solid white; }
+        .ba-overlay .ba-img { width: auto; height: 100%; max-width: none; }
+        .ba-handle { position: absolute; top: 0; bottom: 0; width: 44px; margin-left: -22px; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
+        .ba-line { position: absolute; top: 0; bottom: 0; width: 3px; background: white; left: 50%; transform: translateX(-50%); box-shadow: 0 0 8px rgba(0,0,0,0.3); }
+        .ba-circle { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0B5CFF; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 2; }
+        .ba-label { position: absolute; top: 20px; background: rgba(0,0,0,0.75); color: white; padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; pointer-events: none; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+        .ba-before { left: 20px; }
+        .ba-after { right: 20px; }
+
+        /* Authority Section */
+        .authority-bg { background: #f0f9ff; border-left: 6px solid #0B5CFF; border-radius: 24px; padding: 50px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
+        .authority-flex { display: flex; gap: 40px; align-items: center; }
+        .authority-img-fixed { width: 140px !important; height: 140px !important; border-radius: 50%; object-fit: cover; border: 5px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: block; }
+        .authority-text { flex: 1; }
+        .authority-stars { color: #fbbf24; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 20px; }
+        .authority-sign { margin-top: 25px; }
+        .authority-sign strong { display: block; color: #0f172a; font-size: 1.2rem; font-weight: 900; }
+        .authority-sign span { font-size: 1rem; color: #64748b; font-weight: 600; }
+        @media (max-width: 768px) { .authority-bg { padding: 30px; } .authority-flex { flex-direction: column; text-align: center; gap: 25px; } .authority-sign { margin-top: 20px; } }
+
+        /* FAQ */
+        .faq-item { width: 100%; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .faq-question { width: 100%; text-align: left; padding: 20px 25px; background: #fff; border: none; font-weight: 800; color: #1e293b; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 1.05rem; }
+        .faq-question.active { background: #f8fafc; color: #0B5CFF; }
+        .faq-answer { padding: 0 25px; overflow: hidden; background: white; color: #475569; line-height: 1.7; transition: all 0.3s ease; }
+        .faq-question.active + .faq-answer { padding: 0 25px 25px 25px; }
+
+        /* Sticky Bar Pro (Móvil) OPTIMIZADA */
+        .sticky-mobile-bar-pro { 
+            position: fixed; bottom: 20px; left: 15px; right: 15px; 
+            background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+            padding: 12px 20px; z-index: 9999; 
+            display: flex; align-items: center; justify-content: space-between; 
+            border-radius: 60px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
+            border: 1px solid #e2e8f0; gap: 15px;
+        }
+        @media (min-width: 991px) { .sticky-mobile-bar-pro { display: none; } }
+        .sticky-pro-left { display: flex; flex-direction: column; gap: 2px; }
+        .sticky-pro-label { font-size: 0.7rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        .sticky-pro-price-row { display: flex; align-items: center; gap: 6px; }
+        .sticky-pro-btn { 
+            background: #0B5CFF; color: white; border: none; 
+            padding: 14px 28px; border-radius: 40px; 
+            font-weight: 800; font-size: 1rem; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(11, 92, 255, 0.35); 
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .sticky-pro-btn:active { transform: scale(0.95); }
+
+        /* Bundles & Buttons - Ajuste de espacio */
+        .pd-bundles { display: flex; flex-direction: column; gap: 18px; margin-top: 25px; }
+        .pd-bundle { border: 2px solid #e2e8f0; border-radius: 20px; padding: 18px 22px; cursor: pointer; transition: all 0.2s; position: relative; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .pd-bundle.is-selected { border-color: #0B5CFF; background: #eff6ff; box-shadow: 0 0 0 2px #0B5CFF inset; transform: scale(1.01); }
+        .pd-bundleTitle { font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; flex-wrap: wrap; }
+        .pd-miniTag { font-size: 0.75rem; background: #e2e8f0; padding: 4px 10px; border-radius: 20px; color: #475569; font-weight: 700; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+        .pd-miniTag.highlight { background: #fef08a; color: #854d0e; }
+        .pd-ctaSecondary { width: 100%; background: #0B5CFF; color: white; border: none; padding: 18px; border-radius: 16px; font-weight: 900; font-size: 1.2rem; cursor: pointer; letter-spacing: 0.5px; transition: all 0.3s; box-shadow: 0 10px 30px rgba(11, 92, 255, 0.3); }
+        .pd-ctaSecondary:hover { background: #094ac9; box-shadow: 0 15px 40px rgba(11, 92, 255, 0.4); transform: translateY(-2px); }
+        .pd-ctaPrimary-outline { background: none; border: 2px solid #e2e8f0; padding: 12px 25px; border-radius: 30px; font-weight: 700; color: #64748b; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .pd-ctaPrimary-outline:hover { border-color: #0B5CFF; color: #0B5CFF; }
+
+        /* Reviews */
+        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-top: 50px; align-items: start; }
+        @media (max-width: 990px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
+        .tm-card { background: #fff; border: 1px solid #f1f1f1; border-radius: 24px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 100%; transition: all 0.3s ease; }
+        .tm-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
+        .tm-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .tm-card-title { font-weight: 800; color: #1e293b; font-size: 1.1rem; }
+        .tm-review-img-box { margin-bottom: 25px; border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; height: 200px; }
+        .tm-review-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
+        .tm-card:hover .tm-review-img { transform: scale(1.05); }
       `}</style>
     </main>
   );
