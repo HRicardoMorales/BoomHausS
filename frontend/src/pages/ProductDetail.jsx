@@ -981,6 +981,51 @@ export default function ProductDetail() {
         @media (max-width: 600px) {
             .breakthrough-grid { grid-template-columns: 1fr; }
         }
+            /* === CORRECCIÓN MÓVIL (PARCHE) === */
+        
+        /* 1. Evita que la página "baile" hacia los lados */
+        .main-wrapper {
+            width: 100%;
+            overflow-x: hidden; /* Esto corta cualquier desborde horizontal */
+        }
+
+        /* 2. Ajuste de márgenes en contenedores móviles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px !important; /* Asegura márgenes simétricos */
+            }
+            
+            /* Centrar textos de las tarjetas en móvil para que se vean equilibradas */
+            .breakthrough-card {
+                text-align: center !important; 
+                align-items: center !important;
+            }
+            .breakthrough-icon {
+                align-self: center !important; /* Centrar icono */
+                margin-bottom: 15px !important;
+            }
+            
+            /* Ajuste del fondo ancho para que no descuadre */
+            .full-width-bg {
+                width: 100vw;
+                position: relative;
+                left: 50%;
+                right: 50%;
+                margin-left: -50vw;
+                margin-right: -50vw;
+                padding: 50px 0;
+            }
+            
+            /* Ajuste de la lista de beneficios (Hero) para que no se pegue al borde */
+            .hero-benefits-list {
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }
+            .hero-benefit-item {
+                /* Pequeño ajuste visual para que el check no quede muy al borde */
+                padding-right: 10px; 
+            }
+        }
       `}</style>
     </main>
   );
