@@ -1,345 +1,375 @@
-// frontend/src/pages/AdminProducts.jsx
-
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
+import { Link } from "react-router-dom";
 
+// Configuración por defecto si no existe producto
 const DEFAULT_PRODUCT = {
-    name: "Producto",
-    subtitle: "Frase corta de venta",
-    price: 19999,
-    compareAtPrice: 26999,
-    description: "Descripción del producto...",
+    name: "BodySculpt Pro",
+    subtitle: "Resultados de clínica en casa",
+    price: 129999,
+    compareAtPrice: 259999,
+    description: "La solución definitiva para esculpir tu cuerpo...",
     imageUrl: "",
-    images: [],
-    bullet1: "Beneficio 1",
-    bullet2: "Beneficio 2",
-    bullet3: "Beneficio 3",
-    soldCount: 4766,
-    rating: 4.8,
-    reviewCount: 1168,
+    images: [], // Array de strings
+    bullet1: "Disuelve grasa rebelde",
+    bullet2: "Tensa la piel flácida",
+    bullet3: "Resultados en 4 semanas",
+    soldCount: 894,
+    rating: 4.9,
+    reviewCount: 1200,
 };
-
-function normalizeProduct(p) {
-    if (!p) return null;
-    return {
-        ...DEFAULT_PRODUCT,
-        ...p,
-        images: Array.isArray(p.images)
-            ? p.images.filter(Boolean)
-            : typeof p.images === "string"
-                ? p.images.split(/\r?\n/).map((x) => x.trim()).filter(Boolean)
-                : [],
-    };
-}
 
 export default function AdminProducts() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
 
     const [productId, setProductId] = useState(null);
     const [form, setForm] = useState(DEFAULT_PRODUCT);
-
-    // Estado para el textarea de imágenes
-    const [imagesRaw, setImagesRaw] = useState("");
+    const [imagesRaw, setImagesRaw] = useState(""); // Texto del textarea
 
     useEffect(() => {
-        fetchSingle();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchProduct();
     }, []);
 
-    async function fetchSingle() {
+    // 1. Lógica robusta para obtener el producto (Single Product Store)
+    async function fetchProduct() {
         setLoading(true);
         setError("");
         try {
-            // 1) Intentar endpoint específico
-            const res = await api.get("/products/single").catch(() => null);
-            let p = res?.data?.data;
+            // Intentar obtener el producto individual o el primero de la lista
+            let p = null;
+            
+            // Intento A: Endpoint específico
+            try {
+                const res = await api.get("/products/single");
+                if (res.data?.data) p = res.data.data;
+            } catch (err) { /* Ignorar error 404 aqui */ }
 
-            // 2) Fallback: buscar el primero de la lista
-            if (!p?._id) {
-                const res2 = await api.get("/products?limit=1").catch(() => null);
-                const arr = res2?.data?.data;
-                p = Array.isArray(arr) ? arr[0] : null;
+            // Intento B: Listar todos y agarrar el primero
+            if (!p) {
+                const resList = await api.get("/products?limit=1");
+                const arr = resList.data?.data || resList.data;
+                if (Array.isArray(arr) && arr.length > 0) p = arr[0];
             }
 
-            // 3) Si sigue sin existir, crear uno por defecto
-            if (!p?._id) {
+            // Intento C: Crear uno si no existe nada
+            if (!p) {
+                console.log("Creando producto por defecto...");
                 const created = await api.post("/products", DEFAULT_PRODUCT);
-                p = created.data?.data;
+                p = created.data?.data || created.data;
             }
 
-            if (p?._id) {
-                const normalized = normalizeProduct(p);
+            if (p && p._id) {
                 setProductId(p._id);
+                // Normalizar datos para evitar undefined en los inputs
+                const normalized = {
+                    ...DEFAULT_PRODUCT,
+                    ...p,
+                    images: Array.isArray(p.images) ? p.images : [],
+                };
                 setForm(normalized);
-                setImagesRaw((normalized.images || []).join("\n"));
+                // Convertir array de imágenes a texto para el textarea
+                setImagesRaw(
+                    [normalized.imageUrl, ...(normalized.images || [])]
+                    .filter(Boolean)
+                    .join("\n")
+                );
             } else {
-                setError("No se pudo obtener ni crear el producto.");
+                setError("No se pudo inicializar el producto. Revisa tu backend.");
             }
         } catch (e) {
             console.error(e);
-            setError("Error de conexión al cargar el producto.");
+            setError("Error de conexión con el servidor.");
         } finally {
             setLoading(false);
         }
     }
 
-    function setField(key, value) {
-        setForm((prev) => ({ ...prev, [key]: value }));
+    // 2. Manejadores de cambios
+    function handleChange(e) {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
     }
 
-    function onImagesTextChange(v) {
-        setImagesRaw(v);
-        const parsed = v.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
-        setField("images", parsed);
+    function handleNumberChange(e) {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
     }
 
+    // Sincronizar textarea de imágenes con el estado del formulario
+    function handleImagesChange(e) {
+        const val = e.target.value;
+        setImagesRaw(val);
+        
+        // Procesar las URLs: separar por línea y limpiar espacios
+        const urls = val.split(/\r?\n/).map(u => u.trim()).filter(u => u.length > 0);
+        
+        // La primera URL va a imageUrl (portada), el resto a images (galería)
+        if (urls.length > 0) {
+            setForm(prev => ({
+                ...prev,
+                imageUrl: urls[0],
+                images: urls.slice(1)
+            }));
+        } else {
+            setForm(prev => ({ ...prev, imageUrl: "", images: [] }));
+        }
+    }
+
+    // 3. Guardar cambios (Limpiando el payload)
     async function onSave() {
         if (!productId) return;
         setSaving(true);
         setError("");
+        setSuccessMsg("");
 
-        const parsedImages = imagesRaw.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
-
+        // Construir payload limpio para evitar errores de validación en backend
         const payload = {
-            ...form,
-            price: Number(form.price) || 0,
-            compareAtPrice: Number(form.compareAtPrice) || 0,
-            soldCount: Number(form.soldCount) || 0,
-            rating: Number(form.rating) || 0,
-            reviewCount: Number(form.reviewCount) || 0,
-            images: parsedImages,
-            // Trim strings
-            name: form.name?.trim(),
+            name: form.name.trim(),
             subtitle: form.subtitle?.trim(),
             description: form.description?.trim(),
-            imageUrl: form.imageUrl?.trim(),
+            price: Number(form.price),
+            compareAtPrice: Number(form.compareAtPrice),
+            soldCount: Number(form.soldCount),
+            rating: Number(form.rating),
+            reviewCount: Number(form.reviewCount),
             bullet1: form.bullet1?.trim(),
             bullet2: form.bullet2?.trim(),
             bullet3: form.bullet3?.trim(),
+            imageUrl: form.imageUrl?.trim(),
+            images: form.images.filter(Boolean), // Array limpio
         };
 
         try {
-            // Intentar PUT, si falla intentar PATCH
+            // Intentar PUT primero (estándar REST), fallback a PATCH
             try {
                 await api.put(`/products/${productId}`, payload);
-            } catch {
+            } catch (err) {
                 await api.patch(`/products/${productId}`, payload);
             }
-            await fetchSingle();
-            alert("✅ Producto guardado correctamente.");
+            
+            setSuccessMsg("¡Producto actualizado correctamente!");
+            setTimeout(() => setSuccessMsg(""), 3000);
+            
+            // Recargar para asegurar sincronización
+            await fetchProduct(); 
         } catch (e) {
             console.error(e);
-            setError("Error al guardar. Verifica la conexión.");
+            setError("Error al guardar. Verifica que el servidor esté activo.");
         } finally {
             setSaving(false);
         }
     }
 
-    const previewUrls = useMemo(() => {
-        return [form.imageUrl, ...(form.images || [])].filter(Boolean).slice(0, 8);
+    // Preview de imágenes para la UI
+    const allImages = useMemo(() => {
+        return [form.imageUrl, ...form.images].filter(Boolean);
     }, [form.imageUrl, form.images]);
 
-    // --- ESTILOS COMPARTIDOS ---
-    const inputStyle = {
-        width: '100%',
-        padding: '10px 12px',
-        borderRadius: '8px',
-        border: '1px solid var(--border)',
-        background: 'rgba(0,0,0,0.2)', // Fondo oscuro sutil
-        color: 'inherit',
-        marginTop: '6px'
-    };
-
-    const labelStyle = {
-        display: 'block',
-        marginBottom: '1rem'
-    };
-
-    const labelTitleStyle = {
-        fontSize: '0.85rem',
-        opacity: 0.7,
-        fontWeight: 600
-    };
-
-    if (loading) return <div className="container section"><p className="muted">Cargando editor...</p></div>;
+    if (loading) return (
+        <div className="section container" style={{textAlign:'center', padding:'50px'}}>
+            <div className="spinner"></div>
+            <p className="muted">Cargando panel de administración...</p>
+        </div>
+    );
 
     return (
-        <main className="section" style={{ paddingBottom: '4rem' }}>
+        <main className="section" style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '100px' }}>
             <div className="container">
                 
-                {/* Header Fijo / Principal */}
-                <div className="card reveal" style={{ padding: '1.2rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                {/* === HEADER === */}
+                <div className="admin-header card shadow-hover" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
                     <div>
-                        <span className="badge">Editor</span>
-                        <h1 style={{ margin: '0.5rem 0 0', letterSpacing: '-0.03em', fontSize: '1.8rem' }}>
-                            Editar Producto
-                        </h1>
+                        <h1 style={{ margin: 0, fontSize: '1.8rem', color: '#0f172a' }}>Administrar Producto</h1>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Edita el contenido de tu landing page principal.</p>
                     </div>
-                    
-                    <button 
-                        className="btn btn-primary" 
-                        onClick={onSave} 
-                        disabled={saving}
-                        style={{ minWidth: '140px', padding: '12px 20px' }}
-                    >
-                        {saving ? "Guardando..." : "💾 Guardar Cambios"}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <Link to={`/product/${productId}`} target="_blank" className="btn btn-ghost" style={{border:'1px solid #cbd5e1'}}>
+                            👁️ Ver Tienda
+                        </Link>
+                        <button 
+                            className="btn btn-primary" 
+                            onClick={onSave} 
+                            disabled={saving}
+                            style={{ minWidth: '150px', background: saving ? '#94a3b8' : '#0B5CFF' }}
+                        >
+                            {saving ? "Guardando..." : "💾 Guardar Cambios"}
+                        </button>
+                    </div>
                 </div>
 
-                {error && (
-                    <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,0,0,0.1)', borderRadius: 8, border: '1px solid rgba(255,0,0,0.3)', color: '#ff6b6b' }}>
-                        <b>Error:</b> {error}
-                    </div>
-                )}
+                {/* === MENSAJES === */}
+                {error && <div className="alert-error" style={alertStyle.error}>{error}</div>}
+                {successMsg && <div className="alert-success" style={alertStyle.success}>{successMsg}</div>}
 
-                {/* Grid Layout Automático (Responsive) */}
-                <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                    gap: '1.5rem',
-                    alignItems: 'start' 
-                }}>
+                {/* === GRID DEL FORMULARIO === */}
+                <div className="admin-grid">
                     
-                    {/* COLUMNA IZQUIERDA: Información Textual */}
-                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                    {/* COLUMNA IZQUIERDA: DATOS PRINCIPALES */}
+                    <div className="admin-col">
                         
-                        {/* 1. Datos Básicos */}
-                        <section className="card" style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginTop: 0 }}>Información General</h3>
+                        {/* 1. INFO GENERAL */}
+                        <section className="card admin-card">
+                            <h3 className="card-title">Información General</h3>
                             
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>Nombre del Producto</div>
-                                <input style={inputStyle} value={form.name} onChange={(e) => setField("name", e.target.value)} />
-                            </label>
+                            <div className="form-group">
+                                <label>Nombre del Producto</label>
+                                <input className="form-input" name="name" value={form.name} onChange={handleChange} />
+                            </div>
 
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>Subtítulo (Gancho de venta)</div>
-                                <input style={inputStyle} value={form.subtitle} onChange={(e) => setField("subtitle", e.target.value)} />
-                            </label>
+                            <div className="form-group">
+                                <label>Subtítulo (Gancho Marketing)</label>
+                                <input className="form-input" name="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Ej: Resultados de clínica en casa" />
+                            </div>
 
-                            <label style={{ ...labelStyle, marginBottom: 0 }}>
-                                <div style={labelTitleStyle}>Descripción Detallada</div>
+                            <div className="form-group">
+                                <label>Descripción Completa</label>
                                 <textarea 
-                                    style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }} 
+                                    className="form-input" 
+                                    name="description" 
                                     value={form.description} 
-                                    onChange={(e) => setField("description", e.target.value)} 
-                                />
-                            </label>
-                        </section>
-
-                        {/* 2. Precios */}
-                        <section className="card" style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginTop: 0 }}>Precios</h3>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <label style={{ ...labelStyle, flex: 1 }}>
-                                    <div style={labelTitleStyle}>Precio Real ($)</div>
-                                    <input type="number" style={inputStyle} value={form.price} onChange={(e) => setField("price", e.target.value)} />
-                                </label>
-                                <label style={{ ...labelStyle, flex: 1 }}>
-                                    <div style={labelTitleStyle}>Precio Tachado ($)</div>
-                                    <input type="number" style={inputStyle} value={form.compareAtPrice} onChange={(e) => setField("compareAtPrice", e.target.value)} />
-                                </label>
-                            </div>
-                        </section>
-
-                        {/* 3. Beneficios (Bullets) */}
-                        <section className="card" style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginTop: 0 }}>Beneficios Clave</h3>
-                            <p className="muted" style={{ fontSize: '0.8rem' }}>Estos puntos suelen aparecer cerca del botón de compra.</p>
-                            
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>Bullet 1</div>
-                                <input style={inputStyle} value={form.bullet1} onChange={(e) => setField("bullet1", e.target.value)} />
-                            </label>
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>Bullet 2</div>
-                                <input style={inputStyle} value={form.bullet2} onChange={(e) => setField("bullet2", e.target.value)} />
-                            </label>
-                            <label style={{ ...labelStyle, marginBottom: 0 }}>
-                                <div style={labelTitleStyle}>Bullet 3</div>
-                                <input style={inputStyle} value={form.bullet3} onChange={(e) => setField("bullet3", e.target.value)} />
-                            </label>
-                        </section>
-                    </div>
-
-                    {/* COLUMNA DERECHA: Social Proof e Imágenes */}
-                    <div style={{ display: 'grid', gap: '1.5rem' }}>
-
-                        {/* 4. Social Proof */}
-                        <section className="card" style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginTop: 0 }}>Prueba Social</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                                <label style={{ marginBottom: 0 }}>
-                                    <div style={labelTitleStyle}>Vendidos</div>
-                                    <input type="number" style={inputStyle} value={form.soldCount} onChange={(e) => setField("soldCount", e.target.value)} />
-                                </label>
-                                <label style={{ marginBottom: 0 }}>
-                                    <div style={labelTitleStyle}>Rating (1-5)</div>
-                                    <input type="number" step="0.1" style={inputStyle} value={form.rating} onChange={(e) => setField("rating", e.target.value)} />
-                                </label>
-                                <label style={{ marginBottom: 0 }}>
-                                    <div style={labelTitleStyle}>Nº Reseñas</div>
-                                    <input type="number" style={inputStyle} value={form.reviewCount} onChange={(e) => setField("reviewCount", e.target.value)} />
-                                </label>
-                            </div>
-                        </section>
-
-                        {/* 5. Imágenes */}
-                        <section className="card" style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginTop: 0 }}>Galería de Imágenes</h3>
-                            
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>URL Imagen Principal (Portada)</div>
-                                <input style={inputStyle} value={form.imageUrl} onChange={(e) => setField("imageUrl", e.target.value)} placeholder="https://..." />
-                            </label>
-
-                            <label style={labelStyle}>
-                                <div style={labelTitleStyle}>Imágenes Adicionales (1 URL por línea)</div>
-                                <textarea 
-                                    style={{ ...inputStyle, minHeight: '150px', fontFamily: 'monospace', fontSize: '0.8rem' }} 
+                                    onChange={handleChange} 
                                     rows={6}
-                                    value={imagesRaw}
-                                    onChange={(e) => onImagesTextChange(e.target.value)}
-                                    placeholder={"https://imagen1.jpg\nhttps://imagen2.jpg\n..."}
+                                    style={{ resize: 'vertical' }}
                                 />
-                            </label>
+                            </div>
+                        </section>
 
-                            <div style={{ marginTop: '1.5rem' }}>
-                                <div style={labelTitleStyle}>Vista Previa</div>
-                                <div style={{ 
-                                    marginTop: '10px', 
-                                    display: 'grid', 
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', 
-                                    gap: '10px' 
-                                }}>
-                                    {previewUrls.map((url, idx) => (
-                                        <div key={idx} style={{ 
-                                            aspectRatio: '1/1', 
-                                            borderRadius: 8, 
-                                            overflow: 'hidden', 
-                                            border: '1px solid var(--border)',
-                                            background: '#000',
-                                            position: 'relative'
-                                        }}>
-                                            <img 
-                                                src={url} 
-                                                alt={`preview-${idx}`} 
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                onError={(e) => {e.target.style.display = 'none'}} 
-                                            />
-                                            {idx === 0 && <span style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', textAlign: 'center', padding: '2px' }}>Portada</span>}
-                                        </div>
-                                    ))}
-                                    {!previewUrls.length && <p className="muted" style={{ fontSize: '0.8rem', gridColumn: '1/-1' }}>No hay imágenes válidas para mostrar.</p>}
+                        {/* 2. PRECIOS */}
+                        <section className="card admin-card">
+                            <h3 className="card-title">Estrategia de Precios</h3>
+                            <div className="row-2">
+                                <div className="form-group">
+                                    <label>Precio Real ($)</label>
+                                    <input type="number" className="form-input price-real" name="price" value={form.price} onChange={handleNumberChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Precio Tachado (Comparación)</label>
+                                    <input type="number" className="form-input price-compare" name="compareAtPrice" value={form.compareAtPrice} onChange={handleNumberChange} />
                                 </div>
                             </div>
                         </section>
 
+                        {/* 3. BENEFICIOS HERO (Bullets) */}
+                        <section className="card admin-card">
+                            <h3 className="card-title">Beneficios Destacados (Hero)</h3>
+                            <p className="hint">Estos puntos aparecen justo debajo del precio.</p>
+                            
+                            <div className="form-group">
+                                <label>Beneficio 1</label>
+                                <input className="form-input" name="bullet1" value={form.bullet1} onChange={handleChange} placeholder="Ej: Envío Gratis" />
+                            </div>
+                            <div className="form-group">
+                                <label>Beneficio 2</label>
+                                <input className="form-input" name="bullet2" value={form.bullet2} onChange={handleChange} placeholder="Ej: Garantía 90 días" />
+                            </div>
+                            <div className="form-group">
+                                <label>Beneficio 3</label>
+                                <input className="form-input" name="bullet3" value={form.bullet3} onChange={handleChange} placeholder="Ej: Resultados rápidos" />
+                            </div>
+                        </section>
                     </div>
+
+                    {/* COLUMNA DERECHA: MEDIA & SOCIAL */}
+                    <div className="admin-col">
+                        
+                        {/* 4. IMÁGENES */}
+                        <section className="card admin-card">
+                            <h3 className="card-title">Galería de Imágenes</h3>
+                            <p className="hint">Pega una URL por línea. La primera será la portada.</p>
+                            
+                            <textarea 
+                                className="form-input mono" 
+                                value={imagesRaw} 
+                                onChange={handleImagesChange} 
+                                rows={8}
+                                placeholder="https://ejemplo.com/imagen1.jpg&#10;https://ejemplo.com/imagen2.jpg"
+                            />
+
+                            <div className="preview-grid">
+                                {allImages.map((src, i) => (
+                                    <div key={i} className="preview-item">
+                                        <img src={src} alt={`preview-${i}`} onError={(e) => e.target.style.display='none'} />
+                                        {i === 0 && <span className="cover-badge">Portada</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* 5. PRUEBA SOCIAL */}
+                        <section className="card admin-card">
+                            <h3 className="card-title">Prueba Social (Fake Stats)</h3>
+                            
+                            <div className="form-group">
+                                <label>Unidades Vendidas</label>
+                                <input type="number" className="form-input" name="soldCount" value={form.soldCount} onChange={handleNumberChange} />
+                            </div>
+                            
+                            <div className="row-2">
+                                <div className="form-group">
+                                    <label>Rating (Ej: 4.9)</label>
+                                    <input type="number" step="0.1" max="5" className="form-input" name="rating" value={form.rating} onChange={handleNumberChange} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Cant. Reseñas</label>
+                                    <input type="number" className="form-input" name="reviewCount" value={form.reviewCount} onChange={handleNumberChange} />
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
                 </div>
             </div>
+
+            <style>{`
+                /* ESTILOS PRO ADMIN */
+                .admin-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; align-items: start; }
+                @media(max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+                
+                .admin-card { padding: 25px; margin-bottom: 25px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 12px; background: white; }
+                .card-title { margin-top: 0; margin-bottom: 20px; color: #0f172a; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+                
+                .form-group { margin-bottom: 15px; }
+                .form-group label { display: block; font-weight: 600; font-size: 0.85rem; color: #475569; margin-bottom: 6px; }
+                
+                .form-input { 
+                    width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; 
+                    font-size: 0.95rem; transition: all 0.2s; color: #1e293b; background: #fff;
+                }
+                .form-input:focus { outline: none; border-color: #0B5CFF; box-shadow: 0 0 0 3px rgba(11, 92, 255, 0.1); }
+                .form-input.mono { font-family: 'Consolas', monospace; font-size: 0.85rem; color: #334155; }
+                
+                .price-real { font-weight: 700; color: #166534; }
+                .price-compare { text-decoration: line-through; color: #94a3b8; }
+                
+                .hint { font-size: 0.8rem; color: #94a3b8; margin-top: -10px; margin-bottom: 15px; font-style: italic; }
+                .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                
+                /* Preview Grid Pro (Cuadrado 1:1) */
+                .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 15px; }
+                .preview-item { 
+                    aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; 
+                    position: relative; background: #f8fafc; 
+                }
+                .preview-item img { 
+                    width: 100%; height: 100%; 
+                    object-fit: contain; /* IMPORTANTE: Igual que en la tienda */
+                    padding: 5px;
+                }
+                .cover-badge { 
+                    position: absolute; bottom: 0; left: 0; right: 0; 
+                    background: rgba(11, 92, 255, 0.9); color: white; 
+                    font-size: 0.65rem; text-align: center; padding: 2px; 
+                    font-weight: 700; text-transform: uppercase;
+                }
+            `}</style>
         </main>
     );
 }
+
+const alertStyle = {
+    error: { padding: '15px', background: '#fef2f2', color: '#dc2626', borderRadius: '8px', border: '1px solid #fecaca', marginBottom: '20px', fontWeight: '500' },
+    success: { padding: '15px', background: '#f0fdf4', color: '#16a34a', borderRadius: '8px', border: '1px solid #bbf7d0', marginBottom: '20px', fontWeight: '500' }
+};

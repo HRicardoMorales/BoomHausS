@@ -8,8 +8,19 @@ import { track } from "../lib/metaPixel";
    MARKETING CONTENT
    ======================================================================== */
 const MARKETING_CONTENT = {
-  miniDescription: "Tu lipoescultura en casa. Tecnología clínica 3-en-1 (Cavitación + RF + LED) para disolver grasa rebelde, eliminar celulitis y tensar la piel flácida en 4 semanas.",
+  // TEXTO 1: Título impactante traducido
+  miniDescription: "Logra una figura más firme y definida en 4 semanas. Tecnología adelgazante de triple efecto: Radiofrecuencia + Cavitación Ultrasónica + Terapia de Luz Roja.",
   
+  // TEXTO 1: Los puntos clave para poner debajo del precio (NUEVO)
+  heroBullets: [
+    "Disuelve la grasa rebelde y tensa la piel flácida.",
+    "Luce y siéntete mejor en solo 4 semanas.",
+    "Reduce visiblemente la apariencia de la celulitis.",
+    "Estimula el drenaje linfático y elimina toxinas.",
+    "Seguro, eficaz y respaldado por la ciencia.",
+    "Úsalo solo 10 minutos, 3-4 veces por semana."
+  ],
+
   stats: [
     { pct: "97%", text: "Piel más firme y tensa" },
     { pct: "85%", text: "Reducción de celulitis" },
@@ -17,26 +28,57 @@ const MARKETING_CONTENT = {
   ],
 
   whatsIncluded: [
-    { name: "Dispositivo BodySculpt", icon: "💎" },
-    { name: "Gel Conductor (Regalo)", icon: "💧" },
-    { name: "Cable de Carga", icon: "🔌" },
-    { name: "Manual en Español", icon: "📖" }
+    { name: "Dispositivo BodySculpt Pro", icon: "💎" },
+    { name: "Gel Conductor Premium (Regalo)", icon: "💧" },
+    { name: "Cable de Carga Rápida", icon: "🔌" },
+    { name: "Guía de Uso y Protocolos", icon: "📖" }
   ],
 
-  whyChoose: [
-    { title: "Tecnología de Clínica Real", desc: "Los mismos 1MHz que usan los profesionales." },
-    { title: "Resultados Permanentes", desc: "Destruye la grasa, no solo drena líquidos." },
-    { title: "Seguro para Uso Diario", desc: "Sensores de calor y apagado automático." },
-    { title: "Soporte en Español", desc: "Equipo de esteticistas a tu disposición." }
-  ],
+  // TEXTO 2: "Breakthrough Body Benefits" (Beneficios Revolucionarios)
+  breakthroughBenefits: {
+    title: "Beneficios Corporales Revolucionarios",
+    subtitle: "Una solución completa para esculpir tu cuerpo.",
+    items: [
+      { 
+        title: "Esculpe el Cuerpo", 
+        desc: "Disuelve las células grasas y la piel flácida para una apariencia más esculpida y tonificada.",
+        icon: "✨"
+      },
+      { 
+        title: "Aumenta la Firmeza", 
+        desc: "La potente tecnología LED roja promueve la producción de colágeno para una piel más elástica.",
+        icon: "💪"
+      },
+      { 
+        title: "Suavizado de Piel", 
+        desc: "Mejora la textura y el tono de la piel, restaurando una apariencia más joven y suave.",
+        icon: "🌸"
+      },
+      { 
+        title: "Ataca la Celulitis", 
+        desc: "Se dirige a las células grasas bajo la piel para reducir drásticamente la apariencia de celulitis.",
+        icon: "🍑"
+      },
+      { 
+        title: "Trata Estrías", 
+        desc: "Promueve la curación general de la piel para atacar la apariencia de estrías y manchas.",
+        icon: "⚡"
+      },
+      { 
+        title: "Drenaje Linfático", 
+        desc: "Fomenta el drenaje linfático para combatir la hinchazón, la retención de líquidos y eliminar toxinas.",
+        icon: "💧"
+      }
+    ]
+  },
 
   slider: {
     title: "Resultados en 30 Días",
     text: "Cambios reales usando el dispositivo 3 veces por semana.",
     labelBefore: "Día 1",
     labelAfter: "Día 30",
-    imgBefore: "https://pbs.twimg.com/media/G-WN-OSXsAAfdSc?format=jpg&name=360x360",
-    imgAfter: "https://pbs.twimg.com/media/G-WOIkaXoAAPSeN?format=jpg&name=360x360"
+    imgBefore: "https://images.pexels.com/photos/4498157/pexels-photo-4498157.jpeg?auto=compress&cs=tinysrgb&w=800",
+    imgAfter: "https://images.pexels.com/photos/4498156/pexels-photo-4498156.jpeg?auto=compress&cs=tinysrgb&w=800"
   },
 
   comparison: {
@@ -53,7 +95,7 @@ const MARKETING_CONTENT = {
     ]
   },
 
-bigMedia: {
+  bigMedia: {
     title: "Resultados de Clínica en tu Sofá",
     subtitle: "Así de fácil es usarlo: Mira cómo funciona en segundos.",
     src: "https://res.cloudinary.com/duyth9azk/video/upload/v1768099056/945f381d97174efb885363c4955a257d.HD-720p-2.1Mbps-54457348_duh0wz.mp4", 
@@ -73,7 +115,18 @@ bigMedia: {
     { q: "¿Es obligatorio usar gel?", a: "SÍ. El dispositivo NO funciona sin gel conductor. Incluimos uno de regalo." },
     { q: "¿Duele?", a: "No. Sentirás calor (RF) y un leve zumbido (Cavitación), pero es seguro y cómodo." },
     { q: "¿Tiene garantía?", a: "Sí, 90 días de garantía de satisfacción. Compra sin riesgos." },
-  ]
+  ],
+
+  trustBadges: {
+    payment: [
+      { name: "Visa", src: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" },
+      { name: "Mastercard", src: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" },
+      { name: "Amex", src: "https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" },
+      { name: "Mercado Pago", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Mercado_Pago_Link_Logo.png/1024px-Mercado_Pago_Link_Logo.png" }
+    ],
+    shipping: "Envío Gratis y Asegurado a todo el país",
+    security: "Tus datos están protegidos con SSL de 256 bits."
+  }
 };
 
 /* =========================
@@ -127,25 +180,27 @@ function ClinicalStatsSection() {
   )
 }
 
-function WhyChooseSection() {
-    const { whyChoose } = MARKETING_CONTENT;
-    return (
-        <div className="landing-section fade-in-section" style={{padding: '40px 0'}}>
-            <div className="landing-container">
-                <div className="why-choose-grid">
-                    {whyChoose.map((item, i) => (
-                        <div key={i} className="why-item">
-                            <div className="why-check">✓</div>
-                            <div className="why-text">
-                                <strong>{item.title}</strong>
-                                <p>{item.desc}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+// ✅ PEGA ESTO (La nueva sección)
+function BreakthroughSection() {
+  const { breakthroughBenefits } = MARKETING_CONTENT;
+  return (
+    <div className="landing-section fade-in-section" style={{padding: '60px 0'}}>
+      <div className="landing-container">
+        <h3 className="landing-center-title">{breakthroughBenefits.title}</h3>
+        <p className="landing-center-subtitle" style={{textAlign:'center', marginBottom:'40px', color:'#64748b'}}>{breakthroughBenefits.subtitle}</p>
+        
+        <div className="breakthrough-grid">
+          {breakthroughBenefits.items.map((item, i) => (
+            <div key={i} className="breakthrough-card hover-lift-pro">
+              <div className="breakthrough-icon">{item.icon}</div>
+              <h4 className="breakthrough-title">{item.title}</h4>
+              <p className="breakthrough-desc">{item.desc}</p>
             </div>
+          ))}
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
 function WhatsIncludedSection() {
@@ -552,7 +607,7 @@ export default function ProductDetail() {
           <ClinicalStatsSection />
           <BeforeAfterSlider />
           <AuthoritySection />
-          <WhyChooseSection />
+          <BreakthroughSection />
           <ComparisonTable />
           <ProblemSolutionSection />
           <WhatsIncludedSection />
@@ -877,6 +932,55 @@ export default function ProductDetail() {
         .tm-review-img-box { margin-bottom: 25px; border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; height: 200px; }
         .tm-review-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
         .tm-card:hover .tm-review-img { transform: scale(1.05); }
+
+        /* === BREAKTHROUGH GRID (NUEVA SECCIÓN) === */
+        .breakthrough-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .breakthrough-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: left; /* Alineado a la izquierda para mejor lectura */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .breakthrough-icon {
+            font-size: 2.5rem;
+            background: #f0f9ff;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            align-self: flex-start;
+        }
+        .breakthrough-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+        .breakthrough-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 990px) {
+            .breakthrough-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .breakthrough-grid { grid-template-columns: 1fr; }
+        }
       `}</style>
     </main>
   );
