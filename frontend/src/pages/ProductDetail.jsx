@@ -9,7 +9,7 @@ import { track } from "../lib/metaPixel";
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription: "Logra una figura más firme y definida en 4 semanas. Tecnología adelgazante de triple efecto: Radiofrecuencia + Cavitación Ultrasónica + Terapia de Luz Roja.",
-  
+
   heroBullets: [
     "Disuelve la grasa rebelde y tensa la piel flácida.",
     "Luce y siéntete mejor en solo 4 semanas.",
@@ -36,33 +36,33 @@ const MARKETING_CONTENT = {
     title: "Beneficios Corporales Revolucionarios",
     subtitle: "Una solución completa para esculpir tu cuerpo.",
     items: [
-      { 
-        title: "Esculpe el Cuerpo", 
+      {
+        title: "Esculpe el Cuerpo",
         desc: "Disuelve las células grasas y la piel flácida para una apariencia más esculpida y tonificada.",
         icon: "✨"
       },
-      { 
-        title: "Aumenta la Firmeza", 
+      {
+        title: "Aumenta la Firmeza",
         desc: "La potente tecnología LED roja promueve la producción de colágeno para una piel más elástica.",
         icon: "💪"
       },
-      { 
-        title: "Suavizado de Piel", 
+      {
+        title: "Suavizado de Piel",
         desc: "Mejora la textura y el tono de la piel, restaurando una apariencia más joven y suave.",
         icon: "🌸"
       },
-      { 
-        title: "Ataca la Celulitis", 
+      {
+        title: "Ataca la Celulitis",
         desc: "Se dirige a las células grasas bajo la piel para reducir drásticamente la apariencia de celulitis.",
         icon: "🍑"
       },
-      { 
-        title: "Trata Estrías", 
+      {
+        title: "Trata Estrías",
         desc: "Promueve la curación general de la piel para atacar la apariencia de estrías y manchas.",
         icon: "⚡"
       },
-      { 
-        title: "Drenaje Linfático", 
+      {
+        title: "Drenaje Linfático",
         desc: "Fomenta el drenaje linfático para combatir la hinchazón, la retención de líquidos y eliminar toxinas.",
         icon: "💧"
       }
@@ -95,8 +95,8 @@ const MARKETING_CONTENT = {
   bigMedia: {
     title: "Resultados de Clínica en tu Sofá",
     subtitle: "Así de fácil es usarlo: Mira cómo funciona en segundos.",
-    src: "https://res.cloudinary.com/duyth9azk/video/upload/v1768099056/945f381d97174efb885363c4955a257d.HD-720p-2.1Mbps-54457348_duh0wz.mp4", 
-    isVideo: true 
+    src: "https://res.cloudinary.com/duyth9azk/video/upload/v1768099056/945f381d97174efb885363c4955a257d.HD-720p-2.1Mbps-54457348_duh0wz.mp4",
+    isVideo: true
   },
 
   authority: {
@@ -149,30 +149,30 @@ function CountdownTimer() {
     const timer = setInterval(() => { setTimeLeft(calculateTimeLeft()); }, 1000);
     return () => clearInterval(timer);
   }, []);
-  return <span style={{fontVariantNumeric: 'tabular-nums'}}>{timeLeft}</span>;
+  return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{timeLeft}</span>;
 }
 
 function ClinicalStatsSection() {
   const { stats } = MARKETING_CONTENT;
   return (
     <div className="landing-section fade-in-section">
-       <div className="landing-container">
-          <h3 className="landing-center-title">Eficacia Comprobada</h3>
-          <div className="stats-grid">
-             {stats.map((s, i) => (
-                <div key={i} className="stat-card hover-scale">
-                   <div className="stat-circle">
-                      <svg viewBox="0 0 36 36" className="circular-chart">
-                        <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path className="circle" strokeDasharray={`${parseInt(s.pct)}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <text x="18" y="20.35" className="percentage">{s.pct}</text>
-                      </svg>
-                   </div>
-                   <p className="stat-text">{s.text}</p>
-                </div>
-             ))}
-          </div>
-       </div>
+      <div className="landing-container">
+        <h3 className="landing-center-title">Eficacia Comprobada</h3>
+        <div className="stats-grid">
+          {stats.map((s, i) => (
+            <div key={i} className="stat-card hover-scale">
+              <div className="stat-circle">
+                <svg viewBox="0 0 36 36" className="circular-chart">
+                  <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path className="circle" strokeDasharray={`${parseInt(s.pct)}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <text x="18" y="20.35" className="percentage">{s.pct}</text>
+                </svg>
+              </div>
+              <p className="stat-text">{s.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -180,11 +180,11 @@ function ClinicalStatsSection() {
 function BreakthroughSection() {
   const { breakthroughBenefits } = MARKETING_CONTENT;
   return (
-    <div className="landing-section fade-in-section" style={{padding: '60px 0'}}>
+    <div className="landing-section fade-in-section" style={{ padding: '60px 0' }}>
       <div className="landing-container">
         <h3 className="landing-center-title">{breakthroughBenefits.title}</h3>
-        <p className="landing-center-subtitle" style={{textAlign:'center', marginBottom:'40px', color:'#64748b'}}>{breakthroughBenefits.subtitle}</p>
-        
+        <p className="landing-center-subtitle" style={{ textAlign: 'center', marginBottom: '40px', color: '#64748b' }}>{breakthroughBenefits.subtitle}</p>
+
         <div className="breakthrough-grid">
           {breakthroughBenefits.items.map((item, i) => (
             <div key={i} className="breakthrough-card hover-lift-pro">
@@ -200,22 +200,22 @@ function BreakthroughSection() {
 }
 
 function WhatsIncludedSection() {
-    const { whatsIncluded } = MARKETING_CONTENT;
-    return (
-        <div className="landing-section fade-in-section" style={{background: '#f8fafc', borderRadius: '24px'}}>
-            <div className="landing-container">
-                <h3 className="landing-center-title">¿Qué incluye la caja?</h3>
-                <div className="included-grid">
-                    {whatsIncluded.map((item, i) => (
-                        <div key={i} className="included-item hover-lift">
-                            <div className="included-icon spin-on-hover">{item.icon}</div>
-                            <div className="included-name">{item.name}</div>
-                        </div>
-                    ))}
-                </div>
+  const { whatsIncluded } = MARKETING_CONTENT;
+  return (
+    <div className="landing-section fade-in-section" style={{ background: '#f8fafc', borderRadius: '24px' }}>
+      <div className="landing-container">
+        <h3 className="landing-center-title">¿Qué incluye la caja?</h3>
+        <div className="included-grid">
+          {whatsIncluded.map((item, i) => (
+            <div key={i} className="included-item hover-lift">
+              <div className="included-icon spin-on-hover">{item.icon}</div>
+              <div className="included-name">{item.name}</div>
             </div>
+          ))}
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 function BeforeAfterSlider() {
@@ -233,9 +233,9 @@ function BeforeAfterSlider() {
     <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
         <div className="split-text">
-            <span className="badge-pill">Evidencia Visual</span>
-            <h3 className="landing-title">{slider.title}</h3>
-            <p className="landing-p">{slider.text}</p>
+          <span className="badge-pill">Evidencia Visual</span>
+          <h3 className="landing-title">{slider.title}</h3>
+          <p className="landing-p">{slider.text}</p>
         </div>
         <div className="split-media">
           <div className="ba-slider-container shadow-hover" ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onTouchStart={handleMove}>
@@ -260,10 +260,10 @@ function ComparisonTable() {
       <div className="landing-container">
         <h3 className="landing-center-title">{comparison.title}</h3>
         <div className="comp-table shadow-hover">
-            <div className="comp-header"><div className="comp-col-empty"></div><div className="comp-col-us">{comparison.brandName}</div><div className="comp-col-others">{comparison.competitorName}</div></div>
-            {comparison.features.map((f, i) => (
-              <div key={i} className="comp-row"><div className="comp-feature-name">{f.name}</div><div className="comp-check-us">✔</div><div className="comp-check-others" style={{opacity:0.3}}>✕</div></div>
-            ))}
+          <div className="comp-header"><div className="comp-col-empty"></div><div className="comp-col-us">{comparison.brandName}</div><div className="comp-col-others">{comparison.competitorName}</div></div>
+          {comparison.features.map((f, i) => (
+            <div key={i} className="comp-row"><div className="comp-feature-name">{f.name}</div><div className="comp-check-us">✔</div><div className="comp-check-others" style={{ opacity: 0.3 }}>✕</div></div>
+          ))}
         </div>
       </div>
     </div>
@@ -277,12 +277,12 @@ function BigMediaSection() {
       <div className="landing-container text-center">
         <h2 className="video-title-pro">{bigMedia.title}</h2>
         <p className="video-subtitle-pro">{bigMedia.subtitle}</p>
-        
+
         <div className="video-placeholder-container">
           {bigMedia.isVideo ? (
-             <video src={bigMedia.src} autoPlay loop muted playsInline className="landing-video-real" />
+            <video src={bigMedia.src} autoPlay loop muted playsInline className="landing-video-real" />
           ) : (
-             <img src={bigMedia.src} alt="Demo" className="landing-video-cover" />
+            <img src={bigMedia.src} alt="Demo" className="landing-video-cover" />
           )}
         </div>
       </div>
@@ -295,23 +295,23 @@ function ProblemSolutionSection() {
     <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
         <div className="split-text">
-            <span className="badge-pill">Tecnología 3-en-1</span>
-            <h3 className="landing-title">El poder de 3 tecnologías</h3>
-            <p className="landing-p">La combinación más potente para esculpir tu cuerpo.</p>
-            <div className="tech-list">
-                <div className="tech-item hover-lift">
-                    <div className="tech-icon">💥</div>
-                    <div><strong>Cavitación (Rompe Grasa)</strong><p>Ataca adipocitos difíciles.</p></div>
-                </div>
-                <div className="tech-item hover-lift">
-                    <div className="tech-icon">🔥</div>
-                    <div><strong>Radiofrecuencia (Tensa)</strong><p>Genera colágeno y firmeza.</p></div>
-                </div>
-                <div className="tech-item hover-lift">
-                    <div className="tech-icon">🔴</div>
-                    <div><strong>LED Rojo (Rejuvenece)</strong><p>Mejora la textura de la piel.</p></div>
-                </div>
+          <span className="badge-pill">Tecnología 3-en-1</span>
+          <h3 className="landing-title">El poder de 3 tecnologías</h3>
+          <p className="landing-p">La combinación más potente para esculpir tu cuerpo.</p>
+          <div className="tech-list">
+            <div className="tech-item hover-lift">
+              <div className="tech-icon">💥</div>
+              <div><strong>Cavitación (Rompe Grasa)</strong><p>Ataca adipocitos difíciles.</p></div>
             </div>
+            <div className="tech-item hover-lift">
+              <div className="tech-icon">🔥</div>
+              <div><strong>Radiofrecuencia (Tensa)</strong><p>Genera colágeno y firmeza.</p></div>
+            </div>
+            <div className="tech-item hover-lift">
+              <div className="tech-icon">🔴</div>
+              <div><strong>LED Rojo (Rejuvenece)</strong><p>Mejora la textura de la piel.</p></div>
+            </div>
+          </div>
         </div>
         <div className="split-media"><img src="https://images.pexels.com/photos/3823063/pexels-photo-3823063.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Solución" className="landing-img-rounded shadow-hover" /></div>
       </div>
@@ -326,9 +326,9 @@ function AuthoritySection() {
       <div className="landing-container authority-flex">
         <div className="authority-img-box"><img src={authority.img} alt="Experto" className="authority-img-fixed shadow-hover" /></div>
         <div className="authority-text">
-            <div className="authority-stars">★★★★★</div>
-            <p className="landing-p" style={{marginBottom:"0.5rem", fontStyle:'italic'}}>"{authority.quote}"</p>
-            <div className="authority-sign"><strong>{authority.name}</strong><span>{authority.job}</span></div>
+          <div className="authority-stars">★★★★★</div>
+          <p className="landing-p" style={{ marginBottom: "0.5rem", fontStyle: 'italic' }}>"{authority.quote}"</p>
+          <div className="authority-sign"><strong>{authority.name}</strong><span>{authority.job}</span></div>
         </div>
       </div>
     </div>
@@ -342,7 +342,7 @@ function FaqSection() {
   return (
     <div className="landing-section fade-in-section">
       <h3 className="landing-center-title">Preguntas Frecuentes</h3>
-      <div className="landing-container faq-container">{faq.map((item, i) => (<div key={i} className="faq-item"><button className={`faq-question ${openIndex === i ? "active" : ""}`} onClick={() => toggle(i)}>{item.q}<span className="faq-icon">{openIndex === i ? "−" : "+"}</span></button><div className="faq-answer" style={{ maxHeight: openIndex === i ? "300px" : "0" }}><p style={{paddingTop: '15px'}}>{item.a}</p></div></div>))}</div>
+      <div className="landing-container faq-container">{faq.map((item, i) => (<div key={i} className="faq-item"><button className={`faq-question ${openIndex === i ? "active" : ""}`} onClick={() => toggle(i)}>{item.q}<span className="faq-icon">{openIndex === i ? "−" : "+"}</span></button><div className="faq-answer" style={{ maxHeight: openIndex === i ? "300px" : "0" }}><p style={{ paddingTop: '15px' }}>{item.a}</p></div></div>))}</div>
     </div>
   );
 }
@@ -360,7 +360,7 @@ function TestimonialsSection() {
     <div id="reviews-section" className="landing-section fade-in-section" style={{ background: "#f8fafc", padding: "60px 0" }}>
       <div className="landing-container">
         <div style={{ marginBottom: "40px", textAlign: "center" }}><h3 className="tm-main-title">Historias Reales</h3><p className="tm-subtitle">Más de 800 clientas felices.</p></div>
-        <div className="reviews-grid">{reviews.map((r, i) => (<div key={i} className="tm-card hover-lift"><div className="tm-card-top"><span className="tm-card-title">{r.title}</span><span className="tm-stars">★★★★★</span></div><p className="tm-text">“{r.text}”</p>{r.image && (<div className="tm-review-img-box"><img src={r.image} alt="Review" className="tm-review-img" loading="lazy" /></div>)}<div className="tm-author"><span style={{fontWeight:'800'}}>{r.author}</span></div></div>))}</div>
+        <div className="reviews-grid">{reviews.map((r, i) => (<div key={i} className="tm-card hover-lift"><div className="tm-card-top"><span className="tm-card-title">{r.title}</span><span className="tm-stars">★★★★★</span></div><p className="tm-text">“{r.text}”</p>{r.image && (<div className="tm-review-img-box"><img src={r.image} alt="Review" className="tm-review-img" loading="lazy" /></div>)}<div className="tm-author"><span style={{ fontWeight: '800' }}>{r.author}</span></div></div>))}</div>
       </div>
     </div>
   );
@@ -412,7 +412,7 @@ export default function ProductDetail() {
   const price = Number(product?.price) || 0;
   const compareAt = Number(product?.compareAtPrice) || (price ? Math.round(price * 2) : 0);
   const soldCount = product?.soldCount ?? product?.socialProofCount ?? 894;
-  
+
   const pack2Discount = 20;
   const unitPrice = price;
   const totalQty = qty;
@@ -420,44 +420,44 @@ export default function ProductDetail() {
   const pairsQty = promoOn ? Math.floor(totalQty / 2) * 2 : 0;
   const remQty = totalQty - pairsQty;
   const displayTotal = promoOn ? Math.round(pairsQty * unitPrice * (1 - pack2Discount / 100) + remQty * unitPrice) : Math.round(totalQty * unitPrice);
-  const transferPrice = Math.round(displayTotal * 0.90); 
+  const transferPrice = Math.round(displayTotal * 0.90);
 
   const contentId = useMemo(() => product?.sku || product?.productId || product?._id || (product?.id ? String(product.id) : null) || id || "BODY_SCULPT_1", [product, id]);
 
   useEffect(() => { if (!product) return; if (lastViewedRef.current === contentId) return; lastViewedRef.current = contentId; track("ViewContent", { content_ids: [String(contentId)], content_type: "product", value: Number(price) || 0, currency: "ARS" }); }, [product, contentId, price]);
 
-  const handleBuyNow = () => { 
-    if (!product) return; 
+  const handleBuyNow = () => {
+    if (!product) return;
     setRedirecting(true);
 
     // 1. Rastrear evento
-    track("InitiateCheckout", { 
-        content_ids: [String(contentId)], 
-        content_type: "product", 
-        value: Number(displayTotal) || 0, 
-        currency: "ARS", 
-        num_items: Number(totalQty) || 1 
+    track("InitiateCheckout", {
+      content_ids: [String(contentId)],
+      content_type: "product",
+      value: Number(displayTotal) || 0,
+      currency: "ARS",
+      num_items: Number(totalQty) || 1
     });
 
     // 2. Preparar el producto con la promo seleccionada
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-    
+
     // 3. Agregarlo al carrito
     addItem(product, totalQty, promo ? { promo } : undefined);
 
     // 4. Redirigir al Checkout para que elija pago y ponga envío
     setTimeout(() => {
-        navigate('/checkout');
+      navigate('/checkout');
     }, 500); // Pequeño delay para que se vea la animación del botón
   };
 
-  const handleAddToCart = () => { 
-      if (!product) return; 
-      track("AddToCart", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); 
-      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null; 
-      addItem(product, totalQty, promo ? { promo } : undefined); 
-      setShowToast(true); setTimeout(() => setShowToast(false), 5000); 
-      window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } })); 
+  const handleAddToCart = () => {
+    if (!product) return;
+    track("AddToCart", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 });
+    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+    addItem(product, totalQty, promo ? { promo } : undefined);
+    setShowToast(true); setTimeout(() => setShowToast(false), 5000);
+    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } }));
   };
 
   const scrollToReviews = (e) => { e.preventDefault(); document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
@@ -470,33 +470,33 @@ export default function ProductDetail() {
   return (
     <main className="section main-wrapper">
       <div className="container" style={{ marginTop: "20px" }}>
-        
+
         {/* CORRECCIÓN: align-items: flex-start (CRUCIAL PARA ELIMINAR EL ESPACIO EN BLANCO) */}
         <div className="pd-grid" style={{ alignItems: "flex-start" }}>
-          
+
           {/* MEDIA COLUMN: position: sticky PARA PC + height: auto PARA MÓVIL */}
           <section className="pd-media card shadow-hover" style={{ padding: 0, display: "flex", flexDirection: "column", border: 'none', position: 'sticky', top: '20px', zIndex: 90, height: 'auto' }}>
             {/* AGREGADO: display: flex, justify-content: center, align-items: center para centrar imagen */}
             <div className="pd-mediaMain" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "#f8fbff", cursor: "grab", touchAction: "pan-y", display: 'flex', alignItems: 'center', justifyContent: 'center' }} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               <div className="pd-discount" style={{ zIndex: 10 }}>50% <span>OFF</span></div>
-              
+
               {/* === SOLUCIÓN PARA QUE NO SE CORTE LA IMAGEN === */}
               {images.length > 0 ? (
-                <img 
-                    className="pd-mainImg" 
-                    src={images[activeImgIndex]} 
-                    alt={product.name} 
-                    loading="lazy" 
-                    onDragStart={(e) => e.preventDefault()} 
-                    style={{ 
-                        maxWidth: "100%", 
-                        maxHeight: "100%", 
-                        width: "auto", /* Cambiado de 100% a auto para que respete el aspect ratio real */
-                        height: "auto",
-                        objectFit: "contain",
-                        pointerEvents: "none",
-                        margin: '0 auto' /* Centrado extra */
-                    }} 
+                <img
+                  className="pd-mainImg"
+                  src={images[activeImgIndex]}
+                  alt={product.name}
+                  loading="lazy"
+                  onDragStart={(e) => e.preventDefault()}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: "auto", /* Cambiado de 100% a auto para que respete el aspect ratio real */
+                    height: "auto",
+                    objectFit: "contain",
+                    pointerEvents: "none",
+                    margin: '0 auto' /* Centrado extra */
+                  }}
                 />
               ) : (<div className="pd-empty">Sin imagen</div>)}
               {/* ============================================== */}
@@ -508,108 +508,112 @@ export default function ProductDetail() {
                   <button type="button" style={{ ...arrowStyle, right: "15px" }} onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button>
                 </>
               )}
-              
+
               {/* DOTS */}
               {images.length > 1 && (
-                  <div className="pd-dots-container">
-                      {images.map((_, idx) => (
-                          <div key={idx} className={`pd-dot ${idx === activeImgIndex ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setActiveImgIndex(idx); }} />
-                      ))}
-                  </div>
+                <div className="pd-dots-container">
+                  {images.map((_, idx) => (
+                    <div key={idx} className={`pd-dot ${idx === activeImgIndex ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setActiveImgIndex(idx); }} />
+                  ))}
+                </div>
               )}
             </div>
             {/* THUMBS */}
             <div className="pd-thumbs-desktop">
-               {images.slice(0, 5).map((img, idx) => (<button key={img} type="button" className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`} onClick={() => setActiveImgIndex(idx)}><img src={img} alt="thumb" /></button>))}
+              {images.slice(0, 5).map((img, idx) => (<button key={img} type="button" className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`} onClick={() => setActiveImgIndex(idx)}><img src={img} alt="thumb" /></button>))}
             </div>
           </section>
 
           {/* INFORMACIÓN DEL PRODUCTO */}
           <aside className="pd-info fade-in-section">
             <div className="hero-top">
-              <div className="hero-proof" style={{marginBottom: "8px"}}>
-                  <span className="hero-pill-hot pulse-animation">🔥 Viral en TikTok</span>
-                  <div className="hero-proofText"><b>{Number(soldCount).toLocaleString("es-AR")}</b> unidades vendidas</div>
+              <div className="hero-proof" style={{ marginBottom: "8px" }}>
+                <span className="hero-pill-hot pulse-animation">🔥 Viral en TikTok</span>
+                <div className="hero-proofText"><b>{Number(soldCount).toLocaleString("es-AR")}</b> unidades vendidas</div>
               </div>
               <h1 className="hero-title">{product.name}</h1>
-              <div className="hero-ratingRow"><Stars /> <a href="#reviews-section" onClick={scrollToReviews} className="hero-reviews" style={{textDecoration:'underline', cursor:'pointer'}}>Ver 894 opiniones</a></div>
+              <div className="hero-ratingRow"><Stars /> <a href="#reviews-section" onClick={scrollToReviews} className="hero-reviews" style={{ textDecoration: 'underline', cursor: 'pointer' }}>Ver 894 opiniones</a></div>
               <p className="hero-mini-desc">{MARKETING_CONTENT.miniDescription}</p>
-              
+
               <div className="price-block-container shadow-hover">
-                  <div className="main-price-row">
-                      <span className="hero-price">{formatARS(displayTotal)}</span>
-                      {compareAt > price && (<><span className="hero-compare">{formatARS(compareAt * totalQty)}</span><span className="hero-pill-off">50% OFF</span></>)}
+                <div className="main-price-row">
+                  <span className="hero-price">{formatARS(displayTotal)}</span>
+                  {compareAt > price && (<><span className="hero-compare">{formatARS(compareAt * totalQty)}</span><span className="hero-pill-off">50% OFF</span></>)}
+                </div>
+
+                <div className="transfer-card">
+                  <div className="transfer-icon">⚡</div>
+                  <div className="transfer-text">
+                    <div className="transfer-label">O pagando con Transferencia:</div>
+                    <div className="transfer-amount">{formatARS(transferPrice)} <span className="transfer-tag">AHORRÁ 10% EXTRA</span></div>
                   </div>
-                  
-                  <div className="transfer-card">
-                      <div className="transfer-icon">⚡</div>
-                      <div className="transfer-text">
-                          <div className="transfer-label">O pagando con Transferencia:</div>
-                          <div className="transfer-amount">{formatARS(transferPrice)} <span className="transfer-tag">AHORRÁ 10% EXTRA</span></div>
-                      </div>
-                  </div>
+                </div>
               </div>
 
               <div className="pd-trust-icons">
-                 <div className="trust-icon-item"><span>🛡️</span> Garantía 90 días</div>
-                 <div className="trust-icon-item"><span>🚚</span> Envío Gratis</div>
-                 <div className="trust-icon-item"><span>✅</span> Tecnología Segura</div>
+                <div className="trust-icon-item"><span>🛡️</span> Garantía 90 días</div>
+                <div className="trust-icon-item"><span>🚚</span> Envío Gratis y te llega en menos de 5 dias</div>
+                <div className="trust-icon-item"><span>✅</span> Tecnología Segura</div>
               </div>
             </div>
-            
-            <div className="pd-divider" style={{marginTop:'1.5rem'}}>Elegí tu opción</div>
+
+            <div className="pd-divider" style={{ marginTop: '1.5rem' }}>Elegí tu opción</div>
             <div className="pd-bundles">
               <label className={`pd-bundle hover-lift ${bundle === 1 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 1} onChange={() => { setBundle(1); setQty(1); }} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">1 Dispositivo BodySculpt <span className="pd-miniTag">Kit Esencial</span></div><div className="pd-bundleSub">Incluye gel conductor de regalo</div></div><div className="pd-bundleRight">{moneyARS(unitPrice)}</div></div></label>
               <label className={`pd-bundle hover-lift ${bundle === 2 ? "is-selected" : ""}`}><input type="radio" name="bundle" checked={bundle === 2} onChange={() => { setBundle(2); setQty((q) => (q < 2 ? 2 : q)); }} /><div className="pd-bundleBody"><div className="pd-bundleLeft"><div className="pd-bundleTitle">Pack Doble (2 u.) <span className="pd-miniTag highlight">Mejor Valor</span></div><div className="pd-bundleSub"><b>Ahorrá</b> {pack2Discount}% + Envío Prioritario</div></div><div className="pd-bundleRight">{moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}<div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div></div></div></label>
             </div>
-            
-            <div className="scarcity-text" style={{marginTop: '20px', marginBottom: '10px'}}>
-                <span className="scarcity-icon">⚠️</span> ¡Atención! Quedan solo 3 unidades disponibles
+
+            <div className="scarcity-text" style={{ marginTop: '20px', marginBottom: '10px' }}>
+              <span className="scarcity-icon">⚠️</span> ¡Atención! Quedan solo 3 unidades disponibles
             </div>
 
             <div>
-                <button className="pd-ctaSecondary btn-breathing-intense" type="button" onClick={handleBuyNow} disabled={redirecting}>
-                    {redirecting ? "PROCESANDO PAGO..." : "COMPRAR AHORA - ENVÍO GRATIS"}
-                </button>
-                <div style={{textAlign:'center', marginTop:'15px'}}>
-                     <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">Agregar al carrito</button>
-                </div>
+              <button className="pd-ctaSecondary btn-breathing-intense" type="button" onClick={handleBuyNow} disabled={redirecting}>
+                {redirecting ? "PROCESANDO PAGO..." : "COMPRAR AHORA - ENVÍO GRATIS"}
+              </button>
+              <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">Agregar al carrito</button>
+              </div>
             </div>
 
-            <div className="accordion-wrapper" style={{marginTop: '30px'}}>
-                 <div className="accordion-item">
-                    <button className="accordion-header" onClick={() => setIsDescExpanded(!isDescExpanded)}>
-                        <span>Especificaciones y Tecnología</span>
-                        <span>{isDescExpanded ? '−' : '+'}</span>
-                    </button>
-                    {isDescExpanded && (
-                        <div className="accordion-content fade-in-section">
-                             <p>{product.description || MARKETING_CONTENT.miniDescription}</p>
-                             <ul style={{paddingLeft:'20px', marginTop:'15px', color:'#555', display:'flex', flexDirection:'column', gap:'8px'}}>
-                                 <li><strong>Cavitación Ultrasónica:</strong> 1 MHz.</li>
-                                 <li><strong>Radiofrecuencia (RF):</strong> 1 MHz multipolar.</li>
-                                 <li><strong>LED Rojo:</strong> 625nm.</li>
-                                 <li><strong>Uso:</strong> Corporal (No facial).</li>
-                             </ul>
-                        </div>
-                    )}
-                 </div>
-                 <div className="accordion-item">
-                    <button className="accordion-header" onClick={() => setIsShippingExpanded(!isShippingExpanded)}>
-                        <span>Envíos y Garantía</span>
-                        <span>{isShippingExpanded ? '−' : '+'}</span>
-                    </button>
-                    {isShippingExpanded && (
-                        <div className="accordion-content fade-in-section">
-                             <ul style={{paddingLeft:'20px', marginTop:'15px', color:'#555', display:'flex', flexDirection:'column', gap:'10px'}}>
-                                 <li><strong>Envío Gratis:</strong> A todo el país.</li>
-                                 <li><strong>Despacho Rápido:</strong> Procesamos en 24hs.</li>
-                                 <li><strong>Garantía de 90 días:</strong> Por fallas de fábrica.</li>
-                                 <li><strong>Compra Protegida:</strong> Vía Mercado Pago.</li>
-                             </ul>
-                        </div>
-                    )}
-                 </div>
+            <div className="accordion-wrapper" style={{ marginTop: '30px' }}>
+              <div className="accordion-item">
+                <button className="accordion-header" onClick={() => setIsDescExpanded(!isDescExpanded)}>
+                  <span>Especificaciones y Tecnología</span>
+                  <span>{isDescExpanded ? '−' : '+'}</span>
+                </button>
+                {isDescExpanded && (
+                  <div className="accordion-content fade-in-section">
+                    <p>{product.description || MARKETING_CONTENT.miniDescription}</p>
+                    <div className="muted" style={{ marginTop: '0.6rem', fontSize: '0.95rem' }}>
+                      🚚 <strong>Te llega en 5 a 7 días hábiles</strong> (envío con seguimiento)
+                    </div>
+
+                    <ul style={{ paddingLeft: '20px', marginTop: '15px', color: '#555', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <li><strong>Cavitación Ultrasónica:</strong> 1 MHz.</li>
+                      <li><strong>Radiofrecuencia (RF):</strong> 1 MHz multipolar.</li>
+                      <li><strong>LED Rojo:</strong> 625nm.</li>
+                      <li><strong>Uso:</strong> Corporal (No facial).</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="accordion-item">
+                <button className="accordion-header" onClick={() => setIsShippingExpanded(!isShippingExpanded)}>
+                  <span>Envíos y Garantía</span>
+                  <span>{isShippingExpanded ? '−' : '+'}</span>
+                </button>
+                {isShippingExpanded && (
+                  <div className="accordion-content fade-in-section">
+                    <ul style={{ paddingLeft: '20px', marginTop: '15px', color: '#555', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <li><strong>Envío Gratis:</strong> A todo el país.</li>
+                      <li><strong>Despacho Rápido:</strong> Procesamos en 24hs.</li>
+                      <li><strong>Garantía de 90 días:</strong> Por fallas de fábrica.</li>
+                      <li><strong>Compra Protegida:</strong> Vía Mercado Pago.</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
 
           </aside>
@@ -635,13 +639,13 @@ export default function ProductDetail() {
       {/* STICKY BAR */}
       <div className="sticky-mobile-bar-pro fade-in-section">
         <div className="sticky-pro-left">
-            <span className="sticky-pro-label">Envío Gratis termina en:</span>
-            <div className="sticky-pro-price-row">
-               <span style={{fontWeight:'800', color:'#dc2626'}}><CountdownTimer /></span>
-            </div>
+          <span className="sticky-pro-label">Envío Gratis termina en:</span>
+          <div className="sticky-pro-price-row">
+            <span style={{ fontWeight: '800', color: '#dc2626' }}><CountdownTimer /></span>
+          </div>
         </div>
         <button className="sticky-pro-btn btn-breathing" onClick={handleBuyNow} disabled={redirecting}>
-            {redirecting ? "..." : "COMPRAR AHORA"}
+          {redirecting ? "..." : "COMPRAR AHORA"}
         </button>
       </div>
 

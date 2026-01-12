@@ -224,6 +224,11 @@ function Checkout() {
   // ✅ PANTALLA ÉXITO (Solo Transferencia)
   if (orderData) {
     const orderId = orderData.orderId || orderData._id;
+
+    const subtotal = Number(totalPrice) || 0; // total sin descuento
+    const discount = subtotal * transferDiscountPct; // 10%
+    const toTransfer = subtotal - discount; // lo que debe transferir
+
     return (
       <main className="section">
         <div className="container">
@@ -238,7 +243,15 @@ function Checkout() {
 
             <div style={{ marginTop: '0.95rem', display: 'grid', gap: '0.35rem' }}>
               <div className="muted"><strong>Pedido:</strong> {orderId}</div>
-              <div className="muted"><strong>Total:</strong> {money(orderData.totalAmount ?? finalTotal)}</div>
+              <div className="muted"><strong>Subtotal:</strong> {money(orderData.totalAmount ?? totalPrice)}</div>
+              <div className="muted" style={{ color: '#10b981' }}>
+                <strong>Descuento transferencia (10%):</strong> -{money((orderData.totalAmount ?? totalPrice) * 0.10)}
+              </div>
+              <div className="muted">
+                <strong>Total a transferir:</strong> <span style={{ fontWeight: 900 }}>{money((orderData.totalAmount ?? totalPrice) * 0.90)}</span>
+              </div>
+
+
             </div>
           </section>
 
@@ -354,10 +367,18 @@ function Checkout() {
                 <textarea value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)} placeholder="Calle, número, ciudad..." required rows={3} />
               </label>
               <label className="muted" style={{ display: 'grid', gap: '0.35rem' }}>Método de envío
+                <div className="card" style={{ padding: '1rem', border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 900, marginBottom: '0.35rem' }}>🚚 Envíos y tiempos</div>
+                  <p className="muted" style={{ margin: 0, lineHeight: 1.65 }}>
+                    Enviamos a todo el país por <strong>Correo Argentino</strong> (con seguimiento).
+                    <br />
+                    <strong>Entrega estimada:</strong> 5 a 7 días hábiles.
+                    <br />
+                    <span className="muted">Despachamos tu pedido apenas se acredita el pago.</span>
+                  </p>
+                </div>
                 <select value={shippingMethod} onChange={(e) => setShippingMethod(e.target.value)}>
                   <option value="correo_argentino">Correo Argentino</option>
-                  <option value="andreani">Andreani</option>
-                  <option value="oca">OCA</option>
                   <option value="moto">Moto (CABA/GBA)</option>
                 </select>
               </label>
@@ -382,11 +403,10 @@ function Checkout() {
                       <div style={{ fontWeight: 800, color: '#009ee3' }}>Mercado Pago</div>
                       <div className="muted" style={{ fontSize: '0.85rem' }}>Tarjetas, dinero en cuenta.</div>
                     </div>
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Mercado_Pago_Link_Logo.png/1024px-Mercado_Pago_Link_Logo.png"
-                      alt="MP"
-                      style={{ height: '25px', marginLeft: 'auto' }}
-                    />
+                    <span style={{ marginLeft: 'auto', fontWeight: 900, color: '#009ee3', letterSpacing: '-0.02em' }}>
+                      MP
+                    </span>
+
                   </label>
 
                   {/* Opción Transferencia */}
