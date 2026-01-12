@@ -22,6 +22,7 @@
     "express-rate-limit": "^8.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mercadopago": "^2.11.0",
     "mongoose": "^8.19.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.10",

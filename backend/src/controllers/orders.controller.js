@@ -2,15 +2,27 @@
 
 const mongoose = require("mongoose");
 const fs = require("fs");
-
 const Order = require("../models/order.js");
-const User = require("../models/User"); // Asegúrate que tu modelo se llame así (User o user)
+const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
 
-// ✅ CORRECCIÓN: Agregamos 'confirmed' y 'cancelled' para que coincida con el Frontend
-// TIENE QUE TENER 'confirmed' y 'cancelled'
-const allowedPaymentStatuses = ["pending", "proof_uploaded", "approved", "confirmed", "rejected", "cancelled"];
+// Mercado Pago
+const { MercadoPagoConfig, Preference } = require("mercadopago");
+
+// Cliente MP (PRODUCCIÓN)
+const client = new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN,
+});
+
+const allowedPaymentStatuses = [
+    "pending",
+    "proof_uploaded",
+    "approved",
+    "confirmed",
+    "rejected",
+    "cancelled",
+];
 const allowedShippingStatuses = ["pending", "shipped", "delivered", "cancelled"];
 
 /* =============================
@@ -18,6 +30,14 @@ const allowedShippingStatuses = ["pending", "shipped", "delivered", "cancelled"]
 ============================= */
 async function createOrder(req, res, next) {
     try {
+        console.log("------------------------------------------------");
+        console.log("📥 NUEVA ORDEN RECIBIDA");
+
+        if (!process.env.MP_ACCESS_TOKEN) {
+            console.error("❌ ERROR CRÍTICO: No existe MP_ACCESS_TOKEN en el archivo .env");
+            // No cortamos acá para no romper transferencias, pero MP fallará si lo usan.
+        }
+
         const {
             clientOrderId,
             customerName,
@@ -27,6 +47,7 @@ async function createOrder(req, res, next) {
             shippingMethod,
             items,
             notes,
+            paymentMethod,
         } = req.body || {};
 
         const badReq = (msg) => {
@@ -36,7 +57,8 @@ async function createOrder(req, res, next) {
         };
 
         const normalizeStr = (v) => String(v || "").trim();
-        const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeStr(email).toLowerCase());
+        const isEmailValid = (email) =>
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeStr(email).toLowerCase());
         const toNumber = (v) => {
             const n = Number(v);
             return Number.isFinite(n) ? n : NaN;
@@ -47,15 +69,20 @@ async function createOrder(req, res, next) {
         const phone = normalizeStr(customerPhone);
         const address = normalizeStr(shippingAddress);
         const shipMethod = normalizeStr(shippingMethod) || "correo_argentino";
+
+        // Método de pago
+        const payMethod = normalizeStr(paymentMethod) || "bank_transfer";
         const userNotes = normalizeStr(notes);
+
+        console.log("💳 Método procesado:", payMethod);
 
         if (!name) throw badReq("Falta customerName.");
         if (!email) throw badReq("Falta customerEmail.");
         if (!isEmailValid(email)) throw badReq("Email inválido.");
-        // address opcional si es retiro en tienda, pero validamos si lo envían
         if (!address) throw badReq("Falta shippingAddress.");
 
-        if (!Array.isArray(items) || items.length === 0) throw badReq("El carrito no puede estar vacío.");
+        if (!Array.isArray(items) || items.length === 0)
+            throw badReq("El carrito no puede estar vacío.");
 
         const normalizedItems = items.map((it, idx) => {
             const productId = it?.productId || it?._id || it?.id;
@@ -65,21 +92,90 @@ async function createOrder(req, res, next) {
 
             if (!productId) throw badReq(`Item #${idx + 1}: falta productId.`);
             if (!itemName) throw badReq(`Item #${idx + 1}: falta name.`);
-            if (!Number.isFinite(qty) || qty <= 0) throw badReq(`Item #${idx + 1}: quantity inválida.`);
-            if (!Number.isFinite(price) || price < 0) throw badReq(`Item #${idx + 1}: price inválido.`);
+            if (!Number.isFinite(qty) || qty <= 0)
+                throw badReq(`Item #${idx + 1}: quantity inválida.`);
+            if (!Number.isFinite(price) || price < 0)
+                throw badReq(`Item #${idx + 1}: price inválido.`);
 
             return { productId, name: itemName, price, quantity: qty };
         });
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
-        const totalAmount = normalizedItems.reduce((acc, it) => acc + it.price * it.quantity, 0);
+        const totalAmount = normalizedItems.reduce(
+            (acc, it) => acc + it.price * it.quantity,
+            0
+        );
 
-        if (!Number.isFinite(totalAmount) || totalAmount <= 0) throw badReq("Total inválido.");
+        if (!Number.isFinite(totalAmount) || totalAmount <= 0)
+            throw badReq("Total inválido.");
+
+        // Helper: crear preferencia MP (PRODUCCIÓN)
+        async function createMpPreference(externalReference) {
+            const preference = new Preference(client);
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
+            const result = await preference.create({
+                body: {
+                    items: normalizedItems.map((item) => ({
+                        title: item.name,
+                        quantity: Number(item.quantity),
+                        unit_price: Number(item.price),
+                        currency_id: "ARS",
+                    })),
+                    payer: {
+                        name,
+                        email,
+                        // phone opcional. Para evitar validaciones raras, no lo mandamos.
+                    },
+                    back_urls: {
+                        success: `${frontendUrl}/success-payment`,
+                        failure: `${frontendUrl}/checkout`,
+                        pending: `${frontendUrl}/checkout`,
+                    },
+                    auto_return: "approved",
+                    external_reference: String(externalReference),
+                    statement_descriptor: "BOOMHAUSS",
+                },
+            });
+
+            return result;
+        }
 
         // Idempotencia
         if (clientOrderId) {
             const existing = await Order.findOne({ clientOrderId });
+
             if (existing) {
+                console.log("⚠️ Orden duplicada detectada");
+
+                // ✅ Si es Mercado Pago, devolvemos init_point (producción) igual
+                if (payMethod === "mercadopago" || existing.paymentMethod === "mercadopago") {
+                    try {
+                        console.log("🔁 Regenerando link de Mercado Pago para orden duplicada...");
+                        const result = await createMpPreference(existing._id.toString());
+
+                        return res.status(200).json({
+                            ok: true,
+                            duplicated: true,
+                            data: {
+                                orderId: existing._id,
+                                totalItems: existing.totalItems,
+                                totalAmount: existing.totalAmount,
+                                paymentStatus: existing.paymentStatus,
+                                shippingMethod: existing.shippingMethod,
+                            },
+                            init_point: result.init_point,
+                        });
+                    } catch (mpError) {
+                        console.error("❌ ERROR MERCADO PAGO (duplicada):", mpError);
+                        return res.status(500).json({
+                            ok: false,
+                            error: "No se pudo generar el link de Mercado Pago.",
+                        });
+                    }
+                }
+
+                // No es MP -> devolvemos duplicada normal
                 return res.status(200).json({
                     ok: true,
                     data: {
@@ -94,56 +190,76 @@ async function createOrder(req, res, next) {
             }
         }
 
-        const userId = req.user?.id || req.user?.userId || req.user?._id || req.userId || null;
+        const userId =
+            req.user?.id ||
+            req.user?.userId ||
+            req.user?._id ||
+            req.userId ||
+            null;
 
+        // 1) Crear orden en BD
         const newOrder = await Order.create({
             clientOrderId: clientOrderId || undefined,
             userId: userId || undefined,
-
             customerName: name,
             customerEmail: email,
             customerPhone: phone || undefined,
-
             shippingAddress: address,
             shippingMethod: shipMethod,
             shippingStatus: "pending",
-
             items: normalizedItems,
             totalItems,
             totalAmount,
-
-            paymentMethod: "bank_transfer",
+            paymentMethod: payMethod,
             paymentStatus: "pending",
-
             notes: userNotes || "",
         });
 
-        // Intentar enviar email (no bloqueante)
+        // 2) Mercado Pago
+        if (payMethod === "mercadopago") {
+            console.log("🔄 Entrando a lógica de Mercado Pago...");
+
+            try {
+                const result = await createMpPreference(newOrder._id.toString());
+
+                console.log("✅ LINK GENERADO (init_point):", result.init_point);
+
+                return res.status(201).json({
+                    ok: true,
+                    data: newOrder,
+                    init_point: result.init_point,
+                });
+            } catch (mpError) {
+                console.error("❌ ERROR MERCADO PAGO:", mpError);
+                throw new Error("Error interno de Mercado Pago: " + mpError.message);
+            }
+        }
+
+        // 3) Transferencia
+        console.log("🏦 Procesando como transferencia");
         try {
             await sendOrderConfirmationEmail(newOrder);
         } catch (e) {
-            console.warn("⚠️ No se pudo enviar email de confirmación:", e?.message || e);
+            console.warn("⚠️ No se pudo enviar email:", e?.message || e);
         }
 
         return res.status(201).json({
             ok: true,
             data: {
                 orderId: newOrder._id,
-                totalItems: newOrder.totalItems,
                 totalAmount: newOrder.totalAmount,
                 paymentStatus: newOrder.paymentStatus,
-                shippingMethod: newOrder.shippingMethod,
                 duplicated: false,
             },
         });
     } catch (error) {
+        console.error("❌ ERROR EN CREATE ORDER:", error);
         next(error);
     }
 }
 
-/* =============================
-   GET ORDERS (admin)
-============================= */
+// === RESTO DE FUNCIONES (Admin/User) ===
+
 async function getOrders(req, res, next) {
     try {
         const orders = await Order.find().sort({ createdAt: -1 }).lean();
@@ -153,73 +269,26 @@ async function getOrders(req, res, next) {
     }
 }
 
-/* =============================
-   UPDATE ORDER (admin) - Manual Update
-============================= */
 async function updateOrderStatus(req, res, next) {
     try {
         const { id } = req.params;
         const { paymentStatus, shippingStatus } = req.body;
-
-        if (paymentStatus === undefined && shippingStatus === undefined) {
-            const err = new Error("Debes enviar paymentStatus y/o shippingStatus para actualizar.");
-            err.statusCode = 400;
-            throw err;
-        }
-
         const updateData = {};
-
-        if (paymentStatus !== undefined) {
-            if (!allowedPaymentStatuses.includes(paymentStatus)) {
-                const err = new Error(`paymentStatus inválido ('${paymentStatus}'). Permitidos: ${allowedPaymentStatuses.join(", ")}`);
-                err.statusCode = 400;
-                throw err;
-            }
-            updateData.paymentStatus = paymentStatus;
-        }
-
-        if (shippingStatus !== undefined) {
-            if (!allowedShippingStatuses.includes(shippingStatus)) {
-                const err = new Error(`shippingStatus inválido. Permitidos: ${allowedShippingStatuses.join(", ")}`);
-                err.statusCode = 400;
-                throw err;
-            }
-            updateData.shippingStatus = shippingStatus;
-        }
+        if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
+        if (shippingStatus !== undefined) updateData.shippingStatus = shippingStatus;
 
         const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updatedOrder) {
-            const err = new Error("Pedido no encontrado.");
-            err.statusCode = 404;
-            throw err;
-        }
-
         return res.json({ ok: true, data: updatedOrder });
     } catch (error) {
         next(error);
     }
 }
 
-/* =============================
-   MY ORDERS (user)
-============================= */
 async function getMyOrders(req, res, next) {
     try {
         const userId = req.user?.id || req.user?.userId || req.user?._id || req.userId;
-
-        if (!userId) {
-            const err = new Error("No se pudo identificar al usuario.");
-            err.statusCode = 401;
-            throw err;
-        }
-
-        // Podrías buscar directo en Order por userId si lo guardas, o por email
         const user = await User.findById(userId);
-        if (!user) {
-            const err = new Error("Usuario no encontrado.");
-            err.statusCode = 404;
-            throw err;
-        }
+        if (!user) throw new Error("Usuario no encontrado.");
 
         const orders = await Order.find({ customerEmail: user.email }).sort({ createdAt: -1 });
         return res.json({ ok: true, data: orders });
@@ -228,46 +297,22 @@ async function getMyOrders(req, res, next) {
     }
 }
 
-/* =============================
-   UPLOAD PAYMENT PROOF (user)
-============================= */
 async function uploadPaymentProofController(req, res, next) {
     try {
         const { id } = req.params;
-
-        if (!req.file) {
-            const err = new Error("No se recibió archivo. Campo esperado: paymentProof");
-            err.statusCode = 400;
-            throw err;
-        }
-
         const order = await Order.findById(id);
-        if (!order) {
-            const err = new Error("Pedido no encontrado.");
-            err.statusCode = 404;
-            throw err;
-        }
-
-        if (order.paymentStatus === "confirmed" || order.paymentStatus === "approved") {
-            const err = new Error("Este pedido ya fue aprobado. No se puede subir otro comprobante.");
-            err.statusCode = 400;
-            throw err;
-        }
+        if (!order) throw new Error("Pedido no encontrado.");
 
         const localPath = req.file.path;
         const uploaded = await uploadPaymentProofFromPath(localPath);
 
         order.paymentProofUrl = uploaded.url;
-        order.paymentProofPublicId = uploaded.publicId || null;
-
         order.paymentStatus = "proof_uploaded";
-        order.paymentRejectionReason = null;
-        order.paymentReviewedAt = null;
-        order.paymentReviewedBy = null;
-
         await order.save();
 
-        try { fs.unlinkSync(localPath); } catch (_) { }
+        try {
+            fs.unlinkSync(localPath);
+        } catch (_) { }
 
         return res.json({ ok: true, data: order });
     } catch (error) {
@@ -275,86 +320,24 @@ async function uploadPaymentProofController(req, res, next) {
     }
 }
 
-/* =============================
-   VERIFY / APPROVE PROOF (admin)
-============================= */
 async function verifyPaymentProofController(req, res, next) {
     try {
         const { id } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            const err = new Error("ID inválido.");
-            err.statusCode = 400;
-            throw err;
-        }
-
         const order = await Order.findById(id);
-        if (!order) {
-            const err = new Error("Pedido no encontrado.");
-            err.statusCode = 404;
-            throw err;
-        }
-
-        if (!order.paymentProofUrl) {
-            const err = new Error("El pedido no tiene comprobante subido.");
-            err.statusCode = 400;
-            throw err;
-        }
-
-        // ✅ CORRECCIÓN: Usamos 'confirmed' para estandarizar con el frontend
-        order.paymentStatus = "confirmed"; 
-        order.paymentRejectionReason = null;
-        order.paymentReviewedAt = new Date();
-        order.paymentReviewedBy = req.user?.id || req.userId || null;
-
+        order.paymentStatus = "confirmed";
         await order.save();
-
         return res.json({ ok: true, data: order });
     } catch (error) {
         next(error);
     }
 }
 
-/* =============================
-   REJECT PROOF (admin)
-============================= */
 async function rejectPaymentProofController(req, res, next) {
     try {
         const { id } = req.params;
-        const reason = String(req.body?.reason || "").trim() || "Comprobante inválido";
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            const err = new Error("ID inválido.");
-            err.statusCode = 400;
-            throw err;
-        }
-
         const order = await Order.findById(id);
-        if (!order) {
-            const err = new Error("Pedido no encontrado.");
-            err.statusCode = 404;
-            throw err;
-        }
-
-        if (!order.paymentProofUrl) {
-            const err = new Error("El pedido no tiene comprobante subido.");
-            err.statusCode = 400;
-            throw err;
-        }
-
-        if (order.paymentStatus === "confirmed" || order.paymentStatus === "approved") {
-            const err = new Error("El pedido ya está aprobado. No se puede rechazar.");
-            err.statusCode = 400;
-            throw err;
-        }
-
         order.paymentStatus = "rejected";
-        order.paymentRejectionReason = reason;
-        order.paymentReviewedAt = new Date();
-        order.paymentReviewedBy = req.user?.id || req.userId || null;
-
         await order.save();
-
         return res.json({ ok: true, data: order });
     } catch (error) {
         next(error);

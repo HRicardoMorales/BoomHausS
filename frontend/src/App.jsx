@@ -21,7 +21,7 @@ import AdminProducts from './pages/AdminProducts.jsx';
 import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Returns from './pages/Returns.jsx';
-
+import SuccessPayment from './pages/SuccessPayment';
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
 
@@ -143,6 +143,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/success-payment" element={<SuccessPayment />} />
         </Routes>
       </div>
 

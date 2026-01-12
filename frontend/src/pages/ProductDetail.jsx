@@ -8,10 +8,8 @@ import { track } from "../lib/metaPixel";
    MARKETING CONTENT
    ======================================================================== */
 const MARKETING_CONTENT = {
-  // TEXTO 1: Título impactante traducido
   miniDescription: "Logra una figura más firme y definida en 4 semanas. Tecnología adelgazante de triple efecto: Radiofrecuencia + Cavitación Ultrasónica + Terapia de Luz Roja.",
   
-  // TEXTO 1: Los puntos clave para poner debajo del precio (NUEVO)
   heroBullets: [
     "Disuelve la grasa rebelde y tensa la piel flácida.",
     "Luce y siéntete mejor en solo 4 semanas.",
@@ -34,7 +32,6 @@ const MARKETING_CONTENT = {
     { name: "Guía de Uso y Protocolos", icon: "📖" }
   ],
 
-  // TEXTO 2: "Breakthrough Body Benefits" (Beneficios Revolucionarios)
   breakthroughBenefits: {
     title: "Beneficios Corporales Revolucionarios",
     subtitle: "Una solución completa para esculpir tu cuerpo.",
@@ -77,8 +74,8 @@ const MARKETING_CONTENT = {
     text: "Cambios reales usando el dispositivo 3 veces por semana.",
     labelBefore: "Día 1",
     labelAfter: "Día 30",
-    imgBefore: "https://images.pexels.com/photos/4498157/pexels-photo-4498157.jpeg?auto=compress&cs=tinysrgb&w=800",
-    imgAfter: "https://images.pexels.com/photos/4498156/pexels-photo-4498156.jpeg?auto=compress&cs=tinysrgb&w=800"
+    imgBefore: "https://pbs.twimg.com/media/G-WN-OSXsAAfdSc?format=jpg&name=360x360",
+    imgAfter: "https://pbs.twimg.com/media/G-WOIkaXoAAPSeN?format=jpg&name=360x360"
   },
 
   comparison: {
@@ -180,7 +177,6 @@ function ClinicalStatsSection() {
   )
 }
 
-// ✅ PEGA ESTO (La nueva sección)
 function BreakthroughSection() {
   const { breakthroughBenefits } = MARKETING_CONTENT;
   return (
@@ -279,7 +275,6 @@ function BigMediaSection() {
   return (
     <div className="landing-section full-width-bg fade-in-section">
       <div className="landing-container text-center">
-        {/* Título y Subtítulo Pro */}
         <h2 className="video-title-pro">{bigMedia.title}</h2>
         <p className="video-subtitle-pro">{bigMedia.subtitle}</p>
         
@@ -434,9 +429,26 @@ export default function ProductDetail() {
   const handleBuyNow = () => { 
     if (!product) return; 
     setRedirecting(true);
-    track("InitiateCheckout", { content_ids: [String(contentId)], content_type: "product", value: Number(displayTotal) || 0, currency: "ARS", num_items: Number(totalQty) || 1 }); 
-    const linkMercadoPago = "https://link.mercadopago.com.ar/TU_LINK"; 
-    setTimeout(() => { window.location.href = linkMercadoPago; }, 1500);
+
+    // 1. Rastrear evento
+    track("InitiateCheckout", { 
+        content_ids: [String(contentId)], 
+        content_type: "product", 
+        value: Number(displayTotal) || 0, 
+        currency: "ARS", 
+        num_items: Number(totalQty) || 1 
+    });
+
+    // 2. Preparar el producto con la promo seleccionada
+    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+    
+    // 3. Agregarlo al carrito
+    addItem(product, totalQty, promo ? { promo } : undefined);
+
+    // 4. Redirigir al Checkout para que elija pago y ponga envío
+    setTimeout(() => {
+        navigate('/checkout');
+    }, 500); // Pequeño delay para que se vea la animación del botón
   };
 
   const handleAddToCart = () => { 
@@ -464,7 +476,8 @@ export default function ProductDetail() {
           
           {/* MEDIA COLUMN: position: sticky PARA PC + height: auto PARA MÓVIL */}
           <section className="pd-media card shadow-hover" style={{ padding: 0, display: "flex", flexDirection: "column", border: 'none', position: 'sticky', top: '20px', zIndex: 90, height: 'auto' }}>
-            <div className="pd-mediaMain" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "#f8fbff", cursor: "grab", touchAction: "pan-y" }} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+            {/* AGREGADO: display: flex, justify-content: center, align-items: center para centrar imagen */}
+            <div className="pd-mediaMain" style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "#f8fbff", cursor: "grab", touchAction: "pan-y", display: 'flex', alignItems: 'center', justifyContent: 'center' }} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               <div className="pd-discount" style={{ zIndex: 10 }}>50% <span>OFF</span></div>
               
               {/* === SOLUCIÓN PARA QUE NO SE CORTE LA IMAGEN === */}
@@ -476,13 +489,13 @@ export default function ProductDetail() {
                     loading="lazy" 
                     onDragStart={(e) => e.preventDefault()} 
                     style={{ 
-                        width: "100%", 
-                        height: "100%", 
-                        objectFit: "contain", /* OBLIGA A QUE ENTRE TODA */
-                        position: "absolute", 
-                        inset: 0, 
+                        maxWidth: "100%", 
+                        maxHeight: "100%", 
+                        width: "auto", /* Cambiado de 100% a auto para que respete el aspect ratio real */
+                        height: "auto",
+                        objectFit: "contain",
                         pointerEvents: "none",
-                        background: "white" /* Rellena huecos con blanco */
+                        margin: '0 auto' /* Centrado extra */
                     }} 
                 />
               ) : (<div className="pd-empty">Sin imagen</div>)}
@@ -923,9 +936,10 @@ export default function ProductDetail() {
 
         /* Reviews */
         .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-top: 50px; align-items: start; }
+        .reviews-grid .tm-card { height: 100%; }
         @media (max-width: 990px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
-        .tm-card { background: #fff; border: 1px solid #f1f1f1; border-radius: 24px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 100%; transition: all 0.3s ease; }
+        .tm-card { background: #fff; border: 1px solid #f1f1f1; border-radius: 24px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); display: flex; flex-direction: column; transition: all 0.3s ease; }
         .tm-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
         .tm-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .tm-card-title { font-weight: 800; color: #1e293b; font-size: 1.1rem; }
@@ -1024,6 +1038,123 @@ export default function ProductDetail() {
             .hero-benefit-item {
                 /* Pequeño ajuste visual para que el check no quede muy al borde */
                 padding-right: 10px; 
+            }
+        }
+            /* === CORRECCIÓN ESPECÍFICA IPHONE SE / MÓVIL === */
+        
+        @media (max-width: 600px) {
+            /* 1. Forzar que la estructura principal sea una columna flexible */
+            .pd-grid {
+                display: flex !important;
+                flex-direction: column;
+                width: 100% !important;
+                gap: 25px !important;
+            }
+
+            /* 2. Ajustar Títulos Gigantes para que no empujen el ancho */
+            .hero-title {
+                font-size: 1.8rem !important; /* Reducir tamaño */
+                line-height: 1.2;
+                word-wrap: break-word; /* Romper palabras largas si es necesario */
+            }
+
+            /* 3. Ajustar Bloque de Precios */
+            .main-price-row {
+                flex-wrap: wrap; /* Permitir que el descuento baje si no entra */
+                gap: 10px;
+            }
+            .hero-price {
+                font-size: 2.2rem !important;
+            }
+
+            /* 4. ¡EL CULPABLE PROBABLE! -> Las cajas de los Packs (Bundles) */
+            /* En pantallas chicas, poner el precio a la derecha rompe el margen. */
+            /* Aquí forzamos que el precio baje debajo del texto */
+            .pd-bundleBody {
+                display: flex;
+                flex-direction: column !important; /* Apilar verticalmente */
+                align-items: flex-start !important;
+            }
+            .pd-bundleRight {
+                text-align: left !important;
+                margin-top: 8px; /* Separar precio del texto */
+                font-size: 1.2rem !important;
+            }
+            .pd-bundleLeft {
+                width: 100%;
+            }
+            
+            /* Ajustar etiquetas pequeñas dentro de los packs */
+            .pd-miniTag {
+                display: inline-block;
+                margin-top: 5px;
+            }
+        }
+
+        /* Asegurar que el contenedor de los packs sea flexible por defecto */
+        .pd-bundleBody {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+      /* === CORRECCIÓN FINAL IPHONE SE (SOLUCIÓN NUCLEAR) === */
+        
+        @media (max-width: 480px) {
+            /* 1. Forzar que el contenedor no tenga padding gigante */
+            .container {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                width: 100% !important;
+                overflow-x: hidden !important;
+            }
+
+            /* 2. ARREGLAR LA TARJETA VERDE (Culpable Principal) */
+            /* Hacemos que el icono y el texto se apilen para que no ensanchen la pantalla */
+            .transfer-card {
+                flex-direction: column !important; /* Apilar verticalmente */
+                align-items: flex-start !important;
+                gap: 10px !important;
+                padding: 15px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .transfer-amount {
+                font-size: 1.3rem !important; /* Texto un poco más chico */
+                flex-wrap: wrap;
+            }
+
+            /* 3. ARREGLAR ICONOS DE CONFIANZA (Escudo, Camión...) */
+            /* Permitir que bajen de línea si no entran */
+            .pd-trust-icons {
+                flex-wrap: wrap !important;
+                gap: 10px !important;
+                justify-content: flex-start !important;
+            }
+            .trust-icon-item {
+                font-size: 0.8rem !important; /* Letra más chica */
+                white-space: normal !important; /* Permitir que el texto baje */
+            }
+
+            /* 4. ARREGLAR TÍTULO Y BADGES */
+            .hero-title {
+                font-size: 1.6rem !important; /* Ajuste para iPhone SE */
+                word-wrap: break-word !important;
+            }
+            .hero-proof {
+                flex-wrap: wrap; /* Que el "Viral en Tiktok" baje si molesta */
+            }
+
+            /* 5. ARREGLAR PRECIOS */
+            .main-price-row {
+                flex-direction: column !important; /* Precio y descuento uno arriba del otro */
+                align-items: flex-start !important;
+                gap: 5px !important;
+            }
+            .hero-compare {
+                display: inline-block;
+                margin-bottom: 0 !important;
             }
         }
       `}</style>
