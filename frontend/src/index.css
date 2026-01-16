@@ -743,7 +743,7 @@ header {
 }
 
 .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; align-items: center; }
-.reverse-mobile { }
+
 @media (max-width: 900px) {
   .split-layout { grid-template-columns: 1fr; }
 }
@@ -792,15 +792,120 @@ header {
 .included-item:hover .spin-on-hover { transform: rotateY(360deg); }
 
 /* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px; }
-@media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; gap: 20px; } }
-.stat-card { text-align:center; padding: 20px; background: #fff; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.stat-circle { width: 100px; height: 100px; margin: 0 auto 15px; }
-.circular-chart { display:block; margin: 0 auto; max-width: 100%; max-height: 250px; }
-.circle-bg { fill:none; stroke:#eee; stroke-width: 2; }
-.circle { fill:none; stroke-width: 2.5; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: var(--primary); }
-.percentage { fill: var(--primary); font-family: sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; }
-.stat-text { font-size: 1rem; color: #334155; font-weight: 700; line-height: 1.4; }
+/* =========================
+   STATS PRO (círculos + texto)
+========================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Card un toque más premium */
+.stat-card{
+  text-align: center;
+  padding: 22px 18px;
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 10px 26px rgba(2, 8, 23, 0.06);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+@media (hover:hover){
+  .stat-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(2, 8, 23, 0.10);
+  }
+}
+
+/* Círculo (más grande y consistente) */
+.stat-circle{
+  width: 118px;
+  height: 118px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+}
+
+/* El SVG ocupa el 100% del círculo */
+.circular-chart{
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+  overflow: visible; /* clave: evita cortes raros */
+}
+
+/* Fondo del círculo */
+.circle-bg{
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 2.2;
+}
+
+/* Progreso */
+.circle{
+  fill: none;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+  stroke: var(--primary);
+}
+
+/* Texto dentro del círculo: centrado real + no se corta */
+.percentage{
+  fill: var(--primary);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-weight: 900;
+  text-anchor: middle;
+
+  /* centrado vertical real en SVG */
+  dominant-baseline: middle;
+
+  /* Tamaño seguro para palabras largas */
+  font-size: 0.42em;
+
+  /* mejor legibilidad */
+  letter-spacing: 0.6px;
+}
+
+/* Si la palabra es larga (GRATIS, 20MIL) la ajustamos sin tocar el JSX */
+.stat-card:nth-child(1) .percentage,
+.stat-card:nth-child(2) .percentage,
+.stat-card:nth-child(3) .percentage{
+  /* queda por defecto */
+}
+
+/* Texto abajo */
+.stat-text{
+  font-size: 1rem;
+  color: #334155;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+/* Mobile fino */
+@media (max-width: 480px){
+  .stat-circle{
+    width: 110px;
+    height: 110px;
+  }
+  .percentage{
+    font-size: 0.40em;
+    letter-spacing: 0.4px;
+  }
+}
+
 
 /* Before/After */
 .ba-slider-container { position: relative; width: 100%; max-width: 650px; margin: 0 auto; overflow: hidden; border-radius: 20px; cursor: ew-resize; user-select: none; background: #f1f5f9; }
@@ -1076,3 +1181,170 @@ button[type="submit"]:hover { background-color: var(--primary-hover) !important;
 button[type="submit"]:active { transform: translateY(1px); }
 button:disabled { background-color: #ccc !important; cursor: not-allowed; transform: none !important; }
 a:hover { text-decoration: underline; }
+
+/* =========================
+   BUNDLES PRO (mobile-first)
+========================= */
+
+.pd-bundles-pro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.pd-bundleCard {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 16px 16px;
+  border-radius: 18px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+}
+
+/* Ocultamos el radio nativo (iOS safe) */
+.pd-bundleCard input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Radio custom */
+.pd-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 2px solid #cbd5e1;
+  background: #fff;
+  box-shadow: inset 0 0 0 5px #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all .15s ease;
+}
+
+.pd-bundleContent { flex: 1; min-width: 0; }
+
+.pd-bundleTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.pd-bundleTitle {
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  font-size: 1.05rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pd-tag {
+  font-size: .72rem;
+  font-weight: 900;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+
+.pd-tag.hot {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.pd-bundlePrice {
+  text-align: right;
+  font-weight: 1000;
+  color: #0f172a;
+  font-size: 1.15rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.pd-bundleCompare {
+  margin-top: 6px;
+  font-size: .9rem;
+  font-weight: 900;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.pd-bundleSub {
+  margin-top: 10px;
+  color: #475569;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.pd-bundleBottom {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pd-miniBenefit {
+  font-size: .78rem;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+}
+
+/* Estado seleccionado (bien llamativo) */
+.pd-bundleCard.is-selected {
+  border-color: #0B5CFF;
+  background: #eff6ff;
+  box-shadow: 0 12px 28px rgba(11,92,255,0.18);
+  transform: translateY(-1px);
+}
+
+.pd-bundleCard.is-selected .pd-radio {
+  border-color: #0B5CFF;
+  box-shadow: inset 0 0 0 6px #fff, 0 0 0 4px rgba(11,92,255,0.18);
+  background: #0B5CFF;
+}
+
+/* Hover desktop */
+@media (hover:hover) {
+  .pd-bundleCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.08);
+  }
+}
+
+/* iPhone SE / pantallas chicas: apilar precio abajo */
+@media (max-width: 420px) {
+  .pd-bundleTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pd-bundlePrice { text-align: left; white-space: normal; }
+}
+
+/* Hint debajo */
+.pd-bundleHint {
+  margin-top: 6px;
+  font-size: .92rem;
+  font-weight: 750;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 14px;
+}

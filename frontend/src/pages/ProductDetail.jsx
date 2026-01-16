@@ -9,7 +9,7 @@ import { track } from "../lib/metaPixel";
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription:
-    "Oferta Limitada: Compra tu consola hoy y te regalamos el SEGUNDO Mando para que juegues acompañado. (Valor del regalo: $25.000) y puedes jugar sin necesidad de internet",
+    "Volvé a divertirte como antes, pero en tu TV. La Game Stick M15 es ese “plan fácil” para cualquier día: conectás, agarrás los mandos y ya estás jugando. Ideal para jugar con amigos o en familia, revivir clásicos y pasar horas sin pensar qué poner. Trae 2 mandos para jugar de a dos y una biblioteca enorme de juegos retro para que siempre tengas algo nuevo que probar. Si querés una compra que se disfrute desde el minuto 1, esta es.",
 
   heroBullets: [
     "🎮 +20.000 Juegos ya instalados.",
@@ -1059,56 +1059,75 @@ export default function ProductDetail() {
 
             <div className="pd-divider pd-divider--mt">Elegí tu opción</div>
 
-            <div className="pd-bundles">
-              <label className={`pd-bundle hover-lift ${bundle === 1 ? "is-selected" : ""}`}>
+            <div className="pd-bundles pd-bundles-pro">
+              {/* OPCIÓN 1 */}
+              <label className={`pd-bundleCard ${bundle === 1 ? "is-selected" : ""}`}>
                 <input
                   type="radio"
                   name="bundle"
                   checked={bundle === 1}
-                  onChange={() => {
-                    setBundle(1);
-                    setQty(1);
-                  }}
+                  onChange={() => { setBundle(1); setQty(1); }}
                 />
-                <div className="pd-bundleBody">
-                  <div className="pd-bundleLeft">
+
+                <span className="pd-radio" aria-hidden="true" />
+                <div className="pd-bundleContent">
+                  <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      1 Game Stick + Regalo{" "}
-                      <span className="pd-miniTag pd-miniTag--offer">OFERTA</span>
+                      1 Consola <span className="pd-tag">Esencial</span>
                     </div>
-                    <div className="pd-bundleSub">Incluye 2do Mando GRATIS (Ahorras $25.000)</div>
+                    <div className="pd-bundlePrice">{moneyARS(unitPrice)}</div>
                   </div>
-                  <div className="pd-bundleRight">{moneyARS(unitPrice)}</div>
+
+                  <div className="pd-bundleSub">
+                    Incluye un mando de regalo 🎁
+                  </div>
+
+                  <div className="pd-bundleBottom">
+                    <span className="pd-miniBenefit">✅ Envío gratis</span>
+                    <span className="pd-miniBenefit">✅ Cable incluido</span>
+                  </div>
                 </div>
               </label>
 
-              <label className={`pd-bundle hover-lift ${bundle === 2 ? "is-selected" : ""}`}>
+              {/* OPCIÓN 2 */}
+              <label className={`pd-bundleCard ${bundle === 2 ? "is-selected" : ""}`}>
                 <input
                   type="radio"
                   name="bundle"
                   checked={bundle === 2}
-                  onChange={() => {
-                    setBundle(2);
-                    setQty((q) => (q < 2 ? 2 : q));
-                  }}
+                  onChange={() => { setBundle(2); setQty((q) => (q < 2 ? 2 : q)); }}
                 />
-                <div className="pd-bundleBody">
-                  <div className="pd-bundleLeft">
+
+                <span className="pd-radio" aria-hidden="true" />
+                <div className="pd-bundleContent">
+                  <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      Pack Dúo (2 u.) <span className="pd-miniTag highlight">Regalo Perfecto</span>
+                      Pack Regalo (2 u.)
+                      <span className="pd-tag hot">Mejor valor</span>
                     </div>
-                    <div className="pd-bundleSub">
-                      <b>Ahorrá</b> {pack2Discount}% (Para vos y un amigo)
+
+                    <div className="pd-bundlePrice">
+                      {moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}
+                      <div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div>
                     </div>
                   </div>
 
-                  <div className="pd-bundleRight">
-                    {moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}
-                    <div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div>
+                  <div className="pd-bundleSub">
+                    Ahorrás <b>{pack2Discount}%</b> • Ideal casa / regalo o trabajo
+                  </div>
+
+                  <div className="pd-bundleBottom">
+                    <span className="pd-miniBenefit">🔥 Más conveniente</span>
+                    <span className="pd-miniBenefit">✅ Envío gratis</span>
                   </div>
                 </div>
               </label>
+
+              <div className="pd-bundleHint">
+                Tip: si elegís <b>Pack Regalo</b>, te queda 1 en casa y 1 para regalar (o una en el trabajo).
+              </div>
             </div>
+
 
             <div className="scarcity-text scarcity-text--spaced">
               <span className="scarcity-icon">⚠️</span> ¡Quedan pocas unidades por alta demanda!
