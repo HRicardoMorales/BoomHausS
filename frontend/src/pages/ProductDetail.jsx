@@ -5,7 +5,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 
 /* ========================================================================
-   MARKETING CONTENT (EDICIÓN: ESTRATEGIA "REGALO")
+   MARKETING CONTENT
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription:
@@ -849,6 +849,7 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
+  // ✅ LOGICA DE COMPRA (LIMPIA, SIN POP-UP)
   const handleBuyNow = () => {
     if (!product) return;
     setRedirecting(true);
@@ -864,9 +865,13 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    setTimeout(() => navigate("/checkout"), 500);
+    // Redirige SIN mostrar pop-up
+    setTimeout(() => {
+      navigate('/checkout');
+    }, 500);
   };
 
+  // ✅ LOGICA AGREGAR AL CARRITO (CON POP-UP)
   const handleAddToCart = () => {
     if (!product) return;
     track("AddToCart", {
@@ -880,8 +885,9 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 5000);
+    setShowToast(true); // Muestra el pop-up visualmente
+    setTimeout(() => setShowToast(false), 5000); // Lo esconde a los 5s
+    
     window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } }));
   };
 
@@ -1251,6 +1257,168 @@ export default function ProductDetail() {
           {redirecting ? "..." : "COMPRAR"}
         </button>
       </div>
+
+      {/* ==============================================
+          ESTILOS CSS INCORPORADOS (Esto faltaba)
+          ============================================== */}
+      <style>{`
+        .pd-toast-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pd-toast-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03);
+            padding: 16px;
+            border-radius: 18px;
+            width: 320px;
+            max-width: 90vw;
+        }
+
+        .pd-toast-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .pd-toast-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+
+        .pd-toast-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .pd-toast-status {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #10b981; /* Verde éxito */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pd-toast-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .pd-toast-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 4px;
+        }
+
+        .pd-toast-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pd-toast-btn-primary, .pd-toast-btn-secondary {
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.1s;
+        }
+
+        .pd-toast-btn-primary {
+            background: #0B5CFF;
+            color: white;
+            box-shadow: 0 4px 12px rgba(11, 92, 255, 0.2);
+        }
+
+        .pd-toast-btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .pd-toast-btn-primary:active, .pd-toast-btn-secondary:active {
+            transform: scale(0.96);
+        }
+
+        .pd-toast-progress {
+            height: 3px;
+            background: #10b981;
+            width: 0%;
+            margin-top: 10px;
+            border-radius: 2px;
+            animation: toastProgress 5s linear forwards;
+        }
+
+        @keyframes slideInToast {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @media (max-width: 600px) {
+            .pd-toast-wrapper {
+            top: auto;
+            bottom: 20px;
+            right: 20px;
+            left: 20px;
+            width: auto;
+            display: flex;
+            justify-content: center;
+            }
+            .pd-toast-content {
+            width: 100%;
+            }
+        }
+        
+        .pd-discount-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #dc2626;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+        
+        .sticky-timer-red {
+            color: #dc2626;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        
+      `}</style>
     </main>
   );
 }

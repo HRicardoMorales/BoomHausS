@@ -52,8 +52,8 @@ export default function Navbar() {
     const linkBase = ({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`;
 
     return (
-        <header style={{ position: 'sticky', top: 0, zIndex: 9000, background: '#fff' }}>
-            {/* Solo mostramos el Marquee en Desktop para no ocupar espacio en móvil, o puedes dejarlo si gustas */}
+        <header style={{ position: 'sticky', top: 0, zIndex: 9000, background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+            {/* Solo mostramos el Marquee en Desktop */}
             <div className="desktop-only">
                 <Marquee items={['Envíos gratis a todo el país 🚚', 'Pago por transferencia 💸', 'Soporte por WhatsApp 💬', 'Compra segura ✅']} />
             </div>
@@ -65,13 +65,13 @@ export default function Navbar() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'space-between' }}>
                     
                     {/* Brand Desktop */}
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'inherit' }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 12, border: '1px solid rgba(11,92,255,.25)', background: 'linear-gradient(180deg, rgba(11,92,255,.22), rgba(34,195,255,.14))', display: 'grid', placeItems: 'center', fontWeight: 950 }}>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: '#0f172a' }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 12, border: '1px solid rgba(11,92,255,.25)', background: 'linear-gradient(180deg, rgba(11,92,255,.22), rgba(34,195,255,.14))', display: 'grid', placeItems: 'center', fontWeight: 950, color: '#0B5CFF' }}>
                             {storeName.slice(0, 1).toUpperCase()}
                         </div>
                         <div style={{ lineHeight: 1.1 }}>
                             <div style={{ fontWeight: 950, letterSpacing: '-0.03em' }}>{storeName}</div>
-                            <div className="muted" style={{ fontSize: '0.85rem' }}>Tienda oficial</div>
+                            <div className="muted" style={{ fontSize: '0.85rem', color: '#64748b' }}>Tienda oficial</div>
                         </div>
                     </Link>
 
@@ -86,17 +86,17 @@ export default function Navbar() {
                         {currentUser ? <NavLink className={linkBase} to="/my-orders">Mis pedidos</NavLink> : null}
                         {admin ? <><NavLink className={linkBase} to="/admin/orders">Admin pedidos</NavLink><NavLink className={linkBase} to="/admin/products">Admin productos</NavLink></> : null}
 
-                        <div style={{ width: 1, height: 26, background: 'var(--border)', margin: '0 0.35rem' }} />
+                        <div style={{ width: 1, height: 26, background: '#e2e8f0', margin: '0 0.35rem' }} />
 
                         {!currentUser ? (
                             <>
                                 <NavLink className={linkBase} to="/login">Login</NavLink>
-                                <NavLink className="btn btn-primary" to="/register">Registrarse →</NavLink>
+                                <NavLink className="btn btn-primary" to="/register" style={{padding: '8px 16px', fontSize: '0.9rem'}}>Registrarse →</NavLink>
                             </>
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-                                <span className="muted" style={{ fontWeight: 900, fontSize: '0.9rem' }}>{currentUser.name || currentUser.email}</span>
-                                <button className="btn btn-ghost" type="button" onClick={logout}>Salir</button>
+                                <span className="muted" style={{ fontWeight: 900, fontSize: '0.9rem', color: '#334155' }}>{currentUser.name || currentUser.email}</span>
+                                <button className="btn btn-ghost" type="button" onClick={logout} style={{color: '#ef4444'}}>Salir</button>
                             </div>
                         )}
                     </nav>
@@ -104,7 +104,7 @@ export default function Navbar() {
             </div>
 
             {/* =========================
-                NAVBAR MOBILE (Celular) - ESTILO NUEVO
+                NAVBAR MOBILE (Celular)
                ========================= */}
             <div className="mobile-nav-container">
                 <nav className="mobile-nav">
@@ -133,9 +133,9 @@ export default function Navbar() {
                     </div>
                 </nav>
 
-                {/* Menú Desplegable Móvil (Se abre al tocar el botón hamburguesa) */}
+                {/* Menú Desplegable Móvil */}
                 {open && (
-                    <div className="mobile-menu-dropdown card" style={{ margin: '0', borderRadius: '0 0 16px 16px', borderTop: 'none', padding: '1rem' }}>
+                    <div className="mobile-menu-dropdown card" style={{ margin: '0', borderRadius: '0 0 16px 16px', borderTop: 'none', padding: '1rem', background: 'white', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
                         <div style={{ display: 'grid', gap: '0.5rem' }}>
                             <NavLink className={linkBase} to="/">Inicio</NavLink>
                             <NavLink className={linkBase} to="/products">Tienda</NavLink>
@@ -153,23 +153,54 @@ export default function Navbar() {
             </div>
 
             <style>{`
-                /* === ESTILOS BASE NAVBAR === */
+                /* === ESTILOS CORREGIDOS (PARA FONDO BLANCO) === */
                 .nav-link { 
-                    position: relative; text-decoration: none; color: rgba(255,255,255,0.86); padding: 10px 12px; 
-                    border-radius: 12px; border: 1px solid transparent; transition: all .18s ease; 
-                    font-weight: 850; letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: 8px; 
-                    /* Color texto desktop por defecto (asumo fondo oscuro por tu diseño anterior, si es claro cámbialo a #333) */
-                    color: #fff; 
+                    position: relative; 
+                    text-decoration: none; 
+                    /* CAMBIO CLAVE: Color oscuro para que se vea en fondo blanco */
+                    color: #334155; 
+                    padding: 10px 12px; 
+                    border-radius: 12px; 
+                    border: 1px solid transparent; 
+                    transition: all .18s ease; 
+                    font-weight: 700; 
+                    letter-spacing: -0.01em; 
+                    display: inline-flex; 
+                    align-items: center; 
+                    gap: 8px; 
                 }
-                /* Si tu navbar desktop tiene fondo blanco, descomenta esto: */
-                /* .nav-link { color: #333; } */
 
-                .nav-link:hover { background: rgba(255,255,255,0.04); border-color: var(--border); transform: translateY(-1px); }
-                .nav-link--active { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+                .nav-link:hover { 
+                    background: #f1f5f9; /* Gris muy clarito al pasar el mouse */
+                    color: #0f172a;
+                }
                 
-                .cart-highlight { background: #ffffff !important; color: #0B5CFF !important; border: 2px solid #0B5CFF !important; box-shadow: 0 4px 15px rgba(11, 92, 255, 0.25) !important; font-weight: 950 !important; }
-                .cart-highlight .nav-pill { background: #0B5CFF !important; color: #ffffff !important; border: none !important; }
-                .nav-pill { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); font-size: 0.82rem; font-weight: 950; line-height: 1; }
+                .nav-link--active { 
+                    background: #e2e8f0; /* Gris más fuerte para el activo */
+                    color: #0f172a;
+                    font-weight: 850;
+                }
+                
+                /* Estilo del botón carrito resaltado */
+                .cart-highlight { 
+                    background: #eff6ff !important; 
+                    color: #0B5CFF !important; 
+                    border: 1px solid #bfdbfe !important; 
+                }
+                
+                .nav-pill { 
+                    display: inline-grid; 
+                    place-items: center; 
+                    min-width: 22px; 
+                    height: 22px; 
+                    padding: 0 8px; 
+                    border-radius: 999px; 
+                    background: #0B5CFF; 
+                    color: white;
+                    font-size: 0.82rem; 
+                    font-weight: 950; 
+                    line-height: 1; 
+                }
 
                 /* === RESPONSIVE LOGIC === */
                 .mobile-nav-container { display: none; }
@@ -182,10 +213,10 @@ export default function Navbar() {
                     .desktop-only { display: none; }
                     
                     /* Ajuste links dentro del menu dropdown movil */
-                    .nav-link { color: #333 !important; width: 100%; } 
+                    .nav-link { width: 100%; } 
                 }
 
-                /* === NUEVO DISEÑO MOBILE (AQUALYS) === */
+                /* === DISEÑO MOBILE === */
                 .mobile-nav {
                     display: flex; align-items: center; justify-content: space-between;
                     padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;

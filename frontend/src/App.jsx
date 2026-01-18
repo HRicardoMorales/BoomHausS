@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 import Navbar from './components/navbar.jsx';
 import Footer from './components/Footer.jsx';
@@ -26,55 +26,7 @@ import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
-
-// ✅ Componente Popup de Carrito (Toast)
-function CartToast() {
-  const [show, setShow] = useState(false);
-  const [productName, setProductName] = useState('');
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleAdd = (e) => {
-      setProductName(e.detail?.name || 'Producto');
-      setShow(true);
-      const timer = setTimeout(() => setShow(false), 4000);
-      return () => clearTimeout(timer);
-    };
-
-    window.addEventListener('cart:added', handleAdd);
-    return () => window.removeEventListener('cart:added', handleAdd);
-  }, []);
-
-  if (!show) return null;
-
-  return (
-    <div className="cart-toast">
-      <div className="cart-toast-info">
-        <div style={{ fontSize: '1.4rem' }}>✅</div>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontWeight: 950, fontSize: '1rem', lineHeight: 1.2 }}>¡Agregado!</div>
-          <div style={{
-            fontSize: '0.85rem',
-            opacity: 0.8,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
-            {productName}
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={() => { setShow(false); navigate('/cart'); }}
-        className="cart-toast-btn"
-      >
-        Ver Carrito →
-      </button>
-    </div>
-  );
-}
-
+import ScrollToTop from './components/ScrollToTop.jsx';
 function PrivateRoute({ children }) {
   const location = useLocation();
   const { token, user } = getStoredAuth();
@@ -92,10 +44,23 @@ export default function App() {
     trackPageView(location.pathname);
   }, [location.pathname]);
 
-  // Scroll Top
+  // ✅ SCROLL TOP REFORZADO (FIX DEFINITIVO)
   useEffect(() => {
+    // 1. Intenta scrollear la ventana principal
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+    
+    // 2. Intenta scrollear el documento raíz (a veces necesario en móviles)
+    document.documentElement.scrollTo(0, 0);
+    
+    // 3. Intenta scrollear tus contenedores CSS específicos
+    // (Si usas un layout donde el scroll está dentro de un div y no en el body)
+    const shell = document.querySelector('.app-shell');
+    const bodyDiv = document.querySelector('.app-body');
+    
+    if (shell) shell.scrollTo(0, 0);
+    if (bodyDiv) bodyDiv.scrollTo(0, 0);
+    
+  }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta (ej: ir a checkout)
 
   // Animación Reveal
   useEffect(() => {
@@ -121,8 +86,10 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <ScrollToTop />
       <Navbar />
-      <CartToast />
+      
+      {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
       <div className="app-body">
         <Routes>
