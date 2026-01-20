@@ -5,156 +5,132 @@ import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 
 /* ========================================================================
-   MARKETING CONTENT
+   MARKETING CONTENT (ANTENA TDA 4K)
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription:
-    "Volvé a divertirte como antes, pero en tu TV. La Game Stick M15 es ese “plan fácil” para cualquier día: conectás, agarrás los mandos y ya estás jugando. Ideal para jugar con amigos o en familia, revivir clásicos y pasar horas sin pensar qué poner. Trae 2 mandos para jugar de a dos y una biblioteca enorme de juegos retro para que siempre tengas algo nuevo que probar. Si querés una compra que se disfrute desde el minuto 1, esta es.",
+    "¿Seguís pagando fortunas por ver la tele? Cortá con los gastos fijos. Con la Antena TDA 4K Power-50, accedés a todos los canales de aire (Telefe, El Trece, TV Pública, Deportv y más) en calidad Full HD 1080p y 4K totalmente GRATIS. Gracias a su ganancia de 50 dBi y su cable extra-largo de 5 metros, capta señal donde otras no llegan. Conectala, escaneá y disfrutá.",
 
   heroBullets: [
-    "🎮 +20.000 Juegos ya instalados.",
-    "🎁 2do Joystick GRATIS (Oferta x Tiempo Limitado).",
-    "📺 Resolución 4K Ultra HD vía HDMI.",
-    "💾 Guardado de partidas (Save State).",
-    "🚀 15 Emuladores: PS1, Sega, Nintendo, Arcade...",
-    "✅ Plug & Play: Conectar y Jugar.",
+    "📺 Canales HD y 4K GRATIS de por vida.",
+    "🚀 Potencia Extrema 50 dBi (Mejor señal).",
+    "🔌 Cable de 5 Metros (Llega a la ventana).",
+    "🧲 Base Magnética de alta adherencia.",
+    "🌦️ Apta Interior y Exterior (Resiste lluvia).",
+    "✅ Sin contratos ni mensualidades.",
   ],
 
   stats: [
-    { pct: "20K+", text: "Juegos Clásicos" },
-    { pct: "GRATIS", text: "2do Joystick" },
-    { pct: "4K", text: "Calidad de Imagen" },
+    { pct: "100%", text: "Gratis Mensual" },
+    { pct: "50 dBi", text: "Alta Potencia" },
+    { pct: "4K", text: "Soporte UHD" },
   ],
 
   whatsIncluded: [
-    { name: "Game Stick M15 4K", icon: "🎮" },
-    { name: "Mando Principal", icon: "🕹️" },
-    { name: "2do Mando (REGALO)", icon: "🎁" },
-    { name: "Receptor + Cables", icon: "🔌" },
+    { name: "Antena TDA 50 dBi", icon: "📡" },
+    { name: "Cable Coaxial 5m", icon: "🔌" },
+    { name: "Adaptador Fichas", icon: "⚙️" },
+    { name: "Base Magnética", icon: "🧲" },
   ],
 
   breakthroughBenefits: {
-    title: "Tu infancia en un Stick",
-    subtitle: "Olvídate de comprar consolas viejas. Aquí tienes TODO en uno.",
+    title: "Televisión Premium, Costo Cero",
+    subtitle: "La solución definitiva para ver la tele sin pagar abonos.",
     items: [
       {
-        title: "Oferta 2x1 en Mandos",
-        desc: "Solo por hoy, incluimos el segundo joystick totalmente bonificado para que no juegues solo.",
-        icon: "🎁",
+        title: "Chau Facturas",
+        desc: "Nunca más pagues un abono mensual por ver los canales de aire nacionales.",
+        icon: "💸",
       },
       {
-        title: "Catálogo Infinito",
-        desc: "Desde Mario y Sonic hasta Street Fighter. 20.000 títulos para elegir.",
-        icon: "📚",
+        title: "Señal Donde Sea",
+        desc: "Con 5 metros de cable, podés ponerla cerca de la ventana o afuera para máxima señal.",
+        icon: "📡",
       },
       {
-        title: "Libertad Inalámbrica",
-        desc: "Juega desde el sofá sin cables molestos gracias a los controles 2.4G.",
-        icon: "🛋️",
+        title: "Calidad Cristalina",
+        desc: "Soporta transmisiones en 1080p y 4K. Olvídate de la 'lluvia' o imagen borrosa.",
+        icon: "💎",
       },
       {
-        title: "Potencia M15",
-        desc: "Chip mejorado para correr juegos de PS1 y Arcade sin lag.",
-        icon: "🚀",
+        title: "Base Magnética",
+        desc: "Se pega firmemente a cualquier metal o detrás de la TV. Queda fija y prolija.",
+        icon: "🧲",
       },
       {
-        title: "Guarda tu Progreso",
-        desc: "¿Te llaman a comer? Guarda la partida y retómala después.",
-        icon: "💾",
+        title: "Todo Terreno",
+        desc: "Diseñada para interiores, pero sellada para aguantar lluvia en exteriores.",
+        icon: "🌧️",
       },
       {
-        title: "Plug & Play",
-        desc: "Sin instalaciones. Conectas al HDMI y juegas al instante.",
+        title: "Instalación Fácil",
+        desc: "Es conectar la ficha al TV, poner 'Búsqueda de Canales' y listo.",
         icon: "⚡",
       },
     ],
   },
 
   slider: {
-    title: "Ayer vs. Hoy",
-    text: "Toda tu colección de cartuchos ahora cabe en tu bolsillo.",
-    labelBefore: "Antes (Cables y Cartuchos)",
-    labelAfter: "Ahora (Game Stick M15)",
+    title: "Señal Analógica vs. Digital",
+    text: "La diferencia es abismal. Pasá de ver con lluvia a ver en HD puro.",
+    labelBefore: "Antena Vieja (Lluvia)",
+    labelAfter: "Antena TDA 4K (Full HD)",
     imgBefore:
-      "https://pbs.twimg.com/media/G-wt1eTbQAEFNGS?format=jpg&name=small",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Static_TV.jpg/800px-Static_TV.jpg", // Estática/Lluvia
     imgAfter:
-      "https://pbs.twimg.com/media/G-wuj-CagAAQJqx?format=jpg&name=small",
+      "https://images.pexels.com/photos/5202955/pexels-photo-5202955.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", // TV Clara
   },
 
   comparison: {
-    title: "M15 vs. Consolas Viejas",
-    text: "La evolución de la nostalgia.",
-    brandName: "Game Stick M15",
-    competitorName: "Consola Original",
+    title: "Nuestra Antena vs. Cable",
+    text: "Hacé la cuenta de cuánto ahorrás al año.",
+    brandName: "Antena TDA 4K",
+    competitorName: "Empresa de Cable",
     features: [
-      { name: "20.000 Juegos Incluidos", us: true, others: false },
-      { name: "2do Mando GRATIS", us: true, others: false },
-      { name: "Conexión HDMI 4K", us: true, others: false },
-      { name: "No sopla cartuchos", us: true, others: false },
-      { name: "Guardado de Partida", us: true, others: false },
+      { name: "Costo Mensual $0", us: true, others: false },
+      { name: "Calidad Full HD / 4K", us: true, others: true },
+      { name: "Sin Contratos", us: true, others: false },
+      { name: "Portátil (Llevála de viaje)", us: true, others: false },
+      { name: "Instalación en 1 minuto", us: true, others: false },
     ],
   },
 
-  bigMedia: {
-    title: "Revive la magia en 4K.",
-    subtitle: "Invita a tus amigos, pide unas pizzas y vuelvan a tener 10 años.",
-    src: "https://pbs.twimg.com/media/G-wvy3vbQAMt65N?format=jpg&name=small",
-    isVideo: false,
-  },
-
   authority: {
-    title: "Editor en TecnoGaming",
+    title: "Instalador de TV y Redes",
     quote:
-      "He probado docenas de consolas retro chinas. Por este precio, la M15 es la única que ofrece emulación fluida y mandos que no se sienten de juguete. Es la compra inteligente del año.",
-    name: "Alejandro T.",
-    job: "Cliente Verificado",
-    img: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "Mucha gente gasta fortunas en cable solo para ver el noticiero y fútbol de aire. Esta antena de 50 dBi es la más potente que probé de las portátiles. El cable de 5 metros hace toda la diferencia para agarrar señal.",
+    name: "Martín G.",
+    job: "Técnico en Telecomunicaciones",
+    img: "https://images.pexels.com/photos/3862627/pexels-photo-3862627.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
 
   faq: [
     {
-      q: "¿El segundo mando es realmente gratis?",
-      a: "SÍ. Al comprar el pack hoy, te enviamos la caja con 2 mandos, pero solo pagas el precio de uno.",
+      q: "¿Sirve para cualquier TV?",
+      a: "Funciona directo en cualquier TV LED/Smart fabricado después de 2014 (que ya traen sintonizador TDA integrado). Si tenés una TV 'de tubo' muy vieja, necesitás un decodificador aparte.",
     },
     {
-      q: "¿Necesita internet?",
-      a: "NO. No necesitas internet ni WiFi. Todo viene instalado en la memoria interna.",
+      q: "¿Qué canales agarra?",
+      a: "Depende de tu zona, pero generalmente: Telefe HD, El Trece HD, América, Canal 9, TV Pública, Deportv, Encuentro, C5N, LN+, etc.",
     },
     {
-      q: "¿Qué pilas llevan los mandos?",
-      a: "Cada mando lleva 2 pilas AAA (las 'finitas'). No están incluidas.",
+      q: "¿Necesito internet o WiFi?",
+      a: "NO. Funciona satelitalmente con las torres de transmisión de aire. No consume datos ni internet.",
     },
     {
-      q: "¿Cómo se conecta?",
-      a: "El Stick va al puerto HDMI de la tele, y el cable USB al puerto USB de la tele.",
+      q: "¿El cable es largo?",
+      a: "Sí, trae 5 metros de cable coaxial reforzado, ideal para alejarla de la TV y acercarla a una ventana para mejor señal.",
     },
     {
-      q: "¿Puedo guardar partidas?",
-      a: "Sí, presionando SELECT + START al mismo tiempo abres el menú para Guardar.",
+      q: "¿Sirve para el Mundial/Fútbol?",
+      a: "Sí, podés ver todos los partidos que transmita la TV Pública o canales de aire en HD sin delay.",
     },
   ],
 
   trustBadges: {
-    payment: [
-      {
-        name: "Visa",
-        src: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-      },
-      {
-        name: "Mastercard",
-        src: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
-      },
-      {
-        name: "Amex",
-        src: "https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg",
-      },
-      {
-        name: "Mercado Pago",
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Mercado_Pago_Link_Logo.png/1024px-Mercado_Pago_Link_Logo.png",
-      },
-    ],
-    shipping: "Envío Gratis y Asegurado a todo el país",
-    security: "Garantía de funcionamiento asegurada.",
+    payment: [], // Se usan los íconos por defecto
+    shipping: "Envío Rápido a todo el país",
+    security: "Garantía de Recepción.",
   },
 };
 
@@ -162,10 +138,10 @@ const FALLBACK_IMG =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="900" height="900">
-    <rect width="100%" height="100%" fill="#f1f5f9"/>
+    <rect width="100%" height="100%" fill="#f8fafc"/>
     <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
-      font-family="Arial" font-size="28" fill="#94a3b8">
-      Imagen no disponible
+      font-family="Arial" font-size="24" fill="#cbd5e1">
+      Antena 50dBi
     </text>
   </svg>
 `);
@@ -197,7 +173,7 @@ function ClinicalStatsSection() {
   return (
     <div className="landing-section fade-in-section">
       <div className="landing-container">
-        <h3 className="landing-center-title">Potencia Retro</h3>
+        <h3 className="landing-center-title">Tecnología de Punta</h3>
         <div className="stats-grid">
           {stats.map((s, i) => (
             <div key={i} className="stat-card hover-scale">
@@ -222,6 +198,130 @@ function ClinicalStatsSection() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ✅ NUEVA SECCIÓN: PAIN POINT (Sustituye a Big Media y va arriba)
+function PainPointSection() {
+  return (
+    <div className="landing-section pain-point-bg fade-in-section">
+      <div className="landing-container split-layout">
+        <div className="split-text">
+          <div className="pain-label">⚠️ ATENCIÓN</div>
+          <h2 className="pain-title">¿CANSADO DE REGALAR TU DINERO EN RECIBOS DE CABLE?</h2>
+
+          <p className="pain-text">
+            Olvídate de las facturas a fin de mes. Con nuestra <b>Antena Premium</b>, el entretenimiento es 100% GRATIS y LEGAL.
+          </p>
+
+          <p className="pain-text">
+            ¿Por qué seguir pagando por algo que puedes tener <b>GRATIS</b>? Potencia, Calidad y Definición 4K en un solo dispositivo.
+          </p>
+
+          <div className="pain-benefits">
+            <div className="pain-benefit-item">
+              <span>🚫</span> Sin técnicos
+            </div>
+            <div className="pain-benefit-item">
+              <span>🚫</span> Sin herramientas
+            </div>
+            <div className="pain-benefit-item">
+              <span>🛠️</span> Sin complicaciones
+            </div>
+          </div>
+        </div>
+
+        <div className="split-media">
+          {/* Imagen/GIF simulado de cortar el cable o TV gratis */}
+          <div className="pain-media-container shadow-hover">
+            <img
+              src="https://images.pexels.com/photos/1201996/pexels-photo-1201996.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="Libertad de TV"
+              className="pain-img"
+            />
+            <div className="pain-overlay-badge">
+              💸 Ahorro Garantizado
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Estilos locales para esta sección */}
+      <style>{`
+        .pain-point-bg {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .pain-label {
+            background: #dc2626;
+            color: white;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+        .pain-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #1e293b;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        .pain-text {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .pain-benefits {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        .pain-benefit-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .pain-media-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .pain-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .pain-overlay-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 768px) {
+            .pain-title { font-size: 1.5rem; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -255,7 +355,7 @@ function WhatsIncludedSection() {
   return (
     <div className="landing-section whats-included-section fade-in-section">
       <div className="landing-container">
-        <h3 className="landing-center-title">¿Qué incluye la caja?</h3>
+        <h3 className="landing-center-title">Contenido de la Caja</h3>
         <div className="included-grid">
           {whatsIncluded.map((item, i) => (
             <div key={i} className="included-item hover-lift">
@@ -286,7 +386,7 @@ function BeforeAfterSlider() {
     <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
         <div className="split-text">
-          <span className="badge-pill">Evolución</span>
+          <span className="badge-pill">Calidad de Imagen</span>
           <h3 className="landing-title">{slider.title}</h3>
           <p className="landing-p">{slider.text}</p>
         </div>
@@ -348,81 +448,50 @@ function ComparisonTable() {
   );
 }
 
-function BigMediaSection() {
-  const { bigMedia } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section full-width-bg fade-in-section">
-      <div className="landing-container text-center">
-        <h2 className="video-title-pro">{bigMedia.title}</h2>
-        <p className="video-subtitle-pro">{bigMedia.subtitle}</p>
-
-        <div className="video-placeholder-container">
-          {bigMedia.isVideo ? (
-            <video
-              src={bigMedia.src}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="landing-video-real"
-            />
-          ) : (
-            <img
-              src={bigMedia.src}
-              alt="Demo"
-              className="landing-video-cover"
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ProblemSolutionSection() {
   return (
     <div className="landing-section fade-in-section">
       <div className="landing-container split-layout reverse-mobile">
         <div className="split-text">
-          <span className="badge-pill">Gaming 2024</span>
-          <h3 className="landing-title">¿Por qué elegir la M15?</h3>
+          <span className="badge-pill">Ahorro Inteligente</span>
+          <h3 className="landing-title">¿Por qué pasarte a TDA?</h3>
           <p className="landing-p">
-            La combinación perfecta entre nostalgia y tecnología moderna.
+            La televisión de aire evolucionó. Ya no es "agarrar mal". Ahora es digital, HD y totalmente gratis.
           </p>
 
           <div className="tech-list">
             <div className="tech-item hover-lift">
-              <div className="tech-icon">🎁</div>
+              <div className="tech-icon">💸</div>
               <div>
-                <strong>2do Mando GRATIS</strong>
-                <p>Te regalamos el segundo joystick para que juegues acompañado.</p>
+                <strong>Ahorro Total</strong>
+                <p>Dejá de tirar plata en servicios de cable que casi no usás.</p>
               </div>
             </div>
 
             <div className="tech-item hover-lift">
-              <div className="tech-icon">🏎️</div>
+              <div className="tech-icon">🔭</div>
               <div>
-                <strong>Cero Lag</strong>
-                <p>Procesador optimizado para emulación fluida.</p>
+                <strong>Largo Alcance</strong>
+                <p>El cable de 5mts te permite buscar la señal perfecta.</p>
               </div>
             </div>
 
             <div className="tech-item hover-lift">
               <div className="tech-icon">📺</div>
               <div>
-                <strong>Compatible con todo</strong>
-                <p>Funciona en cualquier TV/Monitor con HDMI.</p>
+                <strong>Universal</strong>
+                <p>Compatible con cualquier TV moderno sin aparatos extra.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="split-media ps-split-media">
-          <div className="gift-card hover-lift">
-            <h3 className="gift-card-title">¡El 2do Mando va de Regalo! 🎁</h3>
+          <div className="gift-card hover-lift" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
+            <h3 className="gift-card-title">¡Pack Casa Completa! 🏠</h3>
             <p className="gift-card-text">
-              No dejes que tu amigo te mire jugar. Con la oferta de hoy, te llevas el segundo joystick{" "}
-              <b>GRATIS</b>.
+              Llevando 2 unidades (una para el living, otra para la habitación) tenés un
+              <b> 10% de DESCUENTO EXTRA</b>.
             </p>
           </div>
         </div>
@@ -496,101 +565,68 @@ function TestimonialsSection() {
   const allReviews = [
     {
       date: "Hace 2 días",
-      author: "Matías F.",
-      location: "Córdoba",
+      author: "Carlos M.",
+      location: "San Martín, GBA",
       rating: 5,
       verified: true,
-      title: "Superó mis expectativas",
+      title: "Chau Cablevisión",
       text:
-        "La verdad tenía dudas porque vi muchas parecidas en internet, pero esta funciona joya. Los joysticks se sienten bien, no son pesados. Lo único malo es que las pilas se gastan rápido si jugás mucho, compren recargables.",
+        "Me cansé de que me aumenten todos los meses. Compré esta antena, la pegué atrás de la tele con el imán y agarró como 30 canales en HD. Telefe y el Trece se ven mejor que con el deco.",
       image: null,
     },
     {
-      date: "Hace 5 días",
-      author: "Lucas G.",
-      location: "Buenos Aires",
+      date: "Hace 4 días",
+      author: "Romina S.",
+      location: "Caballito, CABA",
       rating: 5,
       verified: true,
-      title: "El regalo del 2do mando es real",
+      title: "Funciona perfecto en departamento",
       text:
-        "Llegó todo en la caja. Pensé que era mentira lo del mando de regalo pero vinieron los dos. Ya le dimos duro al Street Fighter con mi hermano. Recomendado.",
+        "Vivo en un 3er piso interno y tenía miedo que no agarre. El cable largo me salvó, la acerqué a la ventana y listo. Imagen 10 puntos.",
       image: null,
     },
     {
       date: "Hace 1 semana",
-      author: "Valeria S.",
-      location: "Mendoza",
+      author: "Gustavo P.",
+      location: "La Plata",
       rating: 4,
       verified: true,
-      title: "Muy buena, llegó rápido",
+      title: "Buena potencia",
       text:
-        "Me llegó en 3 días a Mendoza. La consola es chiquita, queda escondida atrás de la tele, eso me gustó. Trae bocha de juegos, algunos repetidos pero los clásicos están todos.",
+        "Probé una antena barata antes y se cortaba. Esta tiene una base pesada y se nota que tiene más potencia. Agarro canales de deportes y noticias sin drama.",
       image: null,
     },
     {
       date: "Hace 1 semana",
-      author: "Esteban D.",
-      location: "CABA",
+      author: "Mariana L.",
+      location: "Córdoba Capital",
       rating: 5,
       verified: true,
-      title: "Nostalgia pura",
+      title: "Fácil de instalar",
       text:
-        "No puedo creer que tenga el Pepsi Man jajaja. Es enchufar y jugar, no tuve que configurar nada. Vale cada peso.",
+        "Literalmente la enchufé y puse autoprogramación. En 5 minutos estaba viendo la novela en HD. Recomendada.",
       image: null,
     },
     {
       date: "Hace 2 semanas",
-      author: "Camila R.",
-      location: "Santa Fe",
+      author: "Esteban R.",
+      location: "Rosario",
       rating: 5,
       verified: true,
-      title: "Excelente atención",
+      title: "Excelente para el mundial",
       text:
-        "Tuve un problema para conectarlo al principio (era mi tele) y me respondieron al toque por WhatsApp para ayudarme. Unos genios.",
+        "La compré para ver los partidos sin el delay de internet y es un caño. Cero cortes.",
       image: null,
     },
     {
       date: "Hace 3 semanas",
-      author: "Jorge P.",
-      location: "Neuquén",
+      author: "Fernanda T.",
+      location: "Tigre",
       rating: 4,
       verified: true,
       title: "Buen producto",
       text:
-        "La relación precio calidad es imbatible. No esperen gráficos de PS5, son juegos retro. Para pasar el rato con amigos va como piña.",
-      image: null,
-    },
-    {
-      date: "Hace 3 semanas",
-      author: "Fernando A.",
-      location: "Rosario",
-      rating: 5,
-      verified: true,
-      title: "Todo OK",
-      text:
-        "Compré el pack de 2 para regalarle una a mi ahijado y quedé como un rey. La presentación es simple pero cumple.",
-      image: null,
-    },
-    {
-      date: "Hace 1 mes",
-      author: "Lucía M.",
-      location: "Tucumán",
-      rating: 5,
-      verified: true,
-      title: "Me encanta",
-      text:
-        "Los juegos de Mario y Sonic andan perfecto. Me hace acordar a cuando era chica. El envío tardó un poquito más de lo esperado pero llegó bien.",
-      image: null,
-    },
-    {
-      date: "Hace 1 mes",
-      author: "Gustavo L.",
-      location: "La Plata",
-      rating: 4,
-      verified: true,
-      title: "Buena opción económica",
-      text:
-        "Si querés revivir viejos tiempos sin gastar una fortuna en una consola usada, esto es lo mejor. Los mandos son tipo Play, bastante cómodos.",
+        "Llegó rápido. La calidad de los materiales se ve buena, el cable es grueso. Lo único es que hay que buscarle la ubicación justa, pero una vez que la encontrás, vuela.",
       image: null,
     },
   ];
@@ -604,10 +640,10 @@ function TestimonialsSection() {
           <div className="rh-left">
             <h3 className="tm-main-title tm-main-title--left">Opiniones del producto</h3>
             <div className="rh-score-row">
-              <span className="rh-big-score">4.8</span>
+              <span className="rh-big-score">4.7</span>
               <div className="rh-stars-col">
                 <span className="rh-stars">★★★★★</span>
-                <span className="rh-count">Base en 1,204 opiniones</span>
+                <span className="rh-count">Base en 843 opiniones</span>
               </div>
             </div>
           </div>
@@ -616,42 +652,18 @@ function TestimonialsSection() {
             <div className="rh-bar-row">
               <span className="rh-star-label">5 ★</span>
               <div className="rh-bar-bg">
-                <div className="rh-bar-fill w85"></div>
+                <div className="rh-bar-fill w80"></div>
               </div>
-              <span className="rh-pct">85%</span>
+              <span className="rh-pct">80%</span>
             </div>
-
             <div className="rh-bar-row">
               <span className="rh-star-label">4 ★</span>
               <div className="rh-bar-bg">
-                <div className="rh-bar-fill w10"></div>
+                <div className="rh-bar-fill w15"></div>
               </div>
-              <span className="rh-pct">10%</span>
+              <span className="rh-pct">15%</span>
             </div>
-
-            <div className="rh-bar-row">
-              <span className="rh-star-label">3 ★</span>
-              <div className="rh-bar-bg">
-                <div className="rh-bar-fill w3"></div>
-              </div>
-              <span className="rh-pct">3%</span>
-            </div>
-
-            <div className="rh-bar-row">
-              <span className="rh-star-label">2 ★</span>
-              <div className="rh-bar-bg">
-                <div className="rh-bar-fill w1"></div>
-              </div>
-              <span className="rh-pct">1%</span>
-            </div>
-
-            <div className="rh-bar-row">
-              <span className="rh-star-label">1 ★</span>
-              <div className="rh-bar-bg">
-                <div className="rh-bar-fill w1"></div>
-              </div>
-              <span className="rh-pct">1%</span>
-            </div>
+            {/* Barras menores... */}
           </div>
         </div>
 
@@ -728,7 +740,7 @@ function Stars() {
       <span className="hero-star on">★</span>
       <span className="hero-star on">★</span>
       <span className="hero-star on">★</span>{" "}
-      <span className="hero-ratingText">4.9/5</span>
+      <span className="hero-ratingText">4.8/5</span>
     </div>
   );
 }
@@ -737,6 +749,135 @@ function moneyARS(n) {
   const num = Number(n);
   if (Number.isNaN(num)) return "$0";
   return `$${Math.round(num).toLocaleString("es-AR")}`;
+}
+function ChannelLogosSection() {
+  // Usamos dominios oficiales para obtener los logos automáticamente
+  const channels = [
+    { name: "Telefe", url: "https://logo.clearbit.com/telefe.com" },
+    { name: "El Trece", url: "https://logo.clearbit.com/eltrecetv.com.ar" },
+    { name: "TN", url: "https://logo.clearbit.com/tn.com.ar" },
+    { name: "TV Pública", url: "https://www.google.com/s2/favicons?domain=tvpublica.com.ar&sz=128" }, // Google Backup
+    { name: "América TV", url: "https://logo.clearbit.com/americatv.com.ar" },
+    { name: "Canal 9", url: "https://logo.clearbit.com/elnueve.com.ar" },
+    { name: "Cine.Ar", url: "https://www.google.com/s2/favicons?domain=cine.ar&sz=128" }, // Google Backup
+    { name: "Deportv", url: "https://www.google.com/s2/favicons?domain=deportv.gov.ar&sz=128" },
+  ];
+
+  return (
+    <div className="landing-section fade-in-section" style={{ padding: '2.5rem 0', background: '#ffffff' }}>
+      <div className="landing-container">
+        
+        <div style={{textAlign: 'center', marginBottom: '30px'}}>
+           <p className="landing-center-subtitle" style={{
+              fontSize: '0.85rem', 
+              textTransform: 'uppercase', 
+              letterSpacing: '1.5px', 
+              fontWeight: 800,
+              color: '#94a3b8',
+              marginBottom: '10px'
+           }}>
+             GRILLA DE CANALES DIGITALES
+           </p>
+           <h3 style={{fontSize: '1.4rem', margin: 0, color: '#1e293b'}}>
+             Cine, Deportes y Noticias <span style={{color: '#10b981'}}>en Full HD</span>
+           </h3>
+        </div>
+
+        <div className="channel-grid">
+          {channels.map((c, i) => (
+            <div key={i} className="channel-item" title={c.name}>
+              {/* Intentamos cargar la imagen, si falla mostramos texto */}
+              <img 
+                src={c.url} 
+                alt={c.name} 
+                className="channel-img" 
+                loading="lazy"
+                onError={(e) => {
+                    e.target.style.display = 'none'; // Oculta imagen rota
+                    e.target.nextSibling.style.display = 'block'; // Muestra texto
+                }}
+              />
+              <span className="channel-fallback-text" style={{display: 'none'}}>{c.name}</span>
+            </div>
+          ))}
+          
+          {/* Item Extra: "+30 Canales" */}
+          <div className="channel-item more-channels">
+             <span style={{fontSize: '1.5rem', fontWeight: 900, color: '#1e293b'}}>+30</span>
+             <span style={{fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase'}}>Señales<br/>Más</span>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        .channel-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 20px;
+          align-items: center;
+          justify-items: center;
+          max-width: 900px;
+          margin: 0 auto;
+        }
+        .channel-item {
+          width: 100%;
+          height: 65px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f8fafc;
+          border-radius: 12px;
+          padding: 12px;
+          border: 1px solid #e2e8f0;
+          transition: transform 0.2s, box-shadow 0.2s;
+          position: relative;
+          overflow: hidden;
+        }
+        .channel-item:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+          background: #fff;
+          border-color: #cbd5e1;
+        }
+        .channel-img {
+          max-height: 100%;
+          max-width: 100%;
+          object-fit: contain;
+          filter: grayscale(100%);
+          opacity: 0.8;
+          transition: all 0.3s ease;
+        }
+        .channel-item:hover .channel-img {
+          filter: grayscale(0%);
+          opacity: 1;
+        }
+        .channel-fallback-text {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #475569;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .more-channels {
+           display: flex;
+           gap: 8px;
+           background: #eef2ff;
+           border: 1px dashed #818cf8;
+        }
+
+        @media (max-width: 768px) {
+          .channel-grid {
+             grid-template-columns: repeat(3, 1fr);
+             gap: 12px;
+          }
+          .channel-item {
+             height: 55px;
+             padding: 8px;
+          }
+        }
+      `}</style>
+    </div>
+  );
 }
 
 export default function ProductDetail() {
@@ -811,8 +952,8 @@ export default function ProductDetail() {
   const compareAt =
     Number(product?.originalPrice) ||
     Number(product?.compareAtPrice) ||
-    (price ? Math.round(price * 1.35) : 0);
-  const soldCount = product?.soldCount ?? product?.socialProofCount ?? 1284;
+    (price ? Math.round(price * 1.50) : 0); // Mark-up más alto para este producto
+  const soldCount = product?.soldCount ?? product?.socialProofCount ?? 2105;
 
   const pack2Discount = 10;
   const unitPrice = price;
@@ -832,7 +973,7 @@ export default function ProductDetail() {
       product?._id ||
       (product?.id ? String(product.id) : null) ||
       id ||
-      "GAMESTICK_M15",
+      "ANTENA_TDA_4K",
     [product, id]
   );
 
@@ -849,7 +990,7 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
-  // ✅ LOGICA DE COMPRA (LIMPIA, SIN POP-UP)
+  // ✅ LOGICA DE COMPRA
   const handleBuyNow = () => {
     if (!product) return;
     setRedirecting(true);
@@ -865,13 +1006,12 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    // Redirige SIN mostrar pop-up
     setTimeout(() => {
       navigate('/checkout');
     }, 500);
   };
 
-  // ✅ LOGICA AGREGAR AL CARRITO (CON POP-UP)
+  // ✅ LOGICA AGREGAR AL CARRITO
   const handleAddToCart = () => {
     if (!product) return;
     track("AddToCart", {
@@ -885,9 +1025,9 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    setShowToast(true); // Muestra el pop-up visualmente
-    setTimeout(() => setShowToast(false), 5000); // Lo esconde a los 5s
-    
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 5000);
+
     window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } }));
   };
 
@@ -1005,14 +1145,14 @@ export default function ProductDetail() {
           {/* INFO */}
           <aside className="pd-info fade-in-section">
             <div className="hero-top">
-              <div className="gift-banner">
-                <span className="gift-banner-ico">🎁</span> BONUS ACTIVADO: 2do Mando GRATIS
+              <div className="gift-banner" style={{ background: '#10b981', color: 'white' }}>
+                <span className="gift-banner-ico">✅</span> STOCK DISPONIBLE: ENVÍO INMEDIATO
               </div>
 
               <div className="hero-proof">
-                <span className="hero-pill-hot pulse-animation">🔥 Viral en TikTok</span>
+                <span className="hero-pill-hot pulse-animation">🔥 Tendencia en Hogar</span>
                 <div className="hero-proofText">
-                  <b>{Number(soldCount).toLocaleString("es-AR")}</b> unidades vendidas
+                  <b>{Number(soldCount).toLocaleString("es-AR")}</b> personas dejaron de pagar cable
                 </div>
               </div>
 
@@ -1052,18 +1192,18 @@ export default function ProductDetail() {
 
               <div className="pd-trust-icons">
                 <div className="trust-icon-item">
-                  <span>🛡️</span> Garantía asegurada
+                  <span>📡</span> Señal HD
                 </div>
                 <div className="trust-icon-item">
                   <span>🚚</span> Envío Gratis
                 </div>
                 <div className="trust-icon-item">
-                  <span>🎁</span> Regalo Incluido
+                  <span>💰</span> Ahorro Total
                 </div>
               </div>
             </div>
 
-            <div className="pd-divider pd-divider--mt">Elegí tu opción</div>
+            <div className="pd-divider pd-divider--mt">Elegí tu Pack</div>
 
             <div className="pd-bundles pd-bundles-pro">
               {/* OPCIÓN 1 */}
@@ -1079,18 +1219,18 @@ export default function ProductDetail() {
                 <div className="pd-bundleContent">
                   <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      1 Consola <span className="pd-tag">Esencial</span>
+                      1 Antena <span className="pd-tag">Pack Living</span>
                     </div>
                     <div className="pd-bundlePrice">{moneyARS(unitPrice)}</div>
                   </div>
 
                   <div className="pd-bundleSub">
-                    Incluye un mando de regalo 🎁
+                    Ideal para probar o para 1 TV
                   </div>
 
                   <div className="pd-bundleBottom">
                     <span className="pd-miniBenefit">✅ Envío gratis</span>
-                    <span className="pd-miniBenefit">✅ Cable incluido</span>
+                    <span className="pd-miniBenefit">✅ Base + Cable 5m</span>
                   </div>
                 </div>
               </label>
@@ -1108,8 +1248,8 @@ export default function ProductDetail() {
                 <div className="pd-bundleContent">
                   <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      Pack Regalo (2 u.)
-                      <span className="pd-tag hot">Mejor valor</span>
+                      Pack Casa Completa (2 u.)
+                      <span className="pd-tag hot">Oferta</span>
                     </div>
 
                     <div className="pd-bundlePrice">
@@ -1119,18 +1259,18 @@ export default function ProductDetail() {
                   </div>
 
                   <div className="pd-bundleSub">
-                    Ahorrás <b>{pack2Discount}%</b> • Ideal casa / regalo o trabajo
+                    Llevate 2 (Living + Cuarto) con <b>10% OFF</b>
                   </div>
 
                   <div className="pd-bundleBottom">
-                    <span className="pd-miniBenefit">🔥 Más conveniente</span>
+                    <span className="pd-miniBenefit">🔥 El más elegido</span>
                     <span className="pd-miniBenefit">✅ Envío gratis</span>
                   </div>
                 </div>
               </label>
 
               <div className="pd-bundleHint">
-                Tip: si elegís <b>Pack Regalo</b>, te queda 1 en casa y 1 para regalar (o una en el trabajo).
+                Tip: La mayoría lleva el <b>Pack Casa Completa</b> para tener señal en el cuarto y el comedor.
               </div>
             </div>
 
@@ -1141,7 +1281,7 @@ export default function ProductDetail() {
 
             <div className="pd-ctaBlock">
               <button className="pd-ctaSecondary btn-breathing-intense" type="button" onClick={handleBuyNow} disabled={redirecting}>
-                {redirecting ? "PROCESANDO PAGO..." : "COMPRAR Y RECLAMAR REGALO"}
+                {redirecting ? "PROCESANDO..." : "COMPRAR Y AHORRAR"}
               </button>
 
               <div className="pd-addToCartWrap">
@@ -1172,6 +1312,16 @@ export default function ProductDetail() {
                           <strong>{key}:</strong> {val}
                         </li>
                       ))}
+                    {/* Specs hardcodeadas si faltan en DB */}
+                    {!product.specs && (
+                      <>
+                        <li><strong>Ganancia:</strong> 50 dBi</li>
+                        <li><strong>Largo Cable:</strong> 5 Metros</li>
+                        <li><strong>Resolución:</strong> 4K / 1080p</li>
+                        <li><strong>Conector:</strong> Coaxial Universal</li>
+                        <li><strong>Uso:</strong> Interior / Exterior</li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -1188,7 +1338,7 @@ export default function ProductDetail() {
                       <strong>Envío Gratis:</strong> A todo el país (Correo Arg / Andreani).
                     </li>
                     <li>
-                      <strong>Garantía Oficial:</strong> 90 días por fallas.
+                      <strong>Garantía de Señal:</strong> Si no te funciona, tenés devolución gratis.
                     </li>
                     <li>
                       <strong>Compra Protegida:</strong> Tu dinero seguro con Mercado Pago.
@@ -1203,13 +1353,16 @@ export default function ProductDetail() {
         {/* RESTO DE SECCIONES */}
         <div className="pd-sections">
           <ClinicalStatsSection />
+          {/* ✅ AQUÍ ESTÁ LA NUEVA SECCIÓN DE "DOLOR" AL PRINCIPIO */}
+          <PainPointSection />
+          <ChannelLogosSection />
           <AuthoritySection />
           <BreakthroughSection />
           <BeforeAfterSlider />
           <ComparisonTable />
           <ProblemSolutionSection />
           <WhatsIncludedSection />
-          <BigMediaSection />
+          {/* ❌ BIG MEDIA ELIMINADO */}
           <FaqSection />
           <TestimonialsSection />
         </div>
@@ -1258,9 +1411,6 @@ export default function ProductDetail() {
         </button>
       </div>
 
-      {/* ==============================================
-          ESTILOS CSS INCORPORADOS (Esto faltaba)
-          ============================================== */}
       <style>{`
         .pd-toast-wrapper {
             position: fixed;
@@ -1269,7 +1419,6 @@ export default function ProductDetail() {
             z-index: 99999;
             animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         .pd-toast-content {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
@@ -1281,7 +1430,6 @@ export default function ProductDetail() {
             width: 320px;
             max-width: 90vw;
         }
-
         .pd-toast-main {
             display: flex;
             align-items: center;
@@ -1290,7 +1438,6 @@ export default function ProductDetail() {
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(0,0,0,0.06);
         }
-
         .pd-toast-img {
             width: 40px;
             height: 40px;
@@ -1298,21 +1445,18 @@ export default function ProductDetail() {
             object-fit: cover;
             background: #f1f5f9;
         }
-
         .pd-toast-info {
             display: flex;
             flex-direction: column;
             flex: 1;
         }
-
         .pd-toast-status {
             font-size: 0.8rem;
             font-weight: 800;
-            color: #10b981; /* Verde éxito */
+            color: #10b981;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .pd-toast-name {
             font-size: 0.9rem;
             font-weight: 700;
@@ -1322,7 +1466,6 @@ export default function ProductDetail() {
             text-overflow: ellipsis;
             max-width: 180px;
         }
-
         .pd-toast-close {
             background: none;
             border: none;
@@ -1331,13 +1474,11 @@ export default function ProductDetail() {
             font-size: 1.2rem;
             padding: 0 4px;
         }
-
         .pd-toast-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .pd-toast-btn-primary, .pd-toast-btn-secondary {
             border: none;
             border-radius: 10px;
@@ -1348,22 +1489,18 @@ export default function ProductDetail() {
             text-align: center;
             transition: transform 0.1s;
         }
-
         .pd-toast-btn-primary {
             background: #0B5CFF;
             color: white;
             box-shadow: 0 4px 12px rgba(11, 92, 255, 0.2);
         }
-
         .pd-toast-btn-secondary {
             background: #f1f5f9;
             color: #475569;
         }
-
         .pd-toast-btn-primary:active, .pd-toast-btn-secondary:active {
             transform: scale(0.96);
         }
-
         .pd-toast-progress {
             height: 3px;
             background: #10b981;
@@ -1372,17 +1509,14 @@ export default function ProductDetail() {
             border-radius: 2px;
             animation: toastProgress 5s linear forwards;
         }
-
         @keyframes slideInToast {
             from { opacity: 0; transform: translateY(-20px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @keyframes toastProgress {
             from { width: 100%; }
             to { width: 0%; }
         }
-
         @media (max-width: 600px) {
             .pd-toast-wrapper {
             top: auto;
@@ -1397,7 +1531,6 @@ export default function ProductDetail() {
             width: 100%;
             }
         }
-        
         .pd-discount-badge {
             position: absolute;
             top: 12px;
@@ -1410,14 +1543,11 @@ export default function ProductDetail() {
             font-size: 0.8rem;
             z-index: 10;
         }
-        
         .sticky-timer-red {
             color: #dc2626;
             font-weight: 800;
             font-variant-numeric: tabular-nums;
         }
-
-        
       `}</style>
     </main>
   );

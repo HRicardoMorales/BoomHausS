@@ -18,11 +18,11 @@ function GalleryCarousel({
                 ? imagesProp
                 : [
                     // TIP: reemplazá por tus fotos reales (URLs o /assets)
-                    'https://gorilagames.com/img/Public/1019/68444-producto-consola-retro-game-stick-pro-m15-gorila-games-1.jpg',
-                    'https://gorilagames.com/img/Public/1019/7481-producto-consola-retro-game-stick-pro-m15-gorila-games-3.jpg',
-                    'https://gorilagames.com/img/Public/1019/54159-producto-consola-retro-game-stick-pro-m15-gorila-games-4.jpg',
-                    'https://gorilagames.com/img/Public/1019/34311-producto-consola-retro-game-stick-pro-m15-gorila-games-7.jpg',
-                    'https://gorilagames.com/img/Public/1019/89379-producto-consola-retro-game-stick-pro-m15-gorila-games-2.jpg'
+                    'https://pbs.twimg.com/media/G_EIJHgXYAAjh-v?format=jpg&name=360x360',
+                    'https://pbs.twimg.com/media/G_EIJHMWIAA3uOY?format=jpg&name=360x360',
+                    'https://pbs.twimg.com/media/G_EIJHJXUAA5Dfb?format=jpg&name=360x360',
+                    'https://http2.mlstatic.com/D_NQ_NP_2X_895215-MLA99592947912_122025-F.webp',
+                    'https://http2.mlstatic.com/D_NQ_NP_2X_919997-MLA100077402457_122025-F.webp'
                 ],
         [imagesProp]
     );
