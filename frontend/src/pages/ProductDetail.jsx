@@ -76,9 +76,9 @@ const MARKETING_CONTENT = {
     labelBefore: "Antena Vieja (Lluvia)",
     labelAfter: "Antena TDA 4K (Full HD)",
     imgBefore:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Static_TV.jpg/800px-Static_TV.jpg", // Estática/Lluvia
+      "https://pbs.twimg.com/media/G_FUDEBWYAA03b0?format=jpg&name=360x360", // Estática/Lluvia
     imgAfter:
-      "https://images.pexels.com/photos/5202955/pexels-photo-5202955.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", // TV Clara
+      "https://pbs.twimg.com/media/G_FUB7oWkAAHb9e?format=jpg&name=360x360", // TV Clara
   },
 
   comparison: {
@@ -766,45 +766,45 @@ function ChannelLogosSection() {
   return (
     <div className="landing-section fade-in-section" style={{ padding: '2.5rem 0', background: '#ffffff' }}>
       <div className="landing-container">
-        
-        <div style={{textAlign: 'center', marginBottom: '30px'}}>
-           <p className="landing-center-subtitle" style={{
-              fontSize: '0.85rem', 
-              textTransform: 'uppercase', 
-              letterSpacing: '1.5px', 
-              fontWeight: 800,
-              color: '#94a3b8',
-              marginBottom: '10px'
-           }}>
-             GRILLA DE CANALES DIGITALES
-           </p>
-           <h3 style={{fontSize: '1.4rem', margin: 0, color: '#1e293b'}}>
-             Cine, Deportes y Noticias <span style={{color: '#10b981'}}>en Full HD</span>
-           </h3>
+
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <p className="landing-center-subtitle" style={{
+            fontSize: '0.85rem',
+            textTransform: 'uppercase',
+            letterSpacing: '1.5px',
+            fontWeight: 800,
+            color: '#94a3b8',
+            marginBottom: '10px'
+          }}>
+            GRILLA DE CANALES DIGITALES
+          </p>
+          <h3 style={{ fontSize: '1.4rem', margin: 0, color: '#1e293b' }}>
+            Cine, Deportes y Noticias <span style={{ color: '#10b981' }}>en Full HD</span>
+          </h3>
         </div>
 
         <div className="channel-grid">
           {channels.map((c, i) => (
             <div key={i} className="channel-item" title={c.name}>
               {/* Intentamos cargar la imagen, si falla mostramos texto */}
-              <img 
-                src={c.url} 
-                alt={c.name} 
-                className="channel-img" 
+              <img
+                src={c.url}
+                alt={c.name}
+                className="channel-img"
                 loading="lazy"
                 onError={(e) => {
-                    e.target.style.display = 'none'; // Oculta imagen rota
-                    e.target.nextSibling.style.display = 'block'; // Muestra texto
+                  e.target.style.display = 'none'; // Oculta imagen rota
+                  e.target.nextSibling.style.display = 'block'; // Muestra texto
                 }}
               />
-              <span className="channel-fallback-text" style={{display: 'none'}}>{c.name}</span>
+              <span className="channel-fallback-text" style={{ display: 'none' }}>{c.name}</span>
             </div>
           ))}
-          
+
           {/* Item Extra: "+30 Canales" */}
           <div className="channel-item more-channels">
-             <span style={{fontSize: '1.5rem', fontWeight: 900, color: '#1e293b'}}>+30</span>
-             <span style={{fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase'}}>Señales<br/>Más</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>+30</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Señales<br />Más</span>
           </div>
         </div>
       </div>
@@ -1064,6 +1064,21 @@ export default function ProductDetail() {
         </div>
       </main>
     );
+  // Lógica para el mensaje de envío
+  const getShippingMessage = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay(); // 0 = Domingo, 6 = Sábado
+
+    // Si es fin de semana, ponemos algo genérico para no mentir
+    if (day === 0 || day === 6) return "Llega el Lunes/Martes";
+
+    // Si es día de semana antes de las 3 PM
+    if (hour < 15) return "Llega Mañana";
+
+    // Si ya pasó el corte del correo
+    return "Despacho Inmediato";
+  };
 
   return (
     <main className="section main-wrapper pd-page">
@@ -1189,6 +1204,21 @@ export default function ProductDetail() {
                   </div>
                 </div>
               </div>
+              {/* === NUEVO AVISO DE ENVÍO === */}
+              <div className="shipping-notice-card">
+                <div className="shipping-icon-box">
+                  <span className="shipping-icon">⚡</span>
+                </div>
+                <div className="shipping-text-col">
+                  <div className="shipping-title">
+                    <span className="shipping-highlight">Full</span> {getShippingMessage()}
+                  </div>
+                  <div className="shipping-subtitle">
+                    Comprando dentro de las próximas <b>2 horas</b>
+                  </div>
+                </div>
+              </div>
+              {/* ============================ */}
 
               <div className="pd-trust-icons">
                 <div className="trust-icon-item">
@@ -1547,6 +1577,65 @@ export default function ProductDetail() {
             color: #dc2626;
             font-weight: 800;
             font-variant-numeric: tabular-nums;
+        }
+            .shipping-notice-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0fdf4; /* Verde muy suave */
+            border: 1px solid #bbf7d0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .shipping-icon-box {
+            background: #dcfce7;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .shipping-icon {
+            font-size: 1.2rem;
+            animation: pulseGreen 2s infinite;
+        }
+
+        .shipping-text-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shipping-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #166534; /* Verde oscuro */
+            line-height: 1.2;
+        }
+
+        .shipping-highlight {
+            font-style: italic;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #16a34a;
+        }
+
+        .shipping-subtitle {
+            font-size: 0.8rem;
+            color: #15803d;
+            opacity: 0.9;
+        }
+
+        @keyframes pulseGreen {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
         }
       `}</style>
     </main>
