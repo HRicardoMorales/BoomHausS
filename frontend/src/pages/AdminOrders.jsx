@@ -24,7 +24,7 @@ function formatDate(d) {
 
 function getStatusColor(status) {
     switch (String(status).toLowerCase()) {
-        case 'approved': 
+        case 'approved':
         case 'confirmed':
         case 'delivered':
         case 'shipped':
@@ -43,7 +43,7 @@ function getStatusColor(status) {
 // Helper para obtener URL completa de imagen
 const getImageUrl = (url) => {
     if (!url) return null;
-    if (url.startsWith('http')) return url; 
+    if (url.startsWith('http')) return url;
     const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
     const cleanPath = url.startsWith('/') ? url.slice(1) : url;
     return `${BASE_URL}/${cleanPath}`;
@@ -94,7 +94,7 @@ export default function AdminOrders() {
         try {
             setLoadingAbandoned(true);
             // Asegúrate de tener esta ruta en tu backend (GET /api/abandoned-carts)
-            const res = await api.get('/abandoned-carts'); 
+            const res = await api.get('/abandoned-carts');
             // Si tu API devuelve directo el array o { ok: true, data: [] }
             const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
             setAbandonedCarts(data);
@@ -118,14 +118,14 @@ export default function AdminOrders() {
     const getWhatsAppLink = (lead) => {
         if (!lead.phone) return null;
         let phone = lead.phone.replace(/[^\d]/g, "");
-        if (!phone.startsWith("54")) phone = "549" + phone; 
-        
+        if (!phone.startsWith("54")) phone = "549" + phone;
+
         const nombre = lead.name || "Hola";
         const producto = lead.items?.[0]?.name || "el producto";
-        
+
         // MENSAJE DE RECUPERACIÓN
         const mensaje = `Hola ${nombre}! 👋 Te escribo de BoomHausS. Vi que estabas por comprar ${producto} pero no finalizaste. ¿Tuviste algún problema con el pago? Avisame y te ayudo.`;
-        
+
         return `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
     };
 
@@ -153,7 +153,7 @@ export default function AdminOrders() {
                 const updated = res.data.data;
                 setOrders((prev) => prev.map((o) => (o._id === updated._id ? updated : o)));
             } else fetchOrders();
-        } catch (err) { alert('Error verificando'); } 
+        } catch (err) { alert('Error verificando'); }
         finally { setUpdatingOrderId(null); }
     }
 
@@ -178,7 +178,7 @@ export default function AdminOrders() {
             <div className="container">
 
                 {/* TÍTULO Y TABS */}
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <div>
                         <span className="badge">Admin Panel</span>
                         <h1 style={{ margin: '5px 0 0', fontSize: '1.8rem' }}>Gestión de Ventas</h1>
@@ -187,10 +187,10 @@ export default function AdminOrders() {
 
                 {/* PESTAÑAS DE NAVEGACIÓN */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('orders')}
                         className="btn"
-                        style={{ 
+                        style={{
                             background: activeTab === 'orders' ? 'var(--primary)' : 'transparent',
                             color: activeTab === 'orders' ? 'white' : '#888',
                             border: activeTab === 'orders' ? 'none' : '1px solid #444'
@@ -198,10 +198,10 @@ export default function AdminOrders() {
                     >
                         📦 Pedidos ({orders.length})
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('abandoned')}
                         className="btn"
-                        style={{ 
+                        style={{
                             background: activeTab === 'abandoned' ? '#eab308' : 'transparent',
                             color: activeTab === 'abandoned' ? 'black' : '#888',
                             border: activeTab === 'abandoned' ? 'none' : '1px solid #444',
@@ -251,7 +251,7 @@ export default function AdminOrders() {
                                     const isApproved = order.paymentStatus === 'approved';
                                     const fullProofUrl = getImageUrl(order.paymentProofUrl);
                                     const pColor = getStatusColor(order.paymentStatus);
-                                    
+
                                     // Detectar método de pago
                                     const isMP = order.paymentMethod === 'mercadopago';
 
@@ -261,7 +261,7 @@ export default function AdminOrders() {
 
                                     return (
                                         <article key={order._id} className="card" style={{ padding: 0, overflow: 'hidden', border: isExpanded ? '1px solid var(--primary)' : '1px solid var(--border)' }}>
-                                            
+
                                             {/* Cabecera Clickable */}
                                             <div
                                                 onClick={() => setExpandedOrderId(isExpanded ? null : order._id)}
@@ -274,14 +274,14 @@ export default function AdminOrders() {
                                                 <div style={{ display: 'grid', gap: '2px' }}>
                                                     <div style={{ fontWeight: 900, fontSize: '1.05rem' }}>{order.customerName || 'Cliente Anónimo'}</div>
                                                     <div className="muted" style={{ fontSize: '0.8rem' }}>{formatDate(order.createdAt)}</div>
-                                                    
+
                                                     {/* PRECIO + METODO DE PAGO */}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
                                                         <div style={{ fontWeight: 900, fontSize: '1.1rem' }}>{money(order.totalAmount)}</div>
-                                                        <span style={{ 
-                                                            fontSize: '0.7rem', 
-                                                            fontWeight: 'bold', 
-                                                            padding: '2px 6px', 
+                                                        <span style={{
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 'bold',
+                                                            padding: '2px 6px',
                                                             borderRadius: '4px',
                                                             background: isMP ? '#e0f2fe' : '#dcfce7',
                                                             color: isMP ? '#0284c7' : '#16a34a',
@@ -391,8 +391,8 @@ export default function AdminOrders() {
                    ========================================================= */}
                 {activeTab === 'abandoned' && (
                     <div className="reveal">
-                        <div className="card" style={{padding: '1.5rem', marginBottom: '20px', borderLeft: '4px solid #eab308'}}>
-                            <h3 style={{marginTop:0}}>🎣 Recuperación de Ventas</h3>
+                        <div className="card" style={{ padding: '1.5rem', marginBottom: '20px', borderLeft: '4px solid #eab308' }}>
+                            <h3 style={{ marginTop: 0 }}>🎣 Recuperación de Ventas</h3>
                             <p className="muted">Aquí están las personas que dejaron sus datos pero no pagaron. ¡Escribiles por WhatsApp para cerrar la venta!</p>
                             <button className="btn btn-ghost" onClick={fetchAbandonedCarts}>🔄 Actualizar lista</button>
                         </div>
@@ -400,36 +400,41 @@ export default function AdminOrders() {
                         {loadingAbandoned ? <p>Cargando...</p> : abandonedCarts.length === 0 ? (
                             <p>¡No hay carritos abandonados pendientes!</p>
                         ) : (
-                            <div style={{display: 'grid', gap: '15px'}}>
+                            <div style={{ display: 'grid', gap: '15px' }}>
                                 {abandonedCarts.map(cart => {
                                     const waLink = getWhatsAppLink(cart);
-                                    const timeAgo = Math.round((new Date() - new Date(cart.updatedAt)) / 1000 / 60);
+                                    // --- CORRECCIÓN NaN ---
+                                    // Usamos updatedAt, si no existe usamos createdAt, si falla usamos "ahora"
+                                    const dateSource = cart.updatedAt || cart.createdAt || new Date();
+                                    let timeAgo = Math.round((new Date() - new Date(dateSource)) / 1000 / 60);
+                                    if (isNaN(timeAgo)) timeAgo = 0; // Doble seguridad
+                                    // ----------------------
 
                                     return (
-                                        <div key={cart._id} className="card" style={{padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px'}}>
-                                            <div style={{flex: 1}}>
-                                                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                                    <strong style={{fontSize: '1.1rem'}}>{cart.name || 'Sin Nombre'}</strong>
-                                                    <span style={{fontSize: '0.8rem', color: timeAgo < 60 ? '#ef4444' : '#888', fontWeight: 'bold'}}>
-                                                        (Hace {timeAgo < 60 ? `${timeAgo} min` : `${Math.round(timeAgo/60)} hs`})
+                                        <div key={cart._id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <strong style={{ fontSize: '1.1rem' }}>{cart.name || 'Sin Nombre'}</strong>
+                                                    <span style={{ fontSize: '0.8rem', color: timeAgo < 60 ? '#ef4444' : '#888', fontWeight: 'bold' }}>
+                                                        (Hace {timeAgo < 60 ? `${timeAgo} min` : `${Math.round(timeAgo / 60)} hs`})
                                                     </span>
                                                 </div>
-                                                <div className="muted" style={{fontSize: '0.9rem'}}>
+                                                <div className="muted" style={{ fontSize: '0.9rem' }}>
                                                     {cart.items?.map(i => `${i.quantity}x ${i.name}`).join(', ')}
                                                 </div>
-                                                <div style={{fontWeight: 'bold', marginTop: '5px', color: '#10b981'}}>
+                                                <div style={{ fontWeight: 'bold', marginTop: '5px', color: '#10b981' }}>
                                                     Total: {money(cart.totalAmount)}
                                                 </div>
                                             </div>
 
-                                            <div style={{display: 'flex', gap: '10px'}}>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
                                                 {waLink ? (
-                                                    <a href={waLink} target="_blank" rel="noreferrer" className="btn" style={{background: '#25D366', color: 'white', fontWeight: 'bold'}}>
+                                                    <a href={waLink} target="_blank" rel="noreferrer" className="btn" style={{ background: '#25D366', color: 'white', fontWeight: 'bold' }}>
                                                         💬 Rescatar
                                                     </a>
                                                 ) : <span className="muted">Sin Tel</span>}
-                                                
-                                                <button onClick={() => recoverCart(cart._id)} className="btn btn-ghost" style={{border: '1px solid #444'}}>
+
+                                                <button onClick={() => recoverCart(cart._id)} className="btn btn-ghost" style={{ border: '1px solid #444' }}>
                                                     ✅ Listo
                                                 </button>
                                             </div>
