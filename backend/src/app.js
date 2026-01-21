@@ -19,6 +19,7 @@ const ordersRoutes = require('./routes/orders.routes');
 const authRoutes = require('./routes/auth.routes');
 const webhooksRoutes = require('./routes/webhooks.router');
 
+const AbandonedCart = require('./models/AbandonedCart');
 
 const app = express();
 
@@ -86,7 +87,7 @@ const corsOptions = {
     "https://boomhauss.com.ar",              // 👈 ESTE ES EL NUEVO QUE FALTABA
     "https://www.boomhauss.com.ar"           // El mismo con www
   ],
-  credentials: true, 
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
 };
@@ -133,7 +134,64 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 
+app.post('/api/abandoned-cart', async (req, res) => {
+  try {
+    const { email, phone, name, items, total } = req.body;
 
+    // 1. Validamos que haya al menos un dato de contacto
+    if (!email && !phone) {
+      return res.status(400).send('Falta contacto');
+    }
+
+    // 2. Definimos cómo buscar si ya existe (por email O por teléfono)
+    const filter = {};
+    if (email) filter.email = email;
+    if (phone) filter.phone = phone;
+
+    // 3. Datos a guardar/actualizar
+    const updateData = {
+      email,
+      phone,
+      name,
+      items,
+      totalAmount: total,
+      updatedAt: new Date() // Para saber cuándo fue lo último que hizo
+    };
+
+    // 4. "upsert: true" hace la magia: Crea si no existe, Actualiza si existe.
+    await AbandonedCart.findOneAndUpdate(filter, updateData, {
+      upsert: true,
+      new: true
+    });
+
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('Error guardando carrito abandonado:', error);
+    res.status(500).send('Error');
+  }
+});
+// GET /api/abandoned-carts
+app.get('/api/abandoned-carts', async (req, res) => {
+  try {
+    // Traemos los que NO están recuperados, ordenados del más nuevo al más viejo
+    const carts = await AbandonedCart.find({ recovered: false })
+      .sort({ updatedAt: -1 })
+      .limit(50); // Traemos los últimos 50
+    res.json(carts);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener carritos' });
+  }
+});
+
+// POST /api/abandoned-carts/:id/recover (Para marcar como "Ya lo contacté/recuperé")
+app.post('/api/abandoned-carts/:id/recover', async (req, res) => {
+  try {
+    await AbandonedCart.findByIdAndUpdate(req.params.id, { recovered: true });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).send('Error');
+  }
+});
 // ✅ errors al final
 app.use(errorHandler);
 

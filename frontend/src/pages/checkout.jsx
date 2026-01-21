@@ -133,6 +133,32 @@ function Checkout() {
       }).catch(() => { });
   }
 
+  // 🔥 ESTRATEGIA: CAPTURA FURTIVA DE CARRITO ABANDONADO 🔥
+  // Se ejecuta cuando el usuario saca el foco (onBlur) del input de email o teléfono
+  const handleAbandonedCapture = async (field, value) => {
+    if (!value || value.length < 5) return; // Validación mínima
+
+    // Armamos el objeto con lo que tengamos hasta ahora
+    const abandonedData = {
+        email: field === 'email' ? value : customerEmail,
+        phone: field === 'phone' ? value : customerPhone,
+        name: customerName,
+        items: items, // Qué productos tiene
+        total: finalTotal, // Cuánta plata es
+        step: 'checkout_form'
+    };
+
+    // Solo enviamos si tenemos al menos un dato de contacto clave
+    if (abandonedData.email || abandonedData.phone) {
+        try {
+            // Enviamos al backend sin bloquear la UI (sin await bloqueante ni loading)
+            api.post('/abandoned-cart', abandonedData).catch(err => console.log('Silent capture error:', err));
+        } catch (e) {
+            // Ignoramos errores para no molestar al usuario
+        }
+    }
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -306,12 +332,25 @@ function Checkout() {
                     <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} disabled={isLogged} required placeholder="Como figura en tu DNI" />
                   </label>
                   <label className="muted" style={{ display: 'grid', gap: '0.35rem' }}>Teléfono
-                    <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Ej: 11 1234 5678" />
+                    <input 
+                        value={customerPhone} 
+                        onChange={(e) => setCustomerPhone(e.target.value)} 
+                        onBlur={(e) => handleAbandonedCapture('phone', e.target.value)} // 👈 AQUÍ ESTÁ LA MAGIA
+                        placeholder="Ej: 11 1234 5678" 
+                    />
                   </label>
                 </div>
                 
                 <label className="muted" style={{ display: 'grid', gap: '0.35rem' }}>Email para la factura *
-                  <input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} disabled={isLogged} required placeholder="tu@email.com" />
+                  <input 
+                    type="email" 
+                    value={customerEmail} 
+                    onChange={(e) => setCustomerEmail(e.target.value)} 
+                    onBlur={(e) => handleAbandonedCapture('email', e.target.value)} // 👈 AQUÍ ESTÁ LA MAGIA
+                    disabled={isLogged} 
+                    required 
+                    placeholder="tu@email.com" 
+                  />
                   <span style={{ fontSize: '0.8rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
                     ✅ Te enviaremos la factura y seguimiento aquí.
                   </span>
