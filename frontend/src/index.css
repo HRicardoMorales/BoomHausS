@@ -425,11 +425,13 @@ header {
 }
 
 /* GALERÍA: UNA SOLA FUENTE DE VERDAD */
+/* ===== PRODUCT DETAIL MEDIA (FIX PRO) ===== */
 .pd-mediaMain{
   position: relative;
   width: 100%;
-  height: 0;
-  padding-bottom: 100%;
+  /* en vez de height:0 + padding trick, usamos ratio real */
+  aspect-ratio: 1 / 1;          /* desktop: cuadrado prolijo */
+  min-height: 360px;
   overflow: hidden;
   background: #f1f5f9;
   border-radius: 16px;
@@ -437,8 +439,12 @@ header {
   touch-action: pan-y;
 }
 
+/* En móvil, como tus imágenes son banners, mejor 16:9 */
 @media (max-width: 980px){
-  .pd-mediaMain{ padding-bottom: 75%; } /* 4:3 en móvil */
+  .pd-mediaMain{
+    aspect-ratio: 16 / 9;
+    min-height: 240px;
+  }
 }
 
 .pd-mainImg{
@@ -446,12 +452,14 @@ header {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: contain;          /* jamás recorta */
+  object-position: center;
   padding: 10px;
   display: block;
   opacity: 1;
   visibility: visible;
 }
+
 
 .pd-discount-badge{
   position: absolute;
@@ -520,26 +528,26 @@ header {
   transform: scale(1.2);
 }
 
-.pd-thumbs-desktop {
-  padding: 15px;
+/* thumbs visibles también en móvil */
+.pd-thumbs-desktop{
+  padding: 12px 6px;
   background: #fff;
   border-top: 1px solid #f1f5f9;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
-@media (max-width: 768px) { .pd-thumbs-desktop { display: none; } }
 
-.pd-thumb {
-  min-width: 70px;
-  height: 70px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s;
+.pd-thumb{
+  min-width: 64px;
+  height: 64px;
 }
+
+@media (min-width: 991px){
+  .pd-thumb{ min-width: 72px; height: 72px; }
+}
+
 .pd-thumb.is-active {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(11, 92, 255, 0.2);
@@ -1347,4 +1355,382 @@ a:hover { text-decoration: underline; }
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 12px 14px;
+}
+/* =========================
+   CHECKOUT FIXES (AL FINAL)
+========================= */
+
+/* Evita corrimiento a la derecha por elementos con width raro */
+body.page-checkout,
+body.page-checkout #root {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Importante en grids: permite que el contenido NO empuje el ancho */
+body.page-checkout .checkout-grid > * {
+  min-width: 0;
+}
+
+/* Asegura que cards, labels e inputs no excedan el viewport */
+body.page-checkout .card,
+body.page-checkout label,
+body.page-checkout input,
+body.page-checkout textarea,
+body.page-checkout select,
+body.page-checkout img {
+  max-width: 100%;
+}
+
+/* Si la barra sticky del product detail se te cuela en checkout, la apagamos SOLO en checkout */
+body.page-checkout .sticky-mobile-bar-pro {
+  display: none !important;
+}
+
+/* A veces un "100vw" en algún hijo crea scroll fantasma: lo cortamos */
+body.page-checkout main,
+body.page-checkout .section,
+body.page-checkout .container {
+  overflow-x: clip;
+}
+/* ===== Sticky vendedor (ProductDetail) ===== */
+.sticky-pro-now{
+  font-weight: 1000;
+  font-size: 1.05rem;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+.sticky-pro-compare{
+  font-weight: 900;
+  font-size: .85rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+.sticky-pro-subrow{
+  display:flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+.sticky-pro-save{
+  font-size: .78rem;
+  font-weight: 900;
+  color: #16a34a;
+}
+.sticky-pro-transfer{
+  font-size: .78rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+/* Mini bullets arriba */
+.hero-mini-bullets{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 6px;
+  font-weight: 850;
+  color: rgba(11,18,32,.78);
+}
+.hero-mini-bullets div{
+  background: rgba(234,241,255,.85);
+  border: 1px solid rgba(11,92,255,.14);
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+/* Reviews bars missing */
+.rh-bar-fill.w80 { width: 80%; }
+.rh-bar-fill.w15 { width: 15%; }
+
+/* =========================
+   PD FIX FINAL (mobile cut / centering)
+========================= */
+
+/* Evita cualquier “corrimiento” raro en móvil */
+.pd-mediaMain{
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  isolation: isolate;
+}
+
+.pd-mainImg{
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  transform: none !important;
+}
+
+/* =========================
+   MINI REVIEWS (cards flotantes + foto)
+========================= */
+
+.miniReviewsWrap{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  justify-content:center;
+  margin-top: 18px;
+}
+
+.miniNavBtn{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(11,92,255,.18);
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 10px 26px rgba(2,8,23,0.08);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  font-size: 26px;
+  font-weight: 900;
+  color: rgba(11,18,32,.75);
+}
+
+.miniReviewCard{
+  width: min(720px, 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.98));
+  border: 1px solid rgba(11,92,255,.16);
+  border-radius: 22px;
+  box-shadow: 0 18px 54px rgba(2,8,23,0.10);
+  padding: 18px 18px;
+}
+
+.miniReviewTop{
+  display:flex;
+  gap: 14px;
+  align-items:center;
+}
+
+.miniReviewPhoto{
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow:hidden;
+  border: 1px solid rgba(11,92,255,.18);
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.miniReviewPhoto img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.miniReviewMeta{
+  display:flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.miniReviewTitle{
+  font-weight: 1000;
+  color: rgba(11,18,32,.92);
+  letter-spacing: -0.2px;
+}
+
+.miniReviewName{
+  font-weight: 800;
+  color: rgba(11,18,32,.62);
+  font-size: .92rem;
+}
+
+.miniReviewStars{
+  color: #fbbf24;
+  letter-spacing: 2px;
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.miniReviewText{
+  margin-top: 12px;
+  color: rgba(11,18,32,.70);
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.miniReviewHint{
+  margin-top: 10px;
+  font-size: .85rem;
+  color: rgba(11,18,32,.55);
+  font-weight: 700;
+}
+
+@media (max-width: 520px){
+  .miniNavBtn{ display:none; }
+  .miniReviewCard{ border-radius: 18px; }
+}
+
+/* =========================
+   STORY (sin cuadros, todo “seguido”)
+   + imágenes 478x478
+========================= */
+
+.pd-story{
+  margin-top: 14px;
+  display:flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* No usamos cards ni bordes acá */
+.pd-storyBlock{
+  padding: 0;
+  margin: 0;
+}
+
+.pd-storyP{
+  margin: 0 0 12px;
+  color: rgba(11,18,32,.72);
+  font-weight: 700;
+  line-height: 1.75;
+}
+
+/* Imagen 478x478 “cuadrada” */
+.pd-storyMedia{
+  width: 100%;
+  max-width: 478px;
+  aspect-ratio: 1 / 1;
+  background: #f1f5f9;
+  border-radius: 18px;
+  overflow:hidden;
+  border: 1px solid rgba(11,92,255,.14);
+}
+
+.pd-storyMedia img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* En desktop, que quede lindo centrado */
+@media (min-width: 900px){
+  .pd-storyMedia{ max-width: 478px; }
+}
+
+/* =========================
+   CERT STRIP (confianza)
+========================= */
+
+.pd-certStrip{
+  display:flex;
+  gap: 18px;
+  align-items:center;
+  justify-content: space-between;
+  border-radius: 24px;
+  border: 1px solid rgba(11,92,255,.16);
+  background: linear-gradient(120deg, rgba(11,92,255,.08), rgba(34,195,255,.10));
+  box-shadow: 0 18px 54px rgba(2,8,23,0.08);
+  padding: 18px 18px;
+}
+
+.pd-certBadge{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  background: rgba(16,185,129,.12);
+  border: 1px solid rgba(16,185,129,.25);
+  color: #047857;
+  font-weight: 1000;
+  padding: 6px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.pd-certTitle{
+  margin-top: 8px;
+  font-weight: 1000;
+  font-size: 1.1rem;
+  color: rgba(11,18,32,.90);
+  letter-spacing: -0.2px;
+}
+
+.pd-certText{
+  margin-top: 6px;
+  color: rgba(11,18,32,.65);
+  font-weight: 750;
+  line-height: 1.55;
+  max-width: 56ch;
+}
+
+.pd-certRight{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pd-certChip{
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(11,92,255,.16);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 900;
+  color: rgba(11,18,32,.72);
+}
+
+@media (max-width: 840px){
+  .pd-certStrip{ flex-direction: column; align-items:flex-start; }
+  .pd-certRight{ justify-content:flex-start; }
+}
+
+/* =========================
+   PASO A PASO (how to)
+========================= */
+
+.pd-stepsGrid{
+  margin-top: 14px;
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.pd-stepCard{
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(11,92,255,.14);
+  border-radius: 20px;
+  padding: 14px 14px;
+  box-shadow: 0 10px 26px rgba(2,8,23,0.06);
+  display:flex;
+  gap: 12px;
+  align-items:flex-start;
+}
+
+.pd-stepNum{
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  font-weight: 1000;
+  background: rgba(11,92,255,.10);
+  border: 1px solid rgba(11,92,255,.18);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.pd-stepTitle{
+  font-weight: 1000;
+  color: rgba(11,18,32,.90);
+  letter-spacing: -0.2px;
+}
+
+.pd-stepDesc{
+  margin-top: 6px;
+  color: rgba(11,18,32,.65);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px){
+  .pd-stepsGrid{ grid-template-columns: 1fr; }
+}
+/* SAFE FIX: por si algún contenedor “full width” afecta el layout */
+.pd-page, .pd-container, .pd-grid, .pd-media-sticky {
+  max-width: 100%;
+  overflow-x: hidden;
 }

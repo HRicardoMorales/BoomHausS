@@ -1,3 +1,4 @@
+// frontend/src/pages/ProductDetail.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
@@ -5,132 +6,233 @@ import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 
 /* ========================================================================
-   MARKETING CONTENT (ANTENA TDA 4K)
+   MARKETING CONTENT — EDITABLE
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription:
-    "¿Seguís pagando fortunas por ver la tele? Cortá con los gastos fijos. Con la Antena TDA 4K Power-50, accedés a todos los canales de aire (Telefe, El Trece, TV Pública, Deportv y más) en calidad Full HD 1080p y 4K totalmente GRATIS. Gracias a su ganancia de 50 dBi y su cable extra-largo de 5 metros, capta señal donde otras no llegan. Conectala, escaneá y disfrutá.",
+    "¿Seguís pagando fortunas por ver la tele? Cortá con los gastos fijos. Con la Antena TDA Power™, accedés a todos los canales de aire en calidad Full HD 1080p y 4K totalmente GRATIS. Conectala, escaneá y disfrutá.",
 
-  heroBullets: [
-    "📺 Canales HD y 4K GRATIS de por vida.",
-    "🚀 Potencia Extrema 50 dBi (Mejor señal).",
-    "🔌 Cable de 5 Metros (Llega a la ventana).",
-    "🧲 Base Magnética de alta adherencia.",
-    "🌦️ Apta Interior y Exterior (Resiste lluvia).",
-    "✅ Sin contratos ni mensualidades.",
-  ],
-
-  stats: [
-    { pct: "100%", text: "Gratis Mensual" },
-    { pct: "50 dBi", text: "Alta Potencia" },
-    { pct: "4K", text: "Soporte UHD" },
+  trustBullets: [
+    "🚚 Envío gratis a todo el país",
+    "⚡ Instalación en 1 minuto",
+    "🔒 Pago seguro con Mercado Pago",
+    "📺 Canales de aire en HD",
   ],
 
   whatsIncluded: [
-    { name: "Antena TDA 50 dBi", icon: "📡" },
-    { name: "Cable Coaxial 5m", icon: "🔌" },
-    { name: "Adaptador Fichas", icon: "⚙️" },
-    { name: "Base Magnética", icon: "🧲" },
   ],
 
-  breakthroughBenefits: {
-    title: "Televisión Premium, Costo Cero",
-    subtitle: "La solución definitiva para ver la tele sin pagar abonos.",
-    items: [
-      {
-        title: "Chau Facturas",
-        desc: "Nunca más pagues un abono mensual por ver los canales de aire nacionales.",
-        icon: "💸",
-      },
-      {
-        title: "Señal Donde Sea",
-        desc: "Con 5 metros de cable, podés ponerla cerca de la ventana o afuera para máxima señal.",
-        icon: "📡",
-      },
-      {
-        title: "Calidad Cristalina",
-        desc: "Soporta transmisiones en 1080p y 4K. Olvídate de la 'lluvia' o imagen borrosa.",
-        icon: "💎",
-      },
-      {
-        title: "Base Magnética",
-        desc: "Se pega firmemente a cualquier metal o detrás de la TV. Queda fija y prolija.",
-        icon: "🧲",
-      },
-      {
-        title: "Todo Terreno",
-        desc: "Diseñada para interiores, pero sellada para aguantar lluvia en exteriores.",
-        icon: "🌧️",
-      },
-      {
-        title: "Instalación Fácil",
-        desc: "Es conectar la ficha al TV, poner 'Búsqueda de Canales' y listo.",
-        icon: "⚡",
-      },
-    ],
-  },
+  storyBlocks: [
+    {
+      title: "El fútbol se vive en el momento",
+      text:
+        "Nada peor que el gol gritado antes por el vecino o el grupo. Con la antena mirás los partidos en vivo, sin ese delay que te arruina la jugada y sin cortes raros. Prendés la tele y disfrutás como corresponde, en tiempo real. ⚽",
+      img: "https://pbs.twimg.com/media/G_krYtYWAAAQ6La?format=png&name=small",
+      badge: "Ahorra como nunca",
+    },
+    {
+      title: "Señal estable, sin apps ni microcortes raros",
+      text:
+        "¿Te cansaste del delay, los cortes y la calidad que baja justo cuando querés ver algo? Con TV digital por aire no dependés de internet ni de apps: es señal directa. Para ver tranquilo, sin interrupciones.",
+      img: "https://media.istockphoto.com/id/507832501/es/foto/familia-viendo-la-televisi%C3%B3n-en-la-sala-de-estar.jpg?s=612x612&w=0&k=20&c=9rljpj9_sT3fGITOIKBa8_0tzAYnZV_TGhdVwV4GAWs=",
+      badge: "Cable 5m + imán",
+    },
+    {
+      title: "La tele gratis volvió a muchas casas",
+      text:
+        "Esto es para la gente práctica: la que quiere prender la tele y que funcione, sin pensar en facturas. Ideal para casa, depto, habitación, quincho o para los abuelos. Es esa compra que te simplifica el día a día.",
+      img: "https://images.pexels.com/photos/4009402/pexels-photo-4009402.jpeg?auto=compress&cs=tinysrgb&w=800",
+      badge: "HD / 4K",
+    },
+  ],
 
-  slider: {
-    title: "Señal Analógica vs. Digital",
-    text: "La diferencia es abismal. Pasá de ver con lluvia a ver en HD puro.",
-    labelBefore: "Antena Vieja (Lluvia)",
-    labelAfter: "Antena TDA 4K (Full HD)",
-    imgBefore:
-      "https://pbs.twimg.com/media/G_FUDEBWYAA03b0?format=jpg&name=360x360", // Estática/Lluvia
-    imgAfter:
-      "https://pbs.twimg.com/media/G_FUB7oWkAAHb9e?format=jpg&name=360x360", // TV Clara
+  certificate: {
+    title: "COMPRA CON CONFIANZA",
+    logoUrl: "https://via.placeholder.com/160x80?text=Cert+Logo",
+    items: [
+      { icon: "🔒", text: "Pago seguro (Mercado Pago)" },
+      { icon: "✅", text: "Compra protegida" },
+      { icon: "📦", text: "Seguimiento de envío" },
+      { icon: "🤝", text: "Soporte por WhatsApp" },
+    ],
   },
 
   comparison: {
-    title: "Nuestra Antena vs. Cable",
-    text: "Hacé la cuenta de cuánto ahorrás al año.",
-    brandName: "Antena TDA 4K",
-    competitorName: "Empresa de Cable",
-    features: [
-      { name: "Costo Mensual $0", us: true, others: false },
-      { name: "Calidad Full HD / 4K", us: true, others: true },
-      { name: "Sin Contratos", us: true, others: false },
-      { name: "Portátil (Llevála de viaje)", us: true, others: false },
-      { name: "Instalación en 1 minuto", us: true, others: false },
+    title: "ANTENA VS CABLE / STREAMING",
+    rows: [
+      { k: "Costo mensual", a: "$0", b: "Pago mensual", c: "Pago mensual" },
+      { k: "Requiere internet", a: "No", b: "No", c: "Sí" },
+      { k: "Instalación", a: "1 minuto", b: "Técnico/Deco", c: "App + WiFi" },
+      { k: "Delay", a: "No", b: "No", c: "A veces sí" },
+      { k: "Ideal para", a: "Aire HD", b: "Todo", c: "Todo" },
+    ],
+    cols: ["Antena TDA 4K", "Cable", "Streaming"],
+  },
+
+  howTo: {
+    title: "INSTALACIÓN EN 3 PASOS",
+    steps: [
+      { n: "1", t: "Conectá la ficha coaxial al TV", d: "Sin herramientas. Cable directo." },
+      { n: "2", t: "Ubicala cerca de una ventana", d: "Usá los 5m para encontrar el mejor punto." },
+      { n: "3", t: "Escaneá canales en tu TV", d: "Menú → Canales → Autoprogramación." },
     ],
   },
 
-  authority: {
-    title: "Instalador de TV y Redes",
-    quote:
-      "Mucha gente gasta fortunas en cable solo para ver el noticiero y fútbol de aire. Esta antena de 50 dBi es la más potente que probé de las portátiles. El cable de 5 metros hace toda la diferencia para agarrar señal.",
-    name: "Martín G.",
-    job: "Técnico en Telecomunicaciones",
-    img: "https://images.pexels.com/photos/3862627/pexels-photo-3862627.jpeg?auto=compress&cs=tinysrgb&w=600",
-  },
-
+  faqTitle: "PREGUNTAS FRECUENTES",
   faq: [
     {
       q: "¿Sirve para cualquier TV?",
-      a: "Funciona directo en cualquier TV LED/Smart fabricado después de 2014 (que ya traen sintonizador TDA integrado). Si tenés una TV 'de tubo' muy vieja, necesitás un decodificador aparte.",
+      a: "Funciona directo en TVs con sintonizador TDA (la mayoría de Smart/LED modernas). Si tu TV es muy vieja, puede requerir un decodificador TDA.",
     },
+    { q: "¿Necesita internet o WiFi?", a: "No. Recibe señal de aire digital (TDA)." },
     {
       q: "¿Qué canales agarra?",
-      a: "Depende de tu zona, pero generalmente: Telefe HD, El Trece HD, América, Canal 9, TV Pública, Deportv, Encuentro, C5N, LN+, etc.",
+      a: "Depende de tu zona y cobertura, pero suele incluir señales de aire nacionales/provinciales disponibles en TDA.",
     },
     {
-      q: "¿Necesito internet o WiFi?",
-      a: "NO. Funciona satelitalmente con las torres de transmisión de aire. No consume datos ni internet.",
-    },
-    {
-      q: "¿El cable es largo?",
-      a: "Sí, trae 5 metros de cable coaxial reforzado, ideal para alejarla de la TV y acercarla a una ventana para mejor señal.",
-    },
-    {
-      q: "¿Sirve para el Mundial/Fútbol?",
-      a: "Sí, podés ver todos los partidos que transmita la TV Pública o canales de aire en HD sin delay.",
+      q: "¿Es difícil de instalar?",
+      a: "No. Es conectar y buscar canales. La ubicación (ventana/altura) mejora la recepción.",
     },
   ],
 
-  trustBadges: {
-    payment: [], // Se usan los íconos por defecto
-    shipping: "Envío Rápido a todo el país",
-    security: "Garantía de Recepción.",
+  reviewsTitle: "TESTIMONIOS",
+  reviewsSubtitle: "Esto dicen nuestros clientes",
+  reviewsCarousel: [
+    {
+      title: "SE VE INCREÍBLE",
+      rating: 5,
+      text:
+        "La instalé en 3 minutos y me sorprendió la calidad. Telefe y El Trece se ven súper nítidos. Venía renegando con una antena vieja y esto fue otra cosa.",
+      name: "Carla Benítez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_692888-MLA74842898126_032024-F.webp",
+    },
+    {
+      title: "CHAU ABONO",
+      rating: 5,
+      text:
+        "Me cansé de pagar cable. Conecté, busqué canales y listo. Para lo que yo miro (noticias y deportes) va perfecto. Muy buena compra.",
+      name: "Julián Rivas",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_722153-MLA72070195166_102023-F.webp",
+    },
+    {
+      title: "FÁCIL Y RÁPIDA",
+      rating: 5,
+      text:
+        "Literalmente conectar y escanear. La puse cerca de la ventana y agarró varios canales en HD sin cortes. Recomendable si no querés complicarte.",
+      name: "Romina Sosa",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_767141-MLA75196027614_032024-F.webp",
+    },
+    {
+      title: "MEJOR DE LO QUE ESPERABA",
+      rating: 5,
+      text:
+        "Pensé que iba a ser medio humo y nada que ver. La imagen se ve limpia y estable. El cable largo ayuda un montón para encontrar el mejor lugar.",
+      name: "Nicolás Ferreira",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_859622-MLA82052231675_012025-F.webp",
+    },
+    {
+      title: "EN DEPTO FUNCIONA",
+      rating: 4,
+      text:
+        "Estoy en un depto interno y al principio agarraba poco, pero probando dos ubicaciones quedó joya. Si la ponés bien, va excelente.",
+      name: "Micaela Páez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_829243-MLA79690114387_102024-F.webp",
+    },
+    {
+      title: "MUY BUENA SEÑAL",
+      rating: 5,
+      text:
+        "Agarra más canales de los que pensé. La base magnética está buena porque queda prolija atrás de la tele. La volvería a comprar.",
+      name: "Sergio Ledesma",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_903210-MLA79449251472_102024-F.webp",
+    },
+    {
+      title: "SE NOTA EL HD",
+      rating: 5,
+      text:
+        "En mi tele se nota muchísimo la diferencia. Con la antena común se pixelaba y con esta va estable. Para mí re vale.",
+      name: "Lucía Giménez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_777177-MLA79895272194_102024-F.webp",
+    },
+    {
+      title: "INSTALACIÓN EN MINUTOS",
+      rating: 5,
+      text:
+        "La compré para mi mamá y la instalé yo sin saber nada. Menú, autoprogramación y listo. Quedó feliz porque ve todo sin pagar.",
+      name: "Federico Albornoz",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_844020-MLA80959662850_122024-F.webp",
+    },
+    {
+      title: "BUENA CALIDAD",
+      rating: 4,
+      text:
+        "Materiales buenos y el cable se ve resistente. Lo único es que depende mucho de dónde la pongas, pero una vez que encontrás el punto, va perfecto.",
+      name: "Mariana Quiroga",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_728753-MLA91586637905_092025-F.webp",
+    },
+    {
+      title: "CERO CORTES",
+      rating: 5,
+      text:
+        "La uso sobre todo para ver noticias y deportes. Cero delay y cero cortes. No vuelvo al streaming para los partidos ni loco.",
+      name: "Gustavo Molina",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_742625-MLA91586637895_092025-F.webp",
+    },
+    {
+      title: "ME SALVÓ EL CABLE LARGO",
+      rating: 5,
+      text:
+        "Con otras antenas no llegaba a la ventana. Con esta, por el cable largo, la pude ubicar mejor y ahí cambió todo. Excelente.",
+      name: "Valentina Ortiz",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_822761-MLA91586608467_092025-F.webp",
+    },
+    {
+      title: "RECOMENDABLE",
+      rating: 5,
+      text:
+        "La compré por probar y terminé dejando de pagar el cable en casa. Si tu TV es compatible, te soluciona el tema rápido.",
+      name: "Hernán Cabrera",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_621586-MLA100505272605_122025-F.webp",
+    },
+    {
+      title: "MUY CONFORME",
+      rating: 5,
+      text:
+        "Llego rápido, la conecté y anduvo de una. Se ve muy bien en mi Smart y el diseño es discreto, no queda feo.",
+      name: "Paula Acevedo",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_932659-MLA92598923895_092025-F.webp",
+    },
+    {
+      title: "CALIDAD ESTABLE",
+      rating: 4,
+      text:
+        "En mi zona algunos canales cambian según el clima, pero en general se mantiene estable y la mayoría se ve en HD. Buena relación precio/calidad.",
+      name: "Ezequiel Navarro",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_701387-MLA92192890042_092025-F.webp",
+    },
+    {
+      title: "LO VOLVERÍA A COMPRAR",
+      rating: 5,
+      text:
+        "La puse en el living y después pedí otra para la habitación. Re práctica y cumple. Ideal si querés ahorrar sin renegar.",
+      name: "Florencia Medina",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_779916-MLA105813356893_012026-F.webp",
+    },
+  ],
+
+
+  about: {
+    title: "QUIÉNES SOMOS",
+    img:
+      "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    text:
+      "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    bullets: [
+      "✅ Atención por WhatsApp",
+      "📦 Envíos a todo el país",
+      "🔒 Pagos seguros",
+      "⭐ Enfoque en calidad y experiencia",
+    ],
   },
 };
 
@@ -141,585 +243,21 @@ const FALLBACK_IMG =
     <rect width="100%" height="100%" fill="#f8fafc"/>
     <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
       font-family="Arial" font-size="24" fill="#cbd5e1">
-      Antena 50dBi
+      Imagen no disponible
     </text>
   </svg>
 `);
 
-function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState("");
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const endOfDay = new Date();
-      endOfDay.setHours(23, 59, 59, 999);
-      const difference = endOfDay - now;
-      if (difference > 0) {
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
-        return `${hours}h ${minutes}m ${seconds}s`;
-      }
-      return "00h 00m 00s";
-    };
-    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-  return <span className="countdown-timer">{timeLeft}</span>;
-}
-
-function ClinicalStatsSection() {
-  const { stats } = MARKETING_CONTENT;
+function StarsInline({ rating = 5 }) {
   return (
-    <div className="landing-section fade-in-section">
-      <div className="landing-container">
-        <h3 className="landing-center-title">Tecnología de Punta</h3>
-        <div className="stats-grid">
-          {stats.map((s, i) => (
-            <div key={i} className="stat-card hover-scale">
-              <div className="stat-circle">
-                <svg viewBox="0 0 36 36" className="circular-chart">
-                  <path
-                    className="circle-bg"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="circle"
-                    strokeDasharray="100, 100"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <text x="18" y="20.35" className="percentage">
-                    {s.pct}
-                  </text>
-                </svg>
-              </div>
-              <p className="stat-text">{s.text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <span className="stars-inline" aria-label={`${rating} estrellas`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span key={i} className={`s ${i < rating ? "on" : ""}`}>★</span>
+      ))}
+    </span>
   );
 }
 
-// ✅ NUEVA SECCIÓN: PAIN POINT (Sustituye a Big Media y va arriba)
-function PainPointSection() {
-  return (
-    <div className="landing-section pain-point-bg fade-in-section">
-      <div className="landing-container split-layout">
-        <div className="split-text">
-          <div className="pain-label">⚠️ ATENCIÓN</div>
-          <h2 className="pain-title">¿CANSADO DE REGALAR TU DINERO EN RECIBOS DE CABLE?</h2>
-
-          <p className="pain-text">
-            Olvídate de las facturas a fin de mes. Con nuestra <b>Antena Premium</b>, el entretenimiento es 100% GRATIS y LEGAL.
-          </p>
-
-          <p className="pain-text">
-            ¿Por qué seguir pagando por algo que puedes tener <b>GRATIS</b>? Potencia, Calidad y Definición 4K en un solo dispositivo.
-          </p>
-
-          <div className="pain-benefits">
-            <div className="pain-benefit-item">
-              <span>🚫</span> Sin técnicos
-            </div>
-            <div className="pain-benefit-item">
-              <span>🚫</span> Sin herramientas
-            </div>
-            <div className="pain-benefit-item">
-              <span>🛠️</span> Sin complicaciones
-            </div>
-          </div>
-        </div>
-
-        <div className="split-media">
-          {/* Imagen/GIF simulado de cortar el cable o TV gratis */}
-          <div className="pain-media-container shadow-hover">
-            <img
-              src="https://images.pexels.com/photos/1201996/pexels-photo-1201996.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="Libertad de TV"
-              className="pain-img"
-            />
-            <div className="pain-overlay-badge">
-              💸 Ahorro Garantizado
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Estilos locales para esta sección */}
-      <style>{`
-        .pain-point-bg {
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .pain-label {
-            background: #dc2626;
-            color: white;
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            margin-bottom: 12px;
-            letter-spacing: 0.05em;
-        }
-        .pain-title {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #1e293b;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-        .pain-text {
-            font-size: 1.1rem;
-            color: #475569;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-        .pain-benefits {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 1.5rem;
-        }
-        .pain-benefit-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-        .pain-media-container {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .pain-img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .pain-overlay-badge {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 800;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        @media (max-width: 768px) {
-            .pain-title { font-size: 1.5rem; }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-function BreakthroughSection() {
-  const { breakthroughBenefits } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section breakthrough-section fade-in-section">
-      <div className="landing-container">
-        <h3 className="landing-center-title">{breakthroughBenefits.title}</h3>
-        <p className="landing-center-subtitle landing-center-subtitle--breakthrough">
-          {breakthroughBenefits.subtitle}
-        </p>
-
-        <div className="breakthrough-grid">
-          {breakthroughBenefits.items.map((item, i) => (
-            <div key={i} className="breakthrough-card hover-lift-pro">
-              <div className="breakthrough-icon">{item.icon}</div>
-              <h4 className="breakthrough-title">{item.title}</h4>
-              <p className="breakthrough-desc">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function WhatsIncludedSection() {
-  const { whatsIncluded } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section whats-included-section fade-in-section">
-      <div className="landing-container">
-        <h3 className="landing-center-title">Contenido de la Caja</h3>
-        <div className="included-grid">
-          {whatsIncluded.map((item, i) => (
-            <div key={i} className="included-item hover-lift">
-              <div className="included-icon spin-on-hover">{item.icon}</div>
-              <div className="included-name">{item.name}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BeforeAfterSlider() {
-  const [sliderPos, setSliderPos] = useState(50);
-  const containerRef = useRef(null);
-  const { slider } = MARKETING_CONTENT;
-
-  const handleMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const pos = ((x - rect.left) / rect.width) * 100;
-    setSliderPos(Math.min(100, Math.max(0, pos)));
-  };
-
-  return (
-    <div className="landing-section fade-in-section">
-      <div className="landing-container split-layout reverse-mobile">
-        <div className="split-text">
-          <span className="badge-pill">Calidad de Imagen</span>
-          <h3 className="landing-title">{slider.title}</h3>
-          <p className="landing-p">{slider.text}</p>
-        </div>
-
-        <div className="split-media">
-          <div
-            className="ba-slider-container shadow-hover"
-            ref={containerRef}
-            onMouseMove={handleMove}
-            onTouchMove={handleMove}
-            onTouchStart={handleMove}
-          >
-            <img src={slider.imgAfter} alt="Después" className="ba-img" />
-            <div className="ba-label ba-after">{slider.labelAfter}</div>
-
-            <div className="ba-overlay" style={{ width: `${sliderPos}%` }}>
-              <img
-                src={slider.imgBefore}
-                alt="Antes"
-                className="ba-img ba-img--before"
-              />
-              <div className="ba-label ba-before">{slider.labelBefore}</div>
-            </div>
-
-            <div className="ba-handle" style={{ left: `${sliderPos}%` }}>
-              <div className="ba-line"></div>
-              <div className="ba-circle">⟷</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ComparisonTable() {
-  const { comparison } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section fade-in-section">
-      <div className="landing-container">
-        <h3 className="landing-center-title">{comparison.title}</h3>
-        <div className="comp-table shadow-hover">
-          <div className="comp-header">
-            <div className="comp-col-empty"></div>
-            <div className="comp-col-us">{comparison.brandName}</div>
-            <div className="comp-col-others">{comparison.competitorName}</div>
-          </div>
-
-          {comparison.features.map((f, i) => (
-            <div key={i} className="comp-row">
-              <div className="comp-feature-name">{f.name}</div>
-              <div className="comp-check-us">✔</div>
-              <div className="comp-check-others comp-check-others--muted">✕</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProblemSolutionSection() {
-  return (
-    <div className="landing-section fade-in-section">
-      <div className="landing-container split-layout reverse-mobile">
-        <div className="split-text">
-          <span className="badge-pill">Ahorro Inteligente</span>
-          <h3 className="landing-title">¿Por qué pasarte a TDA?</h3>
-          <p className="landing-p">
-            La televisión de aire evolucionó. Ya no es "agarrar mal". Ahora es digital, HD y totalmente gratis.
-          </p>
-
-          <div className="tech-list">
-            <div className="tech-item hover-lift">
-              <div className="tech-icon">💸</div>
-              <div>
-                <strong>Ahorro Total</strong>
-                <p>Dejá de tirar plata en servicios de cable que casi no usás.</p>
-              </div>
-            </div>
-
-            <div className="tech-item hover-lift">
-              <div className="tech-icon">🔭</div>
-              <div>
-                <strong>Largo Alcance</strong>
-                <p>El cable de 5mts te permite buscar la señal perfecta.</p>
-              </div>
-            </div>
-
-            <div className="tech-item hover-lift">
-              <div className="tech-icon">📺</div>
-              <div>
-                <strong>Universal</strong>
-                <p>Compatible con cualquier TV moderno sin aparatos extra.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="split-media ps-split-media">
-          <div className="gift-card hover-lift" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
-            <h3 className="gift-card-title">¡Pack Casa Completa! 🏠</h3>
-            <p className="gift-card-text">
-              Llevando 2 unidades (una para el living, otra para la habitación) tenés un
-              <b> 10% de DESCUENTO EXTRA</b>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AuthoritySection() {
-  const { authority } = MARKETING_CONTENT;
-  return (
-    <div className="landing-section authority-bg fade-in-section">
-      <div className="landing-container authority-flex">
-        <div className="authority-img-box">
-          <img
-            src={authority.img}
-            alt="Experto"
-            className="authority-img-fixed shadow-hover"
-          />
-        </div>
-
-        <div className="authority-text">
-          <div className="authority-stars">★★★★★</div>
-          <p className="landing-p authority-quote">"{authority.quote}"</p>
-          <div className="authority-sign">
-            <strong>{authority.name}</strong>
-            <span>{authority.job}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FaqSection() {
-  const [openIndex, setOpenIndex] = useState(null);
-  const { faq } = MARKETING_CONTENT;
-  const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
-
-  return (
-    <div className="landing-section fade-in-section" id="faq-section">
-      <h3 className="landing-center-title">Preguntas Frecuentes</h3>
-      <div className="landing-container faq-container">
-        {faq.map((item, i) => {
-          const isOpen = openIndex === i;
-          return (
-            <div key={i} className="faq-item">
-              <button
-                className={`faq-question ${isOpen ? "active" : ""}`}
-                onClick={() => toggle(i)}
-                type="button"
-              >
-                {item.q}
-                <span className="faq-icon">{isOpen ? "−" : "+"}</span>
-              </button>
-
-              <div className={`faq-answer ${isOpen ? "open" : ""}`}>
-                <p className="faq-answer-text">{item.a}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function TestimonialsSection() {
-  const [showAll, setShowAll] = useState(false);
-
-  const allReviews = [
-    {
-      date: "Hace 2 días",
-      author: "Carlos M.",
-      location: "San Martín, GBA",
-      rating: 5,
-      verified: true,
-      title: "Chau Cablevisión",
-      text:
-        "Me cansé de que me aumenten todos los meses. Compré esta antena, la pegué atrás de la tele con el imán y agarró como 30 canales en HD. Telefe y el Trece se ven mejor que con el deco.",
-      image: null,
-    },
-    {
-      date: "Hace 4 días",
-      author: "Romina S.",
-      location: "Caballito, CABA",
-      rating: 5,
-      verified: true,
-      title: "Funciona perfecto en departamento",
-      text:
-        "Vivo en un 3er piso interno y tenía miedo que no agarre. El cable largo me salvó, la acerqué a la ventana y listo. Imagen 10 puntos.",
-      image: null,
-    },
-    {
-      date: "Hace 1 semana",
-      author: "Gustavo P.",
-      location: "La Plata",
-      rating: 4,
-      verified: true,
-      title: "Buena potencia",
-      text:
-        "Probé una antena barata antes y se cortaba. Esta tiene una base pesada y se nota que tiene más potencia. Agarro canales de deportes y noticias sin drama.",
-      image: null,
-    },
-    {
-      date: "Hace 1 semana",
-      author: "Mariana L.",
-      location: "Córdoba Capital",
-      rating: 5,
-      verified: true,
-      title: "Fácil de instalar",
-      text:
-        "Literalmente la enchufé y puse autoprogramación. En 5 minutos estaba viendo la novela en HD. Recomendada.",
-      image: null,
-    },
-    {
-      date: "Hace 2 semanas",
-      author: "Esteban R.",
-      location: "Rosario",
-      rating: 5,
-      verified: true,
-      title: "Excelente para el mundial",
-      text:
-        "La compré para ver los partidos sin el delay de internet y es un caño. Cero cortes.",
-      image: null,
-    },
-    {
-      date: "Hace 3 semanas",
-      author: "Fernanda T.",
-      location: "Tigre",
-      rating: 4,
-      verified: true,
-      title: "Buen producto",
-      text:
-        "Llegó rápido. La calidad de los materiales se ve buena, el cable es grueso. Lo único es que hay que buscarle la ubicación justa, pero una vez que la encontrás, vuela.",
-      image: null,
-    },
-  ];
-
-  const visibleReviews = showAll ? allReviews : allReviews.slice(0, 6);
-
-  return (
-    <div id="reviews-section" className="landing-section reviews-section fade-in-section">
-      <div className="landing-container">
-        <div className="reviews-header-grid">
-          <div className="rh-left">
-            <h3 className="tm-main-title tm-main-title--left">Opiniones del producto</h3>
-            <div className="rh-score-row">
-              <span className="rh-big-score">4.7</span>
-              <div className="rh-stars-col">
-                <span className="rh-stars">★★★★★</span>
-                <span className="rh-count">Base en 843 opiniones</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rh-right">
-            <div className="rh-bar-row">
-              <span className="rh-star-label">5 ★</span>
-              <div className="rh-bar-bg">
-                <div className="rh-bar-fill w80"></div>
-              </div>
-              <span className="rh-pct">80%</span>
-            </div>
-            <div className="rh-bar-row">
-              <span className="rh-star-label">4 ★</span>
-              <div className="rh-bar-bg">
-                <div className="rh-bar-fill w15"></div>
-              </div>
-              <span className="rh-pct">15%</span>
-            </div>
-            {/* Barras menores... */}
-          </div>
-        </div>
-
-        <div className="reviews-list-grid">
-          {visibleReviews.map((r, i) => (
-            <div key={i} className="review-card-real fade-in-section">
-              <div className="rc-header">
-                <div className="rc-stars">
-                  {[...Array(r.rating)].map((_, x) => (
-                    <span key={x}>★</span>
-                  ))}
-                </div>
-                <span className="rc-date">{r.date}</span>
-              </div>
-
-              <h4 className="rc-title">{r.title}</h4>
-              <p className="rc-text">{r.text}</p>
-
-              {r.image && (
-                <div className="rc-img-container">
-                  <img src={r.image} alt="Foto del cliente" loading="lazy" />
-                </div>
-              )}
-
-              <div className="rc-footer">
-                <div className="rc-author-block">
-                  <div className="rc-avatar">{r.author.charAt(0)}</div>
-                  <div className="rc-author-info">
-                    <span className="rc-name">{r.author}</span>
-                    <span className="rc-location">{r.location}</span>
-                  </div>
-                </div>
-
-                {r.verified && (
-                  <div className="rc-verified-badge">
-                    <span className="rc-check">✓</span> Compra Verificada
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="reviews-toggle-wrap">
-          <button className="btn-load-more" onClick={() => setShowAll(!showAll)} type="button">
-            {showAll ? "Ver menos" : "Ver todas las opiniones"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* =========================
-   HELPERS & MAIN
-========================= */
 function formatARS(n) {
   try {
     return new Intl.NumberFormat("es-AR", {
@@ -732,154 +270,478 @@ function formatARS(n) {
   }
 }
 
-function Stars() {
-  return (
-    <div className="hero-stars">
-      <span className="hero-star on">★</span>
-      <span className="hero-star on">★</span>
-      <span className="hero-star on">★</span>
-      <span className="hero-star on">★</span>
-      <span className="hero-star on">★</span>{" "}
-      <span className="hero-ratingText">4.8/5</span>
-    </div>
-  );
-}
-
 function moneyARS(n) {
   const num = Number(n);
   if (Number.isNaN(num)) return "$0";
   return `$${Math.round(num).toLocaleString("es-AR")}`;
 }
-function ChannelLogosSection() {
-  // Usamos dominios oficiales para obtener los logos automáticamente
-  const channels = [
-    { name: "Telefe", url: "https://logo.clearbit.com/telefe.com" },
-    { name: "El Trece", url: "https://logo.clearbit.com/eltrecetv.com.ar" },
-    { name: "TN", url: "https://logo.clearbit.com/tn.com.ar" },
-    { name: "TV Pública", url: "https://www.google.com/s2/favicons?domain=tvpublica.com.ar&sz=128" }, // Google Backup
-    { name: "América TV", url: "https://logo.clearbit.com/americatv.com.ar" },
-    { name: "Canal 9", url: "https://logo.clearbit.com/elnueve.com.ar" },
-    { name: "Cine.Ar", url: "https://www.google.com/s2/favicons?domain=cine.ar&sz=128" }, // Google Backup
-    { name: "Deportv", url: "https://www.google.com/s2/favicons?domain=deportv.gov.ar&sz=128" },
-  ];
 
+function clampPct(n) {
+  const x = Number(n);
+  if (Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(99, x));
+}
+
+/* =========================
+   Countdown
+========================= */
+function CountdownTimer({ storageKey = "pd_countdown", minutes = 18 }) {
+  const [left, setLeft] = useState(0);
+
+  useEffect(() => {
+    const saved = Number(sessionStorage.getItem(storageKey));
+    const target =
+      saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
+
+    sessionStorage.setItem(storageKey, String(target));
+
+    const tick = () => setLeft(Math.max(0, target - Date.now()));
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, [storageKey, minutes]);
+
+  const totalSec = Math.floor(left / 1000);
+  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const ss = String(totalSec % 60).padStart(2, "0");
+
+  return <span className="cd">{mm}:{ss}</span>;
+}
+
+/* =========================
+   Sections
+========================= */
+function SectionHeader({ title, subtitle }) {
   return (
-    <div className="landing-section fade-in-section" style={{ padding: '2.5rem 0', background: '#ffffff' }}>
-      <div className="landing-container">
-
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <p className="landing-center-subtitle" style={{
-            fontSize: '0.85rem',
-            textTransform: 'uppercase',
-            letterSpacing: '1.5px',
-            fontWeight: 800,
-            color: '#94a3b8',
-            marginBottom: '10px'
-          }}>
-            GRILLA DE CANALES DIGITALES
-          </p>
-          <h3 style={{ fontSize: '1.4rem', margin: 0, color: '#1e293b' }}>
-            Cine, Deportes y Noticias <span style={{ color: '#10b981' }}>en Full HD</span>
-          </h3>
-        </div>
-
-        <div className="channel-grid">
-          {channels.map((c, i) => (
-            <div key={i} className="channel-item" title={c.name}>
-              {/* Intentamos cargar la imagen, si falla mostramos texto */}
-              <img
-                src={c.url}
-                alt={c.name}
-                className="channel-img"
-                loading="lazy"
-                onError={(e) => {
-                  e.target.style.display = 'none'; // Oculta imagen rota
-                  e.target.nextSibling.style.display = 'block'; // Muestra texto
-                }}
-              />
-              <span className="channel-fallback-text" style={{ display: 'none' }}>{c.name}</span>
-            </div>
-          ))}
-
-          {/* Item Extra: "+30 Canales" */}
-          <div className="channel-item more-channels">
-            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>+30</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Señales<br />Más</span>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        .channel-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 20px;
-          align-items: center;
-          justify-items: center;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-        .channel-item {
-          width: 100%;
-          height: 65px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: #f8fafc;
-          border-radius: 12px;
-          padding: 12px;
-          border: 1px solid #e2e8f0;
-          transition: transform 0.2s, box-shadow 0.2s;
-          position: relative;
-          overflow: hidden;
-        }
-        .channel-item:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-          background: #fff;
-          border-color: #cbd5e1;
-        }
-        .channel-img {
-          max-height: 100%;
-          max-width: 100%;
-          object-fit: contain;
-          filter: grayscale(100%);
-          opacity: 0.8;
-          transition: all 0.3s ease;
-        }
-        .channel-item:hover .channel-img {
-          filter: grayscale(0%);
-          opacity: 1;
-        }
-        .channel-fallback-text {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #475569;
-            text-align: center;
-            line-height: 1.2;
-        }
-        .more-channels {
-           display: flex;
-           gap: 8px;
-           background: #eef2ff;
-           border: 1px dashed #818cf8;
-        }
-
-        @media (max-width: 768px) {
-          .channel-grid {
-             grid-template-columns: repeat(3, 1fr);
-             gap: 12px;
-          }
-          .channel-item {
-             height: 55px;
-             padding: 8px;
-          }
-        }
-      `}</style>
+    <div className="sec-head">
+      <h2 className="sec-title">{title}</h2>
+      {subtitle ? <div className="sec-sub">{subtitle}</div> : null}
     </div>
   );
 }
 
+function CertificateStrip() {
+  const { certificate } = MARKETING_CONTENT;
+  return (
+    <section className="pd-strip">
+      <SectionHeader title={certificate.title} />
+      <div className="pd-stripTop">
+        <div className="pd-certLogoBox" aria-label="Certificación">
+          {certificate.logoUrl ? (
+            <img
+              src={certificate.logoUrl}
+              alt="Certificación"
+              className="pd-certLogo"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="pd-certLogoPlaceholder">Logo</div>
+          )}
+        </div>
+      </div>
+
+      <div className="pd-stripGrid">
+        {certificate.items.map((x, i) => (
+          <div key={i} className="pd-stripItem hover-float">
+            <span className="pd-stripIcon">{x.icon}</span>
+            <span className="pd-stripText">{x.text}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ComparisonTablePro() {
+  const { comparison } = MARKETING_CONTENT;
+  return (
+    <section className="pd-block">
+      <SectionHeader title={comparison.title} />
+      {/* ✅ wrapper con scroll horizontal en mobile + evita “corte” */}
+      <div className="cmp-scroll">
+        <div className="cmp-wrap cmp-anim">
+          <div className="cmp-head">
+            <div className="cmp-k"></div>
+            <div className="cmp-col cmp-a">{comparison.cols[0]}</div>
+            <div className="cmp-col">{comparison.cols[1]}</div>
+            <div className="cmp-col">{comparison.cols[2]}</div>
+          </div>
+
+          {comparison.rows.map((r, i) => (
+            <div key={i} className="cmp-row">
+              <div className="cmp-k">{r.k}</div>
+              <div className="cmp-col cmp-a">{r.a}</div>
+              <div className="cmp-col">{r.b}</div>
+              <div className="cmp-col">{r.c}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="cmp-hint">Deslizá la tabla →</div>
+    </section>
+  );
+}
+
+function HowToSteps() {
+  const { howTo } = MARKETING_CONTENT;
+  return (
+    <section className="pd-block" id="howto">
+      <SectionHeader title={howTo.title} />
+      <div className="how-grid how-anim">
+        {howTo.steps.map((s) => (
+          <div key={s.n} className="how-card">
+            <div className="how-n">{s.n}</div>
+            <div className="how-body">
+              <div className="how-t">{s.t}</div>
+              <div className="how-d">{s.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FaqSectionPro() {
+  const [openIndex, setOpenIndex] = useState(null);
+  const { faq, faqTitle } = MARKETING_CONTENT;
+
+  return (
+    <section className="pd-block" id="faq-section">
+      <SectionHeader title={faqTitle} />
+      <div className="faq-pro">
+        {faq.map((item, i) => {
+          const isOpen = openIndex === i;
+          return (
+            <div key={i} className={`faq-pro-item ${isOpen ? "open" : ""}`}>
+              <button
+                type="button"
+                className="faq-pro-q"
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+              >
+                <span>{item.q}</span>
+                <span className="faq-pro-ico">{isOpen ? "−" : "+"}</span>
+              </button>
+              <div className="faq-pro-a">
+                <p>{item.a}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function StoryBlocks() {
+  const blocks = MARKETING_CONTENT.storyBlocks;
+  return (
+    <section className="pd-flow">
+      {blocks.map((b, i) => (
+        <div key={i} className="flow-row">
+          <div className="flow-text">
+            <div className="flow-badge">{b.badge}</div>
+            <h3 className="flow-title">{b.title}</h3>
+            <p className="flow-p">{b.text}</p>
+          </div>
+
+          <div className="flow-media">
+            <div className="flow-imgBox hover-float">
+              <img
+                src={b.img}
+                alt={b.title}
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+function MiniReviewsBar({ productImg }) {
+  const data = (MARKETING_CONTENT.reviewsCarousel || []).slice(0, 5);
+
+  const [active, setActive] = useState(0);
+
+  const go = (idx) => {
+    if (!data.length) return;
+    const n = data.length;
+    setActive((idx + n) % n);
+  };
+
+  // (opcional) autoplay suave como tiendas
+  useEffect(() => {
+    if (!data.length) return;
+    const t = setInterval(() => go(active + 1), 7000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, data.length]);
+
+  if (!data.length) return null;
+
+  return (
+    <div className="mrb">
+      <div className="mrb-viewport">
+        <div
+          className="mrb-track"
+          style={{ transform: `translateX(-${active * 100}%)` }}
+        >
+          {data.map((r, i) => {
+            const avatar = r.img || productImg || FALLBACK_IMG;
+            return (
+              <div className="mrb-slide" key={i}>
+                <div className="mrb-card">
+                  <div className="mrb-left">
+                    <img
+                      className="mrb-avatar"
+                      src={avatar}
+                      alt={r.name || "Cliente"}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMG;
+                      }}
+                    />
+                  </div>
+
+                  <div className="mrb-mid">
+                    <div className="mrb-text">{r.text}</div>
+
+                    <div className="mrb-bottom">
+                      <div className="mrb-name">{r.name}</div>
+                      <div className="mrb-stars">
+                        <StarsInline rating={r.rating || 5} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mrb-nav">
+        <button type="button" className="mrb-arrow" onClick={() => go(active - 1)} aria-label="Anterior">
+          ‹
+        </button>
+
+        <div className="mrb-dots">
+          {data.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`mrb-dot ${i === active ? "on" : ""}`}
+              onClick={() => go(i)}
+              aria-label={`Ir a reseña ${i + 1}`}
+            />
+          ))}
+        </div>
+
+        <button type="button" className="mrb-arrow" onClick={() => go(active + 1)} aria-label="Siguiente">
+          ›
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+function ReviewsCarouselPro({ productImg }) {
+  const data = MARKETING_CONTENT.reviewsCarousel;
+  const [active, setActive] = useState(0);
+  const rowRef = useRef(null);
+
+  const go = (idx) => {
+    const n = data.length;
+    const next = (idx + n) % n;
+    setActive(next);
+    const el = rowRef.current?.querySelectorAll(".rv-slide")?.[next];
+    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
+
+  const onScroll = () => {
+    if (!rowRef.current) return;
+    const slides = Array.from(rowRef.current.querySelectorAll(".rv-slide"));
+    const center = rowRef.current.scrollLeft + rowRef.current.clientWidth / 2;
+
+    let best = 0;
+    let bestDist = Infinity;
+    slides.forEach((s, i) => {
+      const sCenter = s.offsetLeft + s.clientWidth / 2;
+      const dist = Math.abs(center - sCenter);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    });
+    setActive(best);
+  };
+
+  return (
+    <section className="pd-block" id="reviews-section">
+      <SectionHeader title={MARKETING_CONTENT.reviewsTitle} subtitle={MARKETING_CONTENT.reviewsSubtitle} />
+
+      <div className="rv-wrap">
+        <button type="button" className="rv-nav rv-prev" onClick={() => go(active - 1)} aria-label="Anterior">
+          ‹
+        </button>
+
+        <div className="rv-row" ref={rowRef} onScroll={onScroll}>
+          {data.map((r, i) => {
+            const img = r.img || productImg || FALLBACK_IMG;
+            return (
+              <article key={i} className="rv-slide">
+                <div className="rv-card">
+                  <div className="rv-imgBox">
+                    <img
+                      src={img}
+                      alt={r.title}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMG;
+                      }}
+                    />
+                    <div className="rv-quote">❞</div>
+                  </div>
+
+                  <div className="rv-body">
+                    <StarsInline rating={r.rating} />
+                    <div className="rv-title">{r.title}</div>
+                    <p className="rv-text">{r.text}</p>
+                    <div className="rv-name">{r.name}</div>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <button type="button" className="rv-nav rv-next" onClick={() => go(active + 1)} aria-label="Siguiente">
+          ›
+        </button>
+      </div>
+
+      <div className="rv-dots">
+        {data.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`rv-dot ${i === active ? "on" : ""}`}
+            onClick={() => go(i)}
+            aria-label={`Ir al testimonio ${i + 1}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  const { about } = MARKETING_CONTENT;
+  return (
+    <section className="pd-block" id="about">
+      <SectionHeader title={about.title} />
+      <div className="about-grid">
+        <div className="about-img hover-float">
+          <img
+            src={about.img}
+            alt="BoomHausS equipo"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
+          />
+        </div>
+        <div className="about-text">
+          <p className="about-p">{about.text}</p>
+          <div className="about-bul">
+            {about.bullets.map((b, i) => (
+              <div className="about-li" key={i}>{b}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+function TopReviewsCarouselMini({ productImg }) {
+  const data = MARKETING_CONTENT.reviewsCarousel;
+  const rowRef = useRef(null);
+
+  const scrollByCard = (dir) => {
+    if (!rowRef.current) return;
+    const card = rowRef.current.querySelector(".tr-card");
+    const dx = card ? card.getBoundingClientRect().width + 14 : 320;
+    rowRef.current.scrollBy({ left: dir * dx, behavior: "smooth" });
+  };
+
+  return (
+    <section className="pd-block" id="top-reviews">
+      <SectionHeader title={MARKETING_CONTENT.reviewsTitle} subtitle={MARKETING_CONTENT.reviewsSubtitle} />
+
+      <div className="tr-wrap">
+        <button type="button" className="tr-nav tr-prev" onClick={() => scrollByCard(-1)} aria-label="Anterior">
+          ‹
+        </button>
+
+        <div className="tr-row" ref={rowRef}>
+          {data.map((r, i) => {
+            const img = r.img || productImg || FALLBACK_IMG;
+            return (
+              <article key={i} className="tr-card">
+                <div className="tr-img">
+                  <img
+                    src={img}
+                    alt={r.title}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = FALLBACK_IMG;
+                    }}
+                  />
+                </div>
+
+                <div className="tr-body">
+                  <StarsInline rating={r.rating} />
+                  <div className="tr-title">{r.title}</div>
+                  <p className="tr-text">{r.text}</p>
+                  <div className="tr-name">{r.name}</div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <button type="button" className="tr-nav tr-next" onClick={() => scrollByCard(1)} aria-label="Siguiente">
+          ›
+        </button>
+      </div>
+
+      <div className="tr-hint">Deslizá para ver más →</div>
+    </section>
+  );
+}
+
+
+/* =========================
+   Main
+========================= */
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -908,7 +770,7 @@ export default function ProductDetail() {
         const res = await api.get(`/products/${id}`);
         if (res.data?.ok) setProduct(res.data.data);
         else setError("No se pudo cargar.");
-      } catch (e) {
+      } catch {
         setError("Error al cargar.");
       } finally {
         setLoading(false);
@@ -949,22 +811,25 @@ export default function ProductDetail() {
   };
 
   const price = Number(product?.price) || 0;
+
   const compareAt =
     Number(product?.originalPrice) ||
     Number(product?.compareAtPrice) ||
-    (price ? Math.round(price * 1.50) : 0); // Mark-up más alto para este producto
+    73350;
+
   const soldCount = product?.soldCount ?? product?.socialProofCount ?? 2105;
 
   const pack2Discount = 10;
   const unitPrice = price;
-  const totalQty = qty;
+
   const promoOn = bundle === 2;
-  const pairsQty = promoOn ? Math.floor(totalQty / 2) * 2 : 0;
-  const remQty = totalQty - pairsQty;
+  const totalQty = promoOn ? Math.max(2, qty) : 1;
+
   const displayTotal = promoOn
-    ? Math.round(pairsQty * unitPrice * (1 - pack2Discount / 100) + remQty * unitPrice)
+    ? Math.round(totalQty * unitPrice * (1 - pack2Discount / 100))
     : Math.round(totalQty * unitPrice);
-  const transferPrice = Math.round(displayTotal * 0.9);
+
+  const oldTotal = Math.round(compareAt * totalQty);
 
   const contentId = useMemo(
     () =>
@@ -973,7 +838,7 @@ export default function ProductDetail() {
       product?._id ||
       (product?.id ? String(product.id) : null) ||
       id ||
-      "ANTENA_TDA_4K",
+      "PRODUCT",
     [product, id]
   );
 
@@ -990,7 +855,6 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
-  // ✅ LOGICA DE COMPRA
   const handleBuyNow = () => {
     if (!product) return;
     setRedirecting(true);
@@ -1006,14 +870,12 @@ export default function ProductDetail() {
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
 
-    setTimeout(() => {
-      navigate('/checkout');
-    }, 500);
+    setTimeout(() => navigate("/checkout"), 350);
   };
 
-  // ✅ LOGICA AGREGAR AL CARRITO
   const handleAddToCart = () => {
     if (!product) return;
+
     track("AddToCart", {
       content_ids: [String(contentId)],
       content_type: "product",
@@ -1027,7 +889,6 @@ export default function ProductDetail() {
 
     setShowToast(true);
     setTimeout(() => setShowToast(false), 5000);
-
     window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } }));
   };
 
@@ -1040,10 +901,7 @@ export default function ProductDetail() {
     return (
       <main className="section">
         <div className="container">
-          <div className="pd-skeleton card">
-            <div className="pd-skel-left" />
-            <div className="pd-skel-right" />
-          </div>
+          <div className="card">Cargando…</div>
         </div>
       </main>
     );
@@ -1064,45 +922,28 @@ export default function ProductDetail() {
         </div>
       </main>
     );
-  // Lógica para el mensaje de envío
-  const getShippingMessage = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    const day = now.getDay(); // 0 = Domingo, 6 = Sábado
-
-    // Si es fin de semana, ponemos algo genérico para no mentir
-    if (day === 0 || day === 6) return "Llega el Lunes/Martes";
-
-    // Si es día de semana antes de las 3 PM
-    if (hour < 15) return "Llega Mañana";
-
-    // Si ya pasó el corte del correo
-    return "Despacho Inmediato";
-  };
 
   return (
     <main className="section main-wrapper pd-page">
       <div className="container pd-container">
         <div className="pd-grid">
           {/* MEDIA */}
-          <section className="pd-media card shadow-hover pd-media-sticky">
+          <section className="card pd-media pd-media-sticky">
             <div
-              className="pd-mediaMain"
+              className="pd-mediaMain pd-mediaMain--bigger"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
             >
-              {compareAt > price && <div className="pd-discount-badge">OFERTA</div>}
-
               {images.length > 0 ? (
                 <img
-                  className="pd-mainImg"
+                  className="pd-mainImg pd-mainImg--force"
                   src={images[activeImgIndex]}
                   alt={product.name}
                   referrerPolicy="no-referrer"
                   crossOrigin="anonymous"
+                  loading={activeImgIndex === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  fetchPriority={activeImgIndex === 0 ? "high" : "auto"}
                   onDragStart={(e) => e.preventDefault()}
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -1113,17 +954,7 @@ export default function ProductDetail() {
                 <div className="pd-empty">Sin imagen</div>
               )}
 
-              {images.length > 1 && (
-                <>
-                  <button type="button" className="pd-arrow pd-arrow-left" onClick={(e) => { e.stopPropagation(); prevImage(); }}>
-                    ‹
-                  </button>
-                  <button type="button" className="pd-arrow pd-arrow-right" onClick={(e) => { e.stopPropagation(); nextImage(); }}>
-                    ›
-                  </button>
-                </>
-              )}
-
+              {/* ✅ sin flechas para agrandar imagen (queda swipe + dots) */}
               {images.length > 1 && (
                 <div className="pd-dots-container">
                   {images.map((_, idx) => (
@@ -1142,101 +973,88 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* THUMBS */}
-            <div className="pd-thumbs-desktop">
-              {images.slice(0, 5).map((img, idx) => (
-                <button
-                  key={`${img}-${idx}`}
-                  type="button"
-                  className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`}
-                  onClick={() => setActiveImgIndex(idx)}
-                >
-                  <img src={img} alt="thumb" loading="lazy" referrerPolicy="no-referrer" crossOrigin="anonymous" />
-                </button>
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="pd-thumbs-row">
+                {images.map((img, idx) => (
+                  <button
+                    key={`${img}-${idx}`}
+                    type="button"
+                    className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`}
+                    onClick={() => setActiveImgIndex(idx)}
+                    aria-label={`Miniatura ${idx + 1}`}
+                  >
+                    <img
+                      src={img}
+                      alt="thumb"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMG;
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* INFO */}
-          <aside className="pd-info fade-in-section">
+          <aside className="pd-info">
             <div className="hero-top">
-              <div className="gift-banner" style={{ background: '#10b981', color: 'white' }}>
-                <span className="gift-banner-ico">✅</span> STOCK DISPONIBLE: ENVÍO INMEDIATO
-              </div>
-
               <div className="hero-proof">
-                <span className="hero-pill-hot pulse-animation">🔥 Tendencia en Hogar</span>
+                <span className="hero-pill-hot">Tendencia en hogar</span>
                 <div className="hero-proofText">
-                  <b>{Number(soldCount).toLocaleString("es-AR")}</b> personas dejaron de pagar cable
+                  <b>{Number(soldCount).toLocaleString("es-AR")}</b> personas lo compraron
                 </div>
               </div>
 
               <h1 className="hero-title">{product.name}</h1>
 
               <div className="hero-ratingRow">
-                <Stars />
+                <StarsInline rating={5} />
+                <span className="hero-ratingText">4.7</span>
                 <a href="#reviews-section" onClick={scrollToReviews} className="hero-reviews hero-reviews-link">
-                  Ver opiniones
+                  Ver testimonios
                 </a>
               </div>
 
               <p className="hero-mini-desc">{MARKETING_CONTENT.miniDescription}</p>
 
-              <div className="price-block-container shadow-hover">
-                <div className="main-price-row">
-                  <span className="hero-price">{formatARS(displayTotal)}</span>
-
-                  {compareAt > price && (
-                    <>
-                      <span className="hero-compare">{formatARS(compareAt * totalQty)}</span>
-                      <span className="hero-pill-off">AHORRAS {Math.round((1 - price / compareAt) * 100)}%</span>
-                    </>
-                  )}
-                </div>
-
-                <div className="transfer-card">
-                  <div className="transfer-icon">⚡</div>
-                  <div className="transfer-text">
-                    <div className="transfer-label">O pagando con Transferencia:</div>
-                    <div className="transfer-amount">
-                      {formatARS(transferPrice)} <span className="transfer-tag">10% OFF EXTRA</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="hero-mini-bullets">
+                {MARKETING_CONTENT.trustBullets.map((t, i) => (
+                  <div key={i}>{t}</div>
+                ))}
               </div>
-              {/* === NUEVO AVISO DE ENVÍO === */}
-              <div className="shipping-notice-card">
-                <div className="shipping-icon-box">
-                  <span className="shipping-icon">⚡</span>
-                </div>
-                <div className="shipping-text-col">
-                  <div className="shipping-title">
-                    <span className="shipping-highlight">Full</span> {getShippingMessage()}
-                  </div>
-                  <div className="shipping-subtitle">
-                    Comprando dentro de las próximas <b>2 horas</b>
-                  </div>
-                </div>
-              </div>
-              {/* ============================ */}
 
-              <div className="pd-trust-icons">
-                <div className="trust-icon-item">
-                  <span>📡</span> Señal HD
-                </div>
-                <div className="trust-icon-item">
-                  <span>🚚</span> Envío Gratis
-                </div>
-                <div className="trust-icon-item">
-                  <span>💰</span> Ahorro Total
-                </div>
+              <div className="inc-inline">
+                {MARKETING_CONTENT.whatsIncluded.map((x, i) => (
+                  <div key={i} className="inc-chip">
+                    <span className="inc-ico">{x.icon}</span>
+                    <span className="inc-t">{x.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="pd-divider pd-divider--mt">Elegí tu Pack</div>
+            <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
+
+            {/* Aviso entrega (arriba de packs) */}
+            <div className="pd-deliveryNotice">
+              <div className="pd-deliveryIcon" aria-hidden="true">⚡</div>
+
+              <div className="pd-deliveryText">
+                <div className="pd-deliveryTop">
+                  <span className="pd-deliveryTitle">FULL</span>
+                  <span className="pd-deliveryMsg">Llega Mañana!</span>
+                </div>
+                <div className="pd-deliverySub">Comprando dentro de las próximas 2 horas</div>
+              </div>
+            </div>
+
 
             <div className="pd-bundles pd-bundles-pro">
-              {/* OPCIÓN 1 */}
               <label className={`pd-bundleCard ${bundle === 1 ? "is-selected" : ""}`}>
                 <input
                   type="radio"
@@ -1244,96 +1062,109 @@ export default function ProductDetail() {
                   checked={bundle === 1}
                   onChange={() => { setBundle(1); setQty(1); }}
                 />
-
                 <span className="pd-radio" aria-hidden="true" />
                 <div className="pd-bundleContent">
                   <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      1 Antena <span className="pd-tag">Pack Living</span>
+                      1 unidad <span className="pd-tag">Pack básico</span>
                     </div>
-                    <div className="pd-bundlePrice">{moneyARS(unitPrice)}</div>
+
+                    <div className="pd-bundlePrice">
+                      {moneyARS(unitPrice)}
+                      <div className="pd-bundleCompare">{moneyARS(compareAt)}</div>
+                      <div className="pd-bundleSave">
+                        Ahorrás {clampPct(Math.round((1 - unitPrice / compareAt) * 100))}%
+                      </div>
+                    </div>
                   </div>
 
                   <div className="pd-bundleSub">
-                    Ideal para probar o para 1 TV
+                    Precio final con envío gratis.
                   </div>
 
                   <div className="pd-bundleBottom">
-                    <span className="pd-miniBenefit">✅ Envío gratis</span>
-                    <span className="pd-miniBenefit">✅ Base + Cable 5m</span>
+                    <span className="pd-miniBenefit">🚚 Envío gratis</span>
+                    <span className="pd-miniBenefit">🧲 Base magnética</span>
+                    <span className="pd-miniBenefit">🔌 Cable 5m</span>
                   </div>
                 </div>
               </label>
 
-              {/* OPCIÓN 2 */}
               <label className={`pd-bundleCard ${bundle === 2 ? "is-selected" : ""}`}>
                 <input
                   type="radio"
                   name="bundle"
                   checked={bundle === 2}
-                  onChange={() => { setBundle(2); setQty((q) => (q < 2 ? 2 : q)); }}
+                  onChange={() => { setBundle(2); setQty(2); }}
                 />
-
                 <span className="pd-radio" aria-hidden="true" />
                 <div className="pd-bundleContent">
                   <div className="pd-bundleTop">
                     <div className="pd-bundleTitle">
-                      Pack Casa Completa (2 u.)
-                      <span className="pd-tag hot">Oferta</span>
+                      Pack x2 <span className="pd-tag hot">Más elegido</span>
                     </div>
 
                     <div className="pd-bundlePrice">
                       {moneyARS(Math.round(unitPrice * 2 * (1 - pack2Discount / 100)))}
-                      <div className="pd-bundleCompare">{moneyARS(unitPrice * 2)}</div>
+                      <div className="pd-bundleCompare">{moneyARS(compareAt * 2)}</div>
+                      <div className="pd-bundleSave">
+                        Ahorrás {clampPct(Math.round((1 - (unitPrice * 2 * (1 - pack2Discount / 100)) / (compareAt * 2)) * 100))}%
+                      </div>
                     </div>
                   </div>
 
                   <div className="pd-bundleSub">
-                    Llevate 2 (Living + Cuarto) con <b>10% OFF</b>
+                    Llevás 2 con <b>10% OFF</b> (ideal para living + cuarto).
                   </div>
 
                   <div className="pd-bundleBottom">
-                    <span className="pd-miniBenefit">🔥 El más elegido</span>
-                    <span className="pd-miniBenefit">✅ Envío gratis</span>
+                    <span className="pd-miniBenefit">✅ Mejor valor</span>
+                    <span className="pd-miniBenefit">🚚 Envío gratis</span>
                   </div>
                 </div>
               </label>
-
-              <div className="pd-bundleHint">
-                Tip: La mayoría lleva el <b>Pack Casa Completa</b> para tener señal en el cuarto y el comedor.
-              </div>
             </div>
 
-
-            <div className="scarcity-text scarcity-text--spaced">
-              <span className="scarcity-icon">⚠️</span> ¡Quedan pocas unidades por alta demanda!
-            </div>
 
             <div className="pd-ctaBlock">
-              <button className="pd-ctaSecondary btn-breathing-intense" type="button" onClick={handleBuyNow} disabled={redirecting}>
-                {redirecting ? "PROCESANDO..." : "COMPRAR Y AHORRAR"}
+              <button
+                className="pd-ctaSecondary btn-breathing-intense"
+                type="button"
+                onClick={handleBuyNow}
+                disabled={redirecting}
+              >
+                {redirecting ? "PROCESANDO..." : "COMPRAR AHORA"}
               </button>
+
+              <div className="pd-ctaSub">
+                Vas a ver el total final antes de pagar • Envío gratis • Pago seguro
+              </div>
 
               <div className="pd-addToCartWrap">
                 <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">
                   Agregar al carrito
                 </button>
+
+                <button
+                  type="button"
+                  className="pd-howLink"
+                  onClick={() => document.getElementById("howto")?.scrollIntoView({ behavior: "smooth" })}
+                >
+                  Ver cómo se instala →
+                </button>
               </div>
+
             </div>
 
             <div className="accordion-wrapper">
               <div className="accordion-item">
                 <button className="accordion-header" onClick={() => setIsDescExpanded(!isDescExpanded)} type="button">
-                  <span>Ficha Técnica</span>
+                  <span>Ficha técnica</span>
                   <span>{isDescExpanded ? "−" : "+"}</span>
                 </button>
 
                 <div className={`accordion-content ${isDescExpanded ? "open" : ""}`}>
                   <p>{product.description || MARKETING_CONTENT.miniDescription}</p>
-
-                  <div className="muted pd-shipNote">
-                    🚚 <strong>Envío Rápido:</strong> Despachamos en 24hs.
-                  </div>
 
                   <ul className="pd-specs-list">
                     {product.specs &&
@@ -1342,37 +1173,32 @@ export default function ProductDetail() {
                           <strong>{key}:</strong> {val}
                         </li>
                       ))}
-                    {/* Specs hardcodeadas si faltan en DB */}
+
                     {!product.specs && (
                       <>
                         <li><strong>Ganancia:</strong> 50 dBi</li>
-                        <li><strong>Largo Cable:</strong> 5 Metros</li>
+                        <li><strong>Largo cable:</strong> 5 metros</li>
                         <li><strong>Resolución:</strong> 4K / 1080p</li>
-                        <li><strong>Conector:</strong> Coaxial Universal</li>
-                        <li><strong>Uso:</strong> Interior / Exterior</li>
+                        <li><strong>Conector:</strong> coaxial universal</li>
+                        <li><strong>Uso:</strong> interior / exterior</li>
                       </>
                     )}
                   </ul>
                 </div>
               </div>
 
+
               <div className="accordion-item">
                 <button className="accordion-header" onClick={() => setIsShippingExpanded(!isShippingExpanded)} type="button">
-                  <span>Envíos y Garantía</span>
+                  <span>Envíos y compra protegida</span>
                   <span>{isShippingExpanded ? "−" : "+"}</span>
                 </button>
 
                 <div className={`accordion-content ${isShippingExpanded ? "open" : ""}`}>
                   <ul className="pd-ship-list">
-                    <li>
-                      <strong>Envío Gratis:</strong> A todo el país (Correo Arg / Andreani).
-                    </li>
-                    <li>
-                      <strong>Garantía de Señal:</strong> Si no te funciona, tenés devolución gratis.
-                    </li>
-                    <li>
-                      <strong>Compra Protegida:</strong> Tu dinero seguro con Mercado Pago.
-                    </li>
+                    <li><strong>Envío gratis:</strong> a todo el país.</li>
+                    <li><strong>Compra protegida:</strong> tu pago se procesa de forma segura.</li>
+                    <li><strong>Soporte:</strong> te ayudamos si necesitás guía para instalar.</li>
                   </ul>
                 </div>
               </div>
@@ -1380,29 +1206,33 @@ export default function ProductDetail() {
           </aside>
         </div>
 
-        {/* RESTO DE SECCIONES */}
-        <div className="pd-sections">
-          <ClinicalStatsSection />
-          {/* ✅ AQUÍ ESTÁ LA NUEVA SECCIÓN DE "DOLOR" AL PRINCIPIO */}
-          <PainPointSection />
-          <ChannelLogosSection />
-          <AuthoritySection />
-          <BreakthroughSection />
-          <BeforeAfterSlider />
-          <ComparisonTable />
-          <ProblemSolutionSection />
-          <WhatsIncludedSection />
-          {/* ❌ BIG MEDIA ELIMINADO */}
-          <FaqSection />
-          <TestimonialsSection />
+        <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} />
+
+
+        {/* ✅ SECCIONES */}
+        <div className="pd-sections-new">
+          <StoryBlocks />
+          <CertificateStrip />
+          <ComparisonTablePro />
+          <HowToSteps />
+          <FaqSectionPro />
+          <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
+          <AboutSection />
         </div>
       </div>
 
+      {/* Toast */}
       {showToast && (
         <div className="pd-toast-wrapper">
           <div className="pd-toast-content">
             <div className="pd-toast-main">
-              <img src={images[0] || FALLBACK_IMG} alt="" className="pd-toast-img" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+              <img
+                src={images[0] || FALLBACK_IMG}
+                alt=""
+                className="pd-toast-img"
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+              />
               <div className="pd-toast-info">
                 <span className="pd-toast-status">✓ ¡Agregado!</span>
                 <span className="pd-toast-name">{product.name}</span>
@@ -1420,223 +1250,764 @@ export default function ProductDetail() {
                 FINALIZAR COMPRA
               </button>
             </div>
-            <div className="pd-toast-progress"></div>
           </div>
         </div>
       )}
 
-      {/* STICKY BAR */}
-      <div className="sticky-mobile-bar-pro fade-in-section">
+      {/* ✅ Sticky sin nombre */}
+      <div className="sticky-pro">
         <div className="sticky-pro-left">
-          <span className="sticky-pro-label">Oferta termina en:</span>
-          <div className="sticky-pro-price-row">
-            <span className="sticky-timer-red">
-              <CountdownTimer />
-            </span>
+          <div className="sticky-count">
+            <span className="sticky-countLabel">TERMINA EN</span>
+            <CountdownTimer storageKey={`pd_countdown_${id}`} minutes={18} />
+          </div>
+
+          <div className="sticky-prices">
+            <span className="sticky-old">{formatARS(oldTotal)}</span>
+            <span className="sticky-now">{formatARS(displayTotal)}</span>
           </div>
         </div>
 
-        <button className="sticky-pro-btn btn-breathing" onClick={handleBuyNow} disabled={redirecting} type="button">
-          {redirecting ? "..." : "COMPRAR"}
+        <button className="sticky-pro-btn2" onClick={handleBuyNow} disabled={redirecting} type="button">
+          {redirecting ? "..." : "LO QUIERO!"}
         </button>
       </div>
 
+      {/* ✅ CSS */}
       <style>{`
-        .pd-toast-wrapper {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            animation: slideInToast 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .pd-page{ overflow-x: clip; }
+        .pd-container{
+          padding-left: 16px !important;
+          padding-right: 16px !important;
+          padding-bottom: 10px !important;
         }
-        .pd-toast-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03);
-            padding: 16px;
-            border-radius: 18px;
-            width: 320px;
-            max-width: 90vw;
+        @media (min-width: 720px){
+          .pd-container{ padding-left: 22px !important; padding-right: 22px !important; }
         }
-        .pd-toast-main {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-        .pd-toast-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: #f1f5f9;
-        }
-        .pd-toast-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .pd-toast-status {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #10b981;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .pd-toast-name {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #1e293b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 180px;
-        }
-        .pd-toast-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0 4px;
-        }
-        .pd-toast-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .pd-toast-btn-primary, .pd-toast-btn-secondary {
-            border: none;
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.1s;
-        }
-        .pd-toast-btn-primary {
-            background: #0B5CFF;
-            color: white;
-            box-shadow: 0 4px 12px rgba(11, 92, 255, 0.2);
-        }
-        .pd-toast-btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
-        .pd-toast-btn-primary:active, .pd-toast-btn-secondary:active {
-            transform: scale(0.96);
-        }
-        .pd-toast-progress {
-            height: 3px;
-            background: #10b981;
-            width: 0%;
-            margin-top: 10px;
-            border-radius: 2px;
-            animation: toastProgress 5s linear forwards;
-        }
-        @keyframes slideInToast {
-            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes toastProgress {
-            from { width: 100%; }
-            to { width: 0%; }
-        }
-        @media (max-width: 600px) {
-            .pd-toast-wrapper {
-            top: auto;
-            bottom: 20px;
-            right: 20px;
-            left: 20px;
-            width: auto;
-            display: flex;
-            justify-content: center;
-            }
-            .pd-toast-content {
-            width: 100%;
-            }
-        }
-        .pd-discount-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: #dc2626;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            z-index: 10;
-        }
-        .sticky-timer-red {
-            color: #dc2626;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-        }
-            .shipping-notice-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f0fdf4; /* Verde muy suave */
-            border: 1px solid #bbf7d0;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            animation: fadeIn 0.5s ease;
+        @media (min-width: 1100px){
+          .pd-container{ padding-left: 28px !important; padding-right: 28px !important; }
         }
 
-        .shipping-icon-box {
-            background: #dcfce7;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        /* ===== TITULOS PRO ===== */
+        .sec-head{
+          text-align: center;
+          margin: 26px 0 14px;
+        }
+        .sec-title{
+          margin: 0;
+          font-weight: 1100;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          font-size: 1.55rem;
+          color: rgba(11,18,32,.92);
+        }
+        @media (min-width: 900px){
+          .sec-title{ font-size: 1.85rem; }
+        }
+        .sec-sub{
+          margin-top: 8px;
+          color: rgba(11,18,32,.60);
+          font-weight: 850;
         }
 
-        .shipping-icon {
-            font-size: 1.2rem;
-            animation: pulseGreen 2s infinite;
+        /* ===== IMAGEN PRINCIPAL MÁS GRANDE ===== */
+        .pd-media { padding: 0 !important; }
+        .pd-mediaMain--bigger{
+          position: relative;
+          width: 100%;
+          background: #f8fafc;
+          overflow: hidden;
+          border-radius: 18px;
+          /* ✅ más alto para que se vea grande */
+          height: 520px;
+        }
+        @media (max-width: 980px){
+          .pd-mediaMain--bigger{ height: 420px; }
+        }
+        @media (max-width: 520px){
+          .pd-mediaMain--bigger{ height: 390px; }
         }
 
-        .shipping-text-col {
-            display: flex;
-            flex-direction: column;
+        .pd-mainImg--force{
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block !important;
+          padding: 10px;
+          background: #fff;
         }
 
-        .shipping-title {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: #166534; /* Verde oscuro */
-            line-height: 1.2;
+        /* dots */
+        .pd-dots-container{
+          position:absolute;
+          left: 0;
+          right: 0;
+          bottom: 12px;
+          display:flex;
+          justify-content:center;
+          gap: 8px;
+          z-index: 3;
+          pointer-events: auto;
+        }
+        .pd-dot{
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(2,8,23,.18);
+          cursor:pointer;
+        }
+        .pd-dot.active{
+          background: rgba(11,92,255,.95);
+          transform: scale(1.2);
         }
 
-        .shipping-highlight {
-            font-style: italic;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #16a34a;
+        /* thumbs */
+        .pd-thumbs-row{
+          display:flex;
+          gap: 10px;
+          padding: 12px;
+          border-top: 1px solid rgba(0,0,0,0.06);
+          overflow-x: auto;
+          background: #fff;
+        }
+        .pd-thumb{
+          min-width: 72px;
+          width: 72px;
+          height: 72px;
+          border-radius: 14px;
+          overflow:hidden;
+          border: 2px solid rgba(2,8,23,.10);
+          background: #f1f5f9;
+          padding: 0;
+        }
+        .pd-thumb.is-active{
+          border-color: rgba(11,92,255,.85);
+          box-shadow: 0 0 0 3px rgba(11,92,255,.18);
+        }
+        .pd-thumb img{ width:100%; height:100%; object-fit: cover; display:block; }
+
+        /* hero */
+        .hero-mini-desc{ color: rgba(11,18,32,.72); line-height: 1.7; margin: 10px 0 8px; }
+        .inc-inline{ display:flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 6px; }
+        .inc-chip{
+          display:flex; align-items:center; gap: 8px;
+          background: rgba(234,241,255,.78);
+          border: 1px solid rgba(11,92,255,.14);
+          padding: 10px 12px;
+          border-radius: 14px;
+          font-weight: 850;
+          color: rgba(11,18,32,.78);
         }
 
-        .shipping-subtitle {
-            font-size: 0.8rem;
-            color: #15803d;
-            opacity: 0.9;
+        /* anim helper */
+        .hover-float{
+          transition: transform .18s ease, box-shadow .18s ease;
+          will-change: transform;
+        }
+        .hover-float:hover{
+          transform: translateY(-4px);
+          box-shadow: 0 18px 50px rgba(10,20,40,.14);
+        }
+        @keyframes popIn{
+          from{ opacity: 0; transform: translateY(10px) scale(.98); }
+          to{ opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        @keyframes pulseGreen {
-            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        /* story title */
+        .flow-title{
+          text-align: center;
+          text-transform: uppercase;
+          letter-spacing: .05em;
+          font-size: 1.25rem;
+          font-weight: 1100;
+          margin: 0 0 12px;
         }
+        @media (min-width: 900px){
+          .flow-title{ font-size: 1.45rem; }
+        }
+        .flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
+
+        .pd-sections-new{ margin-top: 40px; padding-bottom: 40px; }
+        .pd-flow{ display:flex; flex-direction: column; gap: 28px; }
+        .flow-row{
+          display:grid;
+          grid-template-columns: 1.1fr .9fr;
+          gap: 22px;
+          align-items: center;
+        }
+        @media (max-width: 900px){
+          .flow-row{ grid-template-columns: 1fr; }
+        }
+        .flow-text{ display:flex; flex-direction: column; align-items: center; }
+        .flow-badge{
+          display:inline-flex;
+          padding: 6px 12px;
+          border-radius: 999px;
+          background: rgba(11,92,255,.10);
+          border: 1px solid rgba(11,92,255,.18);
+          font-weight: 1000;
+          color: rgba(11,18,32,.78);
+          margin-bottom: 10px;
+        }
+
+        .flow-imgBox{
+          width: 100%;
+          max-width: 520px;
+          aspect-ratio: 1 / 1;
+          border-radius: 0px;
+          overflow: hidden;
+          border: 1px solid rgba(2,8,23,.08);
+          background: #fff;
+          margin-left: auto;
+        }
+        @media (max-width: 900px){
+          .flow-imgBox{ margin: 0 auto; max-width: 520px; }
+        }
+        .flow-imgBox img{
+          width:100%;
+          height:100%;
+          object-fit: cover;
+          display:block;
+        }
+
+        /* certificate */
+        .pd-strip{
+          margin: 34px 0 10px;
+          background: rgba(234,241,255,.65);
+          border: 1px solid rgba(11,92,255,.16);
+          border-radius: 18px;
+          padding: 18px;
+        }
+        .pd-stripTop{ display:flex; justify-content:center; margin: 10px 0 16px; }
+        .pd-certLogoBox{
+          height: 48px;
+          min-width: 170px;
+          border-radius: 14px;
+          background: rgba(255,255,255,.9);
+          border: 1px solid rgba(2,8,23,.08);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding: 6px 10px;
+        }
+        .pd-certLogo{ height: 36px; width: auto; object-fit: contain; display:block; }
+
+        .pd-stripGrid{
+          display:grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+        }
+        @media (max-width: 900px){
+          .pd-stripGrid{ grid-template-columns: repeat(2, 1fr); }
+        }
+        .pd-stripItem{
+          display:flex;
+          gap: 10px;
+          align-items:center;
+          background: rgba(255,255,255,.9);
+          border: 1px solid rgba(2,8,23,.06);
+          border-radius: 14px;
+          padding: 12px;
+          font-weight: 900;
+          color: rgba(11,18,32,.72);
+        }
+
+        /* ===== COMPARATIVA NO CORTADA ===== */
+        .cmp-scroll{
+          overflow-x: auto;
+          padding: 6px 2px 12px;
+        }
+        .cmp-scroll::-webkit-scrollbar{ height: 10px; }
+        .cmp-scroll::-webkit-scrollbar-thumb{ background: rgba(11,92,255,.18); border-radius: 999px; }
+
+        .cmp-wrap{
+          min-width: 680px; /* ✅ evita cortar columnas */
+          border: 1px solid rgba(2,8,23,.08);
+          border-radius: 18px;
+          background: #fff;
+          box-shadow: 0 18px 55px rgba(10,20,40,.10);
+          overflow: hidden;
+        }
+        @media (min-width: 900px){
+          .cmp-wrap{ min-width: 0; }
+        }
+
+        .cmp-head, .cmp-row{
+          display:grid;
+          grid-template-columns: 1.2fr 1fr 1fr 1fr;
+          align-items:center;
+        }
+        .cmp-head{
+          background: linear-gradient(180deg, rgba(234,241,255,.95), rgba(234,241,255,.65));
+          border-bottom: 1px solid rgba(2,8,23,.06);
+          font-weight: 1000;
+        }
+        .cmp-row{
+          border-bottom: 1px solid rgba(2,8,23,.06);
+          transition: background .18s ease, transform .18s ease;
+        }
+        .cmp-row:hover{ background: rgba(11,92,255,.06); transform: translateY(-1px); }
+        .cmp-row:last-child{ border-bottom: none; }
+        .cmp-k, .cmp-col{ padding: 14px 12px; color: rgba(11,18,32,.78); font-weight: 850; font-size: .92rem; }
+        .cmp-a{ color: rgba(11,92,255,.95); font-weight: 1100; }
+        .cmp-anim{ animation: popIn .35s ease both; }
+        .cmp-hint{
+          text-align:center;
+          margin-top: 8px;
+          color: rgba(11,18,32,.55);
+          font-weight: 850;
+          font-size: .9rem;
+        }
+
+        /* how to */
+        .how-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 900px){ .how-grid{ grid-template-columns: 1fr; } }
+        .how-card{
+          background: #fff;
+          border: 1px solid rgba(2,8,23,.08);
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 18px 55px rgba(10,20,40,.10);
+          display:flex; gap: 12px; align-items:flex-start;
+          transition: transform .18s ease, box-shadow .18s ease;
+          will-change: transform;
+          position: relative;
+          overflow: hidden;
+        }
+        .how-card:hover{ transform: translateY(-4px); box-shadow: 0 22px 70px rgba(10,20,40,.14); }
+        .how-n{
+          width: 42px; height: 42px; border-radius: 14px;
+          display:grid; place-items:center;
+          background: rgba(11,92,255,.12);
+          border: 1px solid rgba(11,92,255,.18);
+          font-weight: 1100;
+          color: rgba(11,92,255,.95);
+          flex-shrink: 0;
+        }
+        .how-t{ font-weight: 1100; color: rgba(11,18,32,.9); }
+        .how-d{ margin-top: 4px; color: rgba(11,18,32,.68); font-weight: 650; line-height: 1.5; }
+        .how-anim .how-card{ animation: popIn .35s ease both; }
+        .how-anim .how-card:nth-child(2){ animation-delay: .06s; }
+        .how-anim .how-card:nth-child(3){ animation-delay: .12s; }
+
+        /* FAQ */
+        .faq-pro{ display:flex; flex-direction: column; gap: 10px; }
+        .faq-pro-item{
+          background: #fff;
+          border: 1px solid rgba(2,8,23,.08);
+          border-radius: 18px;
+          overflow:hidden;
+          box-shadow: 0 18px 55px rgba(10,20,40,.09);
+        }
+        .faq-pro-q{
+          width:100%;
+          display:flex;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 16px 16px;
+          background: transparent;
+          border: none;
+          cursor:pointer;
+          font-weight: 1000;
+          color: rgba(11,18,32,.9);
+          text-align:left;
+        }
+        .faq-pro-ico{ font-size: 22px; color: rgba(11,92,255,.95); }
+        .faq-pro-a{
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height .25s ease;
+          padding: 0 16px;
+          color: rgba(11,18,32,.72);
+          font-weight: 650;
+        }
+        .faq-pro-item.open .faq-pro-a{
+          max-height: 260px;
+          padding-bottom: 16px;
+        }
+        .faq-pro-a p{ margin: 0; }
+
+        /* stars */
+        .stars-inline{ display:inline-flex; gap: 2px; justify-content: center; }
+        .stars-inline .s{ opacity: .25; font-size: 14px; }
+        .stars-inline .s.on{ opacity: 1; color: #F5B301; }
+
+        /* Reviews carousel */
+        .rv-wrap{ position: relative; margin-top: 14px; }
+        .rv-row{
+          display:flex;
+          gap: 16px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          padding: 10px 6px 16px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .rv-slide{ scroll-snap-align: center; flex: 0 0 auto; width: min(520px, 88vw); }
+        .rv-card{
+          background: #fff;
+          border: 1px solid rgba(2,8,23,.10);
+          border-radius: 22px;
+          box-shadow: 0 22px 70px rgba(10,20,40,.16);
+          overflow: hidden;
+        }
+        .rv-imgBox{ position: relative; width: 100%; aspect-ratio: 4 / 3; background: #f1f5f9; }
+        .rv-imgBox img{ width:100%; height:100%; object-fit: cover; display:block; }
+        .rv-quote{
+          position: absolute;
+          right: 14px;
+          bottom: 14px;
+          width: 46px;
+          height: 46px;
+          border-radius: 999px;
+          background: #ef4444;
+          color: #fff;
+          display:grid;
+          place-items:center;
+          font-weight: 1100;
+          box-shadow: 0 16px 40px rgba(239,68,68,.35);
+        }
+        .rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; }
+        .rv-title{ font-weight: 1100; text-transform: uppercase; letter-spacing: .05em; color: rgba(11,18,32,.92); }
+        .rv-text{ margin: 0; color: rgba(11,18,32,.70); line-height: 1.6; font-weight: 650; }
+        .rv-name{ margin-top: 4px; font-weight: 900; color: rgba(11,18,32,.62); }
+
+        .rv-nav{
+          position:absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px; height: 44px;
+          border-radius: 999px;
+          border: 1px solid rgba(2,8,23,.10);
+          background: rgba(255,255,255,.95);
+          box-shadow: 0 18px 55px rgba(10,20,40,.18);
+          cursor:pointer;
+          display:grid;
+          place-items:center;
+          font-size: 24px;
+          z-index: 10;
+        }
+        .rv-prev{ left: -8px; }
+        .rv-next{ right: -8px; }
+        @media (max-width: 560px){ .rv-nav{ display:none; } }
+
+        .rv-dots{ display:flex; justify-content: center; gap: 8px; margin-top: 10px; }
+        .rv-dot{
+          width: 8px; height: 8px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(2,8,23,.18);
+          cursor:pointer;
+          transition: transform .18s ease, background .18s ease;
+        }
+        .rv-dot.on{ background: rgba(11,92,255,.95); transform: scale(1.25); }
+
+        /* About */
+        .about-grid{
+          display:grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+          align-items: center;
+        }
+        @media (max-width: 900px){
+          .about-grid{ grid-template-columns: 1fr; }
+        }
+        .about-img{
+          border-radius: 22px;
+          overflow: hidden;
+          border: 1px solid rgba(2,8,23,.10);
+          box-shadow: 0 22px 70px rgba(10,20,40,.14);
+          background: #fff;
+        }
+        .about-img img{
+          width:100%;
+          height: 100%;
+          max-height: 340px;
+          object-fit: cover;
+          display:block;
+        }
+        .about-text{ text-align: left; }
+        @media (max-width: 900px){
+          .about-text{ text-align: center; }
+        }
+        .about-p{
+          margin: 0 0 12px;
+          color: rgba(11,18,32,.72);
+          line-height: 1.7;
+          font-weight: 650;
+        }
+        .about-bul{
+          display:flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        @media (max-width: 900px){
+          .about-bul{ align-items: center; }
+        }
+        .about-li{
+          display:inline-flex;
+          gap: 10px;
+          align-items:center;
+          background: rgba(234,241,255,.78);
+          border: 1px solid rgba(11,92,255,.14);
+          padding: 10px 12px;
+          border-radius: 14px;
+          font-weight: 900;
+          color: rgba(11,18,32,.78);
+          width: fit-content;
+        }
+
+        /* Sticky */
+        .sticky-pro{
+          position: fixed;
+          left: 16px;
+          right: 16px;
+          bottom: 14px;
+          z-index: 9999;
+          display:flex;
+          align-items:center;
+          justify-content: space-between;
+          gap: 12px;
+          background: rgba(255,255,255,.98);
+          border: 1px solid rgba(2,8,23,.10);
+          border-radius: 20px;
+          padding: 12px 14px;
+          box-shadow: 0 22px 70px rgba(10,20,40,.18);
+          backdrop-filter: blur(12px);
+        }
+        @media (min-width: 991px){ .sticky-pro{ display:none; } }
+
+        .sticky-pro-left{ display:flex; flex-direction: column; gap: 8px; }
+        .sticky-count{ display:flex; align-items:center; gap: 8px; font-weight: 900; color: rgba(11,18,32,.70); white-space: nowrap; }
+        .sticky-countLabel{ font-size: .78rem; color: rgba(11,18,32,.55); font-weight: 1000; letter-spacing: .06em; }
+        .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 1100; }
+
+        .sticky-prices{ display:flex; align-items: baseline; gap: 10px; }
+        .sticky-old{ color: rgba(11,18,32,.45); font-weight: 900; text-decoration: line-through; font-size: .88rem; }
+        .sticky-now{ font-weight: 1100; color: rgba(11,18,32,.92); font-size: 1.08rem; }
+
+        .sticky-pro-btn2{
+          border: none;
+          background: #0B5CFF;
+          color:#fff;
+          font-weight: 1100;
+          border-radius: 16px;
+          padding: 14px 18px;
+          cursor:pointer;
+          box-shadow: 0 14px 38px rgba(11,92,255,.30);
+          white-space: nowrap;
+          transition: transform .12s ease;
+          text-transform: uppercase;
+          letter-spacing: .04em;
+        }
+        .sticky-pro-btn2:active{ transform: scale(.98); }
+
+        .pd-addToCartWrap{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* link pro, estilo “ver opiniones” */
+.pd-howLink{
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 1000;
+  color: rgba(11,92,255,.95);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  letter-spacing: .2px;
+}
+
+.pd-howLink:hover{
+  opacity: .85;
+  transform: translateY(-1px);
+  transition: .15s ease;
+}
+
+/* ===== MINI RESEÑAS (tipo Shopify) ===== */
+.mrb{
+  margin-top: 14px;
+  background: rgba(2,8,23,.03);
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 16px;
+  padding: 12px 12px 10px;
+  box-shadow: 0 14px 40px rgba(10,20,40,.08);
+}
+
+.mrb-viewport{
+  overflow: hidden;           /* clave: 1 slide visible */
+  border-radius: 14px;
+}
+
+.mrb-track{
+  display: flex;              /* slider real */
+  width: 100%;
+  transition: transform .28s ease;
+  will-change: transform;
+}
+
+.mrb-slide{
+  flex: 0 0 100%;             /* 1 por vez */
+  width: 100%;
+}
+
+.mrb-card{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 14px;
+  padding: 10px 10px;
+}
+
+.mrb-avatar{
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(2,8,23,.10);
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.mrb-mid{
+  flex: 1;
+  min-width: 0;
+}
+
+.mrb-text{
+  font-size: .88rem;
+  color: rgba(11,18,32,.78);
+  font-weight: 650;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      /* 2 líneas como la imagen */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mrb-bottom{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+.mrb-name{
+  font-size: .82rem;
+  font-weight: 900;
+  color: rgba(11,18,32,.60);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mrb-stars .stars-inline .s{ font-size: 12px; } /* más mini */
+.mrb-stars{ flex-shrink: 0; }
+
+/* nav */
+.mrb-nav{
+  display: grid;
+  grid-template-columns: 34px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mrb-arrow{
+  width: 34px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(2,8,23,.10);
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 10px 24px rgba(10,20,40,.10);
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.mrb-dots{
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mrb-dot{
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(2,8,23,.22);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.mrb-dot.on{
+  background: rgba(11,92,255,.95);
+  transform: scale(1.25);
+}
+/* ===== Delivery Notice (FULL) ===== */
+.pd-deliveryNotice{
+  margin: 14px 0 10px;
+  display:flex;
+  gap: 12px;
+  align-items:center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(34,197,94,.25);
+  background: linear-gradient(180deg, rgba(34,197,94,.10), rgba(34,197,94,.06));
+  box-shadow: 0 12px 28px rgba(16,185,129,.10);
+}
+
+.pd-deliveryIcon{
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  background: rgba(34,197,94,.14);
+  border: 1px solid rgba(34,197,94,.22);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pd-deliveryText{ display:flex; flex-direction: column; gap: 3px; }
+.pd-deliveryTop{ display:flex; align-items:center; gap: 8px; flex-wrap: wrap; }
+
+.pd-deliveryTitle{
+  font-weight: 1100;
+  font-size: .86rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(22,101,52,.95);
+  background: rgba(34,197,94,.14);
+  border: 1px solid rgba(34,197,94,.22);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.pd-deliveryMsg{
+  font-weight: 1100;
+  color: rgba(11,18,32,.92);
+}
+
+.pd-deliverySub{
+  font-size: .86rem;
+  font-weight: 850;
+  color: rgba(22,101,52,.90);
+}
+
+
       `}</style>
     </main>
   );
