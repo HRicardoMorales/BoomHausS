@@ -48,7 +48,7 @@ const MARKETING_CONTENT = {
 
   certificate: {
     title: "COMPRA CON CONFIANZA",
-    logoUrl: "https://via.placeholder.com/160x80?text=Cert+Logo",
+    logoUrl: "https://static.vecteezy.com/system/resources/thumbnails/024/097/948/small/certification-of-authenticity-badge-100-percentoriginal-product-stamp-logo-sticker-patch-round-emblem-retro-vintage-hipster-illustration-vector.jpg",
     items: [
       { icon: "🔒", text: "Pago seguro (Mercado Pago)" },
       { icon: "✅", text: "Compra protegida" },
@@ -1483,8 +1483,8 @@ export default function ProductDetail() {
         }
         .pd-stripTop{ display:flex; justify-content:center; margin: 10px 0 16px; }
         .pd-certLogoBox{
-          height: 48px;
-          min-width: 170px;
+          height: 72px;
+          min-width: 230px;
           border-radius: 14px;
           background: rgba(255,255,255,.9);
           border: 1px solid rgba(2,8,23,.08);
@@ -1493,7 +1493,7 @@ export default function ProductDetail() {
           justify-content:center;
           padding: 6px 10px;
         }
-        .pd-certLogo{ height: 36px; width: auto; object-fit: contain; display:block; }
+        .pd-certLogo{ height: 100px; width: auto; object-fit: contain; display:block; }
 
         .pd-stripGrid{
           display:grid;
