@@ -10,13 +10,13 @@ import { track } from "../lib/metaPixel";
    ======================================================================== */
 const MARKETING_CONTENT = {
   miniDescription:
-    "¿Seguís pagando fortunas por ver la tele? Cortá con los gastos fijos. Con la Antena TDA Power™, accedés a todos los canales de aire en calidad Full HD 1080p y 4K totalmente GRATIS. Conectala, escaneá y disfrutá.",
+    "Tu cepillo queda al aire… y eso es un imán de gérmenes. Con el Porta Cepillo Dispenser Esterilizador mantenés los cepillos protegidos y más limpios entre usos, reduciendo el contacto con bacterias del baño. Además, te deja la pasta lista con un solo toque: más orden, más higiene y cero complicaciones..",
 
   trustBullets: [
+    "🦷 Reduce bacterias, gérmenes y humedad",
+    "⚡ Dispenser automático sin contacto",
+    "🔋 Recargable",
     "🚚 Envío gratis a todo el país",
-    "⚡ Instalación en 1 minuto",
-    "🔒 Pago seguro con Mercado Pago",
-    "📺 Canales de aire en HD",
   ],
 
   whatsIncluded: [
@@ -24,25 +24,25 @@ const MARKETING_CONTENT = {
 
   storyBlocks: [
     {
-      title: "El fútbol se vive en el momento",
+      title: "CUIDA A LOS MAS IMPORTANTES PARA VOS",
       text:
-        "Nada peor que el gol gritado antes por el vecino o el grupo. Con la antena mirás los partidos en vivo, sin ese delay que te arruina la jugada y sin cortes raros. Prendés la tele y disfrutás como corresponde, en tiempo real. ⚽",
-      img: "https://pbs.twimg.com/media/G_krYtYWAAAQ6La?format=png&name=small",
-      badge: "Ahorra como nunca",
+        "Para los que querés de verdad, querés soluciones simples que sumen todos los días. Este porta cepillo ayuda a mantener los cepillos más protegidos, ordenados y listos para usar, sin complicaciones. Ideal para hijos, pareja o familiares que comparten baño: más higiene, más tranquilidad.",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_950983-MLA104372170273_012026-F.webp",
+      badge: "",
     },
     {
-      title: "Señal estable, sin apps ni microcortes raros",
+      title: "Tu cepillo no debería quedar expuesto",
       text:
-        "¿Te cansaste del delay, los cortes y la calidad que baja justo cuando querés ver algo? Con TV digital por aire no dependés de internet ni de apps: es señal directa. Para ver tranquilo, sin interrupciones.",
-      img: "https://media.istockphoto.com/id/507832501/es/foto/familia-viendo-la-televisi%C3%B3n-en-la-sala-de-estar.jpg?s=612x612&w=0&k=20&c=9rljpj9_sT3fGITOIKBa8_0tzAYnZV_TGhdVwV4GAWs=",
-      badge: "Cable 5m + imán",
+        "Nada peor que dejar el cepillo “al aire”, juntando polvo y salpicaduras sin darte cuenta. Con el esterilizador, el cabezal queda más protegido y más higiénico para el próximo uso. Es tranquilidad diaria, sin pensarla.",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_605052-MLA92075696569_092025-F.webp",
+      badge: "",
     },
     {
-      title: "La tele gratis volvió a muchas casas",
+      title: "Orden en el baño, rutina más simple",
       text:
-        "Esto es para la gente práctica: la que quiere prender la tele y que funcione, sin pensar en facturas. Ideal para casa, depto, habitación, quincho o para los abuelos. Es esa compra que te simplifica el día a día.",
-      img: "https://images.pexels.com/photos/4009402/pexels-photo-4009402.jpeg?auto=compress&cs=tinysrgb&w=800",
-      badge: "HD / 4K",
+        "Cuando cada cosa tiene su lugar, todo fluye: cepillos colgados, pasta integrada y baño más prolijo. Ideal para casa, depto, familia o compartir baño: queda bien, ocupa poco y te simplifica la mañana y la noche.",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_918000-MLA92075728129_092025-F.webp",
+      badge: "",
     },
   ],
 
@@ -57,168 +57,191 @@ const MARKETING_CONTENT = {
     ],
   },
 
-  comparison: {
-    title: "ANTENA VS CABLE / STREAMING",
-    rows: [
-      { k: "Costo mensual", a: "$0", b: "Pago mensual", c: "Pago mensual" },
-      { k: "Requiere internet", a: "No", b: "No", c: "Sí" },
-      { k: "Instalación", a: "1 minuto", b: "Técnico/Deco", c: "App + WiFi" },
-      { k: "Delay", a: "No", b: "No", c: "A veces sí" },
-      { k: "Ideal para", a: "Aire HD", b: "Todo", c: "Todo" },
-    ],
-    cols: ["Antena TDA 4K", "Cable", "Streaming"],
-  },
+comparison: {
+  title: "ANTES VS DESPUÉS",
+  cols: ["ANTES (SIN EL 3 EN 1)", "DESPUÉS (CON EL 3 EN 1)"],
+  rows: [
+    { k: "Orden en el baño", a: "Cepillos y pasta sueltos / desorden", b: "Todo en un solo lugar, prolijo" },
+    { k: "Uso diario", a: "Apretás el tubo con la mano (se ensucia)", b: "Presionás el cepillo y sale la pasta" },
+    { k: "Limpieza", a: "Salpicaduras / restos alrededor", b: "Menos mugre, más fácil de limpiar" },
+    { k: "Ahorro de pasta", a: "Sale de más y se desperdicia", b: "Dosificación más pareja" },
+    { k: "Espacio", a: "Ocupa lugar en la mesada", b: "Liberás espacio (todo compacto)" },
 
-  howTo: {
-    title: "INSTALACIÓN EN 3 PASOS",
-    steps: [
-      { n: "1", t: "Conectá la ficha coaxial al TV", d: "Sin herramientas. Cable directo." },
-      { n: "2", t: "Ubicala cerca de una ventana", d: "Usá los 5m para encontrar el mejor punto." },
-      { n: "3", t: "Escaneá canales en tu TV", d: "Menú → Canales → Autoprogramación." },
-    ],
-  },
-
-  faqTitle: "PREGUNTAS FRECUENTES",
-  faq: [
-    {
-      q: "¿Sirve para cualquier TV?",
-      a: "Funciona directo en TVs con sintonizador TDA (la mayoría de Smart/LED modernas). Si tu TV es muy vieja, puede requerir un decodificador TDA.",
-    },
-    { q: "¿Necesita internet o WiFi?", a: "No. Recibe señal de aire digital (TDA)." },
-    {
-      q: "¿Qué canales agarra?",
-      a: "Depende de tu zona y cobertura, pero suele incluir señales de aire nacionales/provinciales disponibles en TDA.",
-    },
-    {
-      q: "¿Es difícil de instalar?",
-      a: "No. Es conectar y buscar canales. La ubicación (ventana/altura) mejora la recepción.",
-    },
   ],
+},
+
+
+howTo: {
+  title: "CÓMO SE USA",
+  image: {
+    url: "https://http2.mlstatic.com/D_NQ_NP_2X_730119-MLA92075368185_092025-F.webp",
+    alt: "Cómo se usa la antena en 3 pasos"
+  }
+},
+
+
+faqTitle: "PREGUNTAS FRECUENTES",
+faq: [
+  {
+    q: "¿Cómo se instala?",
+    a: "Se pega a la pared con adhesivo (sin perforar). Limpiá bien la superficie, pegalo, presioná unos segundos y dejalo asentar antes de usar.",
+  },
+  {
+    q: "¿Sirve para cualquier cepillo dental?",
+    a: "Sí, es compatible con la mayoría de cepillos manuales y muchos eléctricos (según tamaño del mango).",
+  },
+  {
+    q: "¿Cómo funciona la esterilización?",
+    a: "El esterilizador ayuda a mantener el cabezal del cepillo más protegido del ambiente. En algunos modelos se activa automáticamente al cerrar la tapa.",
+  },
+  {
+    q: "¿Hay que cargarlo? ¿Cuánto dura la batería?",
+    a: "Depende del modelo: algunos son recargables por USB y otros usan pilas. En uso normal suele durar varios días/semanas antes de necesitar carga/cambio.",
+  },
+  {
+    q: "¿Incluye la pasta dental o el cepillo?",
+    a: "No, el producto es el porta cepillos con dispenser/esterilizador. La pasta y los cepillos se venden por separado.",
+  },
+  {
+    q: "¿El dispenser sirve para cualquier pasta?",
+    a: "Funciona con la mayoría de pastas en tubo estándar. Solo colocás el pico del tubo en el adaptador y presionás el cepillo para dosificar.",
+  },
+  {
+    q: "¿Se puede usar en baño con humedad?",
+    a: "Sí, está pensado para baño. Igual, para que el adhesivo quede firme, instalalo sobre una superficie lisa y bien seca.",
+  },
+  {
+    q: "¿Cómo se limpia?",
+    a: "Pasale un paño húmedo por fuera y, cada tanto, retirás los accesorios lavables para enjuagar y secar antes de volver a colocar.",
+  },
+],
+
 
   reviewsTitle: "TESTIMONIOS",
   reviewsSubtitle: "Esto dicen nuestros clientes",
   reviewsCarousel: [
-    {
-      title: "SE VE INCREÍBLE",
-      rating: 5,
-      text:
-        "La instalé en 3 minutos y me sorprendió la calidad. Telefe y El Trece se ven súper nítidos. Venía renegando con una antena vieja y esto fue otra cosa.",
-      name: "Carla Benítez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_692888-MLA74842898126_032024-F.webp",
-    },
-    {
-      title: "CHAU ABONO",
-      rating: 5,
-      text:
-        "Me cansé de pagar cable. Conecté, busqué canales y listo. Para lo que yo miro (noticias y deportes) va perfecto. Muy buena compra.",
-      name: "Julián Rivas",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_722153-MLA72070195166_102023-F.webp",
-    },
-    {
-      title: "FÁCIL Y RÁPIDA",
-      rating: 5,
-      text:
-        "Literalmente conectar y escanear. La puse cerca de la ventana y agarró varios canales en HD sin cortes. Recomendable si no querés complicarte.",
-      name: "Romina Sosa",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_767141-MLA75196027614_032024-F.webp",
-    },
-    {
-      title: "MEJOR DE LO QUE ESPERABA",
-      rating: 5,
-      text:
-        "Pensé que iba a ser medio humo y nada que ver. La imagen se ve limpia y estable. El cable largo ayuda un montón para encontrar el mejor lugar.",
-      name: "Nicolás Ferreira",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_859622-MLA82052231675_012025-F.webp",
-    },
-    {
-      title: "EN DEPTO FUNCIONA",
-      rating: 4,
-      text:
-        "Estoy en un depto interno y al principio agarraba poco, pero probando dos ubicaciones quedó joya. Si la ponés bien, va excelente.",
-      name: "Micaela Páez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_829243-MLA79690114387_102024-F.webp",
-    },
-    {
-      title: "MUY BUENA SEÑAL",
-      rating: 5,
-      text:
-        "Agarra más canales de los que pensé. La base magnética está buena porque queda prolija atrás de la tele. La volvería a comprar.",
-      name: "Sergio Ledesma",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_903210-MLA79449251472_102024-F.webp",
-    },
-    {
-      title: "SE NOTA EL HD",
-      rating: 5,
-      text:
-        "En mi tele se nota muchísimo la diferencia. Con la antena común se pixelaba y con esta va estable. Para mí re vale.",
-      name: "Lucía Giménez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_777177-MLA79895272194_102024-F.webp",
-    },
-    {
-      title: "INSTALACIÓN EN MINUTOS",
-      rating: 5,
-      text:
-        "La compré para mi mamá y la instalé yo sin saber nada. Menú, autoprogramación y listo. Quedó feliz porque ve todo sin pagar.",
-      name: "Federico Albornoz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_844020-MLA80959662850_122024-F.webp",
-    },
-    {
-      title: "BUENA CALIDAD",
-      rating: 4,
-      text:
-        "Materiales buenos y el cable se ve resistente. Lo único es que depende mucho de dónde la pongas, pero una vez que encontrás el punto, va perfecto.",
-      name: "Mariana Quiroga",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_728753-MLA91586637905_092025-F.webp",
-    },
-    {
-      title: "CERO CORTES",
-      rating: 5,
-      text:
-        "La uso sobre todo para ver noticias y deportes. Cero delay y cero cortes. No vuelvo al streaming para los partidos ni loco.",
-      name: "Gustavo Molina",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_742625-MLA91586637895_092025-F.webp",
-    },
-    {
-      title: "ME SALVÓ EL CABLE LARGO",
-      rating: 5,
-      text:
-        "Con otras antenas no llegaba a la ventana. Con esta, por el cable largo, la pude ubicar mejor y ahí cambió todo. Excelente.",
-      name: "Valentina Ortiz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_822761-MLA91586608467_092025-F.webp",
-    },
-    {
-      title: "RECOMENDABLE",
-      rating: 5,
-      text:
-        "La compré por probar y terminé dejando de pagar el cable en casa. Si tu TV es compatible, te soluciona el tema rápido.",
-      name: "Hernán Cabrera",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_621586-MLA100505272605_122025-F.webp",
-    },
-    {
-      title: "MUY CONFORME",
-      rating: 5,
-      text:
-        "Llego rápido, la conecté y anduvo de una. Se ve muy bien en mi Smart y el diseño es discreto, no queda feo.",
-      name: "Paula Acevedo",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_932659-MLA92598923895_092025-F.webp",
-    },
-    {
-      title: "CALIDAD ESTABLE",
-      rating: 4,
-      text:
-        "En mi zona algunos canales cambian según el clima, pero en general se mantiene estable y la mayoría se ve en HD. Buena relación precio/calidad.",
-      name: "Ezequiel Navarro",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_701387-MLA92192890042_092025-F.webp",
-    },
-    {
-      title: "LO VOLVERÍA A COMPRAR",
-      rating: 5,
-      text:
-        "La puse en el living y después pedí otra para la habitación. Re práctica y cumple. Ideal si querés ahorrar sin renegar.",
-      name: "Florencia Medina",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_779916-MLA105813356893_012026-F.webp",
-    },
-  ],
+  {
+    title: "MÁS HIGIÉNICO",
+    rating: 5,
+    text:
+      "Antes los cepillos quedaban expuestos todo el día. Con esto quedan más protegidos y el baño se siente más limpio en general.",
+    name: "Carla Benítez",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_692888-MLA74842898126_032024-F.webp",
+  },
+  {
+    title: "SE NOTA EL CAMBIO",
+    rating: 5,
+    text:
+      "Me daba cosa tener los cepillos a la intemperie. Ahora quedan guardados y siento que ayuda a mantener mejor la higiene diaria.",
+    name: "Julián Rivas",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_722153-MLA72070195166_102023-F.webp",
+  },
+  {
+    title: "CEPILLOS MÁS PROTEGIDOS",
+    rating: 5,
+    text:
+      "Lo compré por un tema de higiene. Quedó todo más ordenado pero lo principal es que los cepillos no quedan expuestos.",
+    name: "Romina Sosa",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_767141-MLA75196027614_032024-F.webp",
+  },
+  {
+    title: "ME DEJÓ TRANQUILO",
+    rating: 5,
+    text:
+      "Soy bastante obsesivo con la limpieza del baño. Tener los cepillos resguardados me deja mucho más tranquilo con la higiene.",
+    name: "Nicolás Ferreira",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_859622-MLA82052231675_012025-F.webp",
+  },
+  {
+    title: "AYUDA EN CASA",
+    rating: 4,
+    text:
+      "En casa somos varios y los cepillos quedaban todos juntos. Ahora están separados y más protegidos. Eso era lo que buscaba.",
+    name: "Micaela Páez",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_829243-MLA79690114387_102024-F.webp",
+  },
+  {
+    title: "BAÑO MÁS LIMPIO",
+    rating: 5,
+    text:
+      "Me gustó porque mantiene los cepillos lejos de salpicaduras. No es magia, pero claramente ayuda a mantener mejor la higiene.",
+    name: "Sergio Ledesma",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_903210-MLA79449251472_102024-F.webp",
+  },
+  {
+    title: "BUENA IDEA",
+    rating: 5,
+    text:
+      "No quería seguir dejando los cepillos en un vaso. Con esto quedan guardados y siento que es una mejora real para la higiene.",
+    name: "Lucía Giménez",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_777177-MLA79895272194_102024-F.webp",
+  },
+  {
+    title: "PARA LA FAMILIA",
+    rating: 5,
+    text:
+      "Lo puse pensando en mis hijos. Que cada cepillo quede en su lugar y más protegido me parece lo más importante.",
+    name: "Federico Albornoz",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_844020-MLA80959662850_122024-F.webp",
+  },
+  {
+    title: "SE NOTA PROTEGIDO",
+    rating: 4,
+    text:
+      "Los cepillos quedan más resguardados y eso se siente. Me gusta porque el baño queda más ‘sanitario’ sin exagerar.",
+    name: "Mariana Quiroga",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_728753-MLA91586637905_092025-F.webp",
+  },
+  {
+    title: "MEJOR PARA HIGIENE",
+    rating: 5,
+    text:
+      "Desde que lo tengo, dejé de dejar los cepillos expuestos. Es un cambio simple, pero para higiene diaria suma un montón.",
+    name: "Gustavo Molina",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_742625-MLA91586637895_092025-F.webp",
+  },
+  {
+    title: "MÁS TRANQUILIDAD",
+    rating: 5,
+    text:
+      "A mí me importaba la parte higiénica. Los cepillos quedan protegidos y siento más tranquilidad con lo que uso todos los días.",
+    name: "Valentina Ortiz",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_822761-MLA91586608467_092025-F.webp",
+  },
+  {
+    title: "RECOMENDABLE",
+    rating: 5,
+    text:
+      "Si te preocupa la higiene del baño, esto ayuda. Mantiene los cepillos más protegidos y el espacio se ve más limpio.",
+    name: "Hernán Cabrera",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_621586-MLA100505272605_122025-F.webp",
+  },
+  {
+    title: "BUENA COMPRA",
+    rating: 5,
+    text:
+      "Lo compré por el tema de gérmenes y cepillos expuestos. Se nota la diferencia en el día a día: todo queda más resguardado.",
+    name: "Paula Acevedo",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_932659-MLA92598923895_092025-F.webp",
+  },
+  {
+    title: "CUMPLE LO QUE BUSCABA",
+    rating: 4,
+    text:
+      "No esperaba milagros, pero sí algo más higiénico. Los cepillos quedan protegidos y eso ya era el objetivo.",
+    name: "Ezequiel Navarro",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_701387-MLA92192890042_092025-F.webp",
+  },
+  {
+    title: "LO VOLVERÍA A COMPRAR",
+    rating: 5,
+    text:
+      "Me gustó por higiene: cepillos más protegidos y menos exposición. Para mí vale totalmente por la tranquilidad que da.",
+    name: "Florencia Medina",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_779916-MLA105813356893_012026-F.webp",
+  },
+],
+
 
 
   about: {
@@ -360,17 +383,18 @@ function CertificateStrip() {
 
 function ComparisonTablePro() {
   const { comparison } = MARKETING_CONTENT;
+
   return (
     <section className="pd-block">
       <SectionHeader title={comparison.title} />
-      {/* ✅ wrapper con scroll horizontal en mobile + evita “corte” */}
-      <div className="cmp-scroll">
-        <div className="cmp-wrap cmp-anim">
+
+      {/* ✅ Desktop table (sin scroll) */}
+      <div className="cmp-desktop">
+        <div className="cmp-wrap cmp-anim cols-2">
           <div className="cmp-head">
             <div className="cmp-k"></div>
             <div className="cmp-col cmp-a">{comparison.cols[0]}</div>
             <div className="cmp-col">{comparison.cols[1]}</div>
-            <div className="cmp-col">{comparison.cols[2]}</div>
           </div>
 
           {comparison.rows.map((r, i) => (
@@ -378,35 +402,108 @@ function ComparisonTablePro() {
               <div className="cmp-k">{r.k}</div>
               <div className="cmp-col cmp-a">{r.a}</div>
               <div className="cmp-col">{r.b}</div>
-              <div className="cmp-col">{r.c}</div>
             </div>
           ))}
         </div>
       </div>
-      <div className="cmp-hint">Deslizá la tabla →</div>
+
+      {/* ✅ Mobile cards (sin deslizar) */}
+      <div className="cmp-mobile">
+        <div className="cmp-cards">
+          {comparison.rows.map((r, i) => (
+            <div key={i} className="cmp-card">
+              <div className="cmp-card-k">{r.k}</div>
+
+              <div className="cmp-card-grid">
+                <div className="cmp-pill">
+                  <div className="cmp-pill-label">{comparison.cols[0]}</div>
+                  <div className="cmp-pill-val">{r.a}</div>
+                </div>
+
+                <div className="cmp-pill good">
+                  <div className="cmp-pill-label">{comparison.cols[1]}</div>
+                  <div className="cmp-pill-val">{r.b}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
 
 function HowToSteps() {
   const { howTo } = MARKETING_CONTENT;
+
   return (
     <section className="pd-block" id="howto">
       <SectionHeader title={howTo.title} />
-      <div className="how-grid how-anim">
-        {howTo.steps.map((s) => (
-          <div key={s.n} className="how-card">
-            <div className="how-n">{s.n}</div>
-            <div className="how-body">
-              <div className="how-t">{s.t}</div>
-              <div className="how-d">{s.d}</div>
-            </div>
-          </div>
-        ))}
+
+      <div className="how-imgWrap hover-float">
+        <img
+          src={howTo.image?.url}
+          alt={howTo.image?.alt || howTo.title}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = FALLBACK_IMG;
+          }}
+        />
       </div>
     </section>
   );
 }
+
+function AuthorityCard() {
+  return (
+    <section className="pd-block" id="authority">
+      <SectionHeader
+        title="LO QUE DICEN LOS PROFESIONALES"
+        subtitle="Recomendación basada en higiene diaria"
+      />
+
+      <div className="authCard">
+        <div className="authTop">
+          <div className="authAvatar">
+            <img
+              src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Profesional de salud"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+            />
+          </div>
+
+          <div className="authMeta">
+            <div className="authTag">RECOMENDACIÓN PROFESIONAL</div>
+            <div className="authName">Dra. Laura Martínez</div>
+            <div className="authRole">Odontóloga · Higiene oral</div>
+          </div>
+        </div>
+
+        <p className="authQuote">
+          “Un porta cepillos con esterilización UV puede ayudar a reducir la carga bacteriana del cepillo
+          entre usos, especialmente en baños húmedos. Si además mantiene los cepillos separados y secos,
+          mejora la higiene diaria y ayuda a evitar malos olores.”
+        </p>
+
+        <div className="authFoot">
+          <span className="authDot" />
+          <span className="authFootText">
+            Recomendación general de higiene. No reemplaza el cepillado correcto ni controles odontológicos.
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+
 
 function FaqSectionPro() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -815,7 +912,7 @@ export default function ProductDetail() {
   const compareAt =
     Number(product?.originalPrice) ||
     Number(product?.compareAtPrice) ||
-    73350;
+    51350;
 
   const soldCount = product?.soldCount ?? product?.socialProofCount ?? 2105;
 
@@ -1038,6 +1135,22 @@ export default function ProductDetail() {
               </div>
             </div>
 
+            {/* ✅ CABA: PAGO AL RECIBIR (beneficio de conversión) */}
+<div className="pd-codBanner" role="note" aria-label="Pago al recibir en CABA">
+  <div className="pd-codLeft">
+    <div className="pd-codIcon">📍</div>
+    <div className="pd-codText">
+      <div className="pd-codTitle">CABA: PAGÁ AL RECIBIR</div>
+      <div className="pd-codSub">
+        Disponible en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar la compra.
+      </div>
+    </div>
+  </div>
+
+  <div className="pd-codBadge">SOLO CABA</div>
+</div>
+
+
             <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
 
             {/* Aviso entrega (arriba de packs) */}
@@ -1084,13 +1197,13 @@ export default function ProductDetail() {
 
                   <div className="pd-bundleBottom">
                     <span className="pd-miniBenefit">🚚 Envío gratis</span>
-                    <span className="pd-miniBenefit">🧲 Base magnética</span>
-                    <span className="pd-miniBenefit">🔌 Cable 5m</span>
+                    <span className="pd-miniBenefit">🧲 facil instalacion</span>
+                    <span className="pd-miniBenefit">🔌 Recargable</span>
                   </div>
                 </div>
               </label>
 
-              <label className={`pd-bundleCard ${bundle === 2 ? "is-selected" : ""}`}>
+              {/* <label className={`pd-bundleCard ${bundle === 2 ? "is-selected" : ""}`}>
                 <input
                   type="radio"
                   name="bundle"
@@ -1122,7 +1235,7 @@ export default function ProductDetail() {
                     <span className="pd-miniBenefit">🚚 Envío gratis</span>
                   </div>
                 </div>
-              </label>
+              </label> */}
             </div>
 
 
@@ -1215,6 +1328,7 @@ export default function ProductDetail() {
           <CertificateStrip />
           <ComparisonTablePro />
           <HowToSteps />
+          <AuthorityCard />
           <FaqSectionPro />
           <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
           <AboutSection />
@@ -2006,6 +2120,280 @@ export default function ProductDetail() {
   font-weight: 850;
   color: rgba(22,101,52,.90);
 }
+
+/* ===== PAGO AL RECIBIR (CABA) BANNER ===== */
+.pd-codBanner{
+  margin: 14px 0 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(245,158,11,.25);
+  background: linear-gradient(180deg, rgba(255,251,235,.95), rgba(255,251,235,.70));
+  box-shadow: 0 18px 55px rgba(10,20,40,.10);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-codLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pd-codIcon{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  background: rgba(245,158,11,.16);
+  border: 1px solid rgba(245,158,11,.22);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pd-codText{
+  display:grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-codTitle{
+  font-weight: 1100;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: rgba(11,18,32,.92);
+  font-size: .95rem;
+  line-height: 1.1;
+}
+
+.pd-codSub{
+  color: rgba(11,18,32,.68);
+  font-weight: 850;
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+.pd-codBadge{
+  background: rgba(69, 138, 5, 0.95);
+  color: #fff;
+  font-weight: 1100;
+  padding: 8px 10px;
+  border-radius: 999px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-size: .78rem;
+  box-shadow: 0 14px 34px rgba(11, 245, 81, 0.28);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px){
+  .pd-codBanner{ padding: 12px; }
+  .pd-codBadge{ font-size: .72rem; padding: 7px 9px; }
+  .pd-codTitle{ font-size: .9rem; }
+  .pd-codSub{ font-size: .86rem; }
+}
+/* ===== HOW TO COMO IMAGEN ===== */
+.how-imgWrap{
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(2,8,23,.10);
+  background: #fff;
+  box-shadow: 0 22px 70px rgba(10,20,40,.12);
+}
+
+.how-imgWrap img{
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover; /* si querés que recorte y llene */
+}
+
+/* ✅ Soporte dinámico de columnas */
+.cols-2 .cmp-head,
+.cols-2 .cmp-row{
+  grid-template-columns: 1.2fr 1fr 1fr; /* k + 2 cols */
+}
+
+.cols-3 .cmp-head,
+.cols-3 .cmp-row{
+  grid-template-columns: 1.2fr 1fr 1fr 1fr; /* k + 3 cols (tu caso viejo) */
+}
+
+/* ✅ Sin scroll: table en desktop, cards en mobile */
+.cmp-desktop { display: block; }
+.cmp-mobile { display: none; }
+
+@media (max-width: 820px){
+  .cmp-desktop { display: none; }
+  .cmp-mobile { display: block; }
+}
+
+/* Desktop table: que no corte */
+.cmp-wrap{
+  width: 100%;
+  min-width: 0 !important;   /* ✅ important para anular el min-width viejo */
+  overflow: hidden;
+}
+
+/* ✅ Mobile cards */
+.cmp-cards{
+  display: grid;
+  gap: 12px;
+}
+
+.cmp-card{
+  background: #fff;
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 18px;
+  box-shadow: 0 18px 55px rgba(10,20,40,.10);
+  padding: 14px;
+  animation: popIn .35s ease both;
+}
+
+.cmp-card-k{
+  font-weight: 1100;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: rgba(11,18,32,.9);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.cmp-card-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cmp-pill{
+  border-radius: 16px;
+  padding: 10px 10px;
+  border: 1px solid rgba(2,8,23,.08);
+  background: rgba(248,250,252,1);
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.cmp-pill.good{
+  background: rgba(11,92,255,.08);
+  border-color: rgba(11,92,255,.18);
+}
+
+.cmp-pill-label{
+  font-size: .78rem;
+  font-weight: 1000;
+  color: rgba(11,18,32,.55);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.cmp-pill-val{
+  font-weight: 1100;
+  color: rgba(11,18,32,.86);
+  line-height: 1.2;
+}
+/* ===== AUTHORITY CARD (pro, no texto plano) ===== */
+.authCard{
+  background: linear-gradient(180deg, rgba(234,241,255,.75), rgba(255,255,255,.95));
+  border: 1px solid rgba(11,92,255,.16);
+  border-radius: 22px;
+  padding: 35px;
+  box-shadow: 0 22px 70px rgba(10,20,40,.14);
+  animation: popIn .35s ease both;
+}
+
+.authTop{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+}
+
+.authAvatar{
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(11,92,255,.25);
+  background: #fff;
+  box-shadow: 0 12px 35px rgba(11,92,255,.18);
+  flex-shrink: 0;
+}
+
+.authAvatar img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+
+.authMeta{
+  min-width: 0;
+  display:flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.authTag{
+  width: fit-content;
+  font-weight: 1100;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(11,92,255,.95);
+  background: rgba(11,92,255,.10);
+  border: 1px solid rgba(11,92,255,.18);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.authName{
+  font-weight: 1100;
+  color: rgba(11,18,32,.92);
+  line-height: 1.15;
+}
+
+.authRole{
+  color: rgba(11,18,32,.62);
+  font-weight: 900;
+  font-size: .92rem;
+}
+
+.authQuote{
+  margin: 12px 0 0;
+  color: rgba(11,18,32,.78);
+  line-height: 1.65;
+  font-weight: 650;
+  background: rgba(255,255,255,.8);
+  border: 1px solid rgba(2,8,23,.06);
+  border-radius: 18px;
+  padding: 14px 14px;
+}
+
+.authFoot{
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+  margin-top: 10px;
+  color: rgba(11,18,32,.55);
+  font-weight: 850;
+  font-size: .88rem;
+}
+
+.authDot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16,185,129,.95);
+  box-shadow: 0 10px 25px rgba(16,185,129,.25);
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
 
 
       `}</style>

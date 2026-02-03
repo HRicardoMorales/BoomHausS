@@ -10,7 +10,6 @@ import { warmUpApi } from "../services/api";
 function money(n) {
   const num = Number(n);
   if (Number.isNaN(num)) return "$0";
-  // ARS sin decimales (queda $48.900)
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
@@ -32,7 +31,7 @@ function getOrCreateClientOrderId() {
   let id = "";
   try {
     if (crypto?.randomUUID) id = crypto.randomUUID();
-  } catch (_) {}
+  } catch (_) { }
   if (!id) id = `co_${Date.now()}_${Math.random().toString(16).slice(2)}`;
   localStorage.setItem(KEY, id);
   return id;
@@ -103,7 +102,6 @@ export default function Checkout() {
   }, [items]);
 
   // ✅ Precio "ANTES" (por ENV o fallback a 73350)
-  // Nota: si hay cantidad >1, asume que el "ANTES" es por unidad (multiplica por totalItems)
   const compareUnit = Number(import.meta.env.VITE_CHECKOUT_COMPARE_TOTAL || 73350);
   const compareTotal = useMemo(() => {
     if (!compareUnit || compareUnit <= 0) return 0;
@@ -138,12 +136,6 @@ export default function Checkout() {
   const transferExtraSavingsPreview = useMemo(() => {
     return totalPrice * transferDiscountPct;
   }, [totalPrice]);
-
-  const totalSavingsIfTransfer = useMemo(() => {
-    if (!showCompare) return transferExtraSavingsPreview;
-    const diff = compareTotal - transferFinalTotalPreview;
-    return diff > 0 ? diff : transferExtraSavingsPreview;
-  }, [showCompare, compareTotal, transferFinalTotalPreview, transferExtraSavingsPreview]);
 
   // Producto “principal” para mini resumen (thumbnail)
   const mainItem = useMemo(() => (items && items.length ? items[0] : null), [items]);
@@ -195,7 +187,7 @@ export default function Checkout() {
         setCopied((prev) => ({ ...prev, [type]: true }));
         setTimeout(() => setCopied((prev) => ({ ...prev, [type]: false })), 1600);
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   // 🔥 CAPTURA SILENCIOSA DE ABANDONO
@@ -216,7 +208,7 @@ export default function Checkout() {
         api.post("/abandoned-cart", abandonedData).catch((err) =>
           console.log("Silent capture error:", err)
         );
-      } catch (e) {}
+      } catch (e) { }
     }
   };
 
@@ -432,19 +424,17 @@ export default function Checkout() {
           <h1 style={{ margin: "0 0 0.5rem", letterSpacing: "-0.05em" }}>
             Conseguí el tuyo hoy 🔥
           </h1>
+          {/* ✅ Banner entrega */}
+          <div className="ship-banner">
+            <div className="ship-banner__left">
+              <div className="ship-dot" />
+              <div>
+                <div className="ship-title">LLEGA EN 1 A 3 DÍAS HÁBILES</div>
+                <div className="ship-sub">Te avisamos por email</div>
+              </div>
+            </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              marginTop: 10,
-            }}
-          >
-            <span style={chipStyle}>✅ Compra protegida</span>
-            <span style={chipStyle}>🚚 Envío con seguimiento</span>
-            <span style={chipStyle}>💬 Soporte WhatsApp</span>
+            <div className="ship-pill">🚚 ENVÍO RÁPIDO</div>
           </div>
 
           {/* Steps pills */}
@@ -495,7 +485,7 @@ export default function Checkout() {
               <form id="checkout-form" onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Nombre y apellido *
+                    Nombre y apellido
                     <input
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
@@ -568,21 +558,37 @@ export default function Checkout() {
                   <div style={{ fontSize: "1.2rem" }}>🚚</div>
                 </label>
 
-                <label className={`shipping-option ${shippingMethod === "punto_encuentro" ? "selected" : ""}`}>
+                {/* ✅ Reemplazo: Pago al recibir CABA */}
+                <label className={`shipping-option ${shippingMethod === "caba_cod" ? "selected" : ""}`}>
                   <input
                     type="radio"
                     name="shipping"
-                    value="punto_encuentro"
-                    checked={shippingMethod === "punto_encuentro"}
+                    value="caba_cod"
+                    checked={shippingMethod === "caba_cod"}
                     onChange={(e) => setShippingMethod(e.target.value)}
                   />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 900 }}>Punto de Encuentro (CABA)</div>
+                    <div style={{ fontWeight: 900, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      Pagás al recibir (solo CABA)
+                      <span
+                        style={{
+                          fontSize: ".78rem",
+                          fontWeight: 1000,
+                          padding: "4px 8px",
+                          borderRadius: 999,
+                          border: "1px solid rgba(16,185,129,.25)",
+                          background: "rgba(16,185,129,.10)",
+                          color: "#065f46",
+                        }}
+                      >
+                        + Confianza
+                      </span>
+                    </div>
                     <div className="muted" style={{ fontSize: "0.9rem" }}>
-                      Coordinamos día y horario.
+                      Entrega coordinada. Pagás cuando te llega.
                     </div>
                   </div>
-                  <div style={{ fontSize: "1.2rem" }}>📍</div>
+                  <div style={{ fontSize: "1.2rem" }}>💵</div>
                 </label>
 
                 <label className={`shipping-option ${shippingMethod === "retiro_oficina" ? "selected" : ""}`}>
@@ -604,25 +610,28 @@ export default function Checkout() {
               </div>
 
               <div style={{ marginTop: "1.25rem" }}>
-                {shippingMethod === "punto_encuentro" && (
+                {shippingMethod === "caba_cod" && (
                   <div
                     style={{
-                      background: "#eff6ff",
-                      border: "1px solid #bfdbfe",
-                      color: "#1e3a8a",
+                      background: "#ecfdf5",
+                      border: "1px solid #bbf7d0",
+                      color: "#14532d",
                       padding: "12px",
                       borderRadius: "10px",
                       marginBottom: "15px",
                       fontSize: "0.95rem",
                       display: "flex",
                       gap: "10px",
-                      alignItems: "center",
-                      fontWeight: 800,
+                      alignItems: "flex-start",
+                      fontWeight: 900,
                     }}
                   >
-                    <span style={{ fontSize: "1.2rem" }}>📱</span>
+                    <span style={{ fontSize: "1.2rem" }}>✅</span>
                     <div>
-                      <strong>¡Genial!</strong> Al confirmar la compra, te contactamos por WhatsApp para coordinar.
+                      <div style={{ fontWeight: 1000 }}>Pagás cuando te llega</div>
+                      <div style={{ fontSize: ".9rem", fontWeight: 850, opacity: 0.9 }}>
+                        Disponible solo en CABA. Te confirmamos la entrega por WhatsApp / email.
+                      </div>
                     </div>
                   </div>
                 )}
@@ -655,14 +664,20 @@ export default function Checkout() {
                 )}
 
                 <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                  {shippingMethod === "correo_argentino" ? "Dirección de envío completa *" : "Dirección para factura (DNI/Fiscal) *"}
+                  {shippingMethod === "correo_argentino"
+                    ? "Dirección de envío completa *"
+                    : shippingMethod === "caba_cod"
+                      ? "Dirección de entrega en CABA *"
+                      : "Dirección para factura (DNI/Fiscal) *"}
                   <textarea
                     value={shippingAddress}
                     onChange={(e) => setShippingAddress(e.target.value)}
                     placeholder={
                       shippingMethod === "correo_argentino"
                         ? "Calle, altura, piso, ciudad, código postal..."
-                        : "Calle y altura (necesario para el comprobante)"
+                        : shippingMethod === "caba_cod"
+                          ? "Barrio + calle + altura + piso/depto (si aplica)"
+                          : "Calle y altura (necesario para el comprobante)"
                     }
                     required
                     rows={2}
@@ -672,7 +687,11 @@ export default function Checkout() {
 
                 <label className="muted" style={{ display: "grid", gap: "0.35rem", marginTop: "1rem", fontWeight: 900 }}>
                   Notas adicionales (opcional)
-                  <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Ej: El timbre no anda, dejar en portería." />
+                  <input
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Ej: El timbre no anda, dejar en portería."
+                  />
                 </label>
               </div>
             </div>
@@ -740,7 +759,7 @@ export default function Checkout() {
                     </div>
                   </div>
                   <img
-                    src="https://logotipoz.com/wp-content/uploads/2021/10/version-horizontal-logo-mercado-pago.webp"
+                    src="https://logowik.com/content/uploads/images/mercado-pago3162.logowik.com.webp"
                     alt="MP"
                     style={{ height: "24px", marginLeft: "auto", objectFit: "contain" }}
                   />
@@ -854,174 +873,141 @@ export default function Checkout() {
                           {money(compareTotal)}
                         </div>
                       )}
-                      <div style={{ fontWeight: 1000 }}>{money(totalPrice)}</div>
+                      <div style={{ fontWeight: 1100 }}>{money(totalPrice)}</div>
                     </div>
                   </div>
 
-                  {/* Items list (si querés dejarlo) */}
-                  <div style={{ maxHeight: "220px", overflowY: "auto", marginBottom: "1rem", paddingRight: "5px" }}>
-                    {items.map((it) => (
-                      <div key={it.productId} style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px", fontSize: "0.95rem" }}>
-                        <div style={{ minWidth: 0 }}>
-                          <span style={{ fontWeight: 1000 }}>{it.quantity}x</span> {it.name}
-                        </div>
-                        <div className="muted" style={{ fontWeight: 900 }}>
-                          {money(it.price * it.quantity)}
-                        </div>
+                  {/* ✅ Resumen simple: descuentos + total */}
+                  <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+                    {showCompare && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 10,
+                          color: "var(--primary)",
+                          fontWeight: 1000,
+                        }}
+                      >
+                        <span>Descuento aplicado</span>
+                        <span>-{money(promoSavings)}</span>
                       </div>
-                    ))}
-                  </div>
+                    )}
 
-                  <hr style={{ border: 0, borderTop: "1px solid #eee", margin: "15px 0" }} />
+                    {paymentMethod === "transferencia" && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 10,
+                          color: "#10b981",
+                          fontWeight: 1000,
+                        }}
+                      >
+                        <span>10% extra por transferencia</span>
+                        <span>-{money(transferSavings)}</span>
+                      </div>
+                    )}
 
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                    <span className="muted" style={{ fontWeight: 900 }}>Subtotal</span>
-                    <span style={{ fontWeight: 1000 }}>{money(totalPrice)}</span>
-                  </div>
-
-                  {/* Promo ahorro */}
-                  {showCompare && (
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", color: "var(--primary)" }}>
-                      <span style={{ fontWeight: 900 }}>Descuento Promo ({promoPct}% OFF)</span>
-                      <span style={{ fontWeight: 1000 }}>-{money(promoSavings)}</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                        paddingTop: 10,
+                        borderTop: "1px solid #eef2f7",
+                      }}
+                    >
+                      <span style={{ fontSize: "1rem", fontWeight: 1000, color: "rgba(11,18,32,.75)" }}>Total final</span>
+                      <span style={{ fontSize: "1.55rem", fontWeight: 1200, letterSpacing: "-0.02em" }}>
+                        {money(finalTotal)}
+                      </span>
                     </div>
-                  )}
 
-                  {/* Transfer ahorro */}
-                  {paymentMethod === "transferencia" && (
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", color: "#10b981" }}>
-                      <span style={{ fontWeight: 900 }}>Descuento Transferencia (10% EXTRA)</span>
-                      <span style={{ fontWeight: 1000 }}>-{money(transferSavings)}</span>
+                    {/* mini hint transferencia (simple) */}
+                    {paymentMethod !== "transferencia" && (
+                      <div
+                        style={{
+                          fontSize: ".92rem",
+                          fontWeight: 900,
+                          color: "#059669",
+                          background: "rgba(16,185,129,.08)",
+                          border: "1px solid rgba(16,185,129,.20)",
+                          borderRadius: 14,
+                          padding: "10px 12px",
+                        }}
+                      >
+                        💸 Con transferencia te queda en <span style={{ fontWeight: 1100 }}>{money(transferFinalTotalPreview)}</span> (ahorrás{" "}
+                        <span style={{ fontWeight: 1100 }}>{money(transferExtraSavingsPreview)}</span>)
+                      </div>
+                    )}
+
+                    <button
+                      className="btn btn-primary"
+                      type="submit"
+                      form="checkout-form"
+                      disabled={loading || isCartEmpty}
+                      style={{
+                        width: "100%",
+                        marginTop: "0.35rem",
+                        padding: "1.05rem",
+                        fontSize: "1.05rem",
+                        fontWeight: 1100,
+                        background: paymentMethod === "mercadopago" ? "#009ee3" : "var(--primary)",
+                        border: "none",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
+                      }}
+                    >
+                      {loading ? "Procesando..." : paymentMethod === "mercadopago" ? "Pagar en Mercado Pago" : "Finalizar Pedido"}
+                    </button>
+
+                    <div
+                      style={{
+                        textAlign: "center",
+                        fontSize: "0.85rem",
+                        color: "#94a3b8",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        fontWeight: 850,
+                      }}
+                    >
+                      🔒 Pago 100% seguro · Datos encriptados
                     </div>
-                  )}
-
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "15px", paddingTop: "15px", borderTop: "1px solid #eee" }}>
-                    <span style={{ fontSize: "1.1rem", fontWeight: 1000 }}>Total</span>
-                    <span style={{ fontSize: "1.35rem", fontWeight: 1100 }}>{money(finalTotal)}</span>
-                  </div>
-
-                  {/* Incentivo visible siempre */}
-                  <div
-                    style={{
-                      marginTop: 10,
-                      background: "rgba(16,185,129,.10)",
-                      border: "1px solid rgba(16,185,129,.25)",
-                      borderRadius: 14,
-                      padding: "10px 12px",
-                      fontWeight: 1000,
-                      color: "#065f46",
-                      display: "grid",
-                      gap: 4,
-                    }}
-                  >
-                    <div>
-                      💸 Con transferencia te queda en{" "}
-                      <span style={{ color: "#059669" }}>{money(transferFinalTotalPreview)}</span>
-                    </div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: 900 }}>
-                      Ahorrás {money(transferExtraSavingsPreview)} (total ahorro aprox: {money(totalSavingsIfTransfer)})
-                    </div>
-                  </div>
-
-                  <button
-                    className="btn btn-primary"
-                    type="submit"
-                    form="checkout-form"
-                    disabled={loading || isCartEmpty}
-                    style={{
-                      width: "100%",
-                      marginTop: "1.2rem",
-                      padding: "1.05rem",
-                      fontSize: "1.05rem",
-                      fontWeight: 1000,
-                      background: paymentMethod === "mercadopago" ? "#009ee3" : "var(--primary)",
-                      border: "none",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
-                    }}
-                  >
-                    {loading ? "Procesando..." : paymentMethod === "mercadopago" ? "Pagar en Mercado Pago" : "Finalizar Pedido"}
-                  </button>
-
-                  <div style={{ textAlign: "center", marginTop: "12px", fontSize: "0.85rem", color: "#94a3b8", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontWeight: 800 }}>
-                    🔒 Pago 100% seguro · Datos encriptados
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div
-                    style={{
-                      marginTop: 12,
-                      border: "1px solid rgba(11,92,255,.18)",
-                      borderRadius: 14,
-                      padding: "12px",
-                      textAlign: "center",
-                      background: "rgba(255,255,255,.7)",
-                      fontWeight: 1000,
-                    }}
-                  >
-                    💬 ¿Tenés dudas? Te ayudamos por WhatsApp
                   </div>
                 </>
               )}
             </div>
           </aside>
-
-          {/* ✅ Sticky mobile bar (abajo) */}
-          {!isCartEmpty && (
-            <div className="checkout-mobile-bar">
-              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 12,
-                    overflow: "hidden",
-                    border: "1px solid rgba(11,92,255,.18)",
-                    background: "rgba(234,241,255,.75)",
-                    flexShrink: 0,
-                    display: "grid",
-                    placeItems: "center",
-                  }}
-                >
-                  {mainThumb ? (
-                    <img src={mainThumb} alt="Producto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <span style={{ fontWeight: 1000 }}>📦</span>
-                  )}
-                </div>
-
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: ".72rem", fontWeight: 900, color: "#64748b", textTransform: "uppercase" }}>
-                    Total
-                  </div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                    <div style={{ fontWeight: 1100, fontSize: "1.05rem" }}>{money(finalTotal)}</div>
-                    {showCompare && (
-                      <div style={{ fontWeight: 900, fontSize: ".9rem", color: "#94a3b8", textDecoration: "line-through" }}>
-                        {money(compareTotal)}
-                      </div>
-                    )}
-                    <div style={{ fontWeight: 900, fontSize: ".85rem", color: "#10b981" }}>🚚 Envío GRATIS</div>
-                  </div>
-
-                  <div style={{ fontSize: ".85rem", fontWeight: 1000, color: "#059669", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    Con transferencia: {money(transferFinalTotalPreview)} (ahorrás {money(transferExtraSavingsPreview)})
-                  </div>
-                </div>
-              </div>
-
-              <button
-                className="checkout-mobile-pay-btn"
-                type="submit"
-                form="checkout-form"
-                disabled={loading || isCartEmpty}
-              >
-                {loading ? "..." : "Pagar"}
-              </button>
-            </div>
-          )}
-
-          {/* ✅ estilos solo del checkout (sin depender de tus clases globales) */}
+          {/* ✅ estilos solo del checkout */}
           <style>{`
+            /* trust row pro */
+            .trustRow{
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              margin-top: 12px;
+              max-width: 760px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .trustItem{
+              display:flex;
+              gap:10px;
+              align-items:center;
+              padding: 10px 12px;
+              border-radius: 14px;
+              background: rgba(255,255,255,.85);
+              border: 1px solid rgba(11,92,255,.18);
+            }
+            .trustIcon{ font-size: 1.15rem; }
+            .trustTop{ font-weight: 1000; line-height: 1.1; }
+            .trustSub{ font-size: .9rem; font-weight: 850; color: rgba(11,18,32,.62); }
+            @media (max-width: 560px){
+              .trustRow{ grid-template-columns: 1fr; }
+            }
+
             .shipping-option {
               display: flex;
               align-items: center;
@@ -1112,6 +1098,76 @@ export default function Checkout() {
               /* evita que el sticky tape el contenido */
               body{ padding-bottom: 92px; }
             }
+              .ship-banner{
+  margin: 10px auto 2px;
+  width: 100%;
+  max-width: 780px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(11,92,255,.18);
+  background: linear-gradient(180deg, rgba(239,246,255,.95), rgba(255,255,255,.9));
+  box-shadow: 0 14px 40px rgba(10,20,40,.08);
+   width: 100%;
+  justify-content: center;  
+}
+
+.ship-banner__left{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 0;
+    justify-content: center;   /* ✅ centra dentro */
+  text-align: center; 
+}
+
+.ship-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16,185,129,1);
+  box-shadow: 0 0 0 6px rgba(16,185,129,.14);
+  flex-shrink: 0;
+}
+
+.ship-title{
+  font-weight: 1100;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(11,18,32,.92);
+  font-size: .92rem;
+  line-height: 1.1;
+}
+
+.ship-sub{
+  margin-top: 3px;
+  font-weight: 850;
+  color: rgba(11,18,32,.60);
+  font-size: .88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: none;
+}
+
+.ship-pill{
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 1000;
+  letter-spacing: .03em;
+  border: 1px solid rgba(16,185,129,.25);
+  background: rgba(16,185,129,.10);
+  color: #065f46;
+}
+@media (max-width: 520px){
+  .ship-pill{ display:none; } /* en cel se ve más limpio */
+  .ship-sub{ max-width: 78vw; }
+}
+
           `}</style>
         </div>
       </div>
@@ -1119,7 +1175,7 @@ export default function Checkout() {
   );
 }
 
-/* helpers inline */
+/* helpers inline (los dejo como estaban) */
 const chipStyle = {
   padding: "8px 12px",
   borderRadius: 999,
