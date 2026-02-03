@@ -126,7 +126,7 @@ faq: [
     text:
       "Antes los cepillos quedaban expuestos todo el día. Con esto quedan más protegidos y el baño se siente más limpio en general.",
     name: "Carla Benítez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_692888-MLA74842898126_032024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_847065-MLA93209847143_092025-F.webp",
   },
   {
     title: "SE NOTA EL CAMBIO",
@@ -134,7 +134,7 @@ faq: [
     text:
       "Me daba cosa tener los cepillos a la intemperie. Ahora quedan guardados y siento que ayuda a mantener mejor la higiene diaria.",
     name: "Julián Rivas",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_722153-MLA72070195166_102023-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp",
   },
   {
     title: "CEPILLOS MÁS PROTEGIDOS",
@@ -142,7 +142,7 @@ faq: [
     text:
       "Lo compré por un tema de higiene. Quedó todo más ordenado pero lo principal es que los cepillos no quedan expuestos.",
     name: "Romina Sosa",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_767141-MLA75196027614_032024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_914883-MLA104359225539_012026-F.webp",
   },
   {
     title: "ME DEJÓ TRANQUILO",
@@ -150,7 +150,7 @@ faq: [
     text:
       "Soy bastante obsesivo con la limpieza del baño. Tener los cepillos resguardados me deja mucho más tranquilo con la higiene.",
     name: "Nicolás Ferreira",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_859622-MLA82052231675_012025-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_991593-MLA97567338889_112025-F.webp",
   },
   {
     title: "AYUDA EN CASA",
@@ -158,7 +158,7 @@ faq: [
     text:
       "En casa somos varios y los cepillos quedaban todos juntos. Ahora están separados y más protegidos. Eso era lo que buscaba.",
     name: "Micaela Páez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_829243-MLA79690114387_102024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_681590-MLA97122685113_112025-F.webp",
   },
   {
     title: "BAÑO MÁS LIMPIO",
@@ -166,7 +166,7 @@ faq: [
     text:
       "Me gustó porque mantiene los cepillos lejos de salpicaduras. No es magia, pero claramente ayuda a mantener mejor la higiene.",
     name: "Sergio Ledesma",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_903210-MLA79449251472_102024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_604768-MLA105021350975_012026-F.webp",
   },
   {
     title: "BUENA IDEA",
@@ -174,7 +174,7 @@ faq: [
     text:
       "No quería seguir dejando los cepillos en un vaso. Con esto quedan guardados y siento que es una mejora real para la higiene.",
     name: "Lucía Giménez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_777177-MLA79895272194_102024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp",
   },
   {
     title: "PARA LA FAMILIA",
@@ -182,7 +182,7 @@ faq: [
     text:
       "Lo puse pensando en mis hijos. Que cada cepillo quede en su lugar y más protegido me parece lo más importante.",
     name: "Federico Albornoz",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_844020-MLA80959662850_122024-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_735168-MLA104575340271_012026-F.webp",
   },
   {
     title: "SE NOTA PROTEGIDO",
@@ -190,7 +190,7 @@ faq: [
     text:
       "Los cepillos quedan más resguardados y eso se siente. Me gusta porque el baño queda más ‘sanitario’ sin exagerar.",
     name: "Mariana Quiroga",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_728753-MLA91586637905_092025-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_612380-MLA103990675067_012026-F.webp",
   },
   {
     title: "MEJOR PARA HIGIENE",
@@ -198,7 +198,7 @@ faq: [
     text:
       "Desde que lo tengo, dejé de dejar los cepillos expuestos. Es un cambio simple, pero para higiene diaria suma un montón.",
     name: "Gustavo Molina",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_742625-MLA91586637895_092025-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_901052-MLA104463601083_012026-F.webp",
   },
   {
     title: "MÁS TRANQUILIDAD",
@@ -206,39 +206,7 @@ faq: [
     text:
       "A mí me importaba la parte higiénica. Los cepillos quedan protegidos y siento más tranquilidad con lo que uso todos los días.",
     name: "Valentina Ortiz",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_822761-MLA91586608467_092025-F.webp",
-  },
-  {
-    title: "RECOMENDABLE",
-    rating: 5,
-    text:
-      "Si te preocupa la higiene del baño, esto ayuda. Mantiene los cepillos más protegidos y el espacio se ve más limpio.",
-    name: "Hernán Cabrera",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_621586-MLA100505272605_122025-F.webp",
-  },
-  {
-    title: "BUENA COMPRA",
-    rating: 5,
-    text:
-      "Lo compré por el tema de gérmenes y cepillos expuestos. Se nota la diferencia en el día a día: todo queda más resguardado.",
-    name: "Paula Acevedo",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_932659-MLA92598923895_092025-F.webp",
-  },
-  {
-    title: "CUMPLE LO QUE BUSCABA",
-    rating: 4,
-    text:
-      "No esperaba milagros, pero sí algo más higiénico. Los cepillos quedan protegidos y eso ya era el objetivo.",
-    name: "Ezequiel Navarro",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_701387-MLA92192890042_092025-F.webp",
-  },
-  {
-    title: "LO VOLVERÍA A COMPRAR",
-    rating: 5,
-    text:
-      "Me gustó por higiene: cepillos más protegidos y menos exposición. Para mí vale totalmente por la tranquilidad que da.",
-    name: "Florencia Medina",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_779916-MLA105813356893_012026-F.webp",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
   },
 ],
 
@@ -345,11 +313,13 @@ function SectionHeader({ title, subtitle }) {
 
 function CertificateStrip() {
   const { certificate } = MARKETING_CONTENT;
+
   return (
-    <section className="pd-strip">
+    <section className="pd-strip pd-strip--pro">
       <SectionHeader title={certificate.title} />
-      <div className="pd-stripTop">
-        <div className="pd-certLogoBox" aria-label="Certificación">
+
+      <div className="pd-certRow">
+        <div className="pd-certSeal" aria-label="Certificación">
           {certificate.logoUrl ? (
             <img
               src={certificate.logoUrl}
@@ -367,11 +337,21 @@ function CertificateStrip() {
             <div className="pd-certLogoPlaceholder">Logo</div>
           )}
         </div>
+
+        <div className="pd-certMeta">
+          <div className="pd-certKicker">CERTIFICACIÓN / CONFIANZA</div>
+          <div className="pd-certLine">
+            <span className="pd-certDot" />
+            <span className="pd-certSmall">
+              Pagos seguros • Compra protegida • Seguimiento
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="pd-stripGrid">
+      <div className="pd-stripGrid pd-stripGrid--pro">
         {certificate.items.map((x, i) => (
-          <div key={i} className="pd-stripItem hover-float">
+          <div key={i} className="pd-stripItem pd-stripItem--pro">
             <span className="pd-stripIcon">{x.icon}</span>
             <span className="pd-stripText">{x.text}</span>
           </div>
@@ -380,6 +360,7 @@ function CertificateStrip() {
     </section>
   );
 }
+
 
 function ComparisonTablePro() {
   const { comparison } = MARKETING_CONTENT;
@@ -1587,47 +1568,152 @@ export default function ProductDetail() {
           display:block;
         }
 
-        /* certificate */
-        .pd-strip{
-          margin: 34px 0 10px;
-          background: rgba(234,241,255,.65);
-          border: 1px solid rgba(11,92,255,.16);
-          border-radius: 18px;
-          padding: 18px;
-        }
-        .pd-stripTop{ display:flex; justify-content:center; margin: 10px 0 16px; }
-        .pd-certLogoBox{
-          height: 72px;
-          min-width: 230px;
-          border-radius: 14px;
-          background: rgba(255,255,255,.9);
-          border: 1px solid rgba(2,8,23,.08);
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          padding: 6px 10px;
-        }
-        .pd-certLogo{ height: 100px; width: auto; object-fit: contain; display:block; }
+        /* ===== CERTIFICATE PRO (más real / premium) ===== */
+.pd-strip--pro{
+  margin: 34px 0 10px;
+  background: #ffffff;
+  border: 1px solid rgba(2,8,23,.10);
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 22px 70px rgba(10,20,40,.10);
+  position: relative;
+  overflow: hidden;
+}
 
-        .pd-stripGrid{
-          display:grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 10px;
-        }
-        @media (max-width: 900px){
-          .pd-stripGrid{ grid-template-columns: repeat(2, 1fr); }
-        }
-        .pd-stripItem{
-          display:flex;
-          gap: 10px;
-          align-items:center;
-          background: rgba(255,255,255,.9);
-          border: 1px solid rgba(2,8,23,.06);
-          border-radius: 14px;
-          padding: 12px;
-          font-weight: 900;
-          color: rgba(11,18,32,.72);
-        }
+/* barrita superior tipo Shopify */
+.pd-strip--pro::before{
+  content:"";
+  position:absolute;
+  left: 0; right: 0; top: 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(11,92,255,.95), rgba(16,185,129,.85));
+}
+
+.pd-certRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 12px;
+  margin: 10px 0 16px;
+  flex-wrap: wrap;
+}
+
+/* ✅ Sello circular: el blanco queda intencional */
+.pd-certSeal{
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid rgba(2,8,23,.10);
+  box-shadow: 0 18px 50px rgba(10,20,40,.12);
+  display:grid;
+  place-items:center;
+  padding: 10px;
+  position: relative;
+}
+
+.pd-certSeal::after{
+  content:"";
+  position:absolute;
+  inset: 6px;
+  border-radius: 999px;
+  border: 1px dashed rgba(2,8,23,.16);
+  pointer-events:none;
+}
+
+/* logo dentro del sello */
+.pd-certLogo{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 999px;
+  display:block;
+}
+
+/* textito “real” al lado */
+.pd-certMeta{
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  max-width: 420px;
+}
+
+.pd-certKicker{
+  font-weight: 1100;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: .78rem;
+  color: rgba(11,18,32,.62);
+}
+
+.pd-certLine{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+
+.pd-certDot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16,185,129,1);
+  box-shadow: 0 10px 25px rgba(16,185,129,.35);
+}
+
+.pd-certSmall{
+  font-weight: 900;
+  color: rgba(11,18,32,.72);
+  font-size: .92rem;
+}
+
+/* cards internas más “shopify” */
+.pd-stripGrid--pro{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 900px){
+  .pd-stripGrid--pro{
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pd-stripItem--pro{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  background: rgba(248,250,252,.95);
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 16px;
+  padding: 12px 12px;
+  font-weight: 950;
+  color: rgba(11,18,32,.78);
+  box-shadow: 0 14px 40px rgba(10,20,40,.06);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.pd-stripItem--pro:hover{
+  transform: translateY(-3px);
+  border-color: rgba(11,92,255,.22);
+  box-shadow: 0 20px 60px rgba(10,20,40,.10);
+}
+
+.pd-stripIcon{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  background: rgba(11,92,255,.10);
+  border: 1px solid rgba(11,92,255,.14);
+  flex-shrink: 0;
+}
+
+.pd-stripText{
+  line-height: 1.2;
+}
 
         /* ===== COMPARATIVA NO CORTADA ===== */
         .cmp-scroll{
