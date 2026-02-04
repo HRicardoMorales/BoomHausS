@@ -208,6 +208,7 @@ faq: [
     name: "Valentina Ortiz",
     img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
   },
+  
 ],
 
 
@@ -1307,11 +1308,10 @@ export default function ProductDetail() {
         <div className="pd-sections-new">
           <StoryBlocks />
           <CertificateStrip />
-          <ComparisonTablePro />
           <HowToSteps />
           <AuthorityCard />
-          <FaqSectionPro />
           <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
+          <FaqSectionPro />
           <AboutSection />
         </div>
       </div>
@@ -1370,18 +1370,42 @@ export default function ProductDetail() {
 
       {/* ✅ CSS */}
       <style>{`
-        .pd-page{ overflow-x: clip; }
-        .pd-container{
-          padding-left: 16px !important;
-          padding-right: 16px !important;
-          padding-bottom: 10px !important;
-        }
-        @media (min-width: 720px){
-          .pd-container{ padding-left: 22px !important; padding-right: 22px !important; }
-        }
-        @media (min-width: 1100px){
-          .pd-container{ padding-left: 28px !important; padding-right: 28px !important; }
-        }
+/* === Product page: hero image full-bleed on mobile (only the main image) === */
+@media (max-width: 980px){
+  .pd-page{ overflow-x: hidden; }
+
+  .pd-mediaMain--bigger{
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  .pd-mainImg--hero{
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    background: transparent !important;
+    display: block !important;
+  }
+
+  .pd-dots-container{
+    position: static !important;
+    padding: 10px 0 12px !important;
+  }
+}
+
+
+
 
         /* ===== TITULOS PRO ===== */
         .sec-head{
@@ -1423,16 +1447,7 @@ export default function ProductDetail() {
           .pd-mediaMain--bigger{ height: 390px; }
         }
 
-        .pd-mainImg--force{
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          display: block !important;
-          padding: 10px;
-          background: #fff;
-        }
+
 
         /* dots */
         .pd-dots-container{

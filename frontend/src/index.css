@@ -302,7 +302,7 @@ html, body { overflow-x: hidden; width: 100%; }
   margin: 0 auto;
 }
 
-.section { padding: 1.6rem 0 2.2rem; }
+.section { padding: 0rem 0 0rem; }
 
 /* =============== Typography helpers =============== */
 .muted { color: var(--muted); }
@@ -400,7 +400,7 @@ header {
 ========================= */
 
 .pd-page { background: #fff; overflow-x: hidden; }
-.pd-container { margin-top: 20px; }
+.pd-container { margin-top: 0px; }
 
 .pd-grid {
   display: grid;
@@ -434,9 +434,10 @@ header {
   min-height: 360px;
   overflow: hidden;
   background: #f1f5f9;
-  border-radius: 16px;
+  border-radius: 0px;
   cursor: grab;
   touch-action: pan-y;
+  
 }
 
 /* En móvil, como tus imágenes son banners, mejor 16:9 */
@@ -444,21 +445,11 @@ header {
   .pd-mediaMain{
     aspect-ratio: 16 / 9;
     min-height: 240px;
+    width: 100vw !important;
   }
 }
 
-.pd-mainImg{
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;          /* jamás recorta */
-  object-position: center;
-  padding: 10px;
-  display: block;
-  opacity: 1;
-  visibility: visible;
-}
+
 
 
 .pd-discount-badge{
@@ -1449,7 +1440,7 @@ body.page-checkout .container {
 
 /* Evita cualquier “corrimiento” raro en móvil */
 .pd-mediaMain{
-  width: 100%;
+  width: 100vw !important;
   max-width: 100%;
   display: block;
   isolation: isolate;
@@ -1460,6 +1451,7 @@ body.page-checkout .container {
   right: 0;
   margin: 0 auto;
   transform: none !important;
+  width: 100vw !important;
 }
 
 /* =========================
@@ -1734,3 +1726,4 @@ body.page-checkout .container {
   max-width: 100%;
   overflow-x: hidden;
 }
+
