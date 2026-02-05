@@ -4,6 +4,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
+import Marquee from "../components/marquee.jsx";
+
 
 /* ========================================================================
    MARKETING CONTENT — EDITABLE
@@ -57,159 +59,159 @@ const MARKETING_CONTENT = {
     ],
   },
 
-comparison: {
-  title: "ANTES VS DESPUÉS",
-  cols: ["ANTES (SIN EL 3 EN 1)", "DESPUÉS (CON EL 3 EN 1)"],
-  rows: [
-    { k: "Orden en el baño", a: "Cepillos y pasta sueltos / desorden", b: "Todo en un solo lugar, prolijo" },
-    { k: "Uso diario", a: "Apretás el tubo con la mano (se ensucia)", b: "Presionás el cepillo y sale la pasta" },
-    { k: "Limpieza", a: "Salpicaduras / restos alrededor", b: "Menos mugre, más fácil de limpiar" },
-    { k: "Ahorro de pasta", a: "Sale de más y se desperdicia", b: "Dosificación más pareja" },
-    { k: "Espacio", a: "Ocupa lugar en la mesada", b: "Liberás espacio (todo compacto)" },
+  comparison: {
+    title: "ANTES VS DESPUÉS",
+    cols: ["ANTES (SIN EL 3 EN 1)", "DESPUÉS (CON EL 3 EN 1)"],
+    rows: [
+      { k: "Orden en el baño", a: "Cepillos y pasta sueltos / desorden", b: "Todo en un solo lugar, prolijo" },
+      { k: "Uso diario", a: "Apretás el tubo con la mano (se ensucia)", b: "Presionás el cepillo y sale la pasta" },
+      { k: "Limpieza", a: "Salpicaduras / restos alrededor", b: "Menos mugre, más fácil de limpiar" },
+      { k: "Ahorro de pasta", a: "Sale de más y se desperdicia", b: "Dosificación más pareja" },
+      { k: "Espacio", a: "Ocupa lugar en la mesada", b: "Liberás espacio (todo compacto)" },
 
+    ],
+  },
+
+
+  howTo: {
+    title: "CÓMO SE USA",
+    image: {
+      url: "https://http2.mlstatic.com/D_NQ_NP_2X_730119-MLA92075368185_092025-F.webp",
+      alt: "Cómo se usa la antena en 3 pasos"
+    }
+  },
+
+
+  faqTitle: "PREGUNTAS FRECUENTES",
+  faq: [
+    {
+      q: "¿Cómo se instala?",
+      a: "Se pega a la pared con adhesivo (sin perforar). Limpiá bien la superficie, pegalo, presioná unos segundos y dejalo asentar antes de usar.",
+    },
+    {
+      q: "¿Sirve para cualquier cepillo dental?",
+      a: "Sí, es compatible con la mayoría de cepillos manuales y muchos eléctricos (según tamaño del mango).",
+    },
+    {
+      q: "¿Cómo funciona la esterilización?",
+      a: "El esterilizador ayuda a mantener el cabezal del cepillo más protegido del ambiente. En algunos modelos se activa automáticamente al cerrar la tapa.",
+    },
+    {
+      q: "¿Hay que cargarlo? ¿Cuánto dura la batería?",
+      a: "Depende del modelo: algunos son recargables por USB y otros usan pilas. En uso normal suele durar varios días/semanas antes de necesitar carga/cambio.",
+    },
+    {
+      q: "¿Incluye la pasta dental o el cepillo?",
+      a: "No, el producto es el porta cepillos con dispenser/esterilizador. La pasta y los cepillos se venden por separado.",
+    },
+    {
+      q: "¿El dispenser sirve para cualquier pasta?",
+      a: "Funciona con la mayoría de pastas en tubo estándar. Solo colocás el pico del tubo en el adaptador y presionás el cepillo para dosificar.",
+    },
+    {
+      q: "¿Se puede usar en baño con humedad?",
+      a: "Sí, está pensado para baño. Igual, para que el adhesivo quede firme, instalalo sobre una superficie lisa y bien seca.",
+    },
+    {
+      q: "¿Cómo se limpia?",
+      a: "Pasale un paño húmedo por fuera y, cada tanto, retirás los accesorios lavables para enjuagar y secar antes de volver a colocar.",
+    },
   ],
-},
-
-
-howTo: {
-  title: "CÓMO SE USA",
-  image: {
-    url: "https://http2.mlstatic.com/D_NQ_NP_2X_730119-MLA92075368185_092025-F.webp",
-    alt: "Cómo se usa la antena en 3 pasos"
-  }
-},
-
-
-faqTitle: "PREGUNTAS FRECUENTES",
-faq: [
-  {
-    q: "¿Cómo se instala?",
-    a: "Se pega a la pared con adhesivo (sin perforar). Limpiá bien la superficie, pegalo, presioná unos segundos y dejalo asentar antes de usar.",
-  },
-  {
-    q: "¿Sirve para cualquier cepillo dental?",
-    a: "Sí, es compatible con la mayoría de cepillos manuales y muchos eléctricos (según tamaño del mango).",
-  },
-  {
-    q: "¿Cómo funciona la esterilización?",
-    a: "El esterilizador ayuda a mantener el cabezal del cepillo más protegido del ambiente. En algunos modelos se activa automáticamente al cerrar la tapa.",
-  },
-  {
-    q: "¿Hay que cargarlo? ¿Cuánto dura la batería?",
-    a: "Depende del modelo: algunos son recargables por USB y otros usan pilas. En uso normal suele durar varios días/semanas antes de necesitar carga/cambio.",
-  },
-  {
-    q: "¿Incluye la pasta dental o el cepillo?",
-    a: "No, el producto es el porta cepillos con dispenser/esterilizador. La pasta y los cepillos se venden por separado.",
-  },
-  {
-    q: "¿El dispenser sirve para cualquier pasta?",
-    a: "Funciona con la mayoría de pastas en tubo estándar. Solo colocás el pico del tubo en el adaptador y presionás el cepillo para dosificar.",
-  },
-  {
-    q: "¿Se puede usar en baño con humedad?",
-    a: "Sí, está pensado para baño. Igual, para que el adhesivo quede firme, instalalo sobre una superficie lisa y bien seca.",
-  },
-  {
-    q: "¿Cómo se limpia?",
-    a: "Pasale un paño húmedo por fuera y, cada tanto, retirás los accesorios lavables para enjuagar y secar antes de volver a colocar.",
-  },
-],
 
 
   reviewsTitle: "TESTIMONIOS",
   reviewsSubtitle: "Esto dicen nuestros clientes",
   reviewsCarousel: [
-  {
-    title: "MÁS HIGIÉNICO",
-    rating: 5,
-    text:
-      "Antes los cepillos quedaban expuestos todo el día. Con esto quedan más protegidos y el baño se siente más limpio en general.",
-    name: "Carla Benítez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_847065-MLA93209847143_092025-F.webp",
-  },
-  {
-    title: "SE NOTA EL CAMBIO",
-    rating: 5,
-    text:
-      "Me daba cosa tener los cepillos a la intemperie. Ahora quedan guardados y siento que ayuda a mantener mejor la higiene diaria.",
-    name: "Julián Rivas",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp",
-  },
-  {
-    title: "CEPILLOS MÁS PROTEGIDOS",
-    rating: 5,
-    text:
-      "Lo compré por un tema de higiene. Quedó todo más ordenado pero lo principal es que los cepillos no quedan expuestos.",
-    name: "Romina Sosa",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_914883-MLA104359225539_012026-F.webp",
-  },
-  {
-    title: "ME DEJÓ TRANQUILO",
-    rating: 5,
-    text:
-      "Soy bastante obsesivo con la limpieza del baño. Tener los cepillos resguardados me deja mucho más tranquilo con la higiene.",
-    name: "Nicolás Ferreira",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_991593-MLA97567338889_112025-F.webp",
-  },
-  {
-    title: "AYUDA EN CASA",
-    rating: 4,
-    text:
-      "En casa somos varios y los cepillos quedaban todos juntos. Ahora están separados y más protegidos. Eso era lo que buscaba.",
-    name: "Micaela Páez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_681590-MLA97122685113_112025-F.webp",
-  },
-  {
-    title: "BAÑO MÁS LIMPIO",
-    rating: 5,
-    text:
-      "Me gustó porque mantiene los cepillos lejos de salpicaduras. No es magia, pero claramente ayuda a mantener mejor la higiene.",
-    name: "Sergio Ledesma",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_604768-MLA105021350975_012026-F.webp",
-  },
-  {
-    title: "BUENA IDEA",
-    rating: 5,
-    text:
-      "No quería seguir dejando los cepillos en un vaso. Con esto quedan guardados y siento que es una mejora real para la higiene.",
-    name: "Lucía Giménez",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp",
-  },
-  {
-    title: "PARA LA FAMILIA",
-    rating: 5,
-    text:
-      "Lo puse pensando en mis hijos. Que cada cepillo quede en su lugar y más protegido me parece lo más importante.",
-    name: "Federico Albornoz",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_735168-MLA104575340271_012026-F.webp",
-  },
-  {
-    title: "SE NOTA PROTEGIDO",
-    rating: 4,
-    text:
-      "Los cepillos quedan más resguardados y eso se siente. Me gusta porque el baño queda más ‘sanitario’ sin exagerar.",
-    name: "Mariana Quiroga",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_612380-MLA103990675067_012026-F.webp",
-  },
-  {
-    title: "MEJOR PARA HIGIENE",
-    rating: 5,
-    text:
-      "Desde que lo tengo, dejé de dejar los cepillos expuestos. Es un cambio simple, pero para higiene diaria suma un montón.",
-    name: "Gustavo Molina",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_901052-MLA104463601083_012026-F.webp",
-  },
-  {
-    title: "MÁS TRANQUILIDAD",
-    rating: 5,
-    text:
-      "A mí me importaba la parte higiénica. Los cepillos quedan protegidos y siento más tranquilidad con lo que uso todos los días.",
-    name: "Valentina Ortiz",
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
-  },
-  
-],
+    {
+      title: "MÁS HIGIÉNICO",
+      rating: 5,
+      text:
+        "Antes los cepillos quedaban expuestos todo el día. Con esto quedan más protegidos y el baño se siente más limpio en general.",
+      name: "Carla Benítez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_847065-MLA93209847143_092025-F.webp",
+    },
+    {
+      title: "SE NOTA EL CAMBIO",
+      rating: 5,
+      text:
+        "Me daba cosa tener los cepillos a la intemperie. Ahora quedan guardados y siento que ayuda a mantener mejor la higiene diaria.",
+      name: "Julián Rivas",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp",
+    },
+    {
+      title: "CEPILLOS MÁS PROTEGIDOS",
+      rating: 5,
+      text:
+        "Lo compré por un tema de higiene. Quedó todo más ordenado pero lo principal es que los cepillos no quedan expuestos.",
+      name: "Romina Sosa",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_914883-MLA104359225539_012026-F.webp",
+    },
+    {
+      title: "ME DEJÓ TRANQUILO",
+      rating: 5,
+      text:
+        "Soy bastante obsesivo con la limpieza del baño. Tener los cepillos resguardados me deja mucho más tranquilo con la higiene.",
+      name: "Nicolás Ferreira",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_991593-MLA97567338889_112025-F.webp",
+    },
+    {
+      title: "AYUDA EN CASA",
+      rating: 4,
+      text:
+        "En casa somos varios y los cepillos quedaban todos juntos. Ahora están separados y más protegidos. Eso era lo que buscaba.",
+      name: "Micaela Páez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_681590-MLA97122685113_112025-F.webp",
+    },
+    {
+      title: "BAÑO MÁS LIMPIO",
+      rating: 5,
+      text:
+        "Me gustó porque mantiene los cepillos lejos de salpicaduras. No es magia, pero claramente ayuda a mantener mejor la higiene.",
+      name: "Sergio Ledesma",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_604768-MLA105021350975_012026-F.webp",
+    },
+    {
+      title: "BUENA IDEA",
+      rating: 5,
+      text:
+        "No quería seguir dejando los cepillos en un vaso. Con esto quedan guardados y siento que es una mejora real para la higiene.",
+      name: "Lucía Giménez",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp",
+    },
+    {
+      title: "PARA LA FAMILIA",
+      rating: 5,
+      text:
+        "Lo puse pensando en mis hijos. Que cada cepillo quede en su lugar y más protegido me parece lo más importante.",
+      name: "Federico Albornoz",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_735168-MLA104575340271_012026-F.webp",
+    },
+    {
+      title: "SE NOTA PROTEGIDO",
+      rating: 4,
+      text:
+        "Los cepillos quedan más resguardados y eso se siente. Me gusta porque el baño queda más ‘sanitario’ sin exagerar.",
+      name: "Mariana Quiroga",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_612380-MLA103990675067_012026-F.webp",
+    },
+    {
+      title: "MEJOR PARA HIGIENE",
+      rating: 5,
+      text:
+        "Desde que lo tengo, dejé de dejar los cepillos expuestos. Es un cambio simple, pero para higiene diaria suma un montón.",
+      name: "Gustavo Molina",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_901052-MLA104463601083_012026-F.webp",
+    },
+    {
+      title: "MÁS TRANQUILIDAD",
+      rating: 5,
+      text:
+        "A mí me importaba la parte higiénica. Los cepillos quedan protegidos y siento más tranquilidad con lo que uso todos los días.",
+      name: "Valentina Ortiz",
+      img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
+    },
+
+  ],
 
 
 
@@ -816,6 +818,42 @@ function TopReviewsCarouselMini({ productImg }) {
     </section>
   );
 }
+const WaveSvg = ({ fill = "#F8FBFF" }) => (
+  <svg viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path
+      fill={fill}
+      d="M0,64L48,74.7C96,85,192,107,288,101.3C384,96,480,64,576,53.3C672,43,768,53,864,58.7C960,64,1056,64,1152,53.3C1248,43,1344,21,1392,10.7L1440,0L1440,120L0,120Z"
+    />
+  </svg>
+);
+
+const Band = ({
+  variant = "light",
+  topFill,
+  bottomFill,
+  noTop = false,
+  noBottom = false,
+  children,
+}) => {
+  return (
+    <section className={`pd-band pd-band--${variant}`}>
+      {!noTop && (
+        <div className="pd-wave pd-wave--top">
+          <WaveSvg fill={topFill} />
+        </div>
+      )}
+
+      <div className="container pd-band-inner">{children}</div>
+
+      {!noBottom && (
+        <div className="pd-wave pd-wave--bottom">
+          <WaveSvg fill={bottomFill} />
+        </div>
+      )}
+    </section>
+  );
+};
+
 
 
 /* =========================
@@ -1004,6 +1042,20 @@ export default function ProductDetail() {
 
   return (
     <main className="section main-wrapper pd-page">
+      <div className="pd-page">
+        <Marquee
+          speed={18}
+          items={[
+            "Envío gratis a todo el país",
+            "Pagá contra entrega / transferencia",
+            "Compra segura",
+            "Soporte por WhatsApp",
+          ]}
+        />
+
+        {/* ...tu contenido existente... */}
+      </div>
+
       <div className="container pd-container">
         <div className="pd-grid">
           {/* MEDIA */}
@@ -1035,12 +1087,12 @@ export default function ProductDetail() {
 
               {/* ✅ sin flechas para agrandar imagen (queda swipe + dots) */}
               {images.length > 1 && (
-                <div className="pd-dots-container">
+                <div className="">
                   {images.map((_, idx) => (
                     <button
                       key={idx}
                       type="button"
-                      className={`pd-dot ${idx === activeImgIndex ? "active" : ""}`}
+                      className={` ${idx === activeImgIndex ? "" : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveImgIndex(idx);
@@ -1078,6 +1130,8 @@ export default function ProductDetail() {
               </div>
             )}
           </section>
+
+
 
           {/* INFO */}
           <aside className="pd-info">
@@ -1118,19 +1172,19 @@ export default function ProductDetail() {
             </div>
 
             {/* ✅ CABA: PAGO AL RECIBIR (beneficio de conversión) */}
-<div className="pd-codBanner" role="note" aria-label="Pago al recibir en CABA">
-  <div className="pd-codLeft">
-    <div className="pd-codIcon">📍</div>
-    <div className="pd-codText">
-      <div className="pd-codTitle">CABA: PAGÁ AL RECIBIR</div>
-      <div className="pd-codSub">
-        Disponible en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar la compra.
-      </div>
-    </div>
-  </div>
+            <div className="pd-codBanner" role="note" aria-label="Pago al recibir en CABA">
+              <div className="pd-codLeft">
+                <div className="pd-codIcon">📍</div>
+                <div className="pd-codText">
+                  <div className="pd-codTitle">CABA: PAGÁ AL RECIBIR</div>
+                  <div className="pd-codSub">
+                    Disponible en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar la compra.
+                  </div>
+                </div>
+              </div>
 
-  <div className="pd-codBadge">SOLO CABA</div>
-</div>
+              <div className="pd-codBadge">SOLO CABA</div>
+            </div>
 
 
             <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
@@ -1305,15 +1359,58 @@ export default function ProductDetail() {
 
 
         {/* ✅ SECCIONES */}
-        <div className="pd-sections-new">
-          <StoryBlocks />
-          <CertificateStrip />
-          <HowToSteps />
-          <AuthorityCard />
-          <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
-          <FaqSectionPro />
-          <AboutSection />
+        {/* ✅ SECCIONES con transiciones de fondo + ondas (full width) */}
+        <div className="pd-bands">
+          {/* Light */}
+          <Band
+            variant="light"
+            topFill="transparent"
+            bottomFill="var(--pd-blue)"
+            noTop
+          >
+            <div className="pd-sections-new">
+              <StoryBlocks />
+            </div>
+          </Band>
+
+          {/* Blue */}
+          <Band
+            variant="blue"
+            topFill="var(--pd-light)"
+            bottomFill="var(--pd-light)"
+          >
+            <div className="pd-sections-new">
+              <CertificateStrip />
+              <HowToSteps />
+              <AuthorityCard />
+            </div>
+          </Band>
+
+          {/* Light */}
+          <Band
+            variant="light"
+            topFill="var(--pd-blue)"
+            bottomFill="var(--pd-blue)"
+          >
+            <div className="pd-sections-new">
+              <ComparisonTablePro />
+              <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
+            </div>
+          </Band>
+
+          {/* Blue */}
+          <Band
+            variant="blue"
+            topFill="var(--pd-light)"
+            bottomFill="var(--pd-light)"
+          >
+            <div className="pd-sections-new">
+              <FaqSectionPro />
+              <AboutSection />
+            </div>
+          </Band>
         </div>
+
       </div>
 
       {/* Toast */}
@@ -1370,21 +1467,29 @@ export default function ProductDetail() {
 
       {/* ✅ CSS */}
       <style>{`
+      .pd-grid > * { min-width: 0; }  /* si pd-grid es el layout principal */
+aside.pd-info { min-width: 0; width: 100%; max-width: 100%; }
+
+
 /* === Product page: hero image full-bleed on mobile (only the main image) === */
 @media (max-width: 980px){
-  .pd-page{ overflow-x: hidden; }
+  .pd-page, body { 
+    overflow-x: clip !important; 
+    width: 100% !important;
+    position: relative;
+  }
 
   .pd-mediaMain--bigger{
-    width: 100vw !important;
-    max-width: 100vw !important;
-    margin-left: calc(50% - 50vw) !important;
-    margin-right: calc(50% - 50vw) !important;
+    width: calc(100% + 40px) !important; 
+    max-width: none !important;
+    margin-left: -20px !important;       
+    margin-right: -20px !important;
     border-radius: 0 !important;
     height: auto !important;
-    max-height: none !important;
-    aspect-ratio: auto !important;
+    aspect-ratio: 1 / 1 !important;      
     background: #fff !important;
-    overflow: hidden !important;
+    display: block !important;
+    position: relative !important;
   }
 
   .pd-mainImg--hero{
@@ -1402,188 +1507,194 @@ export default function ProductDetail() {
     position: static !important;
     padding: 10px 0 12px !important;
   }
+
+  .pd-mainImg--force{
+    position: absolute !important;
+    top: 0; left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* CORREGIDO: Faltaba cerrar esta propiedad y la llave */
+  }
+  
+  .pd-info {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ===== TITULOS PRO ===== */
+.sec-head{
+  text-align: center;
+  margin: 26px 0 14px;
+}
+.sec-title{
+  margin: 0;
+  font-weight: 1100;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: 1.55rem;
+  color: rgba(11,18,32,.92);
+}
+@media (min-width: 900px){
+  .sec-title{ font-size: 1.85rem; }
+}
+.sec-sub{
+  margin-top: 8px;
+  color: rgba(11,18,32,.60);
+  font-weight: 850;
+}
+
+/* ===== IMAGEN PRINCIPAL MÁS GRANDE ===== */
+.pd-media { padding: 0 !important; }
+.pd-mediaMain--bigger{
+  position: relative;
+  width: 100%;
+  background: #f8fafc;
+  overflow: hidden;
+  border-radius: 0px;
+  height: 520px;
+}
+@media (max-width: 980px){
+  .pd-mediaMain--bigger{ height: 420px; }
+}
+@media (max-width: 520px){
+  .pd-mediaMain--bigger{ height: 390px; }
+}
+
+/* dots */
+.pd-dots-container{
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display:flex;
+  justify-content:center;
+  gap: 8px;
+  z-index: 3;
+  pointer-events: auto;
+}
+.pd-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(2,8,23,.18);
+  cursor:pointer;
 }
 
 
+/* thumbs */
+.pd-thumbs-row{
+  display:flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  overflow-x: auto;
+  background: #fff;
+}
+.pd-thumb{
+  min-width: 72px;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  overflow:hidden;
+  border: 2px solid rgba(2,8,23,.10);
+  background: #f1f5f9;
+  padding: 0;
+}
+.pd-thumb.is-active{
+  border-color: rgba(11,92,255,.85);
+  box-shadow: 0 0 0 3px rgba(11,92,255,.18);
+}
+.pd-thumb img{ width:100%; height:100%; object-fit: cover; display:block; }
 
+/* hero */
+.hero-mini-desc{ color: rgba(11,18,32,.72); line-height: 1.7; margin: 10px 0 8px; }
+.inc-inline{ display:flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 6px; }
+.inc-chip{
+  display:flex; align-items:center; gap: 8px;
+  background: rgba(234,241,255,.78);
+  border: 1px solid rgba(11,92,255,.14);
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 850;
+  color: rgba(11,18,32,.78);
+}
 
-        /* ===== TITULOS PRO ===== */
-        .sec-head{
-          text-align: center;
-          margin: 26px 0 14px;
-        }
-        .sec-title{
-          margin: 0;
-          font-weight: 1100;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-          font-size: 1.55rem;
-          color: rgba(11,18,32,.92);
-        }
-        @media (min-width: 900px){
-          .sec-title{ font-size: 1.85rem; }
-        }
-        .sec-sub{
-          margin-top: 8px;
-          color: rgba(11,18,32,.60);
-          font-weight: 850;
-        }
+/* anim helper */
+.hover-float{
+  transition: transform .18s ease, box-shadow .18s ease;
+  will-change: transform;
+}
+.hover-float:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 18px 50px rgba(10,20,40,.14);
+}
+@keyframes popIn{
+  from{ opacity: 0; transform: translateY(10px) scale(.98); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
+}
 
-        /* ===== IMAGEN PRINCIPAL MÁS GRANDE ===== */
-        .pd-media { padding: 0 !important; }
-        .pd-mediaMain--bigger{
-          position: relative;
-          width: 100%;
-          background: #f8fafc;
-          overflow: hidden;
-          border-radius: 18px;
-          /* ✅ más alto para que se vea grande */
-          height: 520px;
-        }
-        @media (max-width: 980px){
-          .pd-mediaMain--bigger{ height: 420px; }
-        }
-        @media (max-width: 520px){
-          .pd-mediaMain--bigger{ height: 390px; }
-        }
+/* story title */
+.flow-title{
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-size: 1.25rem;
+  font-weight: 1100;
+  margin: 0 0 12px;
+}
+@media (min-width: 900px){
+  .flow-title{ font-size: 1.45rem; }
+}
+.flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
 
+.pd-sections-new{ margin-top: 40px; padding-bottom: 40px; }
+.pd-flow{ display:flex; flex-direction: column; gap: 28px; }
+.flow-row{
+  display:grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 22px;
+  align-items: center;
+}
+@media (max-width: 900px){
+  .flow-row{ grid-template-columns: 1fr; }
+}
+.flow-text{ display:flex; flex-direction: column; align-items: center; }
+.flow-badge{
+  display:inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(11,92,255,.10);
+  border: 1px solid rgba(11,92,255,.18);
+  font-weight: 1000;
+  color: rgba(11,18,32,.78);
+  margin-bottom: 10px;
+}
 
+.flow-imgBox{
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1 / 1;
+  border-radius: 0px;
+  overflow: hidden;
+  border: 1px solid rgba(2,8,23,.08);
+  background: #fff;
+  margin-left: auto;
+}
+@media (max-width: 900px){
+  .flow-imgBox{ margin: 0 auto; max-width: 520px; }
+}
+.flow-imgBox img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
 
-        /* dots */
-        .pd-dots-container{
-          position:absolute;
-          left: 0;
-          right: 0;
-          bottom: 12px;
-          display:flex;
-          justify-content:center;
-          gap: 8px;
-          z-index: 3;
-          pointer-events: auto;
-        }
-        .pd-dot{
-          width: 8px;
-          height: 8px;
-          border-radius: 999px;
-          border: none;
-          background: rgba(2,8,23,.18);
-          cursor:pointer;
-        }
-        .pd-dot.active{
-          background: rgba(11,92,255,.95);
-          transform: scale(1.2);
-        }
-
-        /* thumbs */
-        .pd-thumbs-row{
-          display:flex;
-          gap: 10px;
-          padding: 12px;
-          border-top: 1px solid rgba(0,0,0,0.06);
-          overflow-x: auto;
-          background: #fff;
-        }
-        .pd-thumb{
-          min-width: 72px;
-          width: 72px;
-          height: 72px;
-          border-radius: 14px;
-          overflow:hidden;
-          border: 2px solid rgba(2,8,23,.10);
-          background: #f1f5f9;
-          padding: 0;
-        }
-        .pd-thumb.is-active{
-          border-color: rgba(11,92,255,.85);
-          box-shadow: 0 0 0 3px rgba(11,92,255,.18);
-        }
-        .pd-thumb img{ width:100%; height:100%; object-fit: cover; display:block; }
-
-        /* hero */
-        .hero-mini-desc{ color: rgba(11,18,32,.72); line-height: 1.7; margin: 10px 0 8px; }
-        .inc-inline{ display:flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 6px; }
-        .inc-chip{
-          display:flex; align-items:center; gap: 8px;
-          background: rgba(234,241,255,.78);
-          border: 1px solid rgba(11,92,255,.14);
-          padding: 10px 12px;
-          border-radius: 14px;
-          font-weight: 850;
-          color: rgba(11,18,32,.78);
-        }
-
-        /* anim helper */
-        .hover-float{
-          transition: transform .18s ease, box-shadow .18s ease;
-          will-change: transform;
-        }
-        .hover-float:hover{
-          transform: translateY(-4px);
-          box-shadow: 0 18px 50px rgba(10,20,40,.14);
-        }
-        @keyframes popIn{
-          from{ opacity: 0; transform: translateY(10px) scale(.98); }
-          to{ opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* story title */
-        .flow-title{
-          text-align: center;
-          text-transform: uppercase;
-          letter-spacing: .05em;
-          font-size: 1.25rem;
-          font-weight: 1100;
-          margin: 0 0 12px;
-        }
-        @media (min-width: 900px){
-          .flow-title{ font-size: 1.45rem; }
-        }
-        .flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
-
-        .pd-sections-new{ margin-top: 40px; padding-bottom: 40px; }
-        .pd-flow{ display:flex; flex-direction: column; gap: 28px; }
-        .flow-row{
-          display:grid;
-          grid-template-columns: 1.1fr .9fr;
-          gap: 22px;
-          align-items: center;
-        }
-        @media (max-width: 900px){
-          .flow-row{ grid-template-columns: 1fr; }
-        }
-        .flow-text{ display:flex; flex-direction: column; align-items: center; }
-        .flow-badge{
-          display:inline-flex;
-          padding: 6px 12px;
-          border-radius: 999px;
-          background: rgba(11,92,255,.10);
-          border: 1px solid rgba(11,92,255,.18);
-          font-weight: 1000;
-          color: rgba(11,18,32,.78);
-          margin-bottom: 10px;
-        }
-
-        .flow-imgBox{
-          width: 100%;
-          max-width: 520px;
-          aspect-ratio: 1 / 1;
-          border-radius: 0px;
-          overflow: hidden;
-          border: 1px solid rgba(2,8,23,.08);
-          background: #fff;
-          margin-left: auto;
-        }
-        @media (max-width: 900px){
-          .flow-imgBox{ margin: 0 auto; max-width: 520px; }
-        }
-        .flow-imgBox img{
-          width:100%;
-          height:100%;
-          object-fit: cover;
-          display:block;
-        }
-
-        /* ===== CERTIFICATE PRO (más real / premium) ===== */
+/* ===== CERTIFICATE PRO (más real / premium) ===== */
 .pd-strip--pro{
   margin: 34px 0 10px;
   background: #ffffff;
@@ -1595,7 +1706,6 @@ export default function ProductDetail() {
   overflow: hidden;
 }
 
-/* barrita superior tipo Shopify */
 .pd-strip--pro::before{
   content:"";
   position:absolute;
@@ -1613,7 +1723,6 @@ export default function ProductDetail() {
   flex-wrap: wrap;
 }
 
-/* ✅ Sello circular: el blanco queda intencional */
 .pd-certSeal{
   width: 92px;
   height: 92px;
@@ -1636,7 +1745,6 @@ export default function ProductDetail() {
   pointer-events:none;
 }
 
-/* logo dentro del sello */
 .pd-certLogo{
   width: 100%;
   height: 100%;
@@ -1645,7 +1753,6 @@ export default function ProductDetail() {
   display:block;
 }
 
-/* textito “real” al lado */
 .pd-certMeta{
   display:flex;
   flex-direction: column;
@@ -1682,7 +1789,6 @@ export default function ProductDetail() {
   font-size: .92rem;
 }
 
-/* cards internas más “shopify” */
 .pd-stripGrid--pro{
   display:grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1730,296 +1836,298 @@ export default function ProductDetail() {
   line-height: 1.2;
 }
 
-        /* ===== COMPARATIVA NO CORTADA ===== */
-        .cmp-scroll{
-          overflow-x: auto;
-          padding: 6px 2px 12px;
-        }
-        .cmp-scroll::-webkit-scrollbar{ height: 10px; }
-        .cmp-scroll::-webkit-scrollbar-thumb{ background: rgba(11,92,255,.18); border-radius: 999px; }
+/* ===== COMPARATIVA (FIX DE CORTE EN MÓVIL) ===== */
+.cmp-scroll{
+  overflow-x: auto;
+  padding: 6px 2px 12px;
+}
+.cmp-scroll::-webkit-scrollbar{ height: 10px; }
+.cmp-scroll::-webkit-scrollbar-thumb{ background: rgba(11,92,255,.18); border-radius: 999px; }
 
-        .cmp-wrap{
-          min-width: 680px; /* ✅ evita cortar columnas */
-          border: 1px solid rgba(2,8,23,.08);
-          border-radius: 18px;
-          background: #fff;
-          box-shadow: 0 18px 55px rgba(10,20,40,.10);
-          overflow: hidden;
-        }
-        @media (min-width: 900px){
-          .cmp-wrap{ min-width: 0; }
-        }
+/* CORRECCIÓN PRINCIPAL: min-width: 0 para móvil */
+.cmp-wrap{
+  min-width: 0; 
+  width: 100%;
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 55px rgba(10,20,40,.10);
+  overflow: hidden;
+}
+@media (min-width: 900px){
+  .cmp-wrap{ min-width: 680px; }
+}
 
-        .cmp-head, .cmp-row{
-          display:grid;
-          grid-template-columns: 1.2fr 1fr 1fr 1fr;
-          align-items:center;
-        }
-        .cmp-head{
-          background: linear-gradient(180deg, rgba(234,241,255,.95), rgba(234,241,255,.65));
-          border-bottom: 1px solid rgba(2,8,23,.06);
-          font-weight: 1000;
-        }
-        .cmp-row{
-          border-bottom: 1px solid rgba(2,8,23,.06);
-          transition: background .18s ease, transform .18s ease;
-        }
-        .cmp-row:hover{ background: rgba(11,92,255,.06); transform: translateY(-1px); }
-        .cmp-row:last-child{ border-bottom: none; }
-        .cmp-k, .cmp-col{ padding: 14px 12px; color: rgba(11,18,32,.78); font-weight: 850; font-size: .92rem; }
-        .cmp-a{ color: rgba(11,92,255,.95); font-weight: 1100; }
-        .cmp-anim{ animation: popIn .35s ease both; }
-        .cmp-hint{
-          text-align:center;
-          margin-top: 8px;
-          color: rgba(11,18,32,.55);
-          font-weight: 850;
-          font-size: .9rem;
-        }
+.cmp-head, .cmp-row{
+  display:grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  align-items:center;
+}
+.cmp-head{
+  background: linear-gradient(180deg, rgba(234,241,255,.95), rgba(234,241,255,.65));
+  border-bottom: 1px solid rgba(2,8,23,.06);
+  font-weight: 1000;
+}
+.cmp-row{
+  border-bottom: 1px solid rgba(2,8,23,.06);
+  transition: background .18s ease, transform .18s ease;
+}
+.cmp-row:hover{ background: rgba(11,92,255,.06); transform: translateY(-1px); }
+.cmp-row:last-child{ border-bottom: none; }
+.cmp-k, .cmp-col{ padding: 14px 12px; color: rgba(11,18,32,.78); font-weight: 850; font-size: .92rem; }
+.cmp-a{ color: rgba(11,92,255,.95); font-weight: 1100; }
+.cmp-anim{ animation: popIn .35s ease both; }
+.cmp-hint{
+  text-align:center;
+  margin-top: 8px;
+  color: rgba(11,18,32,.55);
+  font-weight: 850;
+  font-size: .9rem;
+}
 
-        /* how to */
-        .how-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-        @media (max-width: 900px){ .how-grid{ grid-template-columns: 1fr; } }
-        .how-card{
-          background: #fff;
-          border: 1px solid rgba(2,8,23,.08);
-          border-radius: 18px;
-          padding: 16px;
-          box-shadow: 0 18px 55px rgba(10,20,40,.10);
-          display:flex; gap: 12px; align-items:flex-start;
-          transition: transform .18s ease, box-shadow .18s ease;
-          will-change: transform;
-          position: relative;
-          overflow: hidden;
-        }
-        .how-card:hover{ transform: translateY(-4px); box-shadow: 0 22px 70px rgba(10,20,40,.14); }
-        .how-n{
-          width: 42px; height: 42px; border-radius: 14px;
-          display:grid; place-items:center;
-          background: rgba(11,92,255,.12);
-          border: 1px solid rgba(11,92,255,.18);
-          font-weight: 1100;
-          color: rgba(11,92,255,.95);
-          flex-shrink: 0;
-        }
-        .how-t{ font-weight: 1100; color: rgba(11,18,32,.9); }
-        .how-d{ margin-top: 4px; color: rgba(11,18,32,.68); font-weight: 650; line-height: 1.5; }
-        .how-anim .how-card{ animation: popIn .35s ease both; }
-        .how-anim .how-card:nth-child(2){ animation-delay: .06s; }
-        .how-anim .how-card:nth-child(3){ animation-delay: .12s; }
+/* how to */
+.how-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px){ .how-grid{ grid-template-columns: 1fr; } }
+.how-card{
+  background: #fff;
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 18px 55px rgba(10,20,40,.10);
+  display:flex; gap: 12px; align-items:flex-start;
+  transition: transform .18s ease, box-shadow .18s ease;
+  will-change: transform;
+  position: relative;
+  overflow: hidden;
+}
+.how-card:hover{ transform: translateY(-4px); box-shadow: 0 22px 70px rgba(10,20,40,.14); }
+.how-n{
+  width: 42px; height: 42px; border-radius: 14px;
+  display:grid; place-items:center;
+  background: rgba(11,92,255,.12);
+  border: 1px solid rgba(11,92,255,.18);
+  font-weight: 1100;
+  color: rgba(11,92,255,.95);
+  flex-shrink: 0;
+}
+.how-t{ font-weight: 1100; color: rgba(11,18,32,.9); }
+.how-d{ margin-top: 4px; color: rgba(11,18,32,.68); font-weight: 650; line-height: 1.5; }
+.how-anim .how-card{ animation: popIn .35s ease both; }
+.how-anim .how-card:nth-child(2){ animation-delay: .06s; }
+.how-anim .how-card:nth-child(3){ animation-delay: .12s; }
 
-        /* FAQ */
-        .faq-pro{ display:flex; flex-direction: column; gap: 10px; }
-        .faq-pro-item{
-          background: #fff;
-          border: 1px solid rgba(2,8,23,.08);
-          border-radius: 18px;
-          overflow:hidden;
-          box-shadow: 0 18px 55px rgba(10,20,40,.09);
-        }
-        .faq-pro-q{
-          width:100%;
-          display:flex;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 16px 16px;
-          background: transparent;
-          border: none;
-          cursor:pointer;
-          font-weight: 1000;
-          color: rgba(11,18,32,.9);
-          text-align:left;
-        }
-        .faq-pro-ico{ font-size: 22px; color: rgba(11,92,255,.95); }
-        .faq-pro-a{
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height .25s ease;
-          padding: 0 16px;
-          color: rgba(11,18,32,.72);
-          font-weight: 650;
-        }
-        .faq-pro-item.open .faq-pro-a{
-          max-height: 260px;
-          padding-bottom: 16px;
-        }
-        .faq-pro-a p{ margin: 0; }
+/* FAQ */
+.faq-pro{ display:flex; flex-direction: column; gap: 10px; }
+.faq-pro-item{
+  background: #fff;
+  border: 1px solid rgba(2,8,23,.08);
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: 0 18px 55px rgba(10,20,40,.09);
+}
+.faq-pro-q{
+  width:100%;
+  display:flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px;
+  background: transparent;
+  border: none;
+  cursor:pointer;
+  font-weight: 1000;
+  color: rgba(11,18,32,.9);
+  text-align:left;
+}
+.faq-pro-ico{ font-size: 22px; color: rgba(11,92,255,.95); }
+.faq-pro-a{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+  padding: 0 16px;
+  color: rgba(11,18,32,.72);
+  font-weight: 650;
+}
+.faq-pro-item.open .faq-pro-a{
+  max-height: 260px;
+  padding-bottom: 16px;
+}
+.faq-pro-a p{ margin: 0; }
 
-        /* stars */
-        .stars-inline{ display:inline-flex; gap: 2px; justify-content: center; }
-        .stars-inline .s{ opacity: .25; font-size: 14px; }
-        .stars-inline .s.on{ opacity: 1; color: #F5B301; }
+/* stars */
+.stars-inline{ display:inline-flex; gap: 2px; justify-content: center; }
+.stars-inline .s{ opacity: .25; font-size: 14px; }
+.stars-inline .s.on{ opacity: 1; color: #F5B301; }
 
-        /* Reviews carousel */
-        .rv-wrap{ position: relative; margin-top: 14px; }
-        .rv-row{
-          display:flex;
-          gap: 16px;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          padding: 10px 6px 16px;
-          -webkit-overflow-scrolling: touch;
-        }
-        .rv-slide{ scroll-snap-align: center; flex: 0 0 auto; width: min(520px, 88vw); }
-        .rv-card{
-          background: #fff;
-          border: 1px solid rgba(2,8,23,.10);
-          border-radius: 22px;
-          box-shadow: 0 22px 70px rgba(10,20,40,.16);
-          overflow: hidden;
-        }
-        .rv-imgBox{ position: relative; width: 100%; aspect-ratio: 4 / 3; background: #f1f5f9; }
-        .rv-imgBox img{ width:100%; height:100%; object-fit: cover; display:block; }
-        .rv-quote{
-          position: absolute;
-          right: 14px;
-          bottom: 14px;
-          width: 46px;
-          height: 46px;
-          border-radius: 999px;
-          background: #ef4444;
-          color: #fff;
-          display:grid;
-          place-items:center;
-          font-weight: 1100;
-          box-shadow: 0 16px 40px rgba(239,68,68,.35);
-        }
-        .rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; }
-        .rv-title{ font-weight: 1100; text-transform: uppercase; letter-spacing: .05em; color: rgba(11,18,32,.92); }
-        .rv-text{ margin: 0; color: rgba(11,18,32,.70); line-height: 1.6; font-weight: 650; }
-        .rv-name{ margin-top: 4px; font-weight: 900; color: rgba(11,18,32,.62); }
+/* Reviews carousel */
+.rv-wrap{ position: relative; margin-top: 14px; }
+.rv-row{
+  display:flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 6px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.rv-slide{ scroll-snap-align: center; flex: 0 0 auto; width: min(520px, 88vw); }
+.rv-card{
+  background: #fff;
+  border: 1px solid rgba(2,8,23,.10);
+  border-radius: 22px;
+  box-shadow: 0 22px 70px rgba(10,20,40,.16);
+  overflow: hidden;
+}
+.rv-imgBox{ position: relative; width: 100%; aspect-ratio: 4 / 3; background: #f1f5f9; }
+.rv-imgBox img{ width:100%; height:100%; object-fit: cover; display:block; }
+.rv-quote{
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  display:grid;
+  place-items:center;
+  font-weight: 1100;
+  box-shadow: 0 16px 40px rgba(239,68,68,.35);
+}
+.rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; }
+.rv-title{ font-weight: 1100; text-transform: uppercase; letter-spacing: .05em; color: rgba(11,18,32,.92); }
+.rv-text{ margin: 0; color: rgba(11,18,32,.70); line-height: 1.6; font-weight: 650; }
+.rv-name{ margin-top: 4px; font-weight: 900; color: rgba(11,18,32,.62); }
 
-        .rv-nav{
-          position:absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 44px; height: 44px;
-          border-radius: 999px;
-          border: 1px solid rgba(2,8,23,.10);
-          background: rgba(255,255,255,.95);
-          box-shadow: 0 18px 55px rgba(10,20,40,.18);
-          cursor:pointer;
-          display:grid;
-          place-items:center;
-          font-size: 24px;
-          z-index: 10;
-        }
-        .rv-prev{ left: -8px; }
-        .rv-next{ right: -8px; }
-        @media (max-width: 560px){ .rv-nav{ display:none; } }
+.rv-nav{
+  position:absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(2,8,23,.10);
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 18px 55px rgba(10,20,40,.18);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  font-size: 24px;
+  z-index: 10;
+}
+.rv-prev{ left: -8px; }
+.rv-next{ right: -8px; }
+@media (max-width: 560px){ .rv-nav{ display:none; } }
 
-        .rv-dots{ display:flex; justify-content: center; gap: 8px; margin-top: 10px; }
-        .rv-dot{
-          width: 8px; height: 8px;
-          border-radius: 999px;
-          border: none;
-          background: rgba(2,8,23,.18);
-          cursor:pointer;
-          transition: transform .18s ease, background .18s ease;
-        }
-        .rv-dot.on{ background: rgba(11,92,255,.95); transform: scale(1.25); }
+.rv-dots{ display:flex; justify-content: center; gap: 8px; margin-top: 10px; }
+.rv-dot{
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(2,8,23,.18);
+  cursor:pointer;
+  transition: transform .18s ease, background .18s ease;
+}
+.rv-dot.on{ background: rgba(11,92,255,.95); transform: scale(1.25); }
 
-        /* About */
-        .about-grid{
-          display:grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 18px;
-          align-items: center;
-        }
-        @media (max-width: 900px){
-          .about-grid{ grid-template-columns: 1fr; }
-        }
-        .about-img{
-          border-radius: 22px;
-          overflow: hidden;
-          border: 1px solid rgba(2,8,23,.10);
-          box-shadow: 0 22px 70px rgba(10,20,40,.14);
-          background: #fff;
-        }
-        .about-img img{
-          width:100%;
-          height: 100%;
-          max-height: 340px;
-          object-fit: cover;
-          display:block;
-        }
-        .about-text{ text-align: left; }
-        @media (max-width: 900px){
-          .about-text{ text-align: center; }
-        }
-        .about-p{
-          margin: 0 0 12px;
-          color: rgba(11,18,32,.72);
-          line-height: 1.7;
-          font-weight: 650;
-        }
-        .about-bul{
-          display:flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        @media (max-width: 900px){
-          .about-bul{ align-items: center; }
-        }
-        .about-li{
-          display:inline-flex;
-          gap: 10px;
-          align-items:center;
-          background: rgba(234,241,255,.78);
-          border: 1px solid rgba(11,92,255,.14);
-          padding: 10px 12px;
-          border-radius: 14px;
-          font-weight: 900;
-          color: rgba(11,18,32,.78);
-          width: fit-content;
-        }
+/* About */
+.about-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 900px){
+  .about-grid{ grid-template-columns: 1fr; }
+}
+.about-img{
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(2,8,23,.10);
+  box-shadow: 0 22px 70px rgba(10,20,40,.14);
+  background: #fff;
+}
+.about-img img{
+  width:100%;
+  height: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  display:block;
+}
+.about-text{ text-align: left; }
+@media (max-width: 900px){
+  .about-text{ text-align: center; }
+}
+.about-p{
+  margin: 0 0 12px;
+  color: rgba(11,18,32,.72);
+  line-height: 1.7;
+  font-weight: 650;
+}
+.about-bul{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+}
+@media (max-width: 900px){
+  .about-bul{ align-items: center; }
+}
+.about-li{
+  display:inline-flex;
+  gap: 10px;
+  align-items:center;
+  background: rgba(234,241,255,.78);
+  border: 1px solid rgba(11,92,255,.14);
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+  color: rgba(11,18,32,.78);
+  width: fit-content;
+}
 
-        /* Sticky */
-        .sticky-pro{
-          position: fixed;
-          left: 16px;
-          right: 16px;
-          bottom: 14px;
-          z-index: 9999;
-          display:flex;
-          align-items:center;
-          justify-content: space-between;
-          gap: 12px;
-          background: rgba(255,255,255,.98);
-          border: 1px solid rgba(2,8,23,.10);
-          border-radius: 20px;
-          padding: 12px 14px;
-          box-shadow: 0 22px 70px rgba(10,20,40,.18);
-          backdrop-filter: blur(12px);
-        }
-        @media (min-width: 991px){ .sticky-pro{ display:none; } }
+/* Sticky */
+.sticky-pro{
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 9999;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255,255,255,.98);
+  border: 1px solid rgba(2,8,23,.10);
+  border-radius: 20px;
+  padding: 12px 14px;
+  box-shadow: 0 22px 70px rgba(10,20,40,.18);
+  backdrop-filter: blur(12px);
+}
+@media (min-width: 991px){ .sticky-pro{ display:none; } }
 
-        .sticky-pro-left{ display:flex; flex-direction: column; gap: 8px; }
-        .sticky-count{ display:flex; align-items:center; gap: 8px; font-weight: 900; color: rgba(11,18,32,.70); white-space: nowrap; }
-        .sticky-countLabel{ font-size: .78rem; color: rgba(11,18,32,.55); font-weight: 1000; letter-spacing: .06em; }
-        .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 1100; }
+.sticky-pro-left{ display:flex; flex-direction: column; gap: 8px; }
+.sticky-count{ display:flex; align-items:center; gap: 8px; font-weight: 900; color: rgba(11,18,32,.70); white-space: nowrap; }
+.sticky-countLabel{ font-size: .78rem; color: rgba(11,18,32,.55); font-weight: 1000; letter-spacing: .06em; }
+.cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 1100; }
 
-        .sticky-prices{ display:flex; align-items: baseline; gap: 10px; }
-        .sticky-old{ color: rgba(11,18,32,.45); font-weight: 900; text-decoration: line-through; font-size: .88rem; }
-        .sticky-now{ font-weight: 1100; color: rgba(11,18,32,.92); font-size: 1.08rem; }
+.sticky-prices{ display:flex; align-items: baseline; gap: 10px; }
+.sticky-old{ color: rgba(11,18,32,.45); font-weight: 900; text-decoration: line-through; font-size: .88rem; }
+.sticky-now{ font-weight: 1100; color: rgba(11,18,32,.92); font-size: 1.08rem; }
 
-        .sticky-pro-btn2{
-          border: none;
-          background: #0B5CFF;
-          color:#fff;
-          font-weight: 1100;
-          border-radius: 16px;
-          padding: 14px 18px;
-          cursor:pointer;
-          box-shadow: 0 14px 38px rgba(11,92,255,.30);
-          white-space: nowrap;
-          transition: transform .12s ease;
-          text-transform: uppercase;
-          letter-spacing: .04em;
-        }
-        .sticky-pro-btn2:active{ transform: scale(.98); }
+.sticky-pro-btn2{
+  border: none;
+  background: #0B5CFF;
+  color:#fff;
+  font-weight: 1100;
+  border-radius: 16px;
+  padding: 14px 18px;
+  cursor:pointer;
+  box-shadow: 0 14px 38px rgba(11,92,255,.30);
+  white-space: nowrap;
+  transition: transform .12s ease;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.sticky-pro-btn2:active{ transform: scale(.98); }
 
-        .pd-addToCartWrap{
+.pd-addToCartWrap{
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -2336,7 +2444,7 @@ export default function ProductDetail() {
 /* Desktop table: que no corte */
 .cmp-wrap{
   width: 100%;
-  min-width: 0 !important;   /* ✅ important para anular el min-width viejo */
+  min-width: 0 !important;   /* CORREGIDO: min-width: 0 para que no empuje en móvil */
   overflow: hidden;
 }
 
@@ -2494,10 +2602,8 @@ export default function ProductDetail() {
   margin-top: 4px;
   flex-shrink: 0;
 }
-
-
-
-      `}</style>
+  
+`}</style>
     </main>
   );
 }
