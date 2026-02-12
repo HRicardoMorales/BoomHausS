@@ -1337,7 +1337,16 @@ export default function ProductDetail() {
             </div>
           </Band>
 
-
+          <Band
+            variant="light"
+            topFill="var(--pd-blue)"
+            bottomFill="var(--pd-blue)"
+          >
+            <div className="pd-sections-new">
+              
+              <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
+            </div>
+          </Band>
 
           <Band
             variant="blue"
@@ -1583,7 +1592,7 @@ export default function ProductDetail() {
         align-items:center;
         justify-content:center;
         text-align:center;
-        background: #0c2ff1;      /* rojo como captura */
+        background: #dc2626;      /* rojo como captura */
         color: #fff;
         box-shadow: 0 18px 55px rgba(220,38,38,.20);
         margin-top: 8px;
