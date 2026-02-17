@@ -855,7 +855,7 @@ export default function ProductDetail() {
   const compareAt =
     Number(product?.originalPrice) ||
     Number(product?.compareAtPrice) ||
-    51350;
+    60350;
 
   const soldCount = product?.soldCount ?? product?.socialProofCount ?? 2105;
 
