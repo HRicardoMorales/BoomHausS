@@ -1,6 +1,6 @@
 // src/pages/CheckoutSheet.jsx
 import { useEffect, useRef } from "react";
-import { CheckoutContent } from "./Checkout";
+import { CheckoutContent } from "./checkout";
 
 export function CheckoutSheet({ onClose }) {
   const sheetRef = useRef(null);
