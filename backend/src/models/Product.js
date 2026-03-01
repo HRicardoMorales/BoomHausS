@@ -12,6 +12,15 @@ const productSchema = new mongoose.Schema(
             trim: true
         },
 
+        // ✅ Slug público para Landing Pages (ej: "porta-cepillos", "consola-retro")
+        slug: {
+            type: String,
+            unique: true,
+            sparse: true,
+            index: true,
+            trim: true
+        },
+
         // Descripción
         description: {
             type: String,
@@ -22,6 +31,13 @@ const productSchema = new mongoose.Schema(
         price: {
             type: Number,
             required: true,
+            min: 0
+        },
+
+        // ✅ Precio "ANTES" (opcional) para mostrar descuento en la landing
+        compareAtPrice: {
+            type: Number,
+            default: 0,
             min: 0
         },
 

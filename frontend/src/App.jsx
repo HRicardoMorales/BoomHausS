@@ -22,6 +22,8 @@ import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Returns from './pages/Returns.jsx';
 import SuccessPayment from './pages/SuccessPayment';
+import LandingPage from './pages/LandingPage.jsx';
+import AdminHome from './pages/AdminHome.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
 
@@ -38,6 +40,9 @@ function PrivateRoute({ children }) {
 
 export default function App() {
   const location = useLocation();
+
+  // ✅ En landing pages no queremos navbar/footer (estilo "página de anuncio")
+  const hideChrome = location.pathname.startsWith('/lp/');
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -87,13 +92,20 @@ export default function App() {
   return (
     <div className="app-shell">
       <ScrollToTop />
-      <Navbar />
+      {!hideChrome && <Navbar />}
       
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
       <div className="app-body">
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* ✅ Home privado: panel admin */}
+          <Route path="/" element={<AdminRoute><AdminHome /></AdminRoute>} />
+
+          {/* ✅ Home público opcional */}
+          <Route path="/public" element={<Home />} />
+
+          {/* ✅ Landing pages (ads -> directo acá) */}
+          <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
@@ -107,14 +119,14 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/returns" element={<Returns />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/public" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/success-payment" element={<SuccessPayment />} />
         </Routes>
       </div>
 
-      <Footer />
+      {!hideChrome && <Footer />}
     </div>
   );
 }

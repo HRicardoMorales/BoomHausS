@@ -5,6 +5,7 @@ const {
     getSingleProduct,
     getProducts,
     getProductById,
+    getProductBySlug,
     getAllProducts,
     createProduct,
     updateProduct
@@ -22,6 +23,9 @@ router.get('/', getProducts);
 
 // GET /api/products/all (admin)
 router.get('/all', authRequired, adminRequired, getAllProducts);
+
+// ✅ GET /api/products/slug/:slug (público para landing pages)
+router.get('/slug/:slug', getProductBySlug);
 
 // POST /api/products (admin)
 router.post('/', authRequired, adminRequired, createProduct);

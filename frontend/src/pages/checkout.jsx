@@ -1,4 +1,3 @@
-// frontend/src/pages/checkout.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../services/api";
@@ -21,6 +20,10 @@ function sanitizePhone(phone) {
   return String(phone || "").replace(/[^\d+]/g, "");
 }
 
+function onlyDigits(s) {
+  return String(s || "").replace(/[^\d]/g, "");
+}
+
 /**
  * ✅ Idempotencia (anti-duplicados)
  */
@@ -41,23 +44,24 @@ function clearClientOrderId() {
   localStorage.removeItem("clientOrderId");
 }
 
-export default function Checkout() {
+export function CheckoutContent({ embedded = false, onClose } = {}) {
   const { user } = getStoredAuth();
   const isLogged = Boolean(user?.email);
   const { pathname } = useLocation();
 
   // ✅ SCROLL TOP FORZADO
   useEffect(() => {
+    if (embedded) return;
     window.scrollTo(0, 0);
     const timer = setTimeout(() => window.scrollTo(0, 0), 50);
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, embedded]);
 
   // ✅ Carrito
   const { items, totalPrice, clearCart } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
-  // ✅ ÚNICO método de pago: Mercado Pago
+  // ✅ Método de pago (único online): Mercado Pago
   const paymentMethod = "mercadopago";
 
   // ✅ Datos del negocio
@@ -67,6 +71,7 @@ export default function Checkout() {
   // ✅ Datos del cliente
   const [customerName, setCustomerName] = useState(isLogged ? user.name || "" : "");
   const [customerEmail, setCustomerEmail] = useState(isLogged ? user.email || "" : "");
+  const [customerDni, setCustomerDni] = useState(""); // ✅ NUEVO
   const [customerPhone, setCustomerPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
 
@@ -134,13 +139,27 @@ export default function Checkout() {
     );
   }, [mainItem]);
 
-  // ✅ Requisitos mínimos para habilitar pagar
-  const canPay =
-    !loading &&
-    !isCartEmpty &&
-    customerName.trim().length > 0 &&
-    customerEmail.trim().length > 0 &&
-    shippingAddress.trim().length > 0;
+  // ✅ Validación DNI simple (7 u 8 dígitos)
+  const dniDigits = useMemo(() => onlyDigits(customerDni), [customerDni]);
+  const isDniOk = dniDigits.length >= 7 && dniDigits.length <= 8;
+
+  // ✅ Requisitos para habilitar CTA (según método de entrega)
+  const canSubmit = useMemo(() => {
+    if (loading || isCartEmpty) return false;
+    if (!customerName.trim()) return false;
+    if (!customerEmail.trim()) return false;
+    if (!shippingAddress.trim()) return false;
+    if (!isDniOk) return false;
+
+    // ✅ SOLO COD CABA: teléfono obligatorio
+    if (shippingMethod === "caba_cod") {
+      const digits = onlyDigits(customerPhone);
+      if (digits.length < 8) return false;
+    }
+    return true;
+  }, [loading, isCartEmpty, customerName, customerEmail, shippingAddress, shippingMethod, customerPhone, isDniOk]);
+
+  const isCod = shippingMethod === "caba_cod";
 
   // Pixel tracking inicial
   const firedCheckoutRef = useRef(false);
@@ -163,10 +182,12 @@ export default function Checkout() {
 
   const waUrl = useMemo(() => {
     if (!whatsapp) return null;
+
     const orderId = orderData?.orderId || orderData?._id || "";
     const msg = orderId
-      ? `Hola! 👋 Quiero hacer una consulta sobre el pedido #${orderId}`
-      : `Hola! 👋 Quiero hacer una consulta sobre ${storeName}.`;
+      ? `Hola! 👋 Quiero confirmar la entrega del pedido #${orderId}`
+      : `Hola! 👋 Quiero coordinar mi entrega con ${storeName}.`;
+
     return `https://wa.me/${sanitizePhone(whatsapp)}?text=${encodeURIComponent(msg)}`;
   }, [whatsapp, orderData, storeName]);
 
@@ -193,9 +214,21 @@ export default function Checkout() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // ✅ Mensajes de error más claros
     if (!customerName.trim() || !customerEmail.trim() || !shippingAddress.trim()) {
       setError("Completá Nombre, Email y Dirección para continuar.");
       return;
+    }
+    if (!isDniOk) {
+      setError("Ingresá un DNI válido (7 u 8 dígitos).");
+      return;
+    }
+    if (shippingMethod === "caba_cod") {
+      const digits = onlyDigits(customerPhone);
+      if (digits.length < 8) {
+        setError("Para CABA (pagás al recibir) el teléfono es obligatorio.");
+        return;
+      }
     }
     if (isCartEmpty) {
       setError("Tu carrito está vacío.");
@@ -207,7 +240,7 @@ export default function Checkout() {
       currency: "ARS",
       content_ids: contentIds,
       content_type: "product",
-      payment_type: "mercadopago",
+      payment_type: isCod ? "cod" : "mercadopago",
     });
 
     setLoading(true);
@@ -220,10 +253,11 @@ export default function Checkout() {
         clientOrderId,
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
+        customerDni: dniDigits, // ✅ NUEVO
         customerPhone: customerPhone.trim(),
         shippingAddress: shippingAddress.trim(),
         shippingMethod,
-        paymentMethod: "mercadopago",
+        paymentMethod: isCod ? "cod" : "mercadopago",
         notes: notes.trim(),
         total: finalTotal,
         items: items.map((item) => ({
@@ -241,7 +275,25 @@ export default function Checkout() {
         return;
       }
 
-      // ✅ Mercado Pago (único)
+      // ✅ Si es COD: NO redirigir a MP, mostrar pantalla gracias
+      if (isCod) {
+        clearClientOrderId();
+        const data = res.data.data || res.data;
+        setOrderData(data);
+
+        track("Purchase", {
+          value: Number(finalTotal),
+          currency: "ARS",
+          num_items: totalItems,
+          content_ids: contentIds,
+          content_type: "product",
+        });
+
+        clearCart();
+        return;
+      }
+
+      // ✅ Mercado Pago (online)
       const isProd = import.meta.env.MODE === "production";
       const url = isProd ? res.data.init_point : res.data.sandbox_init_point || res.data.init_point;
 
@@ -265,28 +317,74 @@ export default function Checkout() {
     }
   }
 
-  // Si querés: una pantalla fallback (por si tu backend cambia)
-  if (orderData) {
+  // ✅ Pantalla final COD
+  if (orderData && shippingMethod === "caba_cod") {
+    const orderId = orderData?.orderId || orderData?._id || "";
+    const msg = orderId
+      ? `Hola! 👋 Confirmo la entrega del pedido #${orderId}. Puedo pagar en efectivo o transferencia al recibir.`
+      : `Hola! 👋 Confirmo la entrega. Puedo pagar en efectivo o transferencia al recibir.`;
+    const codWaUrl = whatsapp
+      ? `https://wa.me/${sanitizePhone(whatsapp)}?text=${encodeURIComponent(msg)}`
+      : null;
+
     return (
       <main className="section">
         <div className="container">
           <section className="card reveal" style={{ padding: "1.5rem", textAlign: "center" }}>
-            <div style={{ fontSize: "3rem", marginBottom: "10px" }}>✅</div>
-            <h1 style={{ margin: "0.5rem 0", letterSpacing: "-0.03em" }}>Pedido creado</h1>
-            <p className="muted" style={{ fontSize: "1.05rem" }}>
-              En breve te vamos a redirigir a Mercado Pago.
+            <div style={{ fontSize: "3rem", marginBottom: "10px" }}>🎉</div>
+            <h1 style={{ margin: "0.5rem 0", letterSpacing: "-0.03em" }}>¡Gracias por tu pedido!</h1>
+
+            <p className="muted" style={{ fontSize: "1.02rem", fontWeight: 800, lineHeight: 1.45 }}>
+              Tu pedido llega en <b>24 a 48 hs hábiles</b> (solo CABA) y lo abonás en la puerta con total comodidad.
             </p>
-            {waUrl && (
-              <a
-                className="btn btn-primary"
-                href={waUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{ width: "100%", justifyContent: "center", marginTop: 12 }}
+
+            <div
+              style={{
+                marginTop: 14,
+                background: "rgba(16,185,129,.08)",
+                border: "1px solid rgba(16,185,129,.22)",
+                borderRadius: 14,
+                padding: "12px",
+                fontWeight: 900,
+                color: "#065f46",
+                textAlign: "left",
+              }}
+            >
+              ✅ Te confirmamos la entrega por <b>WhatsApp</b> o por teléfono.<br />
+              💵 Podés pagar en <b>efectivo</b> o <b>transferencia en el lugar</b>.
+            </div>
+
+            <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
+              {codWaUrl && (
+                <a
+                  className="btn btn-primary"
+                  href={codWaUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  Confirmar por WhatsApp →
+                </a>
+              )}
+
+              <Link
+                to="/my-orders"
+                style={{ display: "block", fontWeight: 1000, color: "var(--primary)" }}
               >
-                Hablar por WhatsApp →
-              </a>
-            )}
+                Ver mis pedidos
+              </Link>
+
+              {typeof onClose === "function" && (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={onClose}
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  Volver a la landing
+                </button>
+              )}
+            </div>
           </section>
         </div>
       </main>
@@ -308,7 +406,7 @@ export default function Checkout() {
               <div className="ship-dot" />
               <div>
                 <div className="ship-title">LLEGA EN 1 A 3 DÍAS HÁBILES</div>
-                <div className="ship-sub">Te avisamos por email</div>
+                <div className="ship-sub">Te avisamos por WhatsApp / email</div>
               </div>
             </div>
             <div className="ship-pill">🚚 ENVÍO RÁPIDO</div>
@@ -341,7 +439,7 @@ export default function Checkout() {
               </h3>
 
               <p className="muted" style={{ marginTop: 4, marginBottom: 14, fontWeight: 750 }}>
-                Usamos esto para factura y seguimiento.
+                Usamos esto para factura, seguimiento y coordinación.
               </p>
 
               {error && (
@@ -362,7 +460,7 @@ export default function Checkout() {
               <form id="checkout-form" onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Nombre y apellido
+                    Nombre
                     <input
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
@@ -373,40 +471,69 @@ export default function Checkout() {
                   </label>
 
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Teléfono (opcional)
+                    DNI 
+                    <input
+                      inputMode="numeric"
+                      value={customerDni}
+                      onChange={(e) => setCustomerDni(onlyDigits(e.target.value))}
+                      placeholder="Ej: 40123456"
+                      required
+                    />
+                    {!customerDni ? null : !isDniOk ? (
+                      <span style={{ fontSize: ".82rem", color: "#ef4444", fontWeight: 900 }}>
+                        DNI inválido (7 u 8 dígitos)
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: ".82rem", color: "#10b981", fontWeight: 900 }}>
+                        ✅ DNI OK
+                      </span>
+                    )}
+                  </label>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
+                    Email para la factura *
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      onBlur={(e) => handleAbandonedCapture("email", e.target.value)}
+                      disabled={isLogged}
+                      required
+                      placeholder="tu@email.com"
+                    />
+                  </label>
+
+                  <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
+                    {isCod ? "Teléfono *" : "Teléfono"}
                     <input
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       onBlur={(e) => handleAbandonedCapture("phone", e.target.value)}
                       placeholder="Ej: 11 1234 5678"
+                      required={isCod}
                     />
+                    {isCod && (
+                      <span style={{ fontSize: ".82rem", color: "rgba(11,18,32,.65)", fontWeight: 850 }}>
+                        Lo usamos para coordinar la entrega.
+                      </span>
+                    )}
                   </label>
                 </div>
 
-                <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                  Email para la factura *
-                  <input
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    onBlur={(e) => handleAbandonedCapture("email", e.target.value)}
-                    disabled={isLogged}
-                    required
-                    placeholder="tu@email.com"
-                  />
-                  <span
-                    style={{
-                      fontSize: "0.85rem",
-                      color: "#10b981",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontWeight: 900,
-                    }}
-                  >
-                    ✅ Factura + seguimiento a este email.
-                  </span>
-                </label>
+                <span
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#10b981",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontWeight: 900,
+                  }}
+                >
+                  ✅ Factura + seguimiento por email / WhatsApp.
+                </span>
               </form>
             </div>
 
@@ -506,7 +633,7 @@ export default function Checkout() {
                     <div>
                       <div style={{ fontWeight: 1000 }}>Pagás cuando te llega</div>
                       <div style={{ fontSize: ".9rem", fontWeight: 850, opacity: 0.9 }}>
-                        Disponible solo en CABA. Confirmamos entrega por WhatsApp / email.
+                        Solo CABA. Confirmamos entrega por WhatsApp / teléfono.
                       </div>
                     </div>
                   </div>
@@ -576,51 +703,52 @@ export default function Checkout() {
             <div className="card" style={{ padding: "1.5rem" }}>
               <h3 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
                 <span style={stepCircleStyle}>3</span>
-                Pago (Seguro)
+                {isCod ? "Confirmación" : "Pago (Seguro)"}
               </h3>
 
-              <div style={{ display: "grid", gap: "0.8rem" }}>
+              {isCod ? (
                 <div
-                  className="card payment-option"
                   style={{
-                    padding: "1rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px",
-                    border: "2px solid #009ee3",
-                    background: "#f0faff",
+                    background: "rgba(16,185,129,.08)",
+                    border: "1px solid rgba(16,185,129,.22)",
+                    borderRadius: 14,
+                    padding: "12px",
+                    fontWeight: 900,
+                    color: "#065f46",
                   }}
                 >
-                  <div style={{ width: 20, height: 20, borderRadius: 999, background: "#009ee3" }} />
-                  <div>
-                    <div style={{ fontWeight: 1100, color: "#009ee3" }}>Mercado Pago</div>
-                    <div className="muted" style={{ fontSize: "0.9rem" }}>
-                      Más seguridad: pagá con <b>débito</b>, <b>crédito</b>, <b>dinero en cuenta</b> y más.
-                    </div>
-                  </div>
-                  <img
-                    src="https://logowik.com/content/uploads/images/mercado-pago3162.logowik.com.webp"
-                    alt="MP"
-                    style={{ height: "24px", marginLeft: "auto", objectFit: "contain" }}
-                  />
+                  ✅ En CABA abonás al recibir. Podés pagar en <b>efectivo</b> o <b>transferencia en el lugar</b>.
                 </div>
-
-                {!canPay && !isCartEmpty && (
+              ) : (
+                <div style={{ display: "grid", gap: "0.8rem" }}>
                   <div
+                    className="card payment-option"
                     style={{
-                      fontSize: ".92rem",
-                      fontWeight: 900,
-                      color: "rgba(11,18,32,.72)",
-                      background: "rgba(148,163,184,.12)",
-                      border: "1px solid rgba(148,163,184,.22)",
-                      borderRadius: 14,
-                      padding: "10px 12px",
+                      padding: "1rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "15px",
+                      border: "2px solid #009ee3",
+                      background: "#f0faff",
                     }}
                   >
-                    Completá <b>Nombre</b>, <b>Email</b> y <b>Dirección</b> para habilitar el pago.
+                    <div style={{ width: 20, height: 20, borderRadius: 999, background: "#009ee3" }} />
+                    <div>
+                      <div style={{ fontWeight: 1100, color: "#009ee3" }}>Mercado Pago</div>
+                      <div className="muted" style={{ fontSize: "0.9rem" }}>
+                        Pagá con <b>débito</b>, <b>crédito</b>, <b>dinero en cuenta</b> y más.
+                        <br />
+                        <span style={{ fontWeight: 900 }}>3 cuotas sin interés (según tarjeta)</span>.
+                      </div>
+                    </div>
+                    <img
+                      src="https://logowik.com/content/uploads/images/mercado-pago3162.logowik.com.webp"
+                      alt="MP"
+                      style={{ height: "24px", marginLeft: "auto", objectFit: "contain" }}
+                    />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -722,25 +850,48 @@ export default function Checkout() {
                       </span>
                     </div>
 
+                    {/* ✅ Hint de lo que falta */}
+                    {!canSubmit && !isCartEmpty && (
+                      <div
+                        style={{
+                          fontSize: ".92rem",
+                          fontWeight: 900,
+                          color: "rgba(11,18,32,.72)",
+                          background: "rgba(148,163,184,.12)",
+                          border: "1px solid rgba(148,163,184,.22)",
+                          borderRadius: 14,
+                          padding: "10px 12px",
+                        }}
+                      >
+                        {isCod
+                          ? "Completá Nombre, Email, DNI, Teléfono y Dirección para confirmar el pedido."
+                          : "Completá Nombre, Email, DNI y Dirección para habilitar el pago."}
+                      </div>
+                    )}
+
                     <button
                       className="btn btn-primary"
                       type="submit"
                       form="checkout-form"
-                      disabled={!canPay}
+                      disabled={!canSubmit}
                       style={{
                         width: "100%",
                         marginTop: "0.35rem",
                         padding: "1.05rem",
                         fontSize: "1.05rem",
                         fontWeight: 1100,
-                        background: "#009ee3",
+                        background: isCod ? "var(--primary)" : "#009ee3",
                         border: "none",
                         boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
-                        opacity: canPay ? 1 : 0.55,
-                        cursor: canPay ? "pointer" : "not-allowed",
+                        opacity: canSubmit ? 1 : 0.55,
+                        cursor: canSubmit ? "pointer" : "not-allowed",
                       }}
                     >
-                      {loading ? "Procesando..." : "Pagar en Mercado Pago"}
+                      {loading
+                        ? "Procesando..."
+                        : isCod
+                        ? "Confirmar pedido (pagás al recibir)"
+                        : "Pagar en Mercado Pago"}
                     </button>
 
                     <div
@@ -755,41 +906,13 @@ export default function Checkout() {
                         fontWeight: 850,
                       }}
                     >
-                      🔒 Pago 100% seguro · Mercado Pago
+                      🔒 Compra segura · {isCod ? "Pago al recibir (CABA)" : "Mercado Pago"}
                     </div>
                   </div>
                 </>
               )}
             </div>
           </aside>
-
-          {/* ✅ Sticky mobile bar (solo botón submit) */}
-          {/* <div className="checkout-mobile-bar" aria-hidden={false}>
-            <div>
-              <div style={{ display: "grid" }}>
-                <div style={{ fontWeight: 1100, fontSize: ".92rem", color: "rgba(11,18,32,.75)" }}>
-                  Total
-                </div>
-                <div style={{ fontWeight: 1200, fontSize: "1.1rem" }}>
-                  {money(finalTotal)}
-                </div>
-              </div>
-
-              <button
-                className="checkout-mobile-pay-btn"
-                type="submit"
-                form="checkout-form"
-                disabled={!canPay}
-                style={{
-                  background: "#009ee3",
-                  opacity: canPay ? 1 : 0.55,
-                  cursor: canPay ? "pointer" : "not-allowed",
-                }}
-              >
-                {loading ? "..." : "Pagar"}
-              </button>
-            </div>
-          </div> */}
 
           {/* ✅ estilos solo del checkout */}
           <style>{`
@@ -835,51 +958,6 @@ export default function Checkout() {
                 order: -1;
                 margin-bottom: 16px;
               }
-            }
-
-            /* ✅ mobile sticky bar */
-            .checkout-mobile-bar{
-              position: fixed;
-              bottom: 18px;
-              left: 0;
-              right: 0;
-              width: 100%;
-              z-index: 9999;
-              padding: 0 12px;
-              box-sizing: border-box;
-              display: none;
-            }
-            .checkout-mobile-bar > div{
-              width: min(1000px, calc(100% - 0px));
-              margin: 0 auto;
-              background: rgba(255,255,255,0.98);
-              backdrop-filter: blur(12px);
-              border: 1px solid #e2e8f0;
-              border-radius: 999px;
-              box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-              padding: 10px 12px;
-              display:flex;
-              align-items:center;
-              justify-content: space-between;
-              gap: 12px;
-              overflow: hidden;
-            }
-            .checkout-mobile-pay-btn{
-              color: #fff;
-              border: none;
-              padding: 12px 18px;
-              border-radius: 999px;
-              font-weight: 1100;
-              cursor: pointer;
-              box-shadow: 0 8px 25px rgba(0,0,0,0.18);
-              white-space: nowrap;
-              flex-shrink: 0;
-            }
-            .checkout-mobile-pay-btn:active{ transform: scale(.98); }
-
-            @media (max-width: 990px){
-              .checkout-mobile-bar{ display:block; }
-              body{ padding-bottom: 92px; }
             }
 
             .ship-banner{
@@ -990,3 +1068,8 @@ const smallBadgeStyle = {
   background: "rgba(11,92,255,.08)",
   color: "var(--primary)",
 };
+
+// ✅ Mantiene compatibilidad con la ruta /checkout
+export default function Checkout() {
+  return <CheckoutContent />;
+}

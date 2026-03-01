@@ -23,6 +23,8 @@ const orderSchema = new mongoose.Schema(
 
         customerName: { type: String, required: true },
         customerEmail: { type: String, required: true },
+        // ✅ DNI (se pide en checkout)
+        customerDni: { type: String, required: true },
         customerPhone: { type: String },
 
         shippingAddress: { type: String, required: true },

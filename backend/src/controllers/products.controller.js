@@ -52,6 +52,30 @@ async function getProductById(req, res, next) {
     }
 }
 
+// ✅ GET /api/products/slug/:slug (público para Landing Pages)
+async function getProductBySlug(req, res, next) {
+    try {
+        const { slug } = req.params;
+        const clean = String(slug || '').trim();
+        if (!clean) {
+            const err = new Error('Slug requerido');
+            err.statusCode = 400;
+            throw err;
+        }
+
+        const product = await Product.findOne({ slug: clean, isActive: true });
+        if (!product) {
+            const err = new Error('Producto no encontrado');
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return res.json({ ok: true, data: product });
+    } catch (error) {
+        next(error);
+    }
+}
+
 // GET /api/products/all
 async function getAllProducts(req, res, next) {
     try {
@@ -65,7 +89,7 @@ async function getAllProducts(req, res, next) {
 // POST /api/products
 async function createProduct(req, res, next) {
     try {
-        const { name, description, price, category } = req.body;
+        const { name, description, price, category, slug, images, compareAtPrice, isActive } = req.body;
 
         if (!name || price === undefined) {
             const err = new Error('Nombre y precio son obligatorios.');
@@ -83,8 +107,22 @@ async function createProduct(req, res, next) {
             name,
             price,
             description: description || '',
-            category: category || 'general'
+            category: category || 'general',
+            slug: slug || undefined,
+            images: Array.isArray(images) ? images : undefined,
+            compareAtPrice: compareAtPrice ?? undefined,
+            isActive: isActive ?? true,
         };
+
+        // si mandan slug, que sea único
+        if (newProductData.slug) {
+            const exists = await Product.findOne({ slug: newProductData.slug });
+            if (exists) {
+                const err = new Error('Ya existe un producto con ese slug.');
+                err.statusCode = 409;
+                throw err;
+            }
+        }
 
         const newProduct = await Product.create(newProductData);
         return res.status(201).json({ ok: true, data: newProduct });
@@ -97,7 +135,7 @@ async function createProduct(req, res, next) {
 async function updateProduct(req, res, next) {
     try {
         const { id } = req.params;
-        const { name, description, price, category, images, isActive } = req.body;
+        const { name, description, price, category, images, isActive, slug, compareAtPrice } = req.body;
 
         const product = await Product.findById(id);
         if (!product) {
@@ -112,6 +150,20 @@ async function updateProduct(req, res, next) {
         if (category !== undefined) product.category = category;
         if (images !== undefined) product.images = images;
         if (isActive !== undefined) product.isActive = isActive;
+        if (compareAtPrice !== undefined) product.compareAtPrice = compareAtPrice;
+
+        if (slug !== undefined) {
+            const nextSlug = String(slug || '').trim();
+            if (nextSlug) {
+                const exists = await Product.findOne({ slug: nextSlug, _id: { $ne: product._id } });
+                if (exists) {
+                    const err = new Error('Ya existe un producto con ese slug.');
+                    err.statusCode = 409;
+                    throw err;
+                }
+                product.slug = nextSlug;
+            }
+        }
 
         const updatedProduct = await product.save();
         return res.json({ ok: true, data: updatedProduct });
@@ -124,6 +176,7 @@ module.exports = {
     getSingleProduct,
     getProducts,
     getProductById,
+    getProductBySlug,
     getAllProducts,
     createProduct,
     updateProduct

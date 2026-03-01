@@ -6,7 +6,7 @@ const resend = process.env.RESEND_API_KEY
     ? new Resend(process.env.RESEND_API_KEY) 
     : null;
 
-async function sendOrderConfirmationEmail(order) {
+async function sendOrderConfirmationEmail(order, opts = {}) {
     if (!resend) {
         console.error("⚠️ FALTA RESEND_API_KEY. No se envió el correo.");
         return false;
@@ -15,7 +15,47 @@ async function sendOrderConfirmationEmail(order) {
     if (!order.customerEmail) return;
 
     try {
-        const whatsappNumber = "5491112345678"; // 🔴 CAMBIA ESTO POR TU NÚMERO
+        const whatsappNumber = process.env.WHATSAPP_NUMBER || "5491112345678";
+        const storeName = process.env.STORE_NAME || "BoomHausS";
+        const mode = opts?.mode || (order.paymentMethod === "cod" ? "cod" : (order.paymentMethod === "mercadopago" ? "mercadopago" : "transfer"));
+
+        const waBase = whatsappNumber ? `https://wa.me/${whatsappNumber}` : null;
+        const orderId = order?._id;
+
+        const ctaHtml = (() => {
+            if (mode === "cod") {
+                const msg = encodeURIComponent(`Hola ${storeName}! 👋 Confirmo el pedido #${orderId}. Estoy para coordinar la entrega (Pago al recibir).`);
+                return `
+                  <div style="text-align:center; margin-top: 18px;">
+                    <p style="color:#0f172a; font-size: 15px; margin: 0;">
+                      ✅ <strong>Pagás al recibir (solo CABA)</strong><br/>
+                      Te llega en <strong>24 a 48hs hábiles</strong> y abonás en tu puerta.
+                    </p>
+                    ${waBase ? `<a href="${waBase}?text=${msg}" class="btn">📱 Confirmar por WhatsApp</a>` : ""}
+                    <p style="color:#64748b; font-size: 12px; margin-top: 10px;">Te vamos a contactar por WhatsApp / teléfono para coordinar.</p>
+                  </div>
+                `;
+            }
+
+            if (mode === "mercadopago") {
+                return `
+                  <div style="text-align:center; margin-top: 18px;">
+                    <p style="color:#0f172a; font-size: 15px; margin: 0;">
+                      🔒 <strong>Pago seguro con Mercado Pago</strong><br/>
+                      Si no completaste el pago, volvé a la página y finalizalo para confirmar tu pedido.
+                    </p>
+                  </div>
+                `;
+            }
+
+            const msg = encodeURIComponent(`Hola ${storeName}! 👋 Te envío mi comprobante del pedido #${orderId}`);
+            return `
+              <div style="text-align: center;">
+                <p style="color: #555; font-size: 15px;">👇 <strong>Para finalizar y coordinar el envío:</strong><br/>Por favor envianos el comprobante por WhatsApp.</p>
+                ${waBase ? `<a href="${waBase}?text=${msg}" class="btn">📱 Enviar comprobante</a>` : ""}
+              </div>
+            `;
+        })();
 
         // 1. Lista de productos (Diseño limpio y técnico)
         const productsHtml = order.items.map(item => `
@@ -60,12 +100,12 @@ async function sendOrderConfirmationEmail(order) {
             <body>
                 <div class="container">
                     <div class="header">
-                        <div class="logo">BOOMHAUSS AUDIO</div>
+                        <div class="logo">${storeName}</div>
                     </div>
 
                     <div class="content">
-                        <h1 class="h1">¡Gracias por tu compra! 🎧</h1>
-                        <p class="subtitle">Hola <strong>${order.customerName || 'Cliente'}</strong>, tu audio premium está un paso más cerca. Aquí tienes el detalle de tu pedido.</p>
+                        <h1 class="h1">¡Gracias por tu pedido! ✅</h1>
+                        <p class="subtitle">Hola <strong>${order.customerName || 'Cliente'}</strong>, acá está el detalle de tu compra.</p>
 
                         <div class="order-box">
                             <div class="order-id">Orden #${order._id}</div>
@@ -78,19 +118,13 @@ async function sendOrderConfirmationEmail(order) {
                             </div>
                         </div>
 
-                        <div style="text-align: center;">
-                            <p style="color: #555; font-size: 15px;">👇 <strong>Para finalizar y coordinar el envío:</strong><br>Por favor envíanos el comprobante de pago por WhatsApp.</p>
-                            
-                            <a href="https://wa.me/${whatsappNumber}?text=Hola%20BoomHauss,%20te%20envío%20mi%20comprobante%20del%20pedido%20#${order._id}" class="btn">
-                                📱 Enviar Comprobante
-                            </a>
-                        </div>
+                        ${ctaHtml}
                     </div>
 
                     <div class="footer">
-                        <p><strong>BoomHausS</strong> - Sonido de Alta Fidelidad</p>
+                        <p><strong>${storeName}</strong></p>
                         <p>¿Necesitas ayuda? Responde a este correo.</p>
-                        <p>© ${new Date().getFullYear()} BoomHausS. Todos los derechos reservados.</p>
+                        <p>© ${new Date().getFullYear()} ${storeName}. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </body>
@@ -101,7 +135,7 @@ async function sendOrderConfirmationEmail(order) {
         const data = await resend.emails.send({
             from: 'BoomHausS <pedidos@boomhauss.com.ar>', 
             to: order.customerEmail, 
-            subject: `🎧 Confirmación de Pedido #${order._id} - BoomHausS`,
+            subject: `✅ Confirmación de Pedido #${order._id} - ${storeName}`,
             html: htmlContent
         });
 

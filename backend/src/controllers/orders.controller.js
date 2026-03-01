@@ -42,6 +42,7 @@ async function createOrder(req, res, next) {
             clientOrderId,
             customerName,
             customerEmail,
+            customerDni,
             customerPhone,
             shippingAddress,
             shippingMethod,
@@ -66,6 +67,7 @@ async function createOrder(req, res, next) {
 
         const name = normalizeStr(customerName);
         const email = normalizeStr(customerEmail).toLowerCase();
+        const dni = normalizeStr(customerDni);
         const phone = normalizeStr(customerPhone);
         const address = normalizeStr(shippingAddress);
         const shipMethod = normalizeStr(shippingMethod) || "correo_argentino";
@@ -78,6 +80,7 @@ async function createOrder(req, res, next) {
 
         if (!name) throw badReq("Falta customerName.");
         if (!email) throw badReq("Falta customerEmail.");
+        if (!dni) throw badReq("Falta customerDni.");
         if (!isEmailValid(email)) throw badReq("Email inválido.");
         if (!address) throw badReq("Falta shippingAddress.");
 
@@ -116,12 +119,15 @@ async function createOrder(req, res, next) {
 
             const result = await preference.create({
                 body: {
-                    items: normalizedItems.map((item) => ({
-                        title: item.name,
-                        quantity: Number(item.quantity),
-                        unit_price: Number(item.price),
-                        currency_id: "ARS",
-                    })),
+                    // Reemplazamos el .map() por un único ítem general
+                    items: [
+                        {
+                            title: "Compra en BoomHausS",
+                            quantity: 1,
+                            unit_price: Number(totalAmount), // Usamos el totalAmount que ya calculaste más arriba
+                            currency_id: "ARS",
+                        }
+                    ],
                     payer: {
                         name,
                         email,
@@ -203,6 +209,7 @@ async function createOrder(req, res, next) {
             userId: userId || undefined,
             customerName: name,
             customerEmail: email,
+            customerDni: dni,
             customerPhone: phone || undefined,
             shippingAddress: address,
             shippingMethod: shipMethod,
@@ -215,7 +222,23 @@ async function createOrder(req, res, next) {
             notes: userNotes || "",
         });
 
-        // 2) Mercado Pago
+        // 2) Pago contra entrega (CABA)
+        if (payMethod === "cod") {
+            console.log("💵 Procesando como pago al recibir (COD)...");
+
+            try {
+                await sendOrderConfirmationEmail(newOrder, { mode: "cod" });
+            } catch (e) {
+                console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
+            }
+
+            return res.status(201).json({
+                ok: true,
+                data: newOrder,
+            });
+        }
+
+        // 3) Mercado Pago
         if (payMethod === "mercadopago") {
             console.log("🔄 Entrando a lógica de Mercado Pago...");
 
@@ -235,10 +258,10 @@ async function createOrder(req, res, next) {
             }
         }
 
-        // 3) Transferencia
+        // 4) Transferencia
         console.log("🏦 Procesando como transferencia");
         try {
-            await sendOrderConfirmationEmail(newOrder);
+            await sendOrderConfirmationEmail(newOrder, { mode: "transfer" });
         } catch (e) {
             console.warn("⚠️ No se pudo enviar email:", e?.message || e);
         }

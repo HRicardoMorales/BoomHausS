@@ -5,6 +5,7 @@ import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
+import { CheckoutSheet } from "./CheckoutSheet";
 
 /* ========================================================================
    MARKETING CONTENT — EDITABLE
@@ -783,7 +784,7 @@ const Band = ({
    Main
 ========================= */
 export default function ProductDetail() {
-  const { id } = useParams();
+  const { id, slug } = useParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
 
@@ -796,7 +797,7 @@ export default function ProductDetail() {
   const [bundle, setBundle] = useState(1);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isShippingExpanded, setIsShippingExpanded] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -804,20 +805,34 @@ export default function ProductDetail() {
   const lastViewedRef = useRef(null);
 
   useEffect(() => {
-    async function fetchOne() {
-      try {
-        setLoading(true);
-        const res = await api.get(`/products/${id}`);
-        if (res.data?.ok) setProduct(res.data.data);
-        else setError("No se pudo cargar.");
-      } catch {
-        setError("Error al cargar.");
-      } finally {
-        setLoading(false);
+  async function fetchOne() {
+    try {
+      setLoading(true);
+
+      let res;
+
+      if (slug) {
+        // Si viene desde /lp/:slug
+        res = await api.get(`/products/slug/${slug}`);
+      } else {
+        // Si viene desde /products/:id
+        res = await api.get(`/products/${id}`);
       }
+
+      if (res.data?.ok) {
+        setProduct(res.data.data);
+      } else {
+        setError("No se pudo cargar.");
+      }
+    } catch {
+      setError("Error al cargar.");
+    } finally {
+      setLoading(false);
     }
-    fetchOne();
-  }, [id]);
+  }
+
+  fetchOne();
+}, [id, slug]);
 
   const images = useMemo(() => {
     if (!product) return [];
@@ -897,8 +912,6 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     if (!product) return;
-    setRedirecting(true);
-
     track("InitiateCheckout", {
       content_ids: [String(contentId)],
       content_type: "product",
@@ -906,11 +919,9 @@ export default function ProductDetail() {
       currency: "ARS",
       num_items: Number(totalQty) || 1,
     });
-
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
-
-    setTimeout(() => navigate("/checkout"), 350);
+    setShowCheckout(true);
   };
 
   const handleAddToCart = () => {
@@ -1150,9 +1161,8 @@ export default function ProductDetail() {
                 className="hero-ctaBig"
                 type="button"
                 onClick={handleBuyNow}
-                disabled={redirecting}
               >
-                {redirecting ? "PROCESANDO..." : "Pagar Contra Reembolso"}
+                Pagar Contra Reembolso
                 <span>Envío GRATIS en 24/48Hs</span>
               </button>
 
@@ -1385,7 +1395,7 @@ export default function ProductDetail() {
               <button className="pd-toast-btn-secondary" onClick={() => navigate("/cart")} type="button">
                 IR AL CARRITO
               </button>
-              <button className="pd-toast-btn-primary" onClick={() => navigate("/checkout")} type="button">
+              <button className="pd-toast-btn-primary" onClick={() => { setShowToast(false); setShowCheckout(true); }} type="button">
                 FINALIZAR COMPRA
               </button>
             </div>
@@ -1406,10 +1416,14 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        <button className="sticky-pro-btn2" onClick={handleBuyNow} disabled={redirecting} type="button">
-          {redirecting ? "..." : "LO QUIERO!"}
+        <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">
+          LO QUIERO!
         </button>
       </div>
+
+      {showCheckout && (
+        <CheckoutSheet onClose={() => setShowCheckout(false)} />
+      )}
 
       {/* ✅ CSS */}
       <style>{`
