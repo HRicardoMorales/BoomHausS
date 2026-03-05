@@ -398,7 +398,7 @@ header {
   border-bottom: 1px solid var(--border);
   box-shadow: 0 10px 26px rgba(10, 20, 40, .08);
 }
-.marquee-bar { background: var(--primary) !important; color: #fff !important; }
+.marquee-bar { background: #000 !important; color: #fff !important; }
 .marquee-bar * { color: #fff !important; }
 
 /* =========================
@@ -1740,52 +1740,59 @@ body.page-checkout .container {
 /* =========================
    MARQUEE (mobile + desktop)
 ========================= */
-.marquee{
+.marquee {
   width: 100%;
-  background: var(--primary);
+  background: #0B5CFF;
   color: #fff;
   overflow: hidden;
   display: flex;
   align-items: center;
-  height: 34px;
-  border-bottom: 1px solid rgba(255,255,255,.18);
+  height: 42px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
 }
 
-.marquee__track{
+.marquee__track {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marquee var(--marquee-duration, 18s) linear infinite;
+  animation: marquee 14s linear infinite;
 }
 
-.marquee__item{
+.marquee__item {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 0 32px;
   white-space: nowrap;
   font-weight: 900;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: .2px;
 }
 
-.marquee__item::before{
-  content: "✓";
-  opacity: .95;
+.marquee__item--flash {
+  color: #fff;
 }
 
-@keyframes marquee{
+.marquee__cd-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,.85);
+  font-size: 15px;
+}
+
+@keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
 
-@media (max-width: 520px){
-  .marquee{ height: 32px; }
-  .marquee__item{ font-size: 12px; padding: 0 14px; }
+@media (max-width: 520px) {
+  .marquee { height: 38px; }
+  .marquee__item { font-size: 12px; padding: 0 22px; }
 }
 
-@media (prefers-reduced-motion: reduce){
-  .marquee__track{ animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
 }
 
 /* =========================

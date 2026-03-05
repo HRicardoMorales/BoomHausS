@@ -71,7 +71,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   // ✅ Datos del cliente
   const [customerName, setCustomerName] = useState(isLogged ? user.name || "" : "");
   const [customerEmail, setCustomerEmail] = useState(isLogged ? user.email || "" : "");
-  const [customerDni, setCustomerDni] = useState(""); // ✅ NUEVO
+  const [customerDni, setCustomerDni] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
 
@@ -79,7 +79,17 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const [shippingMethod, setShippingMethod] = useState("correo_argentino");
   const [notes, setNotes] = useState("");
 
+  // ✅ FIX RACE CONDITION: refs que se actualizan síncronamente con cada keystroke.
+  // handleSubmit lee desde acá en vez del state (que puede estar un render atrasado).
+  const refName    = useRef(isLogged ? user.name  || "" : "");
+  const refEmail   = useRef(isLogged ? user.email || "" : "");
+  const refDni     = useRef("");
+  const refPhone   = useRef("");
+  const refAddress = useRef("");
+  const refMethod  = useRef("correo_argentino");
+
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false); // ✅ overlay "Conectando con MP"
   const [error, setError] = useState("");
 
   // Guardamos order data por si querés usarlo luego (aunque MP redirige)
@@ -89,6 +99,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     if (isLogged) {
       setCustomerName((prev) => prev || user.name || "");
       setCustomerEmail((prev) => prev || user.email || "");
+      if (!refName.current  && user.name)  refName.current  = user.name;
+      if (!refEmail.current && user.email) refEmail.current = user.email;
     }
   }, [isLogged, user]);
 
@@ -212,20 +224,28 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   };
 
   async function handleSubmit(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
-    // ✅ Mensajes de error más claros
-    if (!customerName.trim() || !customerEmail.trim() || !shippingAddress.trim()) {
+    // ✅ FIX RACE CONDITION: leer de refs (síncronos) en vez de state (puede estar un render atrasado)
+    const name    = refName.current.trim();
+    const email   = refEmail.current.trim();
+    const dni     = onlyDigits(refDni.current);
+    const phone   = refPhone.current.trim();
+    const address = refAddress.current.trim();
+    const method  = refMethod.current;
+
+    const dniOk = dni.length >= 7 && dni.length <= 8;
+
+    if (!name || !email || !address) {
       setError("Completá Nombre, Email y Dirección para continuar.");
       return;
     }
-    if (!isDniOk) {
+    if (!dniOk) {
       setError("Ingresá un DNI válido (7 u 8 dígitos).");
       return;
     }
-    if (shippingMethod === "caba_cod") {
-      const digits = onlyDigits(customerPhone);
-      if (digits.length < 8) {
+    if (method === "caba_cod") {
+      if (onlyDigits(phone).length < 8) {
         setError("Para CABA (pagás al recibir) el teléfono es obligatorio.");
         return;
       }
@@ -240,7 +260,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
       currency: "ARS",
       content_ids: contentIds,
       content_type: "product",
-      payment_type: isCod ? "cod" : "mercadopago",
+      payment_type: method === "caba_cod" ? "cod" : "mercadopago",
     });
 
     setLoading(true);
@@ -251,20 +271,20 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
       const body = {
         clientOrderId,
-        customerName: customerName.trim(),
-        customerEmail: customerEmail.trim(),
-        customerDni: dniDigits, // ✅ NUEVO
-        customerPhone: customerPhone.trim(),
-        shippingAddress: shippingAddress.trim(),
-        shippingMethod,
-        paymentMethod: isCod ? "cod" : "mercadopago",
-        notes: notes.trim(),
-        total: finalTotal,
+        customerName:    name,
+        customerEmail:   email,
+        customerDni:     dni,
+        customerPhone:   phone,
+        shippingAddress: address,
+        shippingMethod:  method,
+        paymentMethod:   method === "caba_cod" ? "cod" : "mercadopago",
+        notes:           notes.trim(),
+        total:           finalTotal,
         items: items.map((item) => ({
           productId: item.productId,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
+          name:      item.name,
+          price:     item.price,
+          quantity:  item.quantity,
         })),
       };
 
@@ -275,31 +295,32 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         return;
       }
 
-      // ✅ Si es COD: NO redirigir a MP, mostrar pantalla gracias
-      if (isCod) {
+      // ✅ COD: mostrar pantalla de gracias
+      if (method === "caba_cod") {
         clearClientOrderId();
         const data = res.data.data || res.data;
         setOrderData(data);
-
         track("Purchase", {
-          value: Number(finalTotal),
-          currency: "ARS",
-          num_items: totalItems,
+          value:       Number(finalTotal),
+          currency:    "ARS",
+          num_items:   totalItems,
           content_ids: contentIds,
           content_type: "product",
         });
-
         clearCart();
         return;
       }
 
-      // ✅ Mercado Pago (online)
+      // ✅ Mercado Pago: mostrar overlay antes de redirigir
       const isProd = import.meta.env.MODE === "production";
       const url = isProd ? res.data.init_point : res.data.sandbox_init_point || res.data.init_point;
 
       if (url) {
         clearClientOrderId();
-        window.location.href = url;
+        setRedirecting(true); // ← activa overlay "Conectando con Mercado Pago"
+        setTimeout(() => {
+          window.location.href = url;
+        }, 1200); // pequeño delay para que el usuario vea el feedback
         return;
       }
 
@@ -460,10 +481,10 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
               <form id="checkout-form" onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Nombre
+                    Nombre y apellido
                     <input
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
+                      onChange={(e) => { setCustomerName(e.target.value); refName.current = e.target.value; }}
                       disabled={isLogged}
                       required
                       placeholder="Como figura en tu DNI"
@@ -475,7 +496,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     <input
                       inputMode="numeric"
                       value={customerDni}
-                      onChange={(e) => setCustomerDni(onlyDigits(e.target.value))}
+                      onChange={(e) => { const v = onlyDigits(e.target.value); setCustomerDni(v); refDni.current = v; }}
                       placeholder="Ej: 40123456"
                       required
                     />
@@ -493,14 +514,13 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Email para la factura *
+                    Email (opcional)
                     <input
                       type="email"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      onChange={(e) => { setCustomerEmail(e.target.value); refEmail.current = e.target.value; }}
                       onBlur={(e) => handleAbandonedCapture("email", e.target.value)}
                       disabled={isLogged}
-                      required
                       placeholder="tu@email.com"
                     />
                   </label>
@@ -509,7 +529,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     {isCod ? "Teléfono *" : "Teléfono"}
                     <input
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      onChange={(e) => { setCustomerPhone(e.target.value); refPhone.current = e.target.value; }}
                       onBlur={(e) => handleAbandonedCapture("phone", e.target.value)}
                       placeholder="Ej: 11 1234 5678"
                       required={isCod}
@@ -551,7 +571,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     name="shipping"
                     value="correo_argentino"
                     checked={shippingMethod === "correo_argentino"}
-                    onChange={(e) => setShippingMethod(e.target.value)}
+                    onChange={(e) => { setShippingMethod(e.target.value); refMethod.current = e.target.value; }}
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 900 }}>Envío a Domicilio (Correo Arg)</div>
@@ -568,7 +588,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     name="shipping"
                     value="caba_cod"
                     checked={shippingMethod === "caba_cod"}
-                    onChange={(e) => setShippingMethod(e.target.value)}
+                    onChange={(e) => { setShippingMethod(e.target.value); refMethod.current = e.target.value; }}
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 900, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -600,7 +620,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     name="shipping"
                     value="retiro_oficina"
                     checked={shippingMethod === "retiro_oficina"}
-                    onChange={(e) => setShippingMethod(e.target.value)}
+                    onChange={(e) => { setShippingMethod(e.target.value); refMethod.current = e.target.value; }}
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 900 }}>Retiro por Oficina</div>
@@ -674,7 +694,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     : "Dirección para factura *"}
                   <textarea
                     value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
+                    onChange={(e) => { setShippingAddress(e.target.value); refAddress.current = e.target.value; }}
                     placeholder={
                       shippingMethod === "correo_argentino"
                         ? "Calle, altura, piso, ciudad, código postal..."
@@ -870,10 +890,10 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     )}
 
                     <button
-                      className="btn btn-primary"
-                      type="submit"
-                      form="checkout-form"
-                      disabled={!canSubmit}
+                      className={`btn btn-primary checkout-pay-btn${loading ? " is-loading" : ""}`}
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={loading || redirecting}
                       style={{
                         width: "100%",
                         marginTop: "0.35rem",
@@ -883,16 +903,51 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         background: isCod ? "var(--primary)" : "#009ee3",
                         border: "none",
                         boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
-                        opacity: canSubmit ? 1 : 0.55,
-                        cursor: canSubmit ? "pointer" : "not-allowed",
+                        cursor: (loading || redirecting) ? "not-allowed" : "pointer",
+                        position: "relative",
+                        overflow: "hidden",
+                        transition: "transform .1s ease, box-shadow .1s ease",
                       }}
                     >
-                      {loading
-                        ? "Procesando..."
+                      {/* Ripple visual on press via CSS */}
+                      <span className="btn-ripple" />
+                      {redirecting
+                        ? "🔄 Conectando con Mercado Pago..."
+                        : loading
+                        ? "⏳ Procesando tu pedido..."
                         : isCod
                         ? "Confirmar pedido (pagás al recibir)"
-                        : "Pagar en Mercado Pago"}
+                        : "Pagar en Mercado Pago →"}
                     </button>
+
+                    {/* ✅ Overlay "Conectando con MP" — aparece antes del redirect */}
+                    {redirecting && (
+                      <div style={{
+                        position: "fixed",
+                        inset: 0,
+                        zIndex: 99999,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(0,158,227,0.96)",
+                        backdropFilter: "blur(6px)",
+                        gap: 20,
+                        animation: "mpFadeIn .25s ease",
+                      }}>
+                        <div style={{ fontSize: "3.5rem" }}>💳</div>
+                        <div style={{ fontWeight: 1200, fontSize: "1.45rem", color: "#fff", textAlign: "center", lineHeight: 1.25 }}>
+                          Conectando con<br />Mercado Pago
+                        </div>
+                        <div style={{ fontWeight: 900, fontSize: ".98rem", color: "rgba(255,255,255,.85)", textAlign: "center" }}>
+                          Vas a ser redirigido para completar el pago 🔒
+                        </div>
+                        <div className="mp-spinner" />
+                        <div style={{ fontSize: ".85rem", color: "rgba(255,255,255,.65)", fontWeight: 850 }}>
+                          No cerrés esta pantalla
+                        </div>
+                      </div>
+                    )}
 
                     <div
                       style={{
@@ -945,6 +1000,38 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
             .payment-option:hover {
               transform: translateY(-2px);
               box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+
+            /* ✅ Botón pagar: animación táctil */
+            .checkout-pay-btn {
+              transform: scale(1);
+              transition: transform .1s ease, box-shadow .1s ease, background .15s ease !important;
+              user-select: none;
+              -webkit-tap-highlight-color: transparent;
+            }
+            .checkout-pay-btn:active:not(:disabled) {
+              transform: scale(0.97) !important;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
+            }
+            .checkout-pay-btn.is-loading {
+              background: rgba(0,130,200,.85) !important;
+            }
+
+            /* ✅ Overlay MP spinner */
+            .mp-spinner {
+              width: 44px;
+              height: 44px;
+              border-radius: 999px;
+              border: 4px solid rgba(255,255,255,.25);
+              border-top-color: #fff;
+              animation: mpSpin .75s linear infinite;
+            }
+            @keyframes mpSpin {
+              to { transform: rotate(360deg); }
+            }
+            @keyframes mpFadeIn {
+              from { opacity: 0; transform: scale(.96); }
+              to   { opacity: 1; transform: scale(1); }
             }
 
             @media (max-width: 980px){

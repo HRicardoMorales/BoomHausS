@@ -5,223 +5,17 @@ import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
+import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 
 /* ========================================================================
-   MARKETING CONTENT — EDITABLE
+   MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
+   El fallback es 'porta-cepillos' cuando se abre por /products/:id
+   Para agregar un producto nuevo: copiá src/landings/porta-cepillos.js,
+   editá los textos y registralo en src/landings/index.js
    ======================================================================== */
-const MARKETING_CONTENT = {
-  miniDescription:
-    "Tu cepillo queda al aire… y eso es un imán de gérmenes. Con el Porta Cepillo Dispenser Esterilizador mantenés los cepillos protegidos y más limpios entre usos, reduciendo el contacto con bacterias del baño. Además, te deja la pasta lista con un solo toque: más orden, más higiene y cero complicaciones..",
+const MARKETING_CONTENT = LANDING_CONFIGS["porta-cepillos"] || {};
 
-  trustBullets: [
-    "🦷 Reduce bacterias, gérmenes y humedad",
-    "⚡ Dispenser automático sin contacto",
-    "🔋 Recargable",
-    "🚚 Envío gratis a todo el país",
-  ],
-
-  whatsIncluded: [],
-
-  storyBlocks: [
-    {
-      title: "CUIDA A LOS MAS IMPORTANTES PARA VOS",
-      text:
-        "Para los que querés de verdad, querés soluciones simples que sumen todos los días. Este porta cepillo ayuda a mantener los cepillos más protegidos, ordenados y listos para usar, sin complicaciones. Ideal para hijos, pareja o familiares que comparten baño: más higiene, más tranquilidad.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_950983-MLA104372170273_012026-F.webp",
-      badge: "",
-    },
-    {
-      title: "Tu cepillo no debería quedar expuesto",
-      text:
-        "Nada peor que dejar el cepillo “al aire”, juntando polvo y salpicaduras sin darte cuenta. Con el esterilizador, el cabezal queda más protegido y más higiénico para el próximo uso. Es tranquilidad diaria, sin pensarla.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_605052-MLA92075696569_092025-F.webp",
-      badge: "",
-    },
-    {
-      title: "Orden en el baño, rutina más simple",
-      text:
-        "Cuando cada cosa tiene su lugar, todo fluye: cepillos colgados, pasta integrada y baño más prolijo. Ideal para casa, depto, familia o compartir baño: queda bien, ocupa poco y te simplifica la mañana y la noche.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_918000-MLA92075728129_092025-F.webp",
-      badge: "",
-    },
-  ],
-
-  certificate: {
-    title: "COMPRA CON CONFIANZA",
-    logoUrl:
-      "https://static.vecteezy.com/system/resources/thumbnails/024/097/948/small/certification-of-authenticity-badge-100-percentoriginal-product-stamp-logo-sticker-patch-round-emblem-retro-vintage-hipster-illustration-vector.jpg",
-    items: [
-      { icon: "🔒", text: "Pago seguro (Mercado Pago)" },
-      { icon: "✅", text: "Compra protegida" },
-      { icon: "📦", text: "Seguimiento de envío" },
-      { icon: "🤝", text: "Soporte por WhatsApp" },
-    ],
-  },
-
-  comparison: {
-    title: "ANTES VS DESPUÉS",
-    cols: ["ANTES (SIN EL 3 EN 1)", "DESPUÉS (CON EL 3 EN 1)"],
-    rows: [
-      { k: "Orden en el baño", a: "Cepillos y pasta sueltos / desorden", b: "Todo en un solo lugar, prolijo" },
-      { k: "Uso diario", a: "Apretás el tubo con la mano (se ensucia)", b: "Presionás el cepillo y sale la pasta" },
-      { k: "Limpieza", a: "Salpicaduras / restos alrededor", b: "Menos mugre, más fácil de limpiar" },
-      { k: "Ahorro de pasta", a: "Sale de más y se desperdicia", b: "Dosificación más pareja" },
-      { k: "Espacio", a: "Ocupa lugar en la mesada", b: "Liberás espacio (todo compacto)" },
-    ],
-  },
-
-  howTo: {
-    title: "CÓMO SE USA",
-    image: {
-      url: "https://http2.mlstatic.com/D_NQ_NP_2X_730119-MLA92075368185_092025-F.webp",
-      alt: "Cómo se usa la antena en 3 pasos",
-    },
-  },
-
-  faqTitle: "PREGUNTAS FRECUENTES",
-  faq: [
-    {
-      q: "¿Cómo se instala?",
-      a: "Se pega a la pared con adhesivo (sin perforar). Limpiá bien la superficie, pegalo, presioná unos segundos y dejalo asentar antes de usar.",
-    },
-    {
-      q: "¿Sirve para cualquier cepillo dental?",
-      a: "Sí, es compatible con la mayoría de cepillos manuales y muchos eléctricos (según tamaño del mango).",
-    },
-    {
-      q: "¿Cómo funciona la esterilización?",
-      a: "El esterilizador ayuda a mantener el cabezal del cepillo más protegido del ambiente. En algunos modelos se activa automáticamente al cerrar la tapa.",
-    },
-    {
-      q: "¿Hay que cargarlo? ¿Cuánto dura la batería?",
-      a: "Depende del modelo: algunos son recargables por USB y otros usan pilas. En uso normal suele durar varios días/semanas antes de necesitar carga/cambio.",
-    },
-    {
-      q: "¿Incluye la pasta dental o el cepillo?",
-      a: "No, el producto es el porta cepillos con dispenser/esterilizador. La pasta y los cepillos se venden por separado.",
-    },
-    {
-      q: "¿El dispenser sirve para cualquier pasta?",
-      a: "Funciona con la mayoría de pastas en tubo estándar. Solo colocás el pico del tubo en el adaptador y presionás el cepillo para dosificar.",
-    },
-    {
-      q: "¿Se puede usar en baño con humedad?",
-      a: "Sí, está pensado para baño. Igual, para que el adhesivo quede firme, instalalo sobre una superficie lisa y bien seca.",
-    },
-    {
-      q: "¿Cómo se limpia?",
-      a: "Pasale un paño húmedo por fuera y, cada tanto, retirás los accesorios lavables para enjuagar y secar antes de volver a colocar.",
-    },
-  ],
-
-  reviewsTitle: "TESTIMONIOS",
-  reviewsSubtitle: "Esto dicen nuestros clientes",
-  reviewsCarousel: [
-    {
-      title: "MÁS HIGIÉNICO",
-      rating: 5,
-      text:
-        "Antes los cepillos quedaban expuestos todo el día. Con esto quedan más protegidos y el baño se siente más limpio en general.",
-      name: "Carla Benítez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_847065-MLA93209847143_092025-F.webp",
-    },
-    {
-      title: "SE NOTA EL CAMBIO",
-      rating: 5,
-      text:
-        "Me daba cosa tener los cepillos a la intemperie. Ahora quedan guardados y siento que ayuda a mantener mejor la higiene diaria.",
-      name: "Julián Rivas",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp",
-    },
-    {
-      title: "CEPILLOS MÁS PROTEGIDOS",
-      rating: 5,
-      text:
-        "Lo compré por un tema de higiene. Quedó todo más ordenado pero lo principal es que los cepillos no quedan expuestos.",
-      name: "Romina Sosa",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_914883-MLA104359225539_012026-F.webp",
-    },
-    {
-      title: "ME DEJÓ TRANQUILO",
-      rating: 5,
-      text:
-        "Soy bastante obsesivo con la limpieza del baño. Tener los cepillos resguardados me deja mucho más tranquilo con la higiene.",
-      name: "Nicolás Ferreira",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_991593-MLA97567338889_112025-F.webp",
-    },
-    {
-      title: "AYUDA EN CASA",
-      rating: 4,
-      text:
-        "En casa somos varios y los cepillos quedaban todos juntos. Ahora están separados y más protegidos. Eso era lo que buscaba.",
-      name: "Micaela Páez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_681590-MLA97122685113_112025-F.webp",
-    },
-    {
-      title: "BAÑO MÁS LIMPIO",
-      rating: 5,
-      text:
-        "Me gustó porque mantiene los cepillos lejos de salpicaduras. No es magia, pero claramente ayuda a mantener mejor la higiene.",
-      name: "Sergio Ledesma",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_604768-MLA105021350975_012026-F.webp",
-    },
-    {
-      title: "BUENA IDEA",
-      rating: 5,
-      text:
-        "No quería seguir dejando los cepillos en un vaso. Con esto quedan guardados y siento que es una mejora real para la higiene.",
-      name: "Lucía Giménez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp",
-    },
-    {
-      title: "PARA LA FAMILIA",
-      rating: 5,
-      text:
-        "Lo puse pensando en mis hijos. Que cada cepillo quede en su lugar y más protegido me parece lo más importante.",
-      name: "Federico Albornoz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_735168-MLA104575340271_012026-F.webp",
-    },
-    {
-      title: "SE NOTA PROTEGIDO",
-      rating: 4,
-      text:
-        "Los cepillos quedan más resguardados y eso se siente. Me gusta porque el baño queda más ‘sanitario’ sin exagerar.",
-      name: "Mariana Quiroga",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_612380-MLA103990675067_012026-F.webp",
-    },
-    {
-      title: "MEJOR PARA HIGIENE",
-      rating: 5,
-      text:
-        "Desde que lo tengo, dejé de dejar los cepillos expuestos. Es un cambio simple, pero para higiene diaria suma un montón.",
-      name: "Gustavo Molina",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_901052-MLA104463601083_012026-F.webp",
-    },
-    {
-      title: "MÁS TRANQUILIDAD",
-      rating: 5,
-      text:
-        "A mí me importaba la parte higiénica. Los cepillos quedan protegidos y siento más tranquilidad con lo que uso todos los días.",
-      name: "Valentina Ortiz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
-    },
-  ],
-
-  about: {
-    title: "QUIÉNES SOMOS",
-    img:
-      "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text:
-      "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
-    bullets: [
-      "✅ Atención por WhatsApp",
-      "📦 Envíos a todo el país",
-      "🔒 Pagos seguros",
-      "⭐ Enfoque en calidad y experiencia",
-    ],
-  },
-};
 
 const FALLBACK_IMG =
   "data:image/svg+xml;charset=UTF-8," +
@@ -307,49 +101,32 @@ function SectionHeader({ title, subtitle }) {
   );
 }
 
-function CertificateStrip() {
-  const { certificate } = MARKETING_CONTENT;
+function BoxContents({ mc = MARKETING_CONTENT }) {
+  const items = mc.boxItems || [];
+  if (!items.length) return null;
 
   return (
-    <section className="pd-strip pd-strip--pro">
-      <SectionHeader title={certificate.title} />
-
-      <div className="pd-certRow">
-        <div className="pd-certSeal" aria-label="Certificación">
-          {certificate.logoUrl ? (
-            <img
-              src={certificate.logoUrl}
-              alt="Certificación"
-              className="pd-certLogo"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="pd-certLogoPlaceholder">Logo</div>
-          )}
-        </div>
-
-        <div className="pd-certMeta">
-          <div className="pd-certKicker">CERTIFICACIÓN / CONFIANZA</div>
-          <div className="pd-certLine">
-            <span className="pd-certDot" />
-            <span className="pd-certSmall">
-              Pagos seguros • Compra protegida • Seguimiento
-            </span>
-          </div>
+    <section className="boxc">
+      <div className="boxc-header">
+        <span className="boxc-header-icon">📦</span>
+        <div>
+          <div className="boxc-header-kicker">TODO INCLUIDO</div>
+          <div className="boxc-header-title">¿Qué viene en la caja?</div>
         </div>
       </div>
-
-      <div className="pd-stripGrid pd-stripGrid--pro">
-        {certificate.items.map((x, i) => (
-          <div key={i} className="pd-stripItem pd-stripItem--pro">
-            <span className="pd-stripIcon">{x.icon}</span>
-            <span className="pd-stripText">{x.text}</span>
+      <div className="boxc-grid">
+        {items.map((item, i) => (
+          <div
+            key={i}
+            className="boxc-item"
+            style={{ animationDelay: `${i * 90}ms` }}
+          >
+            <div className="boxc-item-icon">{item.icon}</div>
+            <div className="boxc-item-info">
+              <div className="boxc-item-name">{item.name}</div>
+              {item.qty && <div className="boxc-item-qty">{item.qty}</div>}
+            </div>
+            <div className="boxc-item-check">✓</div>
           </div>
         ))}
       </div>
@@ -357,8 +134,8 @@ function CertificateStrip() {
   );
 }
 
-function ComparisonTablePro() {
-  const { comparison } = MARKETING_CONTENT;
+function ComparisonTablePro({ mc = MARKETING_CONTENT }) {
+  const { comparison } = mc;
 
   return (
     <section className="pd-block">
@@ -407,8 +184,8 @@ function ComparisonTablePro() {
   );
 }
 
-function HowToSteps() {
-  const { howTo } = MARKETING_CONTENT;
+function HowToSteps({ mc = MARKETING_CONTENT }) {
+  const { howTo } = mc;
 
   return (
     <section className="pd-block" id="howto">
@@ -431,53 +208,54 @@ function HowToSteps() {
   );
 }
 
-function AuthorityCard() {
+function AuthorityCard({ mc = MARKETING_CONTENT }) {
+  const auth = mc.authority || {};
+  if (!auth.show || !auth.quote) return null;
+
+  const { photo, name, role, quote, disclaimer } = auth;
+
   return (
     <section className="pd-block" id="authority">
       <SectionHeader
         title="LO QUE DICEN LOS PROFESIONALES"
-        subtitle="Recomendación basada en higiene diaria"
+        subtitle="Recomendación de expertos"
       />
 
-      <div className="authCard">
-        <div className="authTop">
-          <div className="authAvatar">
-            <img
-              src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Profesional de salud"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-            />
-          </div>
+      <div className="auth2">
+        <div className="auth2-body">
+          <span className="auth2-qq" aria-hidden="true">❝</span>
+          <p className="auth2-quote">{quote}</p>
+        </div>
 
-          <div className="authMeta">
-            <div className="authTag">RECOMENDACIÓN PROFESIONAL</div>
-            <div className="authName">Dra. Laura Martínez</div>
-            <div className="authRole">Odontóloga · Higiene oral</div>
+        <div className="auth2-foot">
+          <img
+            className="auth2-avatar"
+            src={photo}
+            alt={name}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+          />
+          <div className="auth2-meta">
+            <div className="auth2-name">{name}</div>
+            <div className="auth2-role">{role}</div>
+          </div>
+          <div className="auth2-badge">
+            <span className="auth2-badge-dot" aria-hidden="true" />
+            Verificado
           </div>
         </div>
 
-        <p className="authQuote">
-          “Un porta cepillos con esterilización UV puede ayudar a reducir la carga bacteriana del cepillo
-          entre usos, especialmente en baños húmedos. Si además mantiene los cepillos separados y secos,
-          mejora la higiene diaria y ayuda a evitar malos olores.”
-        </p>
-
-        <div className="authFoot">
-          <span className="authDot" />
-          <span className="authFootText">
-            Recomendación general de higiene. No reemplaza el cepillado correcto ni controles odontológicos.
-          </span>
-        </div>
+        <div className="auth2-disclaimer">{disclaimer}</div>
       </div>
     </section>
   );
 }
 
-function FaqSectionPro() {
+function FaqSectionPro({ mc = MARKETING_CONTENT }) {
   const [openIndex, setOpenIndex] = useState(null);
-  const { faq, faqTitle } = MARKETING_CONTENT;
+  const { faq, faqTitle } = mc;
 
   return (
     <section className="pd-block" id="faq-section">
@@ -493,7 +271,7 @@ function FaqSectionPro() {
                 onClick={() => setOpenIndex(isOpen ? null : i)}
               >
                 <span>{item.q}</span>
-                <span className="faq-pro-ico">{isOpen ? "−" : "+"}</span>
+                <span className="faq-pro-ico" aria-hidden="true" />
               </button>
               <div className="faq-pro-a">
                 <p>{item.a}</p>
@@ -506,8 +284,8 @@ function FaqSectionPro() {
   );
 }
 
-function StoryBlocks() {
-  const blocks = MARKETING_CONTENT.storyBlocks;
+function StoryBlocks({ mc = MARKETING_CONTENT }) {
+  const blocks = mc.storyBlocks;
   return (
     <section className="pd-flow">
       {blocks.map((b, i) => (
@@ -535,8 +313,8 @@ function StoryBlocks() {
   );
 }
 
-function MiniReviewsBar({ productImg }) {
-  const data = (MARKETING_CONTENT.reviewsCarousel || []).slice(0, 5);
+function MiniReviewsBar({ productImg, mc = MARKETING_CONTENT }) {
+  const data = (mc.reviewsCarousel || []).slice(0, 5);
   const [active, setActive] = useState(0);
 
   const go = (idx) => {
@@ -556,6 +334,10 @@ function MiniReviewsBar({ productImg }) {
 
   return (
     <div className="mrb">
+      <div className="mrb-section-header">
+        <span className="mrb-section-badge">⭐</span>
+        <span className="mrb-section-title">Lo que dicen otros compradores</span>
+      </div>
       <div className="mrb-viewport">
         <div
           className="mrb-track"
@@ -566,7 +348,7 @@ function MiniReviewsBar({ productImg }) {
             return (
               <div className="mrb-slide" key={i}>
                 <div className="mrb-card">
-                  <div className="mrb-left">
+                  <div className="mrb-header">
                     <img
                       className="mrb-avatar"
                       src={avatar}
@@ -579,18 +361,16 @@ function MiniReviewsBar({ productImg }) {
                         e.currentTarget.src = FALLBACK_IMG;
                       }}
                     />
-                  </div>
-
-                  <div className="mrb-mid">
-                    <div className="mrb-text">{r.text}</div>
-
-                    <div className="mrb-bottom">
+                    <div className="mrb-header-info">
                       <div className="mrb-name">{r.name}</div>
                       <div className="mrb-stars">
                         <StarsInline rating={r.rating || 5} />
                       </div>
                     </div>
                   </div>
+
+                  {r.title && <div className="mrb-title">{r.title}</div>}
+                  <div className="mrb-text">{r.text}</div>
                 </div>
               </div>
             );
@@ -623,8 +403,8 @@ function MiniReviewsBar({ productImg }) {
   );
 }
 
-function ReviewsCarouselPro({ productImg }) {
-  const data = MARKETING_CONTENT.reviewsCarousel;
+function ReviewsCarouselPro({ productImg, mc = MARKETING_CONTENT }) {
+  const data = mc.reviewsCarousel;
   const [active, setActive] = useState(0);
   const rowRef = useRef(null);
 
@@ -656,7 +436,7 @@ function ReviewsCarouselPro({ productImg }) {
 
   return (
     <section className="pd-block" id="reviews-section">
-      <SectionHeader title={MARKETING_CONTENT.reviewsTitle} subtitle={MARKETING_CONTENT.reviewsSubtitle} />
+      <SectionHeader title={mc.reviewsTitle} subtitle={mc.reviewsSubtitle} />
 
       <div className="rv-wrap">
         <button type="button" className="rv-nav rv-prev" onClick={() => go(active - 1)} aria-label="Anterior">
@@ -716,29 +496,52 @@ function ReviewsCarouselPro({ productImg }) {
   );
 }
 
-function AboutSection() {
-  const { about } = MARKETING_CONTENT;
+function AboutSection({ mc = MARKETING_CONTENT }) {
+  const { about, soldCount, reviewScore, reviewCount } = mc;
+
+  const stats = [
+    { value: soldCount  ? `+${soldCount}`              : "+500",  label: "Ventas realizadas"   },
+    { value: reviewScore ? `${reviewScore} ⭐`          : "4.8 ⭐", label: "Calificación promedio" },
+    { value: reviewCount ? `+${reviewCount}`            : "+100",  label: "Reseñas verificadas" },
+  ];
+
   return (
-    <section className="pd-block" id="about">
-      <SectionHeader title={about.title} />
-      <div className="about-grid">
-        <div className="about-img hover-float">
-          <img
-            src={about.img}
-            alt="BoomHausS equipo"
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
-          />
+    <section className="about2" id="about">
+      <div className="about2-top">
+        <div className="about2-brand">
+          <span className="about2-live-dot" aria-hidden="true" />
+          <span className="about2-brand-name">BoomHausS</span>
         </div>
-        <div className="about-text">
-          <p className="about-p">{about.text}</p>
-          <div className="about-bul">
-            {about.bullets.map((b, i) => (
-              <div className="about-li" key={i}>{b}</div>
-            ))}
+        <p className="about2-tagline">Productos que realmente funcionan</p>
+      </div>
+
+      <div className="about2-hero">
+        <img
+          className="about2-img"
+          src={about.img}
+          alt="BoomHausS equipo"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
+        />
+        <div className="about2-overlay">
+          <p className="about2-quote">{about.text}</p>
+        </div>
+      </div>
+
+      <div className="about2-stats">
+        {stats.map((s, i) => (
+          <div key={i} className="about2-stat">
+            <div className="about2-stat-val">{s.value}</div>
+            <div className="about2-stat-lbl">{s.label}</div>
           </div>
-        </div>
+        ))}
+      </div>
+
+      <div className="about2-pills">
+        {about.bullets.map((b, i) => (
+          <div key={i} className="about2-pill">{b}</div>
+        ))}
       </div>
     </section>
   );
@@ -788,6 +591,9 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addItem } = useCart();
 
+  // ✅ Config dinámica: si viene de /lp/:slug usa esa config, si no usa la de porta-cepillos
+  const MC = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [product, setProduct] = useState(null);
@@ -805,34 +611,28 @@ export default function ProductDetail() {
   const lastViewedRef = useRef(null);
 
   useEffect(() => {
-  async function fetchOne() {
-    try {
-      setLoading(true);
-
-      let res;
-
-      if (slug) {
-        // Si viene desde /lp/:slug
-        res = await api.get(`/products/slug/${slug}`);
-      } else {
-        // Si viene desde /products/:id
-        res = await api.get(`/products/${id}`);
+    async function fetchOne() {
+      try {
+        setLoading(true);
+        // ✅ Soporte /lp/:slug (por slug) y /products/:id (por id)
+        const res = slug
+          ? await api.get(`/products/slug/${slug}`)
+          : await api.get(`/products/${id}`);
+        if (res.data?.ok) setProduct(res.data.data);
+        else setError(slug
+          ? `Producto no encontrado. Asegurate de que el producto tenga el slug "${slug}" en el panel de administración (Admin → Productos → Editar → campo Slug).`
+          : "No se pudo cargar el producto.");
+      } catch (err) {
+        const is404 = err?.response?.status === 404;
+        setError(slug && is404
+          ? `Producto no encontrado con slug "${slug}". Abrí Admin → Productos, editá el producto y setéalo como slug.`
+          : err?.response?.data?.message || "Error al cargar el producto.");
+      } finally {
+        setLoading(false);
       }
-
-      if (res.data?.ok) {
-        setProduct(res.data.data);
-      } else {
-        setError("No se pudo cargar.");
-      }
-    } catch {
-      setError("Error al cargar.");
-    } finally {
-      setLoading(false);
     }
-  }
-
-  fetchOne();
-}, [id, slug]);
+    fetchOne();
+  }, [id, slug]);
 
   const images = useMemo(() => {
     if (!product) return [];
@@ -921,7 +721,7 @@ export default function ProductDetail() {
     });
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
-    setShowCheckout(true);
+    setShowCheckout(true); // ✅ Abre el sheet encima de la landing
   };
 
   const handleAddToCart = () => {
@@ -981,15 +781,7 @@ export default function ProductDetail() {
   return (
     <main className="section main-wrapper pd-page">
       <div className="pd-page">
-        <Marquee
-          speed={18}
-          items={[
-            "Envío gratis a todo el país",
-            "Pagá contra entrega / transferencia",
-            "Compra segura",
-            "Soporte por WhatsApp",
-          ]}
-        />
+        <Marquee countdownKey={`pd_countdown_${id}`} />
       </div>
 
       <div className="container pd-container">
@@ -1072,50 +864,65 @@ export default function ProductDetail() {
             <div className="hero-top hero-top--compact">
               {/* (mini carrusel: ya lo tenés en MEDIA) */}
 
-              {/* Trust badges row (como la captura) */}
+              {/* Trust badges row */}
               <div className="hero-trustline hero-trustline--logos" aria-label="Reseñas verificadas">
+
+                {/* Trustpilot */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    {/* Trustpilot simple star */}
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                      <path d="M12 2l3.1 6.3 7 .9-5.1 5 1.2 7-6.2-3.3-6.2 3.3 1.2-7-5.1-5 7-.9L12 2z" fill="currentColor" />
+                    <svg viewBox="0 0 126.5 120" xmlns="http://www.w3.org/2000/svg" width="20" height="19">
+                      <polygon fill="#00B67A" points="63.25,0 82.6,57.9 126.5,57.9 90.9,87.2 104.1,120 63.25,95.5 22.4,120 35.6,87.2 0,57.9 43.9,57.9"/>
+                      <polygon fill="#005128" points="90.9,87.2 104.1,120 63.25,95.5 63.25,0 82.6,57.9 126.5,57.9"/>
                     </svg>
                   </span>
                   <div className="trust-text">
                     <span className="trust-name">Trustpilot</span>
-                    <span className="trust-sub"><b>4.8</b> · Verified</span>
+                    <div className="trust-score-row">
+                      <span className="trust-stars">★★★★★</span>
+                      <b className="trust-score">4.8</b>
+                    </div>
                   </div>
                 </div>
 
                 <span className="hero-trustSep" />
 
+                {/* Facebook */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    {/* Facebook "f" */}
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                      <path d="M14 8h2V5h-2c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h2.3l.7-3H13V9c0-.6.4-1 1-1z" fill="currentColor" />
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                      <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill="#1877F2"/>
                     </svg>
                   </span>
                   <div className="trust-text">
                     <span className="trust-name">Facebook</span>
-                    <span className="trust-sub"><b>4.9</b> · Reviews</span>
+                    <div className="trust-score-row">
+                      <span className="trust-stars">★★★★★</span>
+                      <b className="trust-score">4.9</b>
+                    </div>
                   </div>
                 </div>
 
                 <span className="hero-trustSep" />
 
+                {/* Google */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    {/* Google "G" simple */}
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                      <path d="M12 10.2v3.6h5.1c-.5 2.1-2.3 3.6-5.1 3.6A5.4 5.4 0 1 1 12 6.6c1.4 0 2.6.5 3.6 1.3l2.4-2.4A8.9 8.9 0 1 0 12 20.9c5 0 8.6-3.5 8.6-8.5 0-.6-.1-1.1-.2-1.6H12z" fill="currentColor" />
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                      <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
+                      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+                      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0124 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
+                      <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 01-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/>
                     </svg>
                   </span>
                   <div className="trust-text">
                     <span className="trust-name">Google</span>
-                    <span className="trust-sub"><b>4.8</b> · Ratings</span>
+                    <div className="trust-score-row">
+                      <span className="trust-stars">★★★★★</span>
+                      <b className="trust-score">4.8</b>
+                    </div>
                   </div>
                 </div>
+
               </div>
 
 
@@ -1137,14 +944,16 @@ export default function ProductDetail() {
                 </a>
               </div>
 
-              {/* Subtítulo corto (como “La piel sana comienza desde dentro”) */}
-              <div className="hero-subtitle">
-                Más higiene y orden todos los días
-              </div>
+              {/* Subtítulo corto — viene del config de la landing */}
+              {MC.heroSubtitle && (
+                <div className="hero-subtitle">
+                  {MC.heroSubtitle}
+                </div>
+              )}
 
               {/* ✅ Bullets: compactas, tipo check */}
               <ul className="hero-bullets-compact">
-                {(MARKETING_CONTENT.trustBullets || []).slice(0, 4).map((t, i) => (
+                {(MC.trustBullets || []).slice(0, 4).map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
@@ -1248,14 +1057,10 @@ export default function ProductDetail() {
                 className="pd-ctaSecondary btn-breathing-intense"
                 type="button"
                 onClick={handleBuyNow}
-                disabled={redirecting}
-              >
-                {redirecting ? "PROCESANDO..." : "COMPRAR AHORA"}
+                >
+                COMPRAR AHORA
               </button> */}
 
-              <div className="pd-ctaSub">
-                Vas a ver el total final antes de pagar • Envío gratis • Pago seguro
-              </div>
 
               <div className="pd-addToCartWrap">
                 <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">
@@ -1280,7 +1085,7 @@ export default function ProductDetail() {
                 </button>
 
                 <div className={`accordion-content ${isDescExpanded ? "open" : ""}`}>
-                  <p>{product.description || MARKETING_CONTENT.miniDescription}</p>
+                  <p>{product.description || MC.miniDescription}</p>
 
                   <ul className="pd-specs-list">
                     {product.specs &&
@@ -1321,7 +1126,7 @@ export default function ProductDetail() {
           </aside>
         </div>
 
-        <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} />
+        <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
 
         <div className="pd-bands">
           <Band
@@ -1331,7 +1136,7 @@ export default function ProductDetail() {
             noTop
           >
             <div className="pd-sections-new">
-              <StoryBlocks />
+              <StoryBlocks mc={MC} />
             </div>
           </Band>
 
@@ -1341,9 +1146,9 @@ export default function ProductDetail() {
             bottomFill="var(--pd-light)"
           >
             <div className="pd-sections-new">
-              <CertificateStrip />
-              <HowToSteps />
-              <AuthorityCard />
+              <BoxContents mc={MC} />
+              <HowToSteps mc={MC} />
+              <AuthorityCard mc={MC} />
             </div>
           </Band>
 
@@ -1354,7 +1159,7 @@ export default function ProductDetail() {
           >
             <div className="pd-sections-new">
               
-              <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} />
+              <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
             </div>
           </Band>
 
@@ -1364,8 +1169,8 @@ export default function ProductDetail() {
             bottomFill="var(--pd-light)"
           >
             <div className="pd-sections-new">
-              <FaqSectionPro />
-              <AboutSection />
+              <FaqSectionPro mc={MC} />
+              <AboutSection mc={MC} />
             </div>
           </Band>
         </div>
@@ -1420,10 +1225,6 @@ export default function ProductDetail() {
           LO QUIERO!
         </button>
       </div>
-
-      {showCheckout && (
-        <CheckoutSheet onClose={() => setShowCheckout(false)} />
-      )}
 
       {/* ✅ CSS */}
       <style>{`
@@ -1502,8 +1303,58 @@ export default function ProductDetail() {
       .hero-trustItem b{ font-weight: 900; }
       .hero-trustSep{
         width: 1px;
-        height: 26px;
-        background: rgba(0,0,0,.12);
+        height: 32px;
+        background: rgba(0,0,0,.10);
+        flex-shrink: 0;
+      }
+
+      .trust-badge{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .trust-logo{
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .trust-text{
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .trust-name{
+        font-size: .62rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: rgba(11,18,32,.40);
+        line-height: 1;
+      }
+
+      .trust-score-row{
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        line-height: 1;
+      }
+
+      .trust-stars{
+        color: #F5B301;
+        font-size: 9px;
+        letter-spacing: 1.5px;
+      }
+
+      .trust-score{
+        font-size: .95rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.90);
+        letter-spacing: -.01em;
       }
 
       .hero-proof--compact{
@@ -1794,146 +1645,147 @@ export default function ProductDetail() {
         display:block;
       }
 
-      /* ===== CERTIFICATE PRO ===== */
-      .pd-strip--pro{
+      /* ===== QUÉ VIENE EN LA CAJA ===== */
+      .boxc{
         margin: 34px 0 10px;
-        background: #ffffff;
-        border: 1px solid rgba(2,8,23,.10);
         border-radius: 22px;
-        padding: 18px 16px 16px;
-        box-shadow: 0 22px 70px rgba(10,20,40,.10);
-        position: relative;
         overflow: hidden;
+        border: 1px solid rgba(2,8,23,.10);
+        box-shadow: 0 22px 70px rgba(10,20,40,.12);
       }
 
-      .pd-strip--pro::before{
-        content:"";
-        position:absolute;
-        left: 0; right: 0; top: 0;
-        height: 4px;
-        background: linear-gradient(90deg, rgba(11,92,255,.95), rgba(16,185,129,.85));
+      .boxc-header{
+        background: linear-gradient(135deg, #0b0b1a 0%, #1a1a3a 100%);
+        padding: 22px 20px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
       }
 
-      .pd-certRow{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap: 12px;
-        margin: 10px 0 16px;
-        flex-wrap: wrap;
-      }
-
-      .pd-certSeal{
-        width: 92px;
-        height: 92px;
-        border-radius: 999px;
-        background: #fff;
-        border: 2px solid rgba(2,8,23,.10);
-        box-shadow: 0 18px 50px rgba(10,20,40,.12);
-        display:grid;
-        place-items:center;
-        padding: 10px;
-        position: relative;
-      }
-
-      .pd-certSeal::after{
-        content:"";
-        position:absolute;
-        inset: 6px;
-        border-radius: 999px;
-        border: 1px dashed rgba(2,8,23,.16);
-        pointer-events:none;
-      }
-
-      .pd-certLogo{
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 999px;
-        display:block;
-      }
-
-      .pd-certMeta{
-        display:flex;
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-start;
-        max-width: 420px;
-      }
-
-      .pd-certKicker{
-        font-weight: 1100;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        font-size: .78rem;
-        color: rgba(11,18,32,.62);
-      }
-
-      .pd-certLine{
-        display:flex;
-        align-items:center;
-        gap: 8px;
-      }
-
-      .pd-certDot{
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: rgba(16,185,129,1);
-        box-shadow: 0 10px 25px rgba(16,185,129,.35);
-      }
-
-      .pd-certSmall{
-        font-weight: 900;
-        color: rgba(11,18,32,.72);
-        font-size: .92rem;
-      }
-
-      .pd-stripGrid--pro{
-        display:grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      @media (min-width: 900px){
-        .pd-stripGrid--pro{
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-
-      .pd-stripItem--pro{
-        display:flex;
-        gap: 10px;
-        align-items:center;
-        background: rgba(248,250,252,.95);
-        border: 1px solid rgba(2,8,23,.08);
-        border-radius: 16px;
-        padding: 12px 12px;
-        font-weight: 950;
-        color: rgba(11,18,32,.78);
-        box-shadow: 0 14px 40px rgba(10,20,40,.06);
-        transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-      }
-
-      .pd-stripItem--pro:hover{
-        transform: translateY(-3px);
-        border-color: rgba(11,92,255,.22);
-        box-shadow: 0 20px 60px rgba(10,20,40,.10);
-      }
-
-      .pd-stripIcon{
-        width: 34px;
-        height: 34px;
-        border-radius: 12px;
-        display:grid;
-        place-items:center;
-        background: rgba(11,92,255,.10);
-        border: 1px solid rgba(11,92,255,.14);
+      .boxc-header-icon{
+        font-size: 38px;
+        line-height: 1;
+        filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
         flex-shrink: 0;
       }
 
-      .pd-stripText{
+      .boxc-header-kicker{
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.45);
+        margin-bottom: 3px;
+      }
+
+      .boxc-header-title{
+        font-size: 1.18rem;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -.01em;
         line-height: 1.2;
+      }
+
+      .boxc-grid{
+        background: #fff;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        justify-items: stretch;
+      }
+
+      .boxc-item:last-child:nth-child(odd){
+        grid-column: 1 / -1;
+        max-width: calc(50% - 5px);
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      @media (min-width: 560px){
+        .boxc-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .boxc-item:last-child:nth-child(odd){ grid-column: auto; max-width: none; margin: 0; }
+      }
+
+      .boxc-item{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(248,250,252,.95);
+        border: 1px solid rgba(2,8,23,.07);
+        border-radius: 14px;
+        padding: 12px 10px;
+        opacity: 0;
+        animation: boxcFadeUp .45s ease forwards;
+        transition: transform .15s ease, box-shadow .15s ease;
+      }
+
+      .boxc-item:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(10,20,40,.08);
+      }
+
+      .boxc-item-icon{
+        font-size: 20px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: rgba(11,92,255,.07);
+        border: 1px solid rgba(11,92,255,.12);
+        flex-shrink: 0;
+      }
+
+      .boxc-item-info{
+        flex: 1;
+        min-width: 0;
+      }
+
+      .boxc-item-name{
+        font-size: .83rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.88);
+        line-height: 1.25;
+      }
+
+      .boxc-item-qty{
+        font-size: .72rem;
+        font-weight: 600;
+        color: rgba(11,18,32,.42);
+        margin-top: 2px;
+      }
+
+      .boxc-item-check{
+        font-size: 11px;
+        font-weight: 900;
+        color: #10b981;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(16,185,129,.12);
+        border: 1px solid rgba(16,185,129,.25);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      @keyframes boxcFadeUp{
+        from{ opacity: 0; transform: translateY(12px); }
+        to  { opacity: 1; transform: translateY(0); }
+      }
+
+      @media (prefers-reduced-motion: reduce){
+        .boxc-item{ animation: none; opacity: 1; }
+      }
+
+      #howto .sec-title,
+      #howto .sec-sub,
+      #authority .sec-title,
+      #authority .sec-sub,
+      #faq-section .sec-title,
+      #faq-section .sec-sub{
+        color: #fff;
       }
 
       /* ===== COMPARATIVA ===== */
@@ -2002,137 +1854,217 @@ export default function ProductDetail() {
       }
 
       /* ===== AUTHORITY CARD ===== */
-      .authCard{
-        background: linear-gradient(180deg, rgba(234,241,255,.75), rgba(255,255,255,.95));
-        border: 1px solid rgba(11,92,255,.16);
+      .auth2{
         border-radius: 22px;
-        padding: 35px;
+        overflow: hidden;
+        border: 1px solid rgba(2,8,23,.10);
         box-shadow: 0 22px 70px rgba(10,20,40,.14);
         animation: popIn .35s ease both;
       }
 
-      .authTop{
-        display:flex;
-        align-items:center;
-        gap: 12px;
-      }
-
-      .authAvatar{
-        width: 58px;
-        height: 58px;
-        border-radius: 999px;
+      .auth2-body{
+        background: linear-gradient(150deg, #0d0d20 0%, #111128 100%);
+        padding: 30px 26px 26px;
+        position: relative;
         overflow: hidden;
-        border: 2px solid rgba(11,92,255,.25);
-        background: #fff;
-        box-shadow: 0 12px 35px rgba(11,92,255,.18);
-        flex-shrink: 0;
       }
 
-      .authAvatar img{
-        width:100%;
-        height:100%;
+      .auth2-body::before{
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 85% 15%, rgba(11,92,255,.20) 0%, transparent 65%);
+        pointer-events: none;
+      }
+
+      .auth2-qq{
+        display: block;
+        font-size: 4.5rem;
+        line-height: .65;
+        color: rgba(11,92,255,.55);
+        font-family: Georgia, serif;
+        margin-bottom: 14px;
+        position: relative;
+        user-select: none;
+      }
+
+      .auth2-quote{
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+        color: rgba(255,255,255,.88);
+        line-height: 1.75;
+        font-style: italic;
+        position: relative;
+      }
+
+      .auth2-foot{
+        background: rgba(255,255,255,.98);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px solid rgba(2,8,23,.07);
+      }
+
+      .auth2-avatar{
+        width: 50px;
+        height: 50px;
+        border-radius: 999px;
         object-fit: cover;
-        display:block;
-      }
-
-      .authMeta{
-        min-width: 0;
-        display:flex;
-        flex-direction: column;
-        gap: 3px;
-      }
-
-      .authTag{
-        width: fit-content;
-        font-weight: 1100;
-        font-size: .78rem;
-        letter-spacing: .06em;
-        text-transform: uppercase;
-        color: rgba(11,92,255,.95);
-        background: rgba(11,92,255,.10);
-        border: 1px solid rgba(11,92,255,.18);
-        padding: 6px 10px;
-        border-radius: 999px;
-      }
-
-      .authName{
-        font-weight: 1100;
-        color: rgba(11,18,32,.92);
-        line-height: 1.15;
-      }
-
-      .authRole{
-        color: rgba(11,18,32,.62);
-        font-weight: 900;
-        font-size: .92rem;
-      }
-
-      .authQuote{
-        margin: 12px 0 0;
-        color: rgba(11,18,32,.78);
-        line-height: 1.65;
-        font-weight: 650;
-        background: rgba(255,255,255,.8);
-        border: 1px solid rgba(2,8,23,.06);
-        border-radius: 18px;
-        padding: 14px 14px;
-      }
-
-      .authFoot{
-        display:flex;
-        align-items:flex-start;
-        gap: 10px;
-        margin-top: 10px;
-        color: rgba(11,18,32,.55);
-        font-weight: 850;
-        font-size: .88rem;
-      }
-
-      .authDot{
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: rgba(16,185,129,.95);
-        box-shadow: 0 10px 25px rgba(16,185,129,.25);
-        margin-top: 4px;
+        border: 2px solid rgba(11,92,255,.18);
+        box-shadow: 0 6px 20px rgba(11,92,255,.14);
         flex-shrink: 0;
+      }
+
+      .auth2-meta{
+        flex: 1;
+        min-width: 0;
+      }
+
+      .auth2-name{
+        font-weight: 900;
+        font-size: .95rem;
+        color: rgba(11,18,32,.90);
+        line-height: 1.2;
+      }
+
+      .auth2-role{
+        font-size: .78rem;
+        font-weight: 600;
+        color: rgba(11,18,32,.48);
+        margin-top: 2px;
+      }
+
+      .auth2-badge{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .70rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        color: #10b981;
+        background: rgba(16,185,129,.08);
+        border: 1px solid rgba(16,185,129,.22);
+        border-radius: 999px;
+        padding: 5px 10px;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      .auth2-badge-dot{
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #10b981;
+        box-shadow: 0 0 8px rgba(16,185,129,.7);
+        animation: livePulse 2.2s ease-in-out infinite;
+        flex-shrink: 0;
+      }
+
+      .auth2-disclaimer{
+        background: rgba(248,250,252,.95);
+        border-top: 1px solid rgba(2,8,23,.06);
+        padding: 11px 20px;
+        font-size: .73rem;
+        font-weight: 600;
+        color: rgba(11,18,32,.38);
+        line-height: 1.5;
       }
 
       /* FAQ */
-      .faq-pro{ display:flex; flex-direction: column; gap: 10px; }
+      .faq-pro{
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(2,8,23,.09);
+        box-shadow: 0 22px 60px rgba(10,20,40,.11);
+      }
+
       .faq-pro-item{
         background: #fff;
-        border: 1px solid rgba(2,8,23,.08);
-        border-radius: 18px;
-        overflow:hidden;
-        box-shadow: 0 18px 55px rgba(10,20,40,.09);
+        border-bottom: 1px solid rgba(2,8,23,.07);
+        position: relative;
+        overflow: hidden;
+        transition: background .2s ease;
       }
+
+      .faq-pro-item:last-child{ border-bottom: none; }
+
+      .faq-pro-item.open{ background: rgba(247,249,255,1); }
+
+      .faq-pro-item.open::before{
+        content: "";
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, #0b5cff 0%, #10b981 100%);
+      }
+
       .faq-pro-q{
-        width:100%;
-        display:flex;
+        width: 100%;
+        display: flex;
         justify-content: space-between;
-        gap: 12px;
-        padding: 16px 16px;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 20px;
         background: transparent;
         border: none;
-        cursor:pointer;
-        font-weight: 1100;
-        color: rgba(11,18,32,.9);
-        text-align:left;
+        cursor: pointer;
+        font-weight: 800;
+        font-size: .95rem;
+        color: rgba(11,18,32,.88);
+        text-align: left;
+        line-height: 1.4;
       }
-      .faq-pro-ico{ font-size: 22px; color: rgba(11,92,255,.95); }
+
+      .faq-pro-item.open .faq-pro-q{ color: rgba(11,18,32,1); }
+
+      .faq-pro-ico{
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(11,92,255,.22);
+        background: rgba(11,92,255,.06);
+        flex-shrink: 0;
+        position: relative;
+        transition: transform .28s ease, background .2s ease, border-color .2s ease;
+      }
+
+      .faq-pro-ico::before{
+        content: "";
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 6px; height: 6px;
+        border-right: 1.5px solid rgba(11,92,255,.85);
+        border-bottom: 1.5px solid rgba(11,92,255,.85);
+        transform: translate(-50%, -65%) rotate(45deg);
+      }
+
+      .faq-pro-item.open .faq-pro-ico{
+        transform: rotate(180deg);
+        background: rgba(11,92,255,.12);
+        border-color: rgba(11,92,255,.4);
+      }
+
       .faq-pro-a{
         max-height: 0;
         overflow: hidden;
-        transition: max-height .25s ease;
-        padding: 0 16px;
-        color: rgba(11,18,32,.72);
-        font-weight: 650;
+        transition: max-height .32s ease, padding .28s ease;
+        padding: 0 20px;
+        color: rgba(11,18,32,.65);
+        font-weight: 500;
+        font-size: .9rem;
+        line-height: 1.68;
       }
+
       .faq-pro-item.open .faq-pro-a{
-        max-height: 260px;
-        padding-bottom: 16px;
+        max-height: 340px;
+        padding: 0 20px 20px 23px;
       }
+
       .faq-pro-a p{ margin: 0; }
 
       /* stars */
@@ -2209,59 +2141,157 @@ export default function ProductDetail() {
       }
       .rv-dot.on{ background: rgba(11,92,255,.95); transform: scale(1.25); }
 
-      /* About */
-      .about-grid{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-        align-items: center;
-      }
-      @media (max-width: 900px){
-        .about-grid{ grid-template-columns: 1fr; }
-      }
-      .about-img{
+      /* ===== QUIÉNES SOMOS ===== */
+      .about2{
+        margin: 34px 0 10px;
         border-radius: 22px;
         overflow: hidden;
         border: 1px solid rgba(2,8,23,.10);
-        box-shadow: 0 22px 70px rgba(10,20,40,.14);
-        background: #fff;
+        box-shadow: 0 22px 70px rgba(10,20,40,.12);
       }
-      .about-img img{
-        width:100%;
-        height: 100%;
-        max-height: 340px;
-        object-fit: cover;
-        display:block;
-      }
-      .about-text{ text-align: left; }
-      @media (max-width: 900px){
-        .about-text{ text-align: center; }
-      }
-      .about-p{
-        margin: 0 0 12px;
-        color: rgba(11,18,32,.72);
-        line-height: 1.7;
-        font-weight: 650;
-      }
-      .about-bul{
-        display:flex;
+
+      .about2-top{
+        background: linear-gradient(135deg, #0b0b1a 0%, #1a1a3a 100%);
+        padding: 24px 22px 20px;
+        display: flex;
         flex-direction: column;
         gap: 8px;
       }
-      @media (max-width: 900px){
-        .about-bul{ align-items: center; }
+
+      .about2-brand{
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .about-li{
-        display:inline-flex;
-        gap: 10px;
-        align-items:center;
-        background: rgba(234,241,255,.78);
-        border: 1px solid rgba(11,92,255,.14);
-        padding: 10px 12px;
-        border-radius: 14px;
+
+      .about2-live-dot{
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16,185,129,.7);
+        flex-shrink: 0;
+        animation: livePulse 2.2s ease-in-out infinite;
+      }
+
+      @keyframes livePulse{
+        0%,100%{ box-shadow: 0 0 6px rgba(16,185,129,.6); }
+        50%    { box-shadow: 0 0 18px rgba(16,185,129,.95); }
+      }
+
+      .about2-brand-name{
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.50);
+      }
+
+      .about2-tagline{
+        margin: 0;
+        font-size: 1.32rem;
         font-weight: 900;
-        color: rgba(11,18,32,.78);
-        width: fit-content;
+        color: #fff;
+        letter-spacing: -.015em;
+        line-height: 1.2;
+      }
+
+      .about2-hero{
+        position: relative;
+        aspect-ratio: 16/7;
+        overflow: hidden;
+        background: #0b0b1a;
+      }
+
+      .about2-img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 30%;
+        display: block;
+        opacity: .85;
+      }
+
+      .about2-overlay{
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.15) 55%, transparent 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 22px 20px;
+      }
+
+      .about2-quote{
+        margin: 0;
+        font-size: .88rem;
+        font-weight: 500;
+        color: rgba(255,255,255,.90);
+        line-height: 1.6;
+        font-style: italic;
+        max-width: 580px;
+      }
+
+      .about2-stats{
+        background: #fff;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid rgba(2,8,23,.06);
+        border-bottom: 1px solid rgba(2,8,23,.06);
+      }
+
+      .about2-stat{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 8px;
+        text-align: center;
+        border-right: 1px solid rgba(2,8,23,.06);
+      }
+
+      .about2-stat:last-child{ border-right: none; }
+
+      .about2-stat-val{
+        font-size: 1.28rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.92);
+        letter-spacing: -.02em;
+        line-height: 1;
+      }
+
+      .about2-stat-lbl{
+        font-size: .65rem;
+        font-weight: 700;
+        color: rgba(11,18,32,.42);
+        margin-top: 5px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        line-height: 1.3;
+      }
+
+      .about2-pills{
+        background: #fff;
+        padding: 14px 16px 18px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      @media (min-width: 560px){
+        .about2-pills{ grid-template-columns: repeat(4, 1fr); }
+      }
+
+      .about2-pill{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(248,250,252,.95);
+        border: 1px solid rgba(2,8,23,.07);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: .82rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.82);
+        line-height: 1.25;
       }
 
       /* Sticky */
@@ -2365,17 +2395,28 @@ export default function ProductDetail() {
 
       .mrb-card{
         display: flex;
+        flex-direction: column;
         gap: 10px;
-        align-items: center;
         background: rgba(255,255,255,.92);
         border: 1px solid rgba(2,8,23,.08);
         border-radius: 14px;
-        padding: 10px 10px;
+        padding: 16px;
+      }
+
+      .mrb-header{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mrb-header-info{
+        flex: 1;
+        min-width: 0;
       }
 
       .mrb-avatar{
-        width: 34px;
-        height: 34px;
+        width: 46px;
+        height: 46px;
         border-radius: 999px;
         object-fit: cover;
         border: 1px solid rgba(2,8,23,.10);
@@ -2383,28 +2424,18 @@ export default function ProductDetail() {
         flex-shrink: 0;
       }
 
-      .mrb-mid{
-        flex: 1;
-        min-width: 0;
+      .mrb-title{
+        font-size: .9rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.88);
+        line-height: 1.3;
       }
 
       .mrb-text{
-        font-size: .88rem;
-        color: rgba(11,18,32,.78);
-        font-weight: 650;
-        line-height: 1.35;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .mrb-bottom{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 6px;
-        gap: 10px;
+        font-size: .9rem;
+        color: rgba(11,18,32,.72);
+        font-weight: 500;
+        line-height: 1.5;
       }
 
       .mrb-name{
@@ -2418,6 +2449,26 @@ export default function ProductDetail() {
 
       .mrb-stars .stars-inline .s{ font-size: 12px; }
       .mrb-stars{ flex-shrink: 0; }
+
+      .mrb-section-header{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 18px 4px 12px;
+      }
+
+      .mrb-section-badge{
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .mrb-section-title{
+        font-size: 1rem;
+        font-weight: 900;
+        letter-spacing: .2px;
+        color: rgba(11,18,32,.88);
+      }
 
       .mrb-nav{
         display: grid;
@@ -2586,6 +2637,11 @@ export default function ProductDetail() {
         .pd-codSub{ font-size: .86rem; }
       }
       `}</style>
+
+      {/* ✅ Checkout sheet — se abre encima de la landing sin navegar */}
+      {showCheckout && (
+        <CheckoutSheet onClose={() => setShowCheckout(false)} />
+      )}
     </main>
   );
 }

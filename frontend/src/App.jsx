@@ -22,7 +22,6 @@ import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Returns from './pages/Returns.jsx';
 import SuccessPayment from './pages/SuccessPayment';
-import LandingPage from './pages/LandingPage.jsx';
 import AdminHome from './pages/AdminHome.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
@@ -42,7 +41,8 @@ export default function App() {
   const location = useLocation();
 
   // ✅ En landing pages no queremos navbar/footer (estilo "página de anuncio")
-  const hideChrome = location.pathname.startsWith('/lp/');
+  // ✅ Sin navbar/footer en landing pages y en ProductDetail
+  const hideChrome = location.pathname.startsWith('/lp/') || location.pathname.startsWith('/products/');
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -105,6 +105,7 @@ export default function App() {
           <Route path="/public" element={<Home />} />
 
           {/* ✅ Landing pages (ads -> directo acá) */}
+          {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
