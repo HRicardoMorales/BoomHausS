@@ -291,7 +291,7 @@ function StoryBlocks({ mc = MARKETING_CONTENT }) {
       {blocks.map((b, i) => (
         <div key={i} className="flow-row">
           <div className="flow-text">
-            <div className="flow-badge">{b.badge}</div>
+            {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
             <p className="flow-p">{b.text}</p>
           </div>
@@ -547,13 +547,177 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
   );
 }
 
-const WaveSvg = ({ fill = "#F8FBFF" }) => (
-  <svg viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-    <path
-      fill={fill}
-      d="M0,64L48,74.7C96,85,192,107,288,101.3C384,96,480,64,576,53.3C672,43,768,53,864,58.7C960,64,1056,64,1152,53.3C1248,43,1344,21,1392,10.7L1440,0L1440,120L0,120Z"
-    />
-  </svg>
+/* =========================
+   Upsell Sheet — aparece antes del checkout
+========================= */
+function UpsellSheet({ mc, mainProduct, onConfirm }) {
+  const sheetRef = useRef(null);
+  const backdropRef = useRef(null);
+  const { upsell } = mc;
+  const [accProducts, setAccProducts] = useState({});
+  const [done, setDone] = useState(false);
+  const [selectedIdx, setSelectedIdx] = useState(null);
+
+  // Animar entrada
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => {
+      sheetRef.current?.classList.add("ups-sheet--open");
+      backdropRef.current?.classList.add("ups-backdrop--open");
+    });
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  // Fetch accesorios
+  useEffect(() => {
+    if (!upsell?.items?.length) return;
+    let cancelled = false;
+    async function fetchAll() {
+      const results = await Promise.all(
+        upsell.items.map(async (item) => {
+          try {
+            const res = await api.get(`/products/slug/${item.slug}`);
+            return [item.slug, res.data?.ok ? res.data.data : null];
+          } catch { return [item.slug, null]; }
+        })
+      );
+      if (!cancelled) { setAccProducts(Object.fromEntries(results)); setDone(true); }
+    }
+    fetchAll();
+    return () => { cancelled = true; };
+  }, [upsell]);
+
+  function animateClose(cb) {
+    sheetRef.current?.classList.remove("ups-sheet--open");
+    backdropRef.current?.classList.remove("ups-backdrop--open");
+    setTimeout(cb, 340);
+  }
+
+
+
+  const handleToggle = (idx) => setSelectedIdx((p) => p === idx ? null : idx);
+
+  const selectedItem = selectedIdx !== null ? upsell.items[selectedIdx] : null;
+  const selectedAcc  = selectedItem ? accProducts[selectedItem.slug] : null;
+  const mainPrice    = mainProduct?.price ?? 0;
+  const mainCompareAt = mainProduct?.originalPrice || mainProduct?.compareAtPrice || mainPrice;
+  const accPrice     = selectedAcc?.price ?? selectedItem?.fallbackPrice ?? 0;
+  const accCompareAt = selectedAcc?.originalPrice || selectedAcc?.compareAtPrice || selectedItem?.fallbackCompareAt || accPrice;
+  const bundleTotal  = mainPrice + accPrice;
+  const bundleSaving = (mainCompareAt + accCompareAt) - bundleTotal;
+
+  const confirm = (withBundle) => {
+    animateClose(() => {
+      onConfirm(withBundle && selectedIdx !== null ? { item: selectedItem, accProduct: selectedAcc } : null);
+    });
+  };
+
+  return (
+    <>
+      <div ref={backdropRef} className="ups-backdrop" onClick={() => confirm(false)} aria-hidden="true" />
+      <div ref={sheetRef} className="ups-sheet" role="dialog" aria-modal="true" aria-label="Agregá un extra">
+        <div className="ups-sheet-scroll">
+          {/* Cabecera */}
+          <div className="ups-sheet-head">
+            <p className="ups-sheet-eyebrow">⚡ ANTES DE PAGAR</p>
+            <h2 className="ups-sheet-title">{upsell.title || "¿Querés agregar algo?"}</h2>
+            <p className="ups-sheet-sub">Mismo envío · pagás menos por los dos</p>
+          </div>
+
+          {/* Lista */}
+          <div className="ups-list">
+            {(upsell.items || []).map((item, idx) => {
+              const acc     = accProducts[item.slug];
+              const aPrice  = acc?.price ?? item.fallbackPrice ?? 0;
+              const aCmpAt  = acc?.originalPrice || acc?.compareAtPrice || item.fallbackCompareAt || aPrice;
+              const aImg    = acc?.imageUrl || item.fallbackImage || FALLBACK_IMG;
+              const saving  = aCmpAt - aPrice;
+              const isSel   = selectedIdx === idx;
+              return (
+                <div key={idx} className={`ups-row${isSel ? " ups-row--on" : ""}`}
+                  onClick={() => done && handleToggle(idx)}>
+                  <img src={aImg} alt={item.name} className="ups-row-img"
+                    referrerPolicy="no-referrer" crossOrigin="anonymous"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; }} />
+                  <div className="ups-row-info">
+                    {item.badge && <span className="ups-row-badge">{item.badge}</span>}
+                    <p className="ups-row-name">{item.name}</p>
+                    <div className="ups-row-prices">
+                      {saving > 0 && <s className="ups-row-was">{moneyARS(aCmpAt)}</s>}
+                      <span className="ups-row-now">{moneyARS(aPrice)}</span>
+                      {saving > 0 && <span className="ups-row-save">−{moneyARS(saving)}</span>}
+                    </div>
+                  </div>
+                  <button type="button" aria-label={isSel ? "Quitar" : "Agregar"}
+                    className={`ups-row-btn${isSel ? " ups-row-btn--on" : ""}`}
+                    disabled={!done}
+                    onClick={(e) => { e.stopPropagation(); done && handleToggle(idx); }}>
+                    {isSel ? "✓" : "+"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* CTAs */}
+          <div className="ups-sheet-ctas">
+            {selectedIdx !== null ? (
+              <>
+                <button type="button" className="ups-sheet-btn-main" onClick={() => confirm(true)}>
+                  Agregar y pagar — {moneyARS(bundleTotal)}
+                  {bundleSaving > 0 && <span className="ups-sheet-btn-save"> · ahorrás {moneyARS(bundleSaving)}</span>}
+                </button>
+                <button type="button" className="ups-sheet-btn-skip" onClick={() => confirm(false)}>
+                  No gracias, solo el producto
+                </button>
+              </>
+            ) : (
+              <button type="button" className="ups-sheet-btn-skip ups-sheet-btn-skip--solo" onClick={() => confirm(false)}>
+                Continuar sin agregar →
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        .ups-backdrop { position:fixed; inset:0; background:rgba(11,17,32,0); z-index:10000; transition:background .30s ease; }
+        .ups-backdrop--open { background:rgba(11,17,32,.65); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); }
+        .ups-sheet { position:fixed; top:50%; left:50%; z-index:10001; background:#fff; border-radius:22px; box-shadow:0 24px 80px rgba(11,17,32,.28); width:calc(100% - 32px); max-width:420px; max-height:90dvh; max-height:90vh; display:flex; flex-direction:column; opacity:0; transform:translate(-50%,-50%) scale(.95); transition:opacity .28s ease, transform .28s cubic-bezier(.22,1,.36,1); will-change:transform,opacity; pointer-events:none; }
+        .ups-sheet--open { opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+        .ups-sheet-scroll { overflow-y:auto; flex:1; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:20px 18px 24px; }
+        .ups-sheet-scroll::-webkit-scrollbar { display:none; }
+        .ups-sheet-head { text-align:center; padding:0 0 18px; }
+        .ups-sheet-eyebrow { font-size:.68rem; font-weight:900; letter-spacing:.09em; color:#0b5cff; margin:0 0 6px; }
+        .ups-sheet-title { font-size:1.15rem; font-weight:900; margin:0 0 4px; }
+        .ups-sheet-sub { font-size:.78rem; color:rgba(11,18,32,.45); margin:0; font-weight:600; }
+        .ups-sheet-ctas { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+        .ups-sheet-btn-main { width:100%; padding:15px; border:none; border-radius:14px; background:linear-gradient(135deg,#1a6dff 0%,#0b5cff 60%,#0046e0 100%); color:#fff; font-weight:900; font-size:.97rem; letter-spacing:.03em; cursor:pointer; box-shadow:0 8px 28px rgba(11,92,255,.32); transition:transform .12s,box-shadow .12s; }
+        .ups-sheet-btn-main:active { transform:scale(.98); box-shadow:0 4px 14px rgba(11,92,255,.22); }
+        .ups-sheet-btn-save { font-size:.78rem; font-weight:700; opacity:.85; }
+        .ups-sheet-btn-skip { width:100%; padding:12px; border:1.5px solid rgba(11,18,32,.15); border-radius:12px; background:none; color:rgba(11,18,32,.60); font-size:.88rem; font-weight:700; cursor:pointer; text-align:center; transition:border-color .15s,color .15s; }
+        .ups-sheet-btn-skip:hover { border-color:rgba(11,18,32,.30); color:rgba(11,18,32,.80); }
+        .ups-sheet-btn-skip--solo { border-color:rgba(11,18,32,.18); color:rgba(11,18,32,.65); font-size:.92rem; padding:13px; }
+      `}</style>
+    </>
+  );
+}
+
+const WavesDivider = ({ fill = "#F8FBFF" }) => (
+  <>
+    <svg className="pd-wl pd-wl--1" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
+      <path fill={fill} fillOpacity="0.25"
+        d="M0,40 C100,65 200,15 300,40 C400,65 500,15 600,40 C700,65 800,15 900,40 C1000,65 1100,15 1200,40 C1300,65 1400,15 1500,40 C1600,65 1700,15 1800,40 V80 H0 Z" />
+    </svg>
+    <svg className="pd-wl pd-wl--2" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
+      <path fill={fill} fillOpacity="0.50"
+        d="M0,55 C150,25 300,70 450,55 C600,40 750,70 900,55 C1050,25 1200,70 1350,55 C1500,40 1650,70 1800,55 V80 H0 Z" />
+    </svg>
+    <svg className="pd-wl pd-wl--3" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
+      <path fill={fill} fillOpacity="1"
+        d="M0,60 C300,20 600,80 900,60 C1200,20 1500,80 1800,60 V80 H0 Z" />
+    </svg>
+  </>
 );
 
 const Band = ({
@@ -568,7 +732,7 @@ const Band = ({
     <section className={`pd-band pd-band--${variant}`}>
       {!noTop && (
         <div className="pd-wave pd-wave--top">
-          <WaveSvg fill={topFill} />
+          <WavesDivider fill={topFill} />
         </div>
       )}
 
@@ -576,7 +740,7 @@ const Band = ({
 
       {!noBottom && (
         <div className="pd-wave pd-wave--bottom">
-          <WaveSvg fill={bottomFill} />
+          <WavesDivider fill={bottomFill} />
         </div>
       )}
     </section>
@@ -604,6 +768,7 @@ export default function ProductDetail() {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isShippingExpanded, setIsShippingExpanded] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showUpsellSheet, setShowUpsellSheet] = useState(false);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -615,8 +780,10 @@ export default function ProductDetail() {
       try {
         setLoading(true);
         // ✅ Soporte /lp/:slug (por slug) y /products/:id (por id)
-        const res = slug
-          ? await api.get(`/products/slug/${slug}`)
+        // MC.productSlug permite que el slug de la URL difiera del slug del producto en admin
+        const fetchSlug = slug ? (MC.productSlug || slug) : null;
+        const res = fetchSlug
+          ? await api.get(`/products/slug/${fetchSlug}`)
           : await api.get(`/products/${id}`);
         if (res.data?.ok) setProduct(res.data.data);
         else setError(slug
@@ -712,6 +879,14 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     if (!product) return;
+    // Si hay config de upsell, mostrar el sheet de upsell primero
+    if (MC.upsell) {
+      setShowUpsellSheet(true);
+      return;
+    }
+    // Sin upsell: ir directo al checkout
+    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+    addItem(product, totalQty, promo ? { promo } : undefined);
     track("InitiateCheckout", {
       content_ids: [String(contentId)],
       content_type: "product",
@@ -719,9 +894,24 @@ export default function ProductDetail() {
       currency: "ARS",
       num_items: Number(totalQty) || 1,
     });
+    setShowCheckout(true);
+  };
+
+  const handleUpsellConfirm = (bundle) => {
+    setShowUpsellSheet(false);
+    // Agregar producto principal
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     addItem(product, totalQty, promo ? { promo } : undefined);
-    setShowCheckout(true); // ✅ Abre el sheet encima de la landing
+    // Si eligió un accesorio, agregarlo también
+    if (bundle?.accProduct) addItem(bundle.accProduct, 1);
+    track("InitiateCheckout", {
+      content_ids: [String(contentId)],
+      content_type: "product",
+      value: Number(bundle ? displayTotal + (bundle.accProduct?.price ?? 0) : displayTotal) || 0,
+      currency: "ARS",
+      num_items: bundle?.accProduct ? totalQty + 1 : totalQty,
+    });
+    setShowCheckout(true);
   };
 
   const handleAddToCart = () => {
@@ -985,19 +1175,19 @@ export default function ProductDetail() {
 
             {/* ✅ Mini reseñas: ya las tenés abajo del grid como MiniReviewsBar, NO TOCAMOS */}
 
-            {/* ✅ CABA: PAGO AL RECIBIR (se mantiene igual) */}
+            {/* ✅ CABA: PAGÁ AL RECIBIR */}
             <div className="pd-codBanner" role="note" aria-label="Pago al recibir en CABA">
               <div className="pd-codLeft">
                 <div className="pd-codIcon">📍</div>
                 <div className="pd-codText">
                   <div className="pd-codTitle">CABA: PAGÁ AL RECIBIR</div>
                   <div className="pd-codSub">
-                    Disponible en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar la compra.
+                    Pagá al recibir en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar.
                   </div>
                 </div>
               </div>
 
-              <div className="pd-codBadge">SOLO CABA</div>
+              <div className="pd-codBadge">CABA</div>
             </div>
 
             {/* <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
@@ -1214,21 +1404,63 @@ export default function ProductDetail() {
             <span className="sticky-countLabel">TERMINA EN</span>
             <CountdownTimer storageKey={`pd_countdown_${id}`} minutes={18} />
           </div>
-
           <div className="sticky-prices">
             <span className="sticky-old">{formatARS(oldTotal)}</span>
             <span className="sticky-now">{formatARS(displayTotal)}</span>
           </div>
         </div>
-
         <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">
-          LO QUIERO!
+          LO QUIERO
         </button>
       </div>
 
       {/* ✅ CSS */}
       <style>{`
-      .pd-grid > * { min-width: 0; }  
+      /* ── Upsell sheet: rows (compartidos con UpsellSheet) ── */
+      #upsell-section { padding: 0; }
+      .ups-head { text-align: center; margin-bottom: 16px; }
+      .ups-head-label { display: inline-block; font-size: .68rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; color: #0b5cff; background: rgba(11,92,255,.08); border-radius: 999px; padding: 3px 12px; margin-bottom: 8px; }
+      .ups-head-title { font-size: 1.12rem; font-weight: 900; margin: 0 0 4px; }
+      .ups-head-sub { font-size: .80rem; color: rgba(11,18,32,.50); font-weight: 600; margin: 0; }
+      .ups-list { display: flex; flex-direction: column; gap: 10px; }
+      .ups-row {
+        display: flex; align-items: center; gap: 12px;
+        background: #fff;
+        border: 1.5px solid rgba(2,8,23,.09);
+        border-radius: 14px;
+        padding: 12px 12px 12px 12px;
+        cursor: pointer;
+        transition: border-color .18s, background .18s, box-shadow .18s;
+        box-shadow: 0 2px 8px rgba(10,20,40,.05);
+      }
+      .ups-row:hover { border-color: rgba(11,92,255,.30); box-shadow: 0 4px 16px rgba(11,92,255,.08); }
+      .ups-row--on {
+        border-color: #16a34a !important;
+        background: rgba(22,163,74,.04) !important;
+        box-shadow: 0 4px 18px rgba(22,163,74,.12) !important;
+      }
+      .ups-row-img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(2,8,23,.07); flex-shrink: 0; }
+      .ups-row-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+      .ups-row-badge { font-size: .62rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #0b5cff; background: rgba(11,92,255,.09); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
+      .ups-row-name { font-size: .88rem; font-weight: 800; margin: 0; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .ups-row-prices { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+      .ups-row-was { font-size: .76rem; font-weight: 700; color: rgba(11,18,32,.38); text-decoration: line-through; }
+      .ups-row-now { font-size: .98rem; font-weight: 900; color: rgba(11,18,32,.90); }
+      .ups-row-save { font-size: .72rem; font-weight: 900; color: #16a34a; background: rgba(22,163,74,.10); border-radius: 999px; padding: 1px 7px; }
+      .ups-row-btn {
+        flex-shrink: 0; width: 36px; height: 36px;
+        border-radius: 50%; border: 2px solid rgba(11,18,32,.18);
+        background: transparent; color: rgba(11,18,32,.55);
+        font-size: 1.2rem; font-weight: 900; line-height: 1;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: all .18s;
+      }
+      .ups-row-btn:hover:not(:disabled) { border-color: #0b5cff; color: #0b5cff; background: rgba(11,92,255,.07); }
+      .ups-row-btn--on { border-color: #16a34a !important; background: #16a34a !important; color: #fff !important; font-size: 1rem !important; }
+      .ups-row-btn:disabled { opacity: .4; cursor: default; }
+      .ups-footer { margin-top: 12px; text-align: center; font-size: .76rem; font-weight: 700; color: rgba(11,18,32,.45); }
+
+      .pd-grid > * { min-width: 0; }
       aside.pd-info { min-width: 0; width: 100%; max-width: 100%; }
 
       /* === Product page: hero image full-bleed on mobile (only the main image) === */
@@ -1602,7 +1834,7 @@ export default function ProductDetail() {
       }
       .flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
 
-      .pd-sections-new{ margin-top: 40px; padding-bottom: 40px; }
+      .pd-sections-new{ margin-top: 20px; padding-bottom: 40px; }
       .pd-flow{ display:flex; flex-direction: column; gap: 28px; }
       .flow-row{
         display:grid;
@@ -2297,47 +2529,60 @@ export default function ProductDetail() {
       /* Sticky */
       .sticky-pro{
         position: fixed;
-        left: 16px;
-        right: 16px;
-        bottom: 14px;
+        left: 0;
+        right: 0;
+        bottom: 0;
         z-index: 9999;
-        display:flex;
-        align-items:center;
-        justify-content: space-between;
-        gap: 12px;
-        background: rgba(255,255,255,.98);
-        border: 1px solid rgba(2,8,23,.10);
-        border-radius: 20px;
-        padding: 12px 14px;
-        box-shadow: 0 22px 70px rgba(10,20,40,.18);
-        backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        background: #fff;
+        border-top: 1.5px solid rgba(2,8,23,.08);
+        border-radius: 20px 20px 0 0;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        box-shadow: 0 -6px 36px rgba(10,20,40,.13);
       }
       @media (min-width: 991px){ .sticky-pro{ display:none; } }
 
-      .sticky-pro-left{ display:flex; flex-direction: column; gap: 8px; }
-      .sticky-count{ display:flex; align-items:center; gap: 8px; font-weight: 900; color: rgba(11,18,32,.70); white-space: nowrap; }
-      .sticky-countLabel{ font-size: .78rem; color: rgba(11,18,32,.55); font-weight: 1100; letter-spacing: .06em; }
-      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 1100; }
+      .sticky-pro-left{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .sticky-count{ display:flex; align-items:center; gap: 6px; }
+      .sticky-countLabel{
+        font-size: .70rem;
+        color: rgba(11,18,32,.45);
+        font-weight: 900;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+      }
+      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .92rem; }
 
-      .sticky-prices{ display:flex; align-items: baseline; gap: 10px; }
-      .sticky-old{ color: rgba(11,18,32,.45); font-weight: 900; text-decoration: line-through; font-size: .88rem; }
-      .sticky-now{ font-weight: 1100; color: rgba(11,18,32,.92); font-size: 1.08rem; }
+      .sticky-prices{ display:flex; align-items: baseline; gap: 8px; }
+      .sticky-old{ color: rgba(11,18,32,.38); font-weight: 700; text-decoration: line-through; font-size: .85rem; }
+      .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: 1.18rem; }
 
       .sticky-pro-btn2{
+        width: 100%;
         border: none;
-        background: #0B5CFF;
-        color:#fff;
-        font-weight: 1100;
-        border-radius: 16px;
-        padding: 14px 18px;
-        cursor:pointer;
-        box-shadow: 0 14px 38px rgba(11,92,255,.30);
-        white-space: nowrap;
-        transition: transform .12s ease;
+        background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
+        color: #fff;
+        font-weight: 900;
+        font-size: 1rem;
+        border-radius: 14px;
+        padding: 12px 18px;
+        cursor: pointer;
+        box-shadow: 0 8px 28px rgba(11,92,255,.32);
+        letter-spacing: .05em;
         text-transform: uppercase;
-        letter-spacing: .04em;
+        transition: transform .12s ease, box-shadow .12s ease;
       }
-      .sticky-pro-btn2:active{ transform: scale(.98); }
+      .sticky-pro-btn2:active{
+        transform: scale(.98);
+        box-shadow: 0 4px 14px rgba(11,92,255,.22);
+      }
 
       .pd-addToCartWrap{
         display: flex;
@@ -2638,7 +2883,16 @@ export default function ProductDetail() {
       }
       `}</style>
 
-      {/* ✅ Checkout sheet — se abre encima de la landing sin navegar */}
+      {/* Upsell sheet — aparece antes del checkout cuando hay config de upsell */}
+      {showUpsellSheet && MC.upsell && (
+        <UpsellSheet
+          mc={MC}
+          mainProduct={product}
+          onConfirm={handleUpsellConfirm}
+        />
+      )}
+
+      {/* Checkout sheet */}
       {showCheckout && (
         <CheckoutSheet onClose={() => setShowCheckout(false)} />
       )}

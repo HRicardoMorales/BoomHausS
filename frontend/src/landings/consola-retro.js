@@ -27,20 +27,17 @@ const consolaRetroConfig = {
     {
       title: "TODO INCLUIDO, ENCHUFÁS Y JUGÁS",
       text: "Sin downloads, sin cuentas, sin suscripciones. La M15 Pro viene lista: conectás el stick al HDMI de tu tele, ponés las pilas en los controles y en segundos estás en el menú con más de 10.000 juegos. Así de simple.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp", // ← reemplazá con imagen real del producto
-      badge: "Plug & Play",
+      img: "https://acdn-us.mitiendanube.com/stores/004/266/873/products/d_686743-mla81480580350_012025-o-09b98e83537c52f93917495830187490-1024-1024.webp", // ← reemplazá con imagen real del producto
     },
     {
       title: "DOS CONTROLES INALÁMBRICOS INCLUIDOS",
       text: "Viene con dos mandos estilo PS5, ergonómicos y cómodos para largas sesiones. Conexión 2.4G sin lag, respuesta inmediata. Ideal para jugar solo o en modo multijugador con quien tengas al lado.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp", // ← reemplazá con imagen real del producto
-      badge: "2 controles",
+      img: "https://pbs.twimg.com/media/HCsP23KWwAARP_D?format=jpg&name=small", // ← reemplazá con imagen real del producto
     },
     {
       title: "+10.000 JUEGOS RETRO EN UN SOLO DISPOSITIVO",
       text: "NES, Super Nintendo, Sega Genesis, Game Boy Advance, PS1 y más. Todos los clásicos que creciste jugando, en 64GB de almacenamiento. Nunca más vas a quedarte sin qué jugar.",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_950983-MLA104372170273_012026-F.webp", // ← reemplazá con imagen real del producto
-      badge: "64 GB",
+      img: "https://pbs.twimg.com/media/HCsQO7oXcAAr5Hi?format=png&name=small", // ← reemplazá con imagen real del producto
     },
   ],
 
@@ -75,7 +72,7 @@ const consolaRetroConfig = {
   howTo: {
     title: "CÓMO SE USA",
     image: {
-      url: "https://http2.mlstatic.com/D_NQ_NP_2X_730119-MLA92075368185_092025-F.webp", // ← reemplazá con imagen del instructivo
+      url: "https://pbs.twimg.com/media/HCsR-lubEAACmhz?format=jpg&name=small", // ← reemplazá con imagen del instructivo
       alt: "Cómo conectar la consola M15 Pro en 3 pasos",
     },
   },
@@ -83,7 +80,7 @@ const consolaRetroConfig = {
   // ── Tarjeta de autoridad ──────────────────────────────────
   authority: {
     show: true,
-    photo: "https://images.pexels.com/photos/3831645/pexels-photo-3831645.jpeg?auto=compress&cs=tinysrgb&w=600",
+    photo: "https://gamerstyle.com.mx/wp-content/uploads/2025/03/Gunnar-Fortnite.jpg",
     name: "Lic. Martín Cabrera",
     role: "Especialista en videojuegos retro · Gaming",
     quote: "La M15 Pro es una de las mejores opciones del mercado para quienes quieren revivir los clásicos sin complicaciones. La combinación de más de 10.000 juegos, salida 4K y dos controles inalámbricos incluidos la pone muy por encima de la competencia en su rango de precio.",
@@ -136,78 +133,58 @@ const consolaRetroConfig = {
       rating: 5,
       text: "No esperaba que fuera tan fácil de conectar. Enchufé al HDMI y en dos minutos estaba jugando al Street Fighter con mi hermano. Un golazo.",
       name: "Sebastián Torres",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_847065-MLA93209847143_092025-F.webp",
+      img: "https://m.media-amazon.com/images/I/6157qMXYGuL.jpg",
     },
     {
       title: "REGALO PERFECTO",
       rating: 5,
       text: "Se lo regalé a mi viejo para su cumpleaños. Cuando vio los juegos del Atari y el Super Mario se emocionó. No para de jugar.",
       name: "Lucía Fernández",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_827742-MLA97357658814_112025-F.webp",
+      img: "https://m.media-amazon.com/images/I/61d+329Sd4L.jpg",
     },
     {
       title: "LOS CONTROLES SON CÓMODOS",
       rating: 5,
       text: "Vine por los juegos pero lo que más me sorprendió fueron los controles. Se sienten como los de una PlayStation, no baratos ni incómodos.",
       name: "Matías Herrera",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_914883-MLA104359225539_012026-F.webp",
+      img: "https://m.media-amazon.com/images/I/713-K-d+sNL.jpg",
     },
     {
       title: "NOSTALGIA TOTAL",
       rating: 5,
       text: "Jugué al Contra, al Megaman, al Mortal Kombat y al Crash Bandicoot todo en una tarde. Pura nostalgia. Vale cada peso.",
       name: "Diego Romero",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_991593-MLA97567338889_112025-F.webp",
+      img: "https://m.media-amazon.com/images/I/719PcTe84KL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews",
     },
     {
       title: "PERFECTO PARA NIÑOS",
       rating: 5,
       text: "Mis hijos de 8 y 10 años no lo sueltan. Los juegos son variados y apropiados. Y yo aproveché para enseñarles los clásicos de mi época.",
       name: "Carolina Gómez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_681590-MLA97122685113_112025-F.webp",
+      img: "https://m.media-amazon.com/images/I/61+ly5DZ7nL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews",
     },
     {
       title: "IMAGEN NÍTIDA EN 4K",
       rating: 5,
       text: "Conecté a mi tele 55' y la imagen se ve muy bien. Mucho mejor de lo que esperaba para juegos retro. Los colores se ven vivos.",
       name: "Alejandro Vidal",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_604768-MLA105021350975_012026-F.webp",
+      img: "https://m.media-amazon.com/images/I/712DvJOlSYL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews",
     },
     {
       title: "ENTRETIENE A TODA LA FAMILIA",
       rating: 4,
       text: "Compramos para usarla de vez en cuando y terminamos jugando todos los fines de semana. La variedad de juegos es enorme.",
       name: "Valeria Muñoz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_615857-MLA104463732564_012026-F.webp",
+      img: "https://m.media-amazon.com/images/I/61ZyVTvLV9L._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews",
     },
     {
       title: "LLEGÓ RÁPIDO Y EN CAJA",
       rating: 5,
       text: "Pedido el martes, llegó el jueves. La caja llegó perfecta, sin golpes. Todo como en la foto. Muy conforme con la compra.",
       name: "Nicolás Aguirre",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_735168-MLA104575340271_012026-F.webp",
+      img: "https://m.media-amazon.com/images/I/71+b6uWoGhL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews",
     },
-    {
-      title: "PARA PASAR EL TIEMPO",
-      rating: 4,
-      text: "La compré para tener algo entretenido en casa sin pagar suscripciones. Muy buena opción para lo que cuesta. La recomiendo.",
-      name: "Florencia Paz",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_612380-MLA103990675067_012026-F.webp",
-    },
-    {
-      title: "DOS CONTROLES ES UN PLUS",
-      rating: 5,
-      text: "Lo mejor es que viene con dos controles de entrada. No tuve que comprar nada extra. Directo a jugar con mi pareja.",
-      name: "Ramiro Blanco",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_901052-MLA104463601083_012026-F.webp",
-    },
-    {
-      title: "CLÁSICOS QUE NO FALLAN",
-      rating: 5,
-      text: "Super Mario, Tetris, Sonic, Donkey Kong, Pac-Man... todos están. Para los que crecimos en los 90, esto es una joya.",
-      name: "Marina Suárez",
-      img: "https://http2.mlstatic.com/D_NQ_NP_2X_850550-MLA98741967278_112025-F.webp",
-    },
+
   ],
 
   // ── Quiénes somos ─────────────────────────────────────────

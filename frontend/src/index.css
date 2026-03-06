@@ -1830,15 +1830,41 @@ body.page-checkout .container {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 44px;
+  height: 80px;
+  overflow: hidden;
   pointer-events: none;
 }
 
 .pd-wave--top{ top: -1px; transform: rotate(180deg); }
 .pd-wave--bottom{ bottom: -1px; }
-.pd-wave svg{ width: 100%; height: 100%; display: block; }
+
+.pd-wl{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+}
+
+.pd-wl--1{ animation: waveL 11s linear infinite; }
+.pd-wl--2{ animation: waveR 16s linear infinite; }
+.pd-wl--3{ animation: waveL  7s linear infinite; }
+
+@keyframes waveL{
+  from{ transform: translateX(0); }
+  to  { transform: translateX(-50%); }
+}
+
+@keyframes waveR{
+  from{ transform: translateX(-50%); }
+  to  { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pd-wl{ animation: none; }
+}
 
 @media (max-width: 520px){
   .pd-band{ padding: 54px 0; }
-  .pd-wave{ height: 36px; }
+  .pd-wave{ height: 60px; }
 }
