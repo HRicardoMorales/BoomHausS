@@ -58,7 +58,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   }, [pathname, embedded]);
 
   // ✅ Carrito
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, calcItemTotal } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
   // ✅ Método de pago (único online): Mercado Pago
@@ -113,43 +113,35 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     return (items || []).map((it) => it?.productId).filter(Boolean).map(String);
   }, [items]);
 
-  // ✅ Precio "ANTES" (por ENV o fallback)
-  const compareUnit = Number(import.meta.env.VITE_CHECKOUT_COMPARE_TOTAL || 73350);
+  // Precio "ANTES": suma de precio * cantidad sin descuentos (solo items con promo)
   const compareTotal = useMemo(() => {
-    if (!compareUnit || compareUnit <= 0) return 0;
-    const qty = Math.max(1, Number(totalItems) || 1);
-    return compareUnit * qty;
-  }, [compareUnit, totalItems]);
+    return (items || []).reduce((acc, it) => {
+      if (!it?.promo) return acc;
+      return acc + (Number(it.price) || 0) * (Number(it.quantity) || 0);
+    }, 0);
+  }, [items]);
 
-  const showCompare = compareTotal > 0 && compareTotal > totalPrice;
+  // Total sin promos para calcular el ahorro real
+  const fullTotal = useMemo(() => {
+    return (items || []).reduce((acc, it) => {
+      return acc + (Number(it.price) || 0) * (Number(it.quantity) || 0);
+    }, 0);
+  }, [items]);
+
+  const showCompare = compareTotal > 0 && fullTotal > totalPrice;
 
   const promoSavings = useMemo(() => {
     if (!showCompare) return 0;
-    const diff = compareTotal - totalPrice;
-    return diff > 0 ? diff : 0;
-  }, [showCompare, compareTotal, totalPrice]);
+    return Math.max(0, fullTotal - totalPrice);
+  }, [showCompare, fullTotal, totalPrice]);
 
   const promoPct = useMemo(() => {
-    if (!showCompare) return 0;
-    return Math.round(((compareTotal - totalPrice) / compareTotal) * 100);
-  }, [showCompare, compareTotal, totalPrice]);
+    if (!showCompare || !fullTotal) return 0;
+    return Math.round((promoSavings / fullTotal) * 100);
+  }, [showCompare, fullTotal, promoSavings]);
 
   // ✅ Total final: sin transferencia, sin descuentos extra
   const finalTotal = totalPrice;
-
-  // Producto “principal” para mini resumen (thumbnail)
-  const mainItem = useMemo(() => (items && items.length ? items[0] : null), [items]);
-  const mainThumb = useMemo(() => {
-    if (!mainItem) return null;
-    return (
-      mainItem.image ||
-      mainItem.thumbnail ||
-      mainItem.img ||
-      mainItem.pictureUrl ||
-      mainItem.photo ||
-      null
-    );
-  }, [mainItem]);
 
   // ✅ Validación DNI simple (7 u 8 dígitos)
   const dniDigits = useMemo(() => onlyDigits(customerDni), [customerDni]);
@@ -159,7 +151,6 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const canSubmit = useMemo(() => {
     if (loading || isCartEmpty) return false;
     if (!customerName.trim()) return false;
-    if (!customerEmail.trim()) return false;
     if (!shippingAddress.trim()) return false;
     if (!isDniOk) return false;
 
@@ -236,8 +227,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
     const dniOk = dni.length >= 7 && dni.length <= 8;
 
-    if (!name || !email || !address) {
-      setError("Completá Nombre, Email y Dirección para continuar.");
+    if (!name || !address) {
+      setError("Completá Nombre y Dirección para continuar.");
       return;
     }
     if (!dniOk) {
@@ -775,97 +766,79 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
           {/* DERECHA: RESUMEN */}
           <aside>
             <div className="card summary-card" style={{ padding: "1.5rem", position: "sticky", top: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-                <h3 style={{ marginTop: 0, marginBottom: "0.75rem" }}>Resumen del pedido</h3>
-
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  <span style={smallBadgeStyle}>🚚 Envío GRATIS</span>
-                  {showCompare && <span style={smallBadgeStyle}>🔥 {promoPct}% OFF</span>}
-                </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: "0.75rem" }}>
+                <h3 style={{ margin: 0 }}>Resumen del pedido</h3>
+                <button
+                  type="button"
+                  onClick={() => { if (window.confirm("¿Vaciar el carrito?")) clearCart(); }}
+                  style={{ fontSize: ".75rem", fontWeight: 800, color: "rgba(11,18,32,.38)", background: "none", border: "none", cursor: "pointer", padding: "2px 6px", borderRadius: 6, textDecoration: "underline" }}
+                >
+                  Vaciar
+                </button>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: "0.75rem" }}>
+                <span style={smallBadgeStyle}>🚚 Envío GRATIS</span>
+                {showCompare && <span style={smallBadgeStyle}>🔥 {promoPct}% OFF</span>}
               </div>
 
               {isCartEmpty ? (
                 <p>El carrito está vacío</p>
               ) : (
                 <>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 12,
-                      alignItems: "center",
-                      padding: "10px 12px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(11,92,255,.12)",
-                      background: "rgba(255,255,255,.7)",
-                      marginBottom: 12,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 12,
-                        overflow: "hidden",
-                        border: "1px solid rgba(11,92,255,.18)",
-                        background: "rgba(234,241,255,.75)",
-                        flexShrink: 0,
-                        display: "grid",
-                        placeItems: "center",
-                      }}
-                    >
-                      {mainThumb ? (
-                        <img src={mainThumb} alt="Producto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : (
-                        <span style={{ fontWeight: 1000 }}>📦</span>
-                      )}
-                    </div>
-
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 1000, lineHeight: 1.2 }}>
-                        {mainItem?.name || "Producto"}
-                      </div>
-                      <div className="muted" style={{ fontWeight: 900, fontSize: "0.9rem", marginTop: 2 }}>
-                        {totalItems} item(s)
-                      </div>
-                    </div>
-
-                    <div style={{ marginLeft: "auto", textAlign: "right" }}>
-                      {showCompare && (
-                        <div className="muted" style={{ textDecoration: "line-through", fontWeight: 900, fontSize: "0.9rem" }}>
-                          {money(compareTotal)}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+                    {items.map((item, i) => {
+                      const thumb = item.imageUrl || item.image || item.thumbnail || item.img || null;
+                      const itemTotal = calcItemTotal(item);
+                      return (
+                        <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 12px", borderRadius: 14, border: "1px solid rgba(11,92,255,.12)", background: "rgba(255,255,255,.7)" }}>
+                          <div style={{ width: 52, height: 52, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(11,92,255,.18)", background: "rgba(234,241,255,.75)", flexShrink: 0, display: "grid", placeItems: "center" }}>
+                            {thumb
+                              ? <img src={thumb} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              : <span style={{ fontSize: "1.3rem" }}>📦</span>}
+                          </div>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ fontWeight: 800, fontSize: "0.88rem", lineHeight: 1.25 }}>{item.name || "Producto"}</div>
+                            <div style={{ fontSize: "0.78rem", color: "rgba(11,18,32,.45)", fontWeight: 700, marginTop: 2 }}>
+                              {item.quantity > 1 ? `x${item.quantity} unidades` : "1 unidad"}
+                              {item.promo?.type === "bundle2" && item.promo?.discountPct > 0 && (
+                                <span style={{ marginLeft: 6, color: "#16a34a", fontWeight: 800 }}>−{item.promo.discountPct}% PROMO</span>
+                              )}
+                            </div>
+                          </div>
+                          <div style={{ flexShrink: 0, textAlign: "right" }}>
+                            {item.compareAtPrice && item.compareAtPrice > item.price && (
+                              <div style={{ fontSize: "0.75rem", textDecoration: "line-through", color: "rgba(11,18,32,.35)", fontWeight: 700 }}>
+                                {money(item.compareAtPrice)}
+                              </div>
+                            )}
+                            <div style={{ fontWeight: 900, fontSize: "0.95rem", color: item.compareAtPrice && item.compareAtPrice > item.price ? "#16a34a" : "inherit" }}>
+                              {money(itemTotal)}
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      <div style={{ fontWeight: 1100 }}>{money(totalPrice)}</div>
-                    </div>
+                      );
+                    })}
                   </div>
 
-                  <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+                  <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+                    {/* Envío gratis */}
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: ".88rem", fontWeight: 800, color: "rgba(11,18,32,.5)" }}>
+                      <span>Envío</span>
+                      <span style={{ color: "#16a34a", fontWeight: 900 }}>GRATIS</span>
+                    </div>
+
+                    {/* Descuento */}
                     {showCompare && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          gap: 10,
-                          color: "var(--primary)",
-                          fontWeight: 1100,
-                        }}
-                      >
-                        <span>Descuento aplicado</span>
-                        <span>-{money(promoSavings)}</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(22,163,74,.07)", border: "1px solid rgba(22,163,74,.18)", borderRadius: 10, padding: "7px 10px" }}>
+                        <span style={{ fontSize: ".88rem", fontWeight: 900, color: "#15803d" }}>🏷️ Descuento promo ({promoPct}%)</span>
+                        <span style={{ fontSize: ".92rem", fontWeight: 1000, color: "#15803d" }}>-{money(promoSavings)}</span>
                       </div>
                     )}
 
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                        paddingTop: 10,
-                        borderTop: "1px solid #eef2f7",
-                      }}
-                    >
-                      <span style={{ fontSize: "1rem", fontWeight: 1100, color: "rgba(11,18,32,.75)" }}>Total final</span>
-                      <span style={{ fontSize: "1.55rem", fontWeight: 1200, letterSpacing: "-0.02em" }}>
+                    {/* Total */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, borderTop: "1.5px solid #eef2f7", marginTop: 2 }}>
+                      <span style={{ fontSize: "1rem", fontWeight: 900, color: "rgba(11,18,32,.7)" }}>Total final</span>
+                      <span style={{ fontSize: "1.6rem", fontWeight: 1200, letterSpacing: "-0.03em", color: "rgba(11,18,32,.92)" }}>
                         {money(finalTotal)}
                       </span>
                     </div>
@@ -884,8 +857,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         }}
                       >
                         {isCod
-                          ? "Completá Nombre, Email, DNI, Teléfono y Dirección para confirmar el pedido."
-                          : "Completá Nombre, Email, DNI y Dirección para habilitar el pago."}
+                          ? "Completá Nombre, DNI, Teléfono y Dirección para confirmar el pedido."
+                          : "Completá Nombre, DNI y Dirección para habilitar el pago."}
                       </div>
                     )}
 
@@ -916,8 +889,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         : loading
                         ? "⏳ Procesando tu pedido..."
                         : isCod
-                        ? "Confirmar pedido (pagás al recibir)"
-                        : "Pagar en Mercado Pago →"}
+                        ? `Confirmar pedido · ${money(finalTotal)}`
+                        : `Pagar ${money(finalTotal)} en Mercado Pago →`}
                     </button>
 
                     {/* ✅ Overlay "Conectando con MP" — aparece antes del redirect */}
@@ -949,19 +922,18 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                       </div>
                     )}
 
-                    <div
-                      style={{
-                        textAlign: "center",
-                        fontSize: "0.85rem",
-                        color: "#94a3b8",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        fontWeight: 850,
-                      }}
-                    >
-                      🔒 Compra segura · {isCod ? "Pago al recibir (CABA)" : "Mercado Pago"}
+                    {/* Trust badges */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", marginTop: 2 }}>
+                      {[
+                        { icon: "🔒", label: "Pago seguro" },
+                        { icon: "🚚", label: "Envío gratis" },
+                        { icon: "⭐", label: "+500 clientes" },
+                      ].map(({ icon, label }) => (
+                        <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                          <span style={{ fontSize: "1.1rem" }}>{icon}</span>
+                          <span style={{ fontSize: ".72rem", fontWeight: 800, color: "rgba(11,18,32,.45)", letterSpacing: ".03em" }}>{label}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </>
@@ -1109,6 +1081,48 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
               .ship-pill{ display:none; }
               .ship-sub{ max-width: 78vw; }
             }
+
+            /* ── Retoque visual checkout ── */
+            @keyframes ckFadeUp{
+              from{ opacity:0; transform:translateY(14px); }
+              to{ opacity:1; transform:translateY(0); }
+            }
+            .section .card, .section .ship-banner{
+              animation: ckFadeUp .38s cubic-bezier(.22,1,.36,1) both;
+            }
+            .section .card:nth-child(2){ animation-delay:.07s; }
+            .section .card:nth-child(3){ animation-delay:.14s; }
+
+            /* Smooth input focus */
+            input, select, textarea{
+              transition: border-color .18s ease, box-shadow .18s ease;
+            }
+            input:focus, select:focus, textarea:focus{
+              outline:none;
+              border-color: rgba(11,92,255,.55) !important;
+              box-shadow: 0 0 0 3px rgba(11,92,255,.10);
+            }
+
+            /* Summary items hover */
+            .ck-item{
+              transition: background .15s ease;
+              border-radius: 10px;
+              padding: 4px 6px;
+              margin: 0 -6px;
+            }
+            .ck-item:hover{ background: rgba(11,92,255,.03); }
+
+            /* Pay button pulse on idle */
+            @keyframes payPulse{
+              0%,100%{ box-shadow:0 8px 28px rgba(11,92,255,.32); }
+              50%{ box-shadow:0 12px 38px rgba(11,92,255,.52); }
+            }
+            button[type="submit"]{
+              animation: payPulse 3s ease-in-out infinite;
+              transition: transform .15s ease;
+            }
+            button[type="submit"]:hover{ transform: translateY(-1px); }
+            button[type="submit"]:active{ transform: scale(.98); animation:none; }
           `}</style>
         </div>
       </div>

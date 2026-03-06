@@ -60,6 +60,7 @@ export function CartProvider({ children }) {
     function addItem(product, qty = 1, options = {}) {
         const q = Math.max(1, Number(qty) || 1);
         const promo = options?.promo || null;
+        const compareAtPrice = options?.compareAtPrice ? Number(options.compareAtPrice) || null : null;
 
         // 🔥 NUEVO: Disparamos evento para que App.jsx muestre el Popup
         window.dispatchEvent(new CustomEvent('cart:added', {
@@ -104,6 +105,7 @@ export function CartProvider({ children }) {
                     productId: product._id,
                     name: product.name,
                     price: Number(product.price) || 0,
+                    compareAtPrice,
                     quantity: q,
                     imageUrl: product.imageUrl || product.images?.[0] || "",
                     promo: initialPromo,

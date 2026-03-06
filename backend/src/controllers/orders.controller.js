@@ -49,6 +49,7 @@ async function createOrder(req, res, next) {
             items,
             notes,
             paymentMethod,
+            total: frontendTotal,
         } = req.body || {};
 
         const badReq = (msg) => {
@@ -79,9 +80,8 @@ async function createOrder(req, res, next) {
         console.log("💳 Método procesado:", payMethod);
 
         if (!name) throw badReq("Falta customerName.");
-        if (!email) throw badReq("Falta customerEmail.");
         if (!dni) throw badReq("Falta customerDni.");
-        if (!isEmailValid(email)) throw badReq("Email inválido.");
+        if (email && !isEmailValid(email)) throw badReq("Email inválido.");
         if (!address) throw badReq("Falta shippingAddress.");
 
         if (!Array.isArray(items) || items.length === 0)
@@ -104,10 +104,12 @@ async function createOrder(req, res, next) {
         });
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
-        const totalAmount = normalizedItems.reduce(
-            (acc, it) => acc + it.price * it.quantity,
-            0
-        );
+        // totalAmount: usamos el total enviado por el frontend (ya incluye promos)
+        // como fallback calculamos precio bruto
+        const computedTotal = normalizedItems.reduce((acc, it) => acc + it.price * it.quantity, 0);
+        const totalAmount = (Number.isFinite(Number(frontendTotal)) && Number(frontendTotal) > 0)
+            ? Math.round(Number(frontendTotal))
+            : computedTotal;
 
         if (!Number.isFinite(totalAmount) || totalAmount <= 0)
             throw badReq("Total inválido.");

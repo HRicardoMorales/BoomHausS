@@ -94,7 +94,7 @@ function CountdownTimer({ storageKey = "pd_countdown", minutes = 18 }) {
 ========================= */
 function SectionHeader({ title, subtitle }) {
   return (
-    <div className="sec-head">
+    <div className="sec-head anim-el">
       <h2 className="sec-title">{title}</h2>
       {subtitle ? <div className="sec-sub">{subtitle}</div> : null}
     </div>
@@ -106,7 +106,7 @@ function BoxContents({ mc = MARKETING_CONTENT }) {
   if (!items.length) return null;
 
   return (
-    <section className="boxc">
+    <section className="boxc anim-el">
       <div className="boxc-header">
         <span className="boxc-header-icon">📦</span>
         <div>
@@ -191,7 +191,7 @@ function HowToSteps({ mc = MARKETING_CONTENT }) {
     <section className="pd-block" id="howto">
       <SectionHeader title={howTo.title} />
 
-      <div className="how-imgWrap hover-float">
+      <div className="how-imgWrap hover-float anim-el">
         <img
           src={howTo.image?.url}
           alt={howTo.image?.alt || howTo.title}
@@ -260,7 +260,7 @@ function FaqSectionPro({ mc = MARKETING_CONTENT }) {
   return (
     <section className="pd-block" id="faq-section">
       <SectionHeader title={faqTitle} />
-      <div className="faq-pro">
+      <div className="faq-pro anim-el">
         {faq.map((item, i) => {
           const isOpen = openIndex === i;
           return (
@@ -289,7 +289,7 @@ function StoryBlocks({ mc = MARKETING_CONTENT }) {
   return (
     <section className="pd-flow">
       {blocks.map((b, i) => (
-        <div key={i} className="flow-row">
+        <div key={i} className="flow-row anim-el">
           <div className="flow-text">
             {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
@@ -313,91 +313,49 @@ function StoryBlocks({ mc = MARKETING_CONTENT }) {
   );
 }
 
-function MiniReviewsBar({ productImg, mc = MARKETING_CONTENT }) {
-  const data = (mc.reviewsCarousel || []).slice(0, 5);
+function MiniReviewsBar({ mc = MARKETING_CONTENT }) {
+  const data = (mc.miniReviews || mc.reviewsCarousel || []).slice(0, 6);
   const [active, setActive] = useState(0);
-
-  const go = (idx) => {
-    if (!data.length) return;
-    const n = data.length;
-    setActive((idx + n) % n);
-  };
 
   useEffect(() => {
     if (!data.length) return;
-    const t = setInterval(() => go(active + 1), 7000);
+    const t = setInterval(() => setActive(i => (i + 1) % data.length), 5000);
     return () => clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, data.length]);
+  }, [data.length]);
 
   if (!data.length) return null;
 
+  // paleta de colores para el avatar
+  const avatarColors = ["#0b5cff","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4"];
+
   return (
-    <div className="mrb">
-      <div className="mrb-section-header">
-        <span className="mrb-section-badge">⭐</span>
-        <span className="mrb-section-title">Lo que dicen otros compradores</span>
-      </div>
+    <div className="mrb anim-el">
+      <div className="mrb-label">Lo que dicen nuestros clientes</div>
       <div className="mrb-viewport">
-        <div
-          className="mrb-track"
-          style={{ transform: `translateX(-${active * 100}%)` }}
-        >
-          {data.map((r, i) => {
-            const avatar = r.img || productImg || FALLBACK_IMG;
-            return (
-              <div className="mrb-slide" key={i}>
-                <div className="mrb-card">
-                  <div className="mrb-header">
-                    <img
-                      className="mrb-avatar"
-                      src={avatar}
-                      alt={r.name || "Cliente"}
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = FALLBACK_IMG;
-                      }}
-                    />
-                    <div className="mrb-header-info">
-                      <div className="mrb-name">{r.name}</div>
-                      <div className="mrb-stars">
-                        <StarsInline rating={r.rating || 5} />
-                      </div>
-                    </div>
+        <div className="mrb-track" style={{ transform: `translateX(-${active * 100}%)` }}>
+          {data.map((r, i) => (
+            <div className="mrb-slide" key={i}>
+              <div className="mrb-card">
+                <div className="mrb-card-header">
+                  <div className="mrb-card-avatar" style={{ background: avatarColors[i % avatarColors.length] }}>
+                    {(r.name || "?").charAt(0).toUpperCase()}
                   </div>
-
-                  {r.title && <div className="mrb-title">{r.title}</div>}
-                  <div className="mrb-text">{r.text}</div>
+                  <div className="mrb-card-meta">
+                    <div className="mrb-card-name">{r.name}</div>
+                    <div className="mrb-card-stars"><StarsInline rating={r.rating || 5} /></div>
+                  </div>
                 </div>
+                <p className="mrb-card-text">"{r.short || r.text}"</p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mrb-nav">
-        <button type="button" className="mrb-arrow" onClick={() => go(active - 1)} aria-label="Anterior">
-          ‹
-        </button>
-
-        <div className="mrb-dots">
-          {data.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`mrb-dot ${i === active ? "on" : ""}`}
-              onClick={() => go(i)}
-              aria-label={`Ir a reseña ${i + 1}`}
-            />
+            </div>
           ))}
         </div>
-
-        <button type="button" className="mrb-arrow" onClick={() => go(active + 1)} aria-label="Siguiente">
-          ›
-        </button>
+      </div>
+      <div className="mrb-dots">
+        {data.map((_, i) => (
+          <button key={i} type="button" className={`mrb-dot ${i === active ? "on" : ""}`}
+            onClick={() => setActive(i)} aria-label={`Reseña ${i + 1}`} />
+        ))}
       </div>
     </div>
   );
@@ -438,7 +396,7 @@ function ReviewsCarouselPro({ productImg, mc = MARKETING_CONTENT }) {
     <section className="pd-block" id="reviews-section">
       <SectionHeader title={mc.reviewsTitle} subtitle={mc.reviewsSubtitle} />
 
-      <div className="rv-wrap">
+      <div className="rv-wrap anim-el">
         <button type="button" className="rv-nav rv-prev" onClick={() => go(active - 1)} aria-label="Anterior">
           ‹
         </button>
@@ -506,7 +464,7 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
   ];
 
   return (
-    <section className="about2" id="about">
+    <section className="about2 anim-el" id="about">
       <div className="about2-top">
         <div className="about2-brand">
           <span className="about2-live-dot" aria-hidden="true" />
@@ -550,13 +508,13 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
 /* =========================
    Upsell Sheet — aparece antes del checkout
 ========================= */
-function UpsellSheet({ mc, mainProduct, onConfirm }) {
+function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
   const sheetRef = useRef(null);
   const backdropRef = useRef(null);
   const { upsell } = mc;
   const [accProducts, setAccProducts] = useState({});
   const [done, setDone] = useState(false);
-  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [selectedSet, setSelectedSet] = useState(new Set());
 
   // Animar entrada
   useEffect(() => {
@@ -595,20 +553,37 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
 
 
 
-  const handleToggle = (idx) => setSelectedIdx((p) => p === idx ? null : idx);
+  const handleToggle = (idx) => setSelectedSet((p) => {
+    const next = new Set(p);
+    if (next.has(idx)) next.delete(idx); else next.add(idx);
+    return next;
+  });
 
-  const selectedItem = selectedIdx !== null ? upsell.items[selectedIdx] : null;
-  const selectedAcc  = selectedItem ? accProducts[selectedItem.slug] : null;
-  const mainPrice    = mainProduct?.price ?? 0;
-  const mainCompareAt = mainProduct?.originalPrice || mainProduct?.compareAtPrice || mainPrice;
-  const accPrice     = selectedAcc?.price ?? selectedItem?.fallbackPrice ?? 0;
-  const accCompareAt = selectedAcc?.originalPrice || selectedAcc?.compareAtPrice || selectedItem?.fallbackCompareAt || accPrice;
-  const bundleTotal  = mainPrice + accPrice;
-  const bundleSaving = (mainCompareAt + accCompareAt) - bundleTotal;
+  const mainPrice       = mainDisplayTotal ?? mainProduct?.price ?? 0;
+  const mainCompareAt   = mainProduct?.originalPrice || mainProduct?.compareAtPrice || (mainProduct?.price ?? 0);
+  const selIdxArr       = Array.from(selectedSet);
+  const accTotal        = selIdxArr.reduce((sum, idx) => {
+    const it = upsell.items[idx]; const ac = accProducts[it.slug];
+    return sum + (ac?.price ?? it.fallbackPrice ?? 0);
+  }, 0);
+  const accCompareTotal = selIdxArr.reduce((sum, idx) => {
+    const it = upsell.items[idx]; const ac = accProducts[it.slug];
+    const p  = ac?.price ?? it.fallbackPrice ?? 0;
+    return sum + (ac?.originalPrice || ac?.compareAtPrice || it.fallbackCompareAt || p);
+  }, 0);
+  const bundleTotal  = mainPrice + accTotal;
+  const bundleSaving = (mainCompareAt + accCompareTotal) - bundleTotal;
 
   const confirm = (withBundle) => {
     animateClose(() => {
-      onConfirm(withBundle && selectedIdx !== null ? { item: selectedItem, accProduct: selectedAcc } : null);
+      if (!withBundle || selectedSet.size === 0) { onConfirm(null); return; }
+      const bundles = selIdxArr.map(idx => {
+        const it = upsell.items[idx];
+        const ac = accProducts[it.slug] ?? null;
+        const compareAt = ac?.originalPrice || ac?.compareAtPrice || it.fallbackCompareAt || null;
+        return { item: it, accProduct: ac, compareAtPrice: compareAt };
+      });
+      onConfirm({ bundles });
     });
   };
 
@@ -635,7 +610,7 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
               const aCmpAt  = acc?.originalPrice || acc?.compareAtPrice || item.fallbackCompareAt || aPrice;
               const aImg    = acc?.imageUrl || item.fallbackImage || FALLBACK_IMG;
               const saving  = aCmpAt - aPrice;
-              const isSel   = selectedIdx === idx;
+              const isSel   = selectedSet.has(idx);
               return (
                 <div key={idx} className={`ups-row${isSel ? " ups-row--on" : ""}`}
                   onClick={() => done && handleToggle(idx)}>
@@ -664,7 +639,7 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
 
           {/* CTAs */}
           <div className="ups-sheet-ctas">
-            {selectedIdx !== null ? (
+            {selectedSet.size > 0 ? (
               <>
                 <button type="button" className="ups-sheet-btn-main" onClick={() => confirm(true)}>
                   Agregar y pagar — {moneyARS(bundleTotal)}
@@ -708,46 +683,67 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
   );
 }
 
-const WavesDivider = ({ fill = "#F8FBFF" }) => (
-  <>
-    <svg className="pd-wl pd-wl--1" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
-      <path fill={fill} fillOpacity="0.25"
-        d="M0,40 C100,65 200,15 300,40 C400,65 500,15 600,40 C700,65 800,15 900,40 C1000,65 1100,15 1200,40 C1300,65 1400,15 1500,40 C1600,65 1700,15 1800,40 V80 H0 Z" />
-    </svg>
-    <svg className="pd-wl pd-wl--2" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
-      <path fill={fill} fillOpacity="0.50"
-        d="M0,55 C150,25 300,70 450,55 C600,40 750,70 900,55 C1050,25 1200,70 1350,55 C1500,40 1650,70 1800,55 V80 H0 Z" />
-    </svg>
-    <svg className="pd-wl pd-wl--3" viewBox="0 0 1800 80" preserveAspectRatio="none" aria-hidden="true">
-      <path fill={fill} fillOpacity="1"
-        d="M0,60 C300,20 600,80 900,60 C1200,20 1500,80 1800,60 V80 H0 Z" />
-    </svg>
-  </>
-);
+// WaveSeparator — implementación fiel al Wave 3 Animated Divider.
+// "from" controla los colores: sección de arriba y sección de abajo.
+//   "light" → claro arriba (#eef4ff), oscuro abajo (#0b172a)
+//   "blue"  → oscuro arriba (#0e1a2e), claro abajo (#f8fbff)
+// El div tiene el fondo de la sección de arriba + 3 SVGs con el color de abajo.
+// Cada SVG tiene el path repetido 2× → loop sin corte con translateX(-50%).
+function WaveSeparator({ from = "light" }) {
+  const isDark = from === "blue";
+  // topColor debe coincidir exactamente con el color FINAL del gradiente del Band de arriba
+  // bottomColor debe coincidir con el color INICIAL del Band de abajo
+  const topColor    = isDark ? "#0b172a" : "#ffffff";
+  const bottomColor = isDark ? "#ffffff" : "#0b172a";
+  return (
+    <div
+      className="wave-divider"
+      role="presentation"
+      aria-hidden="true"
+      style={{ "--wave-top-color": topColor, "--wave-bottom-color": bottomColor }}
+    >
+      {/* Olas calmadas: amplitud ±12px, centro en y=78 sobre viewBox de 100 */}
+      <svg className="wave-1" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 1440 100" preserveAspectRatio="none">
+        <path fill="var(--wave-bottom-color)" d="
+          M0,78 C120,90 240,66 360,78 C480,90 600,66 720,78
+          C840,90 960,66 1080,78 C1200,90 1320,66 1440,78
+          L1440,100 L0,100 Z
+          M1440,78 C1560,90 1680,66 1800,78 C1920,90 2040,66 2160,78
+          C2280,90 2400,66 2520,78 C2640,90 2760,66 2880,78
+          L2880,100 L1440,100 Z
+        "/>
+      </svg>
+      <svg className="wave-2" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 1440 100" preserveAspectRatio="none">
+        <path fill="var(--wave-bottom-color)" d="
+          M0,84 C180,72 360,94 540,84 C720,72 900,94 1080,84
+          C1260,72 1350,88 1440,84
+          L1440,100 L0,100 Z
+          M1440,84 C1620,72 1800,94 1980,84 C2160,72 2340,94 2520,84
+          C2700,72 2790,88 2880,84
+          L2880,100 L1440,100 Z
+        "/>
+      </svg>
+      <svg className="wave-3" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 1440 100" preserveAspectRatio="none">
+        <path fill="var(--wave-bottom-color)" d="
+          M0,72 C90,82 270,62 360,72 C450,82 630,62 720,72
+          C810,82 990,62 1080,72 C1170,82 1350,62 1440,72
+          L1440,100 L0,100 Z
+          M1440,72 C1530,82 1710,62 1800,72 C1890,82 2070,62 2160,72
+          C2250,82 2430,62 2520,72 C2610,82 2790,62 2880,72
+          L2880,100 L1440,100 Z
+        "/>
+      </svg>
+    </div>
+  );
+}
 
-const Band = ({
-  variant = "light",
-  topFill,
-  bottomFill,
-  noTop = false,
-  noBottom = false,
-  children,
-}) => {
+const Band = ({ variant = "light", children }) => {
   return (
     <section className={`pd-band pd-band--${variant}`}>
-      {!noTop && (
-        <div className="pd-wave pd-wave--top">
-          <WavesDivider fill={topFill} />
-        </div>
-      )}
-
       <div className="container pd-band-inner">{children}</div>
-
-      {!noBottom && (
-        <div className="pd-wave pd-wave--bottom">
-          <WavesDivider fill={bottomFill} />
-        </div>
-      )}
     </section>
   );
 };
@@ -882,6 +878,65 @@ export default function ProductDetail() {
     });
   }, [product, contentId, price]);
 
+  // Scroll-reveal: animar solo los elementos debajo del fold
+  useEffect(() => {
+    if (!product) return;
+    let io = null;
+
+    const timer = setTimeout(() => {
+      const all = Array.from(document.querySelectorAll('.anim-el'));
+      if (!all.length) return;
+
+      // 1. Ocultar solo los que están completamente fuera del viewport inicial
+      const vh = window.innerHeight;
+      const belowFold = all.filter(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.top > vh + 40; // +40px de margen
+      });
+      belowFold.forEach(el => el.classList.add('anim-hidden'));
+
+      if (!belowFold.length) return;
+
+      // 2. Fallback: en 3s mostrar todo (por si IO falla)
+      const fallback = setTimeout(() => {
+        belowFold.forEach(el => el.classList.add('in-view'));
+      }, 3000);
+
+      if (!('IntersectionObserver' in window)) {
+        clearTimeout(fallback);
+        belowFold.forEach(el => el.classList.add('in-view'));
+        return;
+      }
+
+      // Medir la altura real del sticky para no tapar la animación
+      const stickyEl = document.querySelector('.sticky-pro');
+      const stickyH = (stickyEl && stickyEl.offsetHeight > 0)
+        ? stickyEl.offsetHeight + 24
+        : 24;
+
+      io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            // NO quitar anim-hidden — la transición vive ahí.
+            // Solo agregar in-view que override opacity/transform.
+            e.target.classList.add('in-view');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.04, rootMargin: `0px 0px -${stickyH}px 0px` });
+
+      belowFold.forEach(el => io.observe(el));
+
+      // cleanup del fallback cuando el IO termina su trabajo
+      return () => { clearTimeout(fallback); io?.disconnect(); };
+    }, 200);
+
+    return () => { clearTimeout(timer); io?.disconnect(); };
+  }, [product]);
+
+  // Producto con nombre adaptado a la landing (se muestra así en el resumen del checkout)
+  const cartProduct = product && MC.checkoutName ? { ...product, name: MC.checkoutName } : product;
+
   const handleBuyNow = () => {
     if (!product) return;
     // Si hay config de upsell, mostrar el sheet de upsell primero
@@ -891,7 +946,10 @@ export default function ProductDetail() {
     }
     // Sin upsell: ir directo al checkout
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-    addItem(product, totalQty, promo ? { promo } : undefined);
+    const mainOpts = {};
+    if (promo) mainOpts.promo = promo;
+    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
     track("InitiateCheckout", {
       content_ids: [String(contentId)],
       content_type: "product",
@@ -906,9 +964,22 @@ export default function ProductDetail() {
     setShowUpsellSheet(false);
     // Agregar producto principal
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-    addItem(product, totalQty, promo ? { promo } : undefined);
-    // Si eligió un accesorio, agregarlo también
-    if (bundle?.accProduct) addItem(bundle.accProduct, 1);
+    const mainOpts = {};
+    if (promo) mainOpts.promo = promo;
+    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
+    // Si eligió accesorios, agregarlos también
+    if (bundle?.bundles) {
+      bundle.bundles.forEach(b => {
+        // Si el API falló usamos los datos de fallback del config como producto sintético
+        const acc = b.accProduct ?? (b.item?.fallbackPrice
+          ? { _id: b.item.slug, name: b.item.name, price: b.item.fallbackPrice, imageUrl: b.item.fallbackImage || "" }
+          : null);
+        if (acc) addItem(acc, 1, b.compareAtPrice ? { compareAtPrice: b.compareAtPrice } : undefined);
+      });
+    } else if (bundle?.accProduct) {
+      addItem(bundle.accProduct, 1);
+    }
     track("InitiateCheckout", {
       content_ids: [String(contentId)],
       content_type: "product",
@@ -931,7 +1002,10 @@ export default function ProductDetail() {
     });
 
     const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-    addItem(product, totalQty, promo ? { promo } : undefined);
+    const mainOpts = {};
+    if (promo) mainOpts.promo = promo;
+    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
 
     setShowToast(true);
     setTimeout(() => setShowToast(false), 5000);
@@ -1322,53 +1396,42 @@ export default function ProductDetail() {
         </div>
 
         <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+      </div>
 
-        <div className="pd-bands">
-          <Band
-            variant="light"
-            topFill="transparent"
-            bottomFill="var(--pd-blue)"
-            noTop
-          >
-            <div className="pd-sections-new">
-              <StoryBlocks mc={MC} />
-            </div>
-          </Band>
+      {/* pd-bands fuera del container → waves a ancho completo de pantalla */}
+      <div className="pd-bands">
+        <Band variant="light">
+          <div className="pd-sections-new">
+            <StoryBlocks mc={MC} />
+          </div>
+        </Band>
 
-          <Band
-            variant="blue"
-            topFill="var(--pd-light)"
-            bottomFill="var(--pd-light)"
-          >
-            <div className="pd-sections-new">
-              <BoxContents mc={MC} />
-              <HowToSteps mc={MC} />
-              <AuthorityCard mc={MC} />
-            </div>
-          </Band>
+        <WaveSeparator from="light" />
 
-          <Band
-            variant="light"
-            topFill="var(--pd-blue)"
-            bottomFill="var(--pd-blue)"
-          >
-            <div className="pd-sections-new">
-              
-              <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
-            </div>
-          </Band>
+        <Band variant="blue">
+          <div className="pd-sections-new">
+            <BoxContents mc={MC} />
+            <HowToSteps mc={MC} />
+            <AuthorityCard mc={MC} />
+          </div>
+        </Band>
 
-          <Band
-            variant="blue"
-            topFill="var(--pd-light)"
-            bottomFill="var(--pd-light)"
-          >
-            <div className="pd-sections-new">
-              <FaqSectionPro mc={MC} />
-              <AboutSection mc={MC} />
-            </div>
-          </Band>
-        </div>
+        <WaveSeparator from="blue" />
+
+        <Band variant="light">
+          <div className="pd-sections-new">
+            <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+          </div>
+        </Band>
+
+        <WaveSeparator from="light" />
+
+        <Band variant="blue">
+          <div className="pd-sections-new">
+            <FaqSectionPro mc={MC} />
+            <AboutSection mc={MC} />
+          </div>
+        </Band>
       </div>
 
       {showToast && (
@@ -2616,149 +2679,111 @@ export default function ProductDetail() {
         transition: .15s ease;
       }
 
-      /* ===== MINI RESEÑAS ===== */
+      /* ===== MINI RESEÑAS (mini cards) ===== */
       .mrb{
         margin-top: 14px;
-        background: rgba(2,8,23,.03);
-        border: 1px solid rgba(2,8,23,.08);
-        border-radius: 16px;
-        padding: 12px 12px 10px;
-        box-shadow: 0 14px 40px rgba(10,20,40,.08);
+        background: transparent;
       }
 
-      .mrb-viewport{
-        overflow: hidden;
-        border-radius: 14px;
+      .mrb-label{
+        font-size: .70rem;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: rgba(11,18,32,.38);
+        margin-bottom: 8px;
       }
+
+      .mrb-viewport{ overflow: hidden; }
 
       .mrb-track{
         display: flex;
         width: 100%;
-        transition: transform .28s ease;
+        transition: transform .35s cubic-bezier(.4,0,.2,1);
         will-change: transform;
       }
 
-      .mrb-slide{
-        flex: 0 0 100%;
-        width: 100%;
-      }
+      .mrb-slide{ flex: 0 0 100%; width: 100%; }
 
       .mrb-card{
+        background: #fff;
+        border: 1px solid rgba(2,8,23,.09);
+        border-radius: 14px;
+        padding: 12px 14px;
+        box-shadow: 0 2px 12px rgba(10,20,40,.07);
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        background: rgba(255,255,255,.92);
-        border: 1px solid rgba(2,8,23,.08);
-        border-radius: 14px;
-        padding: 16px;
+        gap: 8px;
       }
 
-      .mrb-header{
+      .mrb-card-header{
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
       }
 
-      .mrb-header-info{
-        flex: 1;
+      .mrb-card-avatar{
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        color: #fff;
+        font-weight: 900;
+        font-size: .95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0;
+      }
+
+      .mrb-card-meta{
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
         min-width: 0;
       }
 
-      .mrb-avatar{
-        width: 46px;
-        height: 46px;
-        border-radius: 999px;
-        object-fit: cover;
-        border: 1px solid rgba(2,8,23,.10);
-        background: #e2e8f0;
-        flex-shrink: 0;
-      }
-
-      .mrb-title{
-        font-size: .9rem;
-        font-weight: 900;
-        color: rgba(11,18,32,.88);
-        line-height: 1.3;
-      }
-
-      .mrb-text{
-        font-size: .9rem;
-        color: rgba(11,18,32,.72);
-        font-weight: 500;
-        line-height: 1.5;
-      }
-
-      .mrb-name{
-        font-size: .82rem;
-        font-weight: 900;
-        color: rgba(11,18,32,.60);
+      .mrb-card-name{
+        font-size: .80rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.82);
+        line-height: 1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .mrb-stars .stars-inline .s{ font-size: 12px; }
-      .mrb-stars{ flex-shrink: 0; }
+      .mrb-card-stars .stars-inline .s{ font-size: 11px; }
 
-      .mrb-section-header{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        padding: 18px 4px 12px;
-      }
-
-      .mrb-section-badge{
-        font-size: 16px;
-        line-height: 1;
-      }
-
-      .mrb-section-title{
-        font-size: 1rem;
-        font-weight: 900;
-        letter-spacing: .2px;
-        color: rgba(11,18,32,.88);
-      }
-
-      .mrb-nav{
-        display: grid;
-        grid-template-columns: 34px 1fr 34px;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-
-      .mrb-arrow{
-        width: 34px;
-        height: 28px;
-        border-radius: 10px;
-        border: 1px solid rgba(2,8,23,.10);
-        background: rgba(255,255,255,.92);
-        box-shadow: 0 10px 24px rgba(10,20,40,.10);
-        cursor: pointer;
-        font-size: 18px;
-        display: grid;
-        place-items: center;
+      .mrb-card-text{
+        margin: 0;
+        font-size: .84rem;
+        font-style: italic;
+        color: rgba(11,18,32,.65);
+        font-weight: 500;
+        line-height: 1.5;
       }
 
       .mrb-dots{
         display: flex;
         justify-content: center;
-        gap: 6px;
+        gap: 5px;
+        margin-top: 10px;
       }
 
       .mrb-dot{
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         border-radius: 999px;
         border: none;
-        background: rgba(2,8,23,.22);
+        background: rgba(2,8,23,.18);
         cursor: pointer;
-        transition: transform .15s ease, background .15s ease;
+        padding: 0;
+        transition: width .22s ease, background .18s ease;
       }
       .mrb-dot.on{
-        background: rgba(11,92,255,.95);
-        transform: scale(1.25);
+        background: rgba(11,92,255,.80);
+        width: 16px;
       }
 
       /* ===== Delivery Notice ===== */
@@ -2886,6 +2911,167 @@ export default function ProductDetail() {
         .pd-codTitle{ font-size: .9rem; }
         .pd-codSub{ font-size: .86rem; }
       }
+
+      /* ===== RETOQUE VISUAL GLOBAL ===== */
+
+      /* Refined band backgrounds */
+      .pd-band--light{ background: #ffffff; }
+      .pd-band--blue { background: #0b172a; }
+      .pd-band--blue .sec-title{ color: rgba(255,255,255,.92); }
+      .pd-band--blue .sec-sub{ color: rgba(255,255,255,.50); }
+      .pd-band--blue .flow-title{ color: rgba(255,255,255,.90); }
+      .pd-band--blue .flow-p{ color: rgba(255,255,255,.65); }
+      .pd-band--blue .faq-pro{ border-color: rgba(255,255,255,.08); }
+      .pd-band--blue .faq-pro-item{ background: rgba(255,255,255,.04); border-bottom-color: rgba(255,255,255,.07); }
+      .pd-band--blue .faq-pro-item.open{ background: rgba(255,255,255,.08); }
+      .pd-band--blue .faq-pro-q{ color: rgba(255,255,255,.85); }
+      .pd-band--blue .faq-pro-a p{ color: rgba(255,255,255,.62); }
+
+      /* ===== WAVE DIVIDER ===== */
+      .wave-divider {
+        position: relative;
+        width: 100%;
+        height: 70px;
+        overflow: hidden;
+        background: var(--wave-top-color);
+        line-height: 0;
+        pointer-events: none;
+        /* elimina el pixel de separación con las secciones adyacentes */
+        margin-top: -1px;
+        margin-bottom: -1px;
+      }
+      .wave-divider svg {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        display: block;
+      }
+      .wave-divider .wave-1 {
+        animation: wave-scroll 10s linear infinite;
+        opacity: 1;
+        z-index: 3;
+      }
+      .wave-divider .wave-2 {
+        animation: wave-scroll 7s linear infinite reverse;
+        opacity: 0.5;
+        z-index: 2;
+      }
+      .wave-divider .wave-3 {
+        animation: wave-scroll 5s linear infinite;
+        opacity: 0.3;
+        z-index: 1;
+      }
+      @keyframes wave-scroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .wave-divider svg { animation: none !important; }
+      }
+
+      /* ===== SCROLL ANIMATIONS (IntersectionObserver) ===== */
+      /* Elementos visibles por defecto; JS añade anim-hidden solo a los de abajo del fold */
+      .anim-el.anim-hidden{
+        opacity: 0;
+        transform: translateY(22px);
+        /* La transición vive AQUÍ — cuando in-view se agrega arriba, el browser anima */
+        transition: opacity .60s cubic-bezier(.22,1,.36,1),
+                    transform .60s cubic-bezier(.22,1,.36,1);
+      }
+      /* in-view viene después en el CSS → gana el empate de especificidad → anima */
+      .anim-el.in-view{
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+      /* stagger sutil para bloques de historia */
+      .pd-flow .anim-el.anim-hidden:nth-child(2){ transition-delay:.10s; }
+      .pd-flow .anim-el.anim-hidden:nth-child(3){ transition-delay:.18s; }
+      /* sticky siempre encima */
+      .sticky-pro{ z-index:9000 !important; }
+
+      /* Section spacing harmony */
+      .pd-block{ padding-top: 12px; padding-bottom: 12px; }
+      .pd-sections-new{ padding-top: 12px; padding-bottom: 52px; }
+
+      /* Story blocks: smoother image cards */
+      .flow-imgBox{
+        border-radius: 18px;
+        transition: transform .28s ease, box-shadow .28s ease;
+        box-shadow: 0 8px 32px rgba(10,20,40,.10);
+      }
+      .flow-imgBox:hover{
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 20px 56px rgba(10,20,40,.16);
+      }
+      .flow-row{ gap: 28px; }
+
+      /* Reviews carousel cards */
+      .rv-card{
+        transition: transform .22s ease, box-shadow .22s ease;
+      }
+      .rv-slide:hover .rv-card{
+        transform: translateY(-4px);
+        box-shadow: 0 18px 50px rgba(10,20,40,.16);
+      }
+
+      /* FAQ items: add left accent transition */
+      .faq-pro-item::before{ transition: opacity .22s ease; opacity:0; }
+      .faq-pro-item.open::before{ opacity:1; }
+
+      /* Global interactive transitions */
+      .hero-ctaBig{
+        transition: transform .15s ease, box-shadow .18s ease, background .18s ease;
+      }
+      .hero-ctaBig:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 22px 60px rgba(220,38,38,.28);
+      }
+      .hero-ctaBig:active{ transform: translateY(0) scale(.98); }
+
+      .pd-ctaPrimary-outline{
+        transition: transform .15s ease, box-shadow .18s ease;
+      }
+      .pd-ctaPrimary-outline:hover{
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(10,20,40,.12);
+      }
+
+      /* Accordion smooth open */
+      .accordion-content{
+        transition: max-height .28s cubic-bezier(.4,0,.2,1), opacity .22s ease;
+        overflow:hidden;
+        max-height:0;
+        opacity:0;
+      }
+      .accordion-content.open{
+        max-height:600px;
+        opacity:1;
+      }
+
+      /* Trust badges shimmer on hover */
+      .trust-badge{ transition: opacity .18s ease; }
+      .trust-badge:hover{ opacity:.75; }
+
+      /* About stats */
+      .about2-stat{ transition: transform .18s ease; }
+      .about2-stat:hover{ transform: translateY(-3px); }
+
+      /* Section header: subtle underline accent */
+      .sec-head{ position:relative; }
+      .sec-head::after{
+        content:"";
+        display:block;
+        width:38px;
+        height:3px;
+        border-radius:999px;
+        background:linear-gradient(90deg,#0b5cff,#10b981);
+        margin:10px auto 0;
+      }
+      .pd-band--blue .sec-head::after{
+        background:linear-gradient(90deg,#60a5fa,#34d399);
+      }
       `}</style>
 
       {/* Upsell sheet — aparece antes del checkout cuando hay config de upsell */}
@@ -2893,6 +3079,7 @@ export default function ProductDetail() {
         <UpsellSheet
           mc={MC}
           mainProduct={product}
+          mainDisplayTotal={displayTotal}
           onConfirm={handleUpsellConfirm}
         />
       )}

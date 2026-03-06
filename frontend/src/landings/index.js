@@ -2,13 +2,13 @@
 import portaCepillos         from './porta-cepillos';
 import consolaRetro          from './consola-retro';
 import mochilaTransparente   from './mochila-transparente';
-// import auriculares from './auriculares';
+import mochilaFashion        from './mochila-fashion';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
   'consola-retro':            consolaRetro,
   'mochila-transparente':     mochilaTransparente,
-  // 'nuevo-producto': nuevoProducto,
+  'mochila-fashion':          mochilaFashion,
 };
 
 export const LANDING_META = [
@@ -32,6 +32,13 @@ export const LANDING_META = [
     desc: 'Mochila con cupula panoramica 360 para mascotas. Producto slug: "mochila-transparente-pt4133".',
     status: 'active',
     emoji: '🐱',
+  },
+  {
+    slug: 'mochila-fashion',
+    name: 'Mochila Fashion para Mascotas',
+    desc: 'Mochila estilo fashion para mascotas de hasta 6kg. Producto slug: "mochila-fashion".',
+    status: 'active',
+    emoji: '🎀',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

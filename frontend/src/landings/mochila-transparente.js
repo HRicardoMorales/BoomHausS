@@ -13,6 +13,7 @@ const mochilaTransparenteConfig = {
 
   // ── SEO ───────────────────────────────────────────────────
   pageTitle: "Mochila Transparente para Mascotas PT-4133 | BoomHausS",
+  checkoutName: "Mochila Transparente para Mascotas PT-4133",
 
   // ── Hero ─────────────────────────────────────────────────
   heroSubtitle: "Llevá a tu mascota a todos lados con estilo y comodidad",
@@ -97,6 +98,16 @@ const mochilaTransparenteConfig = {
     { q: "¿Se puede usar en avión?",            a: "Sí, es compatible con los requisitos de cabina en la mayoría de aerolíneas para mascotas pequeñas. Igual, verificá las reglas específicas de tu aerolínea antes de viajar." },
     { q: "¿Cómo se limpia?",                    a: "Interior desmontable y lavable con agua y jabón neutro. La cúpula se limpia con paño húmedo. Secá bien antes de guardarla." },
     { q: "¿Qué incluye la caja?",               a: "1 mochila transparente PT-4133, 1 alfombra interior antideslizante, 1 bolsa de transporte, instrucciones de uso." },
+  ],
+
+  // ── Mini reseñas (carrusel compacto, textos muy cortos) ──
+  miniReviews: [
+    { rating: 5, short: "Mi gato iba siempre estresado en el transportín. Con esta mochila llegó al vet tranquilo. Un antes y después.", name: "Valentina R." },
+    { rating: 5, short: "Pedí el lunes, llegó el miércoles. La calidad es buena, los cierres firmes y la cúpula resistente.", name: "Facundo L." },
+    { rating: 5, short: "Mi gata tarda dos minutos en entrar sola. Se queda mirando todo por la cúpula durante el paseo.", name: "Camila O." },
+    { rating: 5, short: "Lo uso todos los días para ir al vet o dar una vuelta. Cómodo para cargar y mi gato va tranquilo.", name: "Santiago R." },
+    { rating: 5, short: "En colectivo por CABA sin drama. Mi gato ve todo por la cúpula y la gente ni se da cuenta que va ahí.", name: "Martín P." },
+    { rating: 4, short: "Mi chihuahua se duerme al rato de arrancar. Antes de esto odiaba salir, ahora es un paseo.", name: "Renata G." },
   ],
 
   // ── Testimonios ──────────────────────────────────────────

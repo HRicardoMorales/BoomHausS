@@ -8,6 +8,7 @@
 const consolaRetroConfig = {
   // ── SEO ───────────────────────────────────────────────────
   pageTitle: "Consola Retro M15 Pro | BoomHausS",
+  checkoutName: "Consola Retro M15 Pro — 10.000 Juegos",
 
   // ── Hero ─────────────────────────────────────────────────
   heroSubtitle: "2 controles inalámbricos + +10.000 juegos retro. Enchufás y jugás.",

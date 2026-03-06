@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema(
     {
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        // Mixed permite tanto ObjectId reales como slugs (productos de fallback)
+        productId: { type: mongoose.Schema.Types.Mixed },
         productName: { type: String },
         name: { type: String }, // compat
         price: { type: Number, required: true },
@@ -22,7 +23,7 @@ const orderSchema = new mongoose.Schema(
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
         customerName: { type: String, required: true },
-        customerEmail: { type: String, required: true },
+        customerEmail: { type: String, default: '' },
         // ✅ DNI (se pide en checkout)
         customerDni: { type: String, required: true },
         customerPhone: { type: String },
@@ -31,7 +32,7 @@ const orderSchema = new mongoose.Schema(
         shippingMethod: { type: String, default: 'correo_argentino' },
         shippingStatus: {
             type: String,
-            enum: ['pending', 'shipped', 'delivered'],
+            enum: ['pending', 'shipped', 'delivered', 'cancelled'],
             default: 'pending'
         },
 
@@ -42,7 +43,7 @@ const orderSchema = new mongoose.Schema(
         paymentMethod: { type: String, default: 'bank_transfer' },
         paymentStatus: {
             type: String,
-            enum: ["pending", "proof_uploaded", "approved", "rejected"],
+            enum: ["pending", "proof_uploaded", "approved", "confirmed", "rejected", "cancelled"],
             default: "pending",
         },
         paymentRejectionReason: { type: String, default: null },

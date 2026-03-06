@@ -8,6 +8,7 @@
 const portaCepillosConfig = {
   // ── Datos para el head/SEO ────────────────────────────────
   pageTitle: "Porta Cepillo Esterilizador | BoomHausS",
+  checkoutName: "Porta Cepillo Esterilizador UV",
 
   // ── Hero ─────────────────────────────────────────────────
   heroSubtitle: "Más higiene y orden todos los días",
