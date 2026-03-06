@@ -619,9 +619,12 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
         <div className="ups-sheet-scroll">
           {/* Cabecera */}
           <div className="ups-sheet-head">
-            <p className="ups-sheet-eyebrow">⚡ ANTES DE PAGAR</p>
+            <div className="ups-sheet-promo-banner">
+              <span className="ups-sheet-promo-icon">🏷️</span>
+              <span className="ups-sheet-promo-text">DESCUENTOS EXCLUSIVOS PARA TU COMPRA</span>
+            </div>
             <h2 className="ups-sheet-title">{upsell.title || "¿Querés agregar algo?"}</h2>
-            <p className="ups-sheet-sub">Mismo envío · pagás menos por los dos</p>
+            <p className="ups-sheet-sub">Mismo envío · ahorrás más llevando los dos</p>
           </div>
 
           {/* Lista */}
@@ -688,7 +691,9 @@ function UpsellSheet({ mc, mainProduct, onConfirm }) {
         .ups-sheet-scroll { overflow-y:auto; flex:1; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:20px 18px 24px; }
         .ups-sheet-scroll::-webkit-scrollbar { display:none; }
         .ups-sheet-head { text-align:center; padding:0 0 18px; }
-        .ups-sheet-eyebrow { font-size:.68rem; font-weight:900; letter-spacing:.09em; color:#0b5cff; margin:0 0 6px; }
+        .ups-sheet-promo-banner { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#ff6b00 0%,#ff9500 100%); color:#fff; font-size:.67rem; font-weight:900; letter-spacing:.1em; padding:5px 13px; border-radius:100px; margin-bottom:10px; box-shadow:0 4px 14px rgba(255,107,0,.35); }
+        .ups-sheet-promo-icon { font-size:.85rem; line-height:1; }
+        .ups-sheet-promo-text { line-height:1; }
         .ups-sheet-title { font-size:1.15rem; font-weight:900; margin:0 0 4px; }
         .ups-sheet-sub { font-size:.78rem; color:rgba(11,18,32,.45); margin:0; font-weight:600; }
         .ups-sheet-ctas { display:flex; flex-direction:column; gap:10px; margin-top:20px; }

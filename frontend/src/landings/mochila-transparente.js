@@ -150,7 +150,7 @@ const mochilaTransparenteConfig = {
         badge: "MAS VENDIDO",
         fallbackPrice: 9700,
         fallbackCompareAt: 14500,
-        fallbackImage: "https://www.petmarket.com.ar/wp-content/uploads/2025/05/D_755648-MLA78360195846_082024-O.jpg",
+        fallbackImage: "https://m.media-amazon.com/images/I/61oKBiAUpTL._AC_SL1500_.jpg",
       },
       {
         slug: "cepillo-spray-electrico",        // ← slug en el admin
@@ -166,7 +166,7 @@ const mochilaTransparenteConfig = {
         badge: "OFERTA",
         fallbackPrice: 5800,
         fallbackCompareAt: 8900,
-        fallbackImage: "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSw1Wt66UwPcXRDLXhlvKw0dtEO3fBMfOP07yCIzhJfURkE3EzYJYxPGpfqCW8CC1TNQkvYDBLeXtcQYwzH8s8RZHm7rwUPXsPBD5HJg-zg&usqp=CAc",
+        fallbackImage: "https://http2.mlstatic.com/D_NQ_NP_871033-MLA88006639688_072025-O.webp",
       },
     ],
   },
