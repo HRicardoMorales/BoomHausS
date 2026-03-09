@@ -3,12 +3,14 @@ import portaCepillos         from './porta-cepillos';
 import consolaRetro          from './consola-retro';
 import mochilaTransparente   from './mochila-transparente';
 import mochilaFashion        from './mochila-fashion';
+import nebulizadorMesh       from './nebulizador-mesh';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
   'consola-retro':            consolaRetro,
   'mochila-transparente':     mochilaTransparente,
   'mochila-fashion':          mochilaFashion,
+  'nebulizador-mesh':         nebulizadorMesh,
 };
 
 export const LANDING_META = [
@@ -39,6 +41,13 @@ export const LANDING_META = [
     desc: 'Mochila estilo fashion para mascotas de hasta 6kg. Producto slug: "mochila-fashion".',
     status: 'active',
     emoji: '🎀',
+  },
+  {
+    slug: 'nebulizador-mesh',
+    name: 'Nebulizador Recargable Mesh',
+    desc: 'Nebulizador portatil silencioso con tecnologia Mesh, recargable USB-C. Producto slug: "nebulizador-mesh".',
+    status: 'active',
+    emoji: '💨',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

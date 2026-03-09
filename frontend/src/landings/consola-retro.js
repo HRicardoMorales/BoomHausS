@@ -205,7 +205,7 @@ const consolaRetroConfig = {
   soldCount: 847,
   reviewCount: 112,
   reviewScore: 4.8,
-  viewingNow: 9,
+  stockAlert: { show: true, remaining: 9 },
 
   // ── Qué viene en la caja ──────────────────────────────────
   boxItems: [

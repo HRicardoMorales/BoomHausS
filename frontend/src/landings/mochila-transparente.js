@@ -141,7 +141,7 @@ const mochilaTransparenteConfig = {
   soldCount: 634,
   reviewCount: 89,
   reviewScore: 4.8,
-  viewingNow: 11,
+  stockAlert: { show: true, remaining: 14 },
 
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,

@@ -139,7 +139,7 @@ const portaCepillosConfig = {
   soldCount: 2105,
   reviewCount: 274,
   reviewScore: 4.7,
-  viewingNow: 13,
+  stockAlert: { show: true, remaining: 12 },
 
   // ── Precio fallback (si el API no trae compareAtPrice) ───
   compareAtPriceFallback: 60350,

@@ -118,7 +118,7 @@ const miProductoConfig = {
   soldCount: 0,           // cuántos vendidos a mostrar
   reviewCount: 0,         // cantidad de reseñas
   reviewScore: 4.8,       // score (ej: 4.8)
-  viewingNow: 8,          // personas viendo ahora
+  stockAlert: { show: true, remaining: 10 },  // alerta de stock limitado
 
   // Precio tachado fallback (si el producto no tiene compareAtPrice en el API)
   compareAtPriceFallback: 0,

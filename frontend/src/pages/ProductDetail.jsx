@@ -220,16 +220,10 @@ function AuthorityCard({ mc = MARKETING_CONTENT }) {
         title="LO QUE DICEN LOS PROFESIONALES"
         subtitle="Recomendación de expertos"
       />
-
-      <div className="auth2">
-        <div className="auth2-body">
-          <span className="auth2-qq" aria-hidden="true">❝</span>
-          <p className="auth2-quote">{quote}</p>
-        </div>
-
-        <div className="auth2-foot">
+      <div className="auth3">
+        <div className="auth3-photo-col">
           <img
-            className="auth2-avatar"
+            className="auth3-photo"
             src={photo}
             alt={name}
             loading="lazy"
@@ -237,17 +231,33 @@ function AuthorityCard({ mc = MARKETING_CONTENT }) {
             crossOrigin="anonymous"
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
-          <div className="auth2-meta">
-            <div className="auth2-name">{name}</div>
-            <div className="auth2-role">{role}</div>
-          </div>
-          <div className="auth2-badge">
-            <span className="auth2-badge-dot" aria-hidden="true" />
-            Verificado
-          </div>
         </div>
 
-        <div className="auth2-disclaimer">{disclaimer}</div>
+        <div className="auth3-content">
+          <div className="auth3-label">
+            <span className="auth3-label-dot" aria-hidden="true" />
+            RECOMENDADO POR PROFESIONALES
+          </div>
+
+          <blockquote className="auth3-quote">
+            <span className="auth3-qq" aria-hidden="true">"</span>
+            {quote}
+          </blockquote>
+
+          <div className="auth3-author">
+            <div className="auth3-name">{name}</div>
+            <div className="auth3-role">{role}</div>
+          </div>
+
+          <div className="auth3-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Profesional verificado
+          </div>
+
+          {disclaimer && (
+            <p className="auth3-disclaimer">{disclaimer}</p>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -702,37 +712,37 @@ function WaveSeparator({ from = "light" }) {
       aria-hidden="true"
       style={{ "--wave-top-color": topColor, "--wave-bottom-color": bottomColor }}
     >
-      {/* Olas calmadas: amplitud ±12px, centro en y=78 sobre viewBox de 100 */}
+      {/* Olas con amplitud ±22px, centro en y=70 sobre viewBox de 100 */}
       <svg className="wave-1" xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 1440 100" preserveAspectRatio="none">
         <path fill="var(--wave-bottom-color)" d="
-          M0,78 C120,90 240,66 360,78 C480,90 600,66 720,78
-          C840,90 960,66 1080,78 C1200,90 1320,66 1440,78
+          M0,70 C120,92 240,48 360,70 C480,92 600,48 720,70
+          C840,92 960,48 1080,70 C1200,92 1320,48 1440,70
           L1440,100 L0,100 Z
-          M1440,78 C1560,90 1680,66 1800,78 C1920,90 2040,66 2160,78
-          C2280,90 2400,66 2520,78 C2640,90 2760,66 2880,78
+          M1440,70 C1560,92 1680,48 1800,70 C1920,92 2040,48 2160,70
+          C2280,92 2400,48 2520,70 C2640,92 2760,48 2880,70
           L2880,100 L1440,100 Z
         "/>
       </svg>
       <svg className="wave-2" xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 1440 100" preserveAspectRatio="none">
         <path fill="var(--wave-bottom-color)" d="
-          M0,84 C180,72 360,94 540,84 C720,72 900,94 1080,84
-          C1260,72 1350,88 1440,84
+          M0,75 C180,55 360,95 540,75 C720,55 900,95 1080,75
+          C1260,55 1350,85 1440,75
           L1440,100 L0,100 Z
-          M1440,84 C1620,72 1800,94 1980,84 C2160,72 2340,94 2520,84
-          C2700,72 2790,88 2880,84
+          M1440,75 C1620,55 1800,95 1980,75 C2160,55 2340,95 2520,75
+          C2700,55 2790,85 2880,75
           L2880,100 L1440,100 Z
         "/>
       </svg>
       <svg className="wave-3" xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 1440 100" preserveAspectRatio="none">
         <path fill="var(--wave-bottom-color)" d="
-          M0,72 C90,82 270,62 360,72 C450,82 630,62 720,72
-          C810,82 990,62 1080,72 C1170,82 1350,62 1440,72
+          M0,68 C90,85 270,50 360,68 C450,85 630,50 720,68
+          C810,85 990,50 1080,68 C1170,85 1350,50 1440,68
           L1440,100 L0,100 Z
-          M1440,72 C1530,82 1710,62 1800,72 C1890,82 2070,62 2160,72
-          C2250,82 2430,62 2520,72 C2610,82 2790,62 2880,72
+          M1440,68 C1530,85 1710,50 1800,68 C1890,85 2070,50 2160,68
+          C2250,85 2430,50 2520,68 C2610,85 2790,50 2880,68
           L2880,100 L1440,100 Z
         "/>
       </svg>
@@ -1045,7 +1055,6 @@ export default function ProductDetail() {
 
   // ✅ para el nuevo hero (como la captura)
   const discountPct = clampPct(Math.round((1 - unitPrice / compareAt) * 100));
-  const heroViews = product?.viewingNow ?? product?.socialProofLive ?? 13;
 
   return (
     <main className="section main-wrapper pd-page">
@@ -1244,11 +1253,26 @@ export default function ProductDetail() {
                 <span>Envío GRATIS en 24/48Hs</span>
               </button>
 
-              {/* viewing pill */}
-              <div className="hero-viewingPill" aria-live="polite">
-                <span className="hero-dot" aria-hidden="true" />
-                <b>{heroViews}</b>&nbsp;personas están viendo este producto
-              </div>
+              {/* Stock limitado */}
+              {MC.stockAlert?.show && (
+                <div className="pd-stockAlert">
+                  <span className="pd-stockDot" />
+                  Quedan solo <b>{MC.stockAlert.remaining} unidades</b> en stock
+                </div>
+              )}
+
+              {/* Garantia visible */}
+              {MC.guarantee && (
+                <div className="pd-guarantee">
+                  <span className="pd-guaranteeIcon">&#x1F6E1;&#xFE0F;</span>
+                  <div className="pd-guaranteeText">
+                    <strong>{MC.guarantee.text}</strong>
+                    <span>{MC.guarantee.subtext}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* viewing pill — eliminado por decisión de diseño */}
             </div>
             {/* ====== FIN CAMBIO HERO COMPACTO ====== */}
 
@@ -1257,16 +1281,11 @@ export default function ProductDetail() {
             {/* ✅ CABA: PAGÁ AL RECIBIR */}
             <div className="pd-codBanner" role="note" aria-label="Pago al recibir en CABA">
               <div className="pd-codLeft">
-                <div className="pd-codIcon">📍</div>
-                <div className="pd-codText">
-                  <div className="pd-codTitle">CABA: PAGÁ AL RECIBIR</div>
-                  <div className="pd-codSub">
-                    Pagá al recibir en <b>Punto de encuentro</b> o <b>Retiro</b>. Lo elegís al finalizar.
-                  </div>
-                </div>
+                <svg className="pd-codIcon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span className="pd-codText">
+                  <b>CABA — Pagá al recibir</b> en punto de encuentro o retiro
+                </span>
               </div>
-
-              <div className="pd-codBadge">CABA</div>
             </div>
 
             {/* <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
@@ -1481,6 +1500,19 @@ export default function ProductDetail() {
           LO QUIERO
         </button>
       </div>
+
+      {/* WhatsApp flotante */}
+      {MC.whatsapp?.show && (
+        <a
+          className="pd-wa-float"
+          href={`https://wa.me/${MC.whatsapp.number}?text=${encodeURIComponent(MC.whatsapp.message || "Hola!")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Consultar por WhatsApp"
+        >
+          <svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16.004c0 3.5 1.132 6.744 3.058 9.374L1.058 31.14l5.968-1.97A15.89 15.89 0 0 0 16.004 32C24.826 32 32 24.826 32 16.004S24.826 0 16.004 0Zm9.35 22.616c-.394 1.108-1.95 2.028-3.192 2.296-.85.18-1.96.324-5.696-1.224-4.78-1.98-7.852-6.836-8.09-7.152-.228-.316-1.916-2.552-1.916-4.868 0-2.316 1.214-3.454 1.644-3.926.43-.472.94-.59 1.252-.59.312 0 .624.002.898.016.288.014.674-.11 1.054.804.394.948 1.336 3.264 1.452 3.502.118.238.196.514.04.828-.158.316-.236.514-.472.79-.236.278-.496.62-.71.832-.236.236-.482.492-.206.964.276.472 1.226 2.022 2.634 3.276 1.81 1.612 3.336 2.112 3.808 2.348.472.236.748.198 1.024-.118.276-.316 1.182-1.376 1.496-1.848.316-.472.628-.394 1.06-.236.43.158 2.746 1.296 3.216 1.532.472.236.786.354.902.55.118.196.118 1.128-.276 2.236Z"/></svg>
+        </a>
+      )}
 
       {/* ✅ CSS */}
       <style>{`
@@ -2153,123 +2185,130 @@ export default function ProductDetail() {
         .cmp-mobile { display: block; }
       }
 
-      /* ===== AUTHORITY CARD ===== */
-      .auth2{
-        border-radius: 22px;
+      /* ===== AUTHORITY CARD v3 ===== */
+      .auth3{
+        display: flex;
+        gap: 0;
+        border-radius: 18px;
         overflow: hidden;
-        border: 1px solid rgba(2,8,23,.10);
-        box-shadow: 0 22px 70px rgba(10,20,40,.14);
-        animation: popIn .35s ease both;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.10);
+        backdrop-filter: blur(12px);
+        animation: popIn .4s ease both;
       }
 
-      .auth2-body{
-        background: linear-gradient(150deg, #0d0d20 0%, #111128 100%);
-        padding: 30px 26px 26px;
+      .auth3-photo-col{
+        flex-shrink: 0;
+        width: 170px;
         position: relative;
         overflow: hidden;
       }
 
-      .auth2-body::before{
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(ellipse at 85% 15%, rgba(11,92,255,.20) 0%, transparent 65%);
-        pointer-events: none;
-      }
-
-      .auth2-qq{
+      .auth3-photo{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         display: block;
-        font-size: 4.5rem;
-        line-height: .65;
-        color: rgba(11,92,255,.55);
-        font-family: Georgia, serif;
-        margin-bottom: 14px;
-        position: relative;
-        user-select: none;
       }
 
-      .auth2-quote{
+      .auth3-content{
+        flex: 1;
+        padding: 22px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .auth3-label{
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.50);
+      }
+
+      .auth3-label-dot{
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 10px rgba(16,185,129,.6);
+        animation: livePulse 2.2s ease-in-out infinite;
+      }
+
+      .auth3-quote{
         margin: 0;
-        font-size: 1rem;
-        font-weight: 500;
-        color: rgba(255,255,255,.88);
-        line-height: 1.75;
+        padding: 0;
+        border: none;
+        font-size: .95rem;
+        font-weight: 400;
+        color: rgba(255,255,255,.85);
+        line-height: 1.65;
         font-style: italic;
         position: relative;
       }
 
-      .auth2-foot{
-        background: rgba(255,255,255,.98);
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border-top: 1px solid rgba(2,8,23,.07);
+      .auth3-qq{
+        font-family: Georgia, serif;
+        font-size: 3.5rem;
+        line-height: 0;
+        color: rgba(255,255,255,.15);
+        position: absolute;
+        top: 8px;
+        left: -4px;
+        user-select: none;
+        font-style: normal;
       }
 
-      .auth2-avatar{
-        width: 50px;
-        height: 50px;
-        border-radius: 999px;
-        object-fit: cover;
-        border: 2px solid rgba(11,92,255,.18);
-        box-shadow: 0 6px 20px rgba(11,92,255,.14);
-        flex-shrink: 0;
-      }
-
-      .auth2-meta{
-        flex: 1;
-        min-width: 0;
-      }
-
-      .auth2-name{
-        font-weight: 900;
-        font-size: .95rem;
-        color: rgba(11,18,32,.90);
-        line-height: 1.2;
-      }
-
-      .auth2-role{
-        font-size: .78rem;
-        font-weight: 600;
-        color: rgba(11,18,32,.48);
+      .auth3-author{
         margin-top: 2px;
       }
 
-      .auth2-badge{
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: .70rem;
+      .auth3-name{
         font-weight: 800;
-        letter-spacing: .04em;
+        font-size: 1rem;
+        color: #ffffff;
+        line-height: 1.3;
+      }
+
+      .auth3-role{
+        font-size: .8rem;
+        font-weight: 500;
+        color: rgba(255,255,255,.45);
+        margin-top: 2px;
+      }
+
+      .auth3-badge{
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        gap: 6px;
+        font-size: .72rem;
+        font-weight: 700;
         color: #10b981;
-        background: rgba(16,185,129,.08);
-        border: 1px solid rgba(16,185,129,.22);
+        background: rgba(16,185,129,.10);
+        border: 1px solid rgba(16,185,129,.25);
         border-radius: 999px;
-        padding: 5px 10px;
-        flex-shrink: 0;
-        white-space: nowrap;
+        padding: 5px 12px;
       }
 
-      .auth2-badge-dot{
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: #10b981;
-        box-shadow: 0 0 8px rgba(16,185,129,.7);
-        animation: livePulse 2.2s ease-in-out infinite;
-        flex-shrink: 0;
-      }
-
-      .auth2-disclaimer{
-        background: rgba(248,250,252,.95);
-        border-top: 1px solid rgba(2,8,23,.06);
-        padding: 11px 20px;
-        font-size: .73rem;
-        font-weight: 600;
-        color: rgba(11,18,32,.38);
+      .auth3-disclaimer{
+        margin: 0;
+        font-size: .72rem;
+        font-weight: 500;
+        color: rgba(255,255,255,.28);
         line-height: 1.5;
+        border-top: 1px solid rgba(255,255,255,.06);
+        padding-top: 12px;
+      }
+
+      @media (max-width: 640px) {
+        .auth3 { flex-direction: column; }
+        .auth3-photo-col { width: 100%; min-height: 200px; max-height: 240px; }
+        .auth3-content { padding: 24px 20px 22px; }
       }
 
       /* FAQ */
@@ -2839,77 +2878,35 @@ export default function ProductDetail() {
 
       /* ===== PAGO AL RECIBIR (CABA) ===== */
       .pd-codBanner{
-        margin: 14px 0 12px;
-        padding: 12px 14px;
-        border-radius: 18px;
-        border: 1px solid rgba(245,158,11,.25);
-        background: linear-gradient(180deg, rgba(255,251,235,.95), rgba(255,251,235,.70));
-        box-shadow: 0 18px 55px rgba(10,20,40,.10);
+        margin: 12px 0 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(11,18,32,.08);
+        background: rgba(11,18,32,.03);
         display:flex;
         align-items:center;
-        justify-content: space-between;
-        gap: 12px;
       }
 
       .pd-codLeft{
         display:flex;
         align-items:center;
-        gap: 12px;
-        min-width: 0;
+        gap: 10px;
       }
 
       .pd-codIcon{
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        display:grid;
-        place-items:center;
-        background: rgba(245,158,11,.16);
-        border: 1px solid rgba(245,158,11,.22);
-        font-size: 18px;
+        color: rgba(11,18,32,.45);
         flex-shrink: 0;
       }
 
       .pd-codText{
-        display:grid;
-        gap: 2px;
-        min-width: 0;
+        font-size: .84rem;
+        color: rgba(11,18,32,.60);
+        line-height: 1.4;
+        font-weight: 500;
       }
-
-      .pd-codTitle{
-        font-weight: 1100;
-        letter-spacing: .05em;
-        text-transform: uppercase;
-        color: rgba(11,18,32,.92);
-        font-size: .95rem;
-        line-height: 1.1;
-      }
-
-      .pd-codSub{
-        color: rgba(11,18,32,.68);
-        font-weight: 850;
-        font-size: .9rem;
-        line-height: 1.35;
-      }
-
-      .pd-codBadge{
-        background: rgba(69, 138, 5, 0.95);
-        color: #fff;
-        font-weight: 1100;
-        padding: 8px 10px;
-        border-radius: 999px;
-        letter-spacing: .04em;
-        text-transform: uppercase;
-        font-size: .78rem;
-        box-shadow: 0 14px 34px rgba(11, 245, 81, 0.28);
-        white-space: nowrap;
-      }
-
-      @media (max-width: 520px){
-        .pd-codBanner{ padding: 12px; }
-        .pd-codBadge{ font-size: .72rem; padding: 7px 9px; }
-        .pd-codTitle{ font-size: .9rem; }
-        .pd-codSub{ font-size: .86rem; }
+      .pd-codText b{
+        color: rgba(11,18,32,.85);
+        font-weight: 800;
       }
 
       /* ===== RETOQUE VISUAL GLOBAL ===== */
@@ -2931,7 +2928,7 @@ export default function ProductDetail() {
       .wave-divider {
         position: relative;
         width: 100%;
-        height: 70px;
+        height: 100px;
         overflow: hidden;
         background: var(--wave-top-color);
         line-height: 0;
@@ -2993,7 +2990,9 @@ export default function ProductDetail() {
 
       /* Section spacing harmony */
       .pd-block{ padding-top: 12px; padding-bottom: 12px; }
+      .pd-block:last-child{ padding-bottom: 0; }
       .pd-sections-new{ padding-top: 12px; padding-bottom: 52px; }
+      #authority{ padding-bottom: 0; margin-bottom: -20px; }
 
       /* Story blocks: smoother image cards */
       .flow-imgBox{
@@ -3072,6 +3071,63 @@ export default function ProductDetail() {
       .pd-band--blue .sec-head::after{
         background:linear-gradient(90deg,#60a5fa,#34d399);
       }
+
+      /* ===== STOCK ALERT ===== */
+      .pd-stockAlert{
+        display:flex; align-items:center; gap:8px;
+        background:#fff3f3; border:1px solid #fecaca;
+        border-radius:10px; padding:10px 14px;
+        font-size:.82rem; font-weight:600; color:#b91c1c;
+        margin-top:10px;
+      }
+      .pd-stockDot{
+        width:8px; height:8px; border-radius:50%;
+        background:#ef4444; flex-shrink:0;
+        animation: stockPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes stockPulse{
+        0%,100%{ opacity:1; transform:scale(1); }
+        50%{ opacity:.4; transform:scale(.7); }
+      }
+
+      /* ===== GUARANTEE BADGE ===== */
+      .pd-guarantee{
+        display:flex; align-items:center; gap:10px;
+        background:#f0fdf4; border:1px solid #bbf7d0;
+        border-radius:10px; padding:10px 14px;
+        margin-top:8px;
+      }
+      .pd-guaranteeIcon{ font-size:1.3rem; flex-shrink:0; line-height:1; }
+      .pd-guaranteeText{
+        display:flex; flex-direction:column; gap:1px;
+      }
+      .pd-guaranteeText strong{
+        font-size:.82rem; font-weight:800; color:#166534;
+      }
+      .pd-guaranteeText span{
+        font-size:.72rem; font-weight:600; color:#15803d; opacity:.75;
+      }
+
+      /* ===== WHATSAPP FLOTANTE ===== */
+      .pd-wa-float{
+        position:fixed; bottom:160px; right:16px; z-index:8500;
+        display:flex; align-items:center; justify-content:center;
+        width:52px; height:52px;
+        background:#25D366;
+        border-radius:50%;
+        box-shadow:0 4px 18px rgba(37,211,102,.45);
+        text-decoration:none;
+        transition:transform .15s, box-shadow .15s;
+      }
+      .pd-wa-float:hover{
+        transform:scale(1.08);
+        box-shadow:0 6px 24px rgba(37,211,102,.55);
+      }
+      .pd-wa-float:active{ transform:scale(.95); }
+      @media (min-width:991px){
+        .pd-wa-float{ bottom:24px; right:24px; width:56px; height:56px; }
+      }
+
       `}</style>
 
       {/* Upsell sheet — aparece antes del checkout cuando hay config de upsell */}

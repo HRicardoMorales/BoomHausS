@@ -139,7 +139,7 @@ const mochilaFashionConfig = {
   soldCount: 412,
   reviewCount: 67,
   reviewScore: 4.9,
-  viewingNow: 8,
+  stockAlert: { show: true, remaining: 7 },
 
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,
