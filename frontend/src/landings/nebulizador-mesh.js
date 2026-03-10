@@ -84,9 +84,9 @@ const nebulizadorMeshConfig = {
   // ── Tarjeta de autoridad ──────────────────────────────────
   authority: {
     show: true,
-    photo: "hhttps://pbs.twimg.com/media/HC_K60AXkAASNnq?format=jpg&name=360x360",
-    name: "Dr. Martín Ezequiel Sosa",
-    role: "Neumonólogo — M.N. 142.387",
+    photo: "https://pbs.twimg.com/media/HDAf8mAXAAAcVzl?format=jpg&name=small",
+    name: "Dra. Sofia Sosa",
+    role: "Neumonóloga — M.N. 142.387",
     quote: "La tecnología Mesh genera partículas menores a 5 micrones que llegan directo a las vías respiratorias. Sesiones más cortas, mayor absorción y al ser silencioso, ideal para chicos.",
     disclaimer: "Opinión profesional con fines informativos. Consultá siempre a tu médico antes de iniciar cualquier tratamiento.",
   },
