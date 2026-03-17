@@ -14,7 +14,7 @@ const nebulizadorMeshConfig = {
   checkoutName: "Nebulizador Recargable Portatil Mesh",
 
   // ── Hero ─────────────────────────────────────────────────
-  heroSubtitle: "Nebulizaciones silenciosas en cualquier lugar — recargable, portátil y listo en segundos",
+  heroSubtitle: "Nebulizaciones silenciosas en cualquier lugar  recargable, portátil y listo en segundos",
   trustBullets: [
     "🔇 Ultra silencioso — no asusta a chicos ni adultos",
     "🔋 Batería recargable USB — sin cables durante el uso",

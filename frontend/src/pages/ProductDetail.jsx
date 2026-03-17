@@ -39,6 +39,7 @@ function StarsInline({ rating = 5 }) {
   );
 }
 
+
 function formatARS(n) {
   try {
     return new Intl.NumberFormat("es-AR", {
@@ -695,14 +696,9 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
 
 // WaveSeparator — implementación fiel al Wave 3 Animated Divider.
 // "from" controla los colores: sección de arriba y sección de abajo.
-//   "light" → claro arriba (#eef4ff), oscuro abajo (#0b172a)
-//   "blue"  → oscuro arriba (#0e1a2e), claro abajo (#f8fbff)
-// El div tiene el fondo de la sección de arriba + 3 SVGs con el color de abajo.
-// Cada SVG tiene el path repetido 2× → loop sin corte con translateX(-50%).
+// Wave divider — estilo Shopify "gentle wave" con 4 capas parallax
 function WaveSeparator({ from = "light" }) {
   const isDark = from === "blue";
-  // topColor debe coincidir exactamente con el color FINAL del gradiente del Band de arriba
-  // bottomColor debe coincidir con el color INICIAL del Band de abajo
   const topColor    = isDark ? "#0b172a" : "#ffffff";
   const bottomColor = isDark ? "#ffffff" : "#0b172a";
   return (
@@ -712,39 +708,24 @@ function WaveSeparator({ from = "light" }) {
       aria-hidden="true"
       style={{ "--wave-top-color": topColor, "--wave-bottom-color": bottomColor }}
     >
-      {/* Olas con amplitud ±22px, centro en y=70 sobre viewBox de 100 */}
-      <svg className="wave-1" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 1440 100" preserveAspectRatio="none">
-        <path fill="var(--wave-bottom-color)" d="
-          M0,70 C120,92 240,48 360,70 C480,92 600,48 720,70
-          C840,92 960,48 1080,70 C1200,92 1320,48 1440,70
-          L1440,100 L0,100 Z
-          M1440,70 C1560,92 1680,48 1800,70 C1920,92 2040,48 2160,70
-          C2280,92 2400,48 2520,70 C2640,92 2760,48 2880,70
-          L2880,100 L1440,100 Z
-        "/>
-      </svg>
-      <svg className="wave-2" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 1440 100" preserveAspectRatio="none">
-        <path fill="var(--wave-bottom-color)" d="
-          M0,75 C180,55 360,95 540,75 C720,55 900,95 1080,75
-          C1260,55 1350,85 1440,75
-          L1440,100 L0,100 Z
-          M1440,75 C1620,55 1800,95 1980,75 C2160,55 2340,95 2520,75
-          C2700,55 2790,85 2880,75
-          L2880,100 L1440,100 Z
-        "/>
-      </svg>
-      <svg className="wave-3" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 1440 100" preserveAspectRatio="none">
-        <path fill="var(--wave-bottom-color)" d="
-          M0,68 C90,85 270,50 360,68 C450,85 630,50 720,68
-          C810,85 990,50 1080,68 C1170,85 1350,50 1440,68
-          L1440,100 L0,100 Z
-          M1440,68 C1530,85 1710,50 1800,68 C1890,85 2070,50 2160,68
-          C2250,85 2430,50 2520,68 C2610,85 2790,50 2880,68
-          L2880,100 L1440,100 Z
-        "/>
+      <svg className="waves-anim" xmlns="http://www.w3.org/2000/svg"
+           xmlnsXlink="http://www.w3.org/1999/xlink"
+           viewBox="0 24 150 28" preserveAspectRatio="none">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
+        </defs>
+        <g className="parallax1">
+          <use xlinkHref="#gentle-wave" x="50" y="3" fill="var(--wave-bottom-color)" />
+        </g>
+        <g className="parallax2">
+          <use xlinkHref="#gentle-wave" x="50" y="0" fill="var(--wave-bottom-color)" />
+        </g>
+        <g className="parallax3">
+          <use xlinkHref="#gentle-wave" x="50" y="9" fill="var(--wave-bottom-color)" />
+        </g>
+        <g className="parallax4">
+          <use xlinkHref="#gentle-wave" x="50" y="6" fill="var(--wave-bottom-color)" />
+        </g>
       </svg>
     </div>
   );
@@ -850,7 +831,6 @@ export default function ProductDetail() {
     Number(product?.compareAtPrice) ||
     60350;
 
-  const soldCount = product?.soldCount ?? product?.socialProofCount ?? 2105;
 
   const pack2Discount = 10;
   const unitPrice = price;
@@ -1205,20 +1185,15 @@ export default function ProductDetail() {
 
 
 
-              {/* social proof chico arriba del título (como “Mabel H. + de 100.000 compraron”) */}
-              <div className="hero-proof hero-proof--compact">
-                <div className="hero-proofText">
-                  <b>{Number(soldCount).toLocaleString("es-AR")}</b> personas compraron
-                </div>
-              </div>
-
               <h1 className="hero-title hero-title--compact">{product.name}</h1>
 
-              <div className="hero-ratingRow hero-ratingRow--compact">
-                <StarsInline rating={5} />
-                <span className="hero-ratingText">4.7</span>
-                <a href="#reviews-section" onClick={scrollToReviews} className="hero-reviews hero-reviews-link">
-                  ({Number(274).toLocaleString("es-AR")} reseñas)
+              {/* Rating row */}
+              <div className="hero-ratingRow--compact" style={{display:"flex",alignItems:"center"}}>
+                <StarsInline rating={Math.round(MC.reviewScore || 4.8)} />
+                <span style={{fontWeight:700,fontSize:14,marginLeft:4}}>{MC.reviewScore || "4.8"}</span>
+                <a href="#reviews-section" className="hero-reviews-link" onClick={scrollToReviews}
+                   style={{fontSize:13,marginLeft:6,color:"#555"}}>
+                  ({MC.reviewCount || 650} reseñas)
                 </a>
               </div>
 
@@ -1255,9 +1230,12 @@ export default function ProductDetail() {
 
               {/* Stock limitado */}
               {MC.stockAlert?.show && (
-                <div className="pd-stockAlert">
-                  <span className="pd-stockDot" />
-                  Quedan solo <b>{MC.stockAlert.remaining} unidades</b> en stock
+                <div className="limited-stock-container">
+                  <div className="limited-stock-dot"><span style={{visibility:"hidden"}}>.</span></div>
+                  <div>
+                    <span className="limited-stock-text1">¡Stock Limitado! </span>
+                    <span className="limited-stock-text2">Pocas piezas disponibles.</span>
+                  </div>
                 </div>
               )}
 
@@ -1716,6 +1694,7 @@ export default function ProductDetail() {
         text-decoration: none !important;
         opacity: .85;
       }
+
 
       .hero-subtitle{
         text-align:center;
@@ -2924,48 +2903,37 @@ export default function ProductDetail() {
       .pd-band--blue .faq-pro-q{ color: rgba(255,255,255,.85); }
       .pd-band--blue .faq-pro-a p{ color: rgba(255,255,255,.62); }
 
-      /* ===== WAVE DIVIDER ===== */
+      /* ===== WAVE DIVIDER (Shopify gentle-wave) ===== */
       .wave-divider {
         position: relative;
         width: 100%;
-        height: 100px;
         overflow: hidden;
         background: var(--wave-top-color);
         line-height: 0;
         pointer-events: none;
-        /* elimina el pixel de separación con las secciones adyacentes */
         margin-top: -1px;
         margin-bottom: -1px;
       }
-      .wave-divider svg {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 200%;
-        height: 100%;
+      .waves-anim {
         display: block;
+        width: 100%;
+        height: auto;
+        max-height: 3rem;
+        margin: 0;
       }
-      .wave-divider .wave-1 {
-        animation: wave-scroll 10s linear infinite;
-        opacity: 1;
-        z-index: 3;
+      @media (min-width: 1000px) {
+        .waves-anim { max-height: 6rem; }
       }
-      .wave-divider .wave-2 {
-        animation: wave-scroll 7s linear infinite reverse;
-        opacity: 0.5;
-        z-index: 2;
-      }
-      .wave-divider .wave-3 {
-        animation: wave-scroll 5s linear infinite;
-        opacity: 0.3;
-        z-index: 1;
-      }
-      @keyframes wave-scroll {
-        0%   { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
+      .parallax1 > use { animation: wMove1 10s linear infinite; animation-delay: -2s; }
+      .parallax2 > use { animation: wMove2 8s linear infinite; opacity: 0.4; animation-delay: -2s; }
+      .parallax3 > use { animation: wMove3 6s linear infinite; opacity: 0.3; animation-delay: -2s; }
+      .parallax4 > use { animation: wMove4 4s linear infinite; opacity: 0.2; animation-delay: -2s; }
+      @keyframes wMove1 { 0%{transform:translate(85px,0)} 100%{transform:translate(-90px,0)} }
+      @keyframes wMove2 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)} }
+      @keyframes wMove3 { 0%{transform:translate(85px,0)} 100%{transform:translate(-90px,0)} }
+      @keyframes wMove4 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)} }
       @media (prefers-reduced-motion: reduce) {
-        .wave-divider svg { animation: none !important; }
+        .parallax1 > use, .parallax2 > use, .parallax3 > use, .parallax4 > use { animation: none !important; }
       }
 
       /* ===== SCROLL ANIMATIONS (IntersectionObserver) ===== */
@@ -3073,21 +3041,29 @@ export default function ProductDetail() {
       }
 
       /* ===== STOCK ALERT ===== */
-      .pd-stockAlert{
-        display:flex; align-items:center; gap:8px;
-        background:#fff3f3; border:1px solid #fecaca;
-        border-radius:10px; padding:10px 14px;
-        font-size:.82rem; font-weight:600; color:#b91c1c;
+      .limited-stock-container{
+        display:flex; align-items:center;
+        font-size:14px; color:#282828; line-height:22px;
         margin-top:10px;
       }
-      .pd-stockDot{
-        width:8px; height:8px; border-radius:50%;
-        background:#ef4444; flex-shrink:0;
-        animation: stockPulse 1.4s ease-in-out infinite;
+      .limited-stock-dot{
+        width:10px; height:10px; background-color:#d74f33;
+        border-radius:50%; margin-right:15px; flex-shrink:0;
+        animation: limitedPulse 1.5s infinite;
       }
-      @keyframes stockPulse{
-        0%,100%{ opacity:1; transform:scale(1); }
-        50%{ opacity:.4; transform:scale(.7); }
+      .limited-stock-text1{
+        font-weight:bold; font-size:14px; line-height:10px;
+      }
+      .limited-stock-text2{
+        font-size:14px; line-height:10px;
+      }
+      .limited-stock-highlight{
+        color:#d74f33;
+      }
+      @keyframes limitedPulse{
+        0%{ box-shadow:0 0 10px #d74f33; transform:scale(1); }
+        50%{ box-shadow:0 0 20px #d74f33; transform:scale(1); }
+        100%{ box-shadow:0 0 10px #d74f33; transform:scale(1); }
       }
 
       /* ===== GUARANTEE BADGE ===== */

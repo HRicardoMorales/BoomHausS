@@ -11,6 +11,7 @@ export const LANDING_CONFIGS = {
   'mochila-transparente':     mochilaTransparente,
   'mochila-fashion':          mochilaFashion,
   'nebulizador-mesh':         nebulizadorMesh,
+  'nebulizador':              nebulizadorMesh,
 };
 
 export const LANDING_META = [

@@ -106,7 +106,7 @@ export default function App() {
 
           {/* ✅ Landing pages (ads -> directo acá) */}
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
-          <Route path="/lp/:slug" element={<ProductDetail />} />
+<Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />

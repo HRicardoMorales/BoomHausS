@@ -92,6 +92,34 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const [redirecting, setRedirecting] = useState(false); // ✅ overlay "Conectando con MP"
   const [error, setError] = useState("");
 
+  // ✅ Cupones de descuento
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // { code, pct }
+  const [couponError, setCouponError] = useState("");
+
+  const VALID_COUPONS = {
+    "DESCUENTO10": 10,
+    "PROMO15":     15,
+    "WELCOME20":   20,
+    "VIP25":       25,
+  };
+
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    const code = couponInput.trim().toUpperCase();
+    if (!code) { setCouponError("Ingresá un cupón"); return; }
+    const pct = VALID_COUPONS[code];
+    if (!pct) { setCouponError("Cupón inválido o expirado"); return; }
+    setAppliedCoupon({ code, pct });
+    setCouponError("");
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError("");
+  };
+
   // Guardamos order data por si querés usarlo luego (aunque MP redirige)
   const [orderData, setOrderData] = useState(null);
 
@@ -140,8 +168,9 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     return Math.round((promoSavings / fullTotal) * 100);
   }, [showCompare, fullTotal, promoSavings]);
 
-  // ✅ Total final: sin transferencia, sin descuentos extra
-  const finalTotal = totalPrice;
+  // ✅ Total final: aplica cupón si existe
+  const couponDiscount = appliedCoupon ? Math.round(totalPrice * appliedCoupon.pct / 100) : 0;
+  const finalTotal = totalPrice - couponDiscount;
 
   // ✅ Validación DNI simple (7 u 8 dígitos)
   const dniDigits = useMemo(() => onlyDigits(customerDni), [customerDni]);
@@ -270,6 +299,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         shippingMethod:  method,
         paymentMethod:   method === "caba_cod" ? "cod" : "mercadopago",
         notes:           notes.trim(),
+        coupon:          appliedCoupon ? appliedCoupon.code : null,
+        couponDiscount:  couponDiscount,
         total:           finalTotal,
         items: items.map((item) => ({
           productId: item.productId,
@@ -834,6 +865,44 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         <span style={{ fontSize: ".92rem", fontWeight: 1000, color: "#15803d" }}>-{money(promoSavings)}</span>
                       </div>
                     )}
+
+                    {/* Cupón de descuento */}
+                    <div style={{ marginTop: 4 }}>
+                      {!appliedCoupon ? (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <input
+                            type="text"
+                            placeholder="Cupón de descuento"
+                            value={couponInput}
+                            onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleApplyCoupon(); } }}
+                            style={{ flex: 1, padding: "9px 12px", borderRadius: 10, border: "1px solid rgba(11,18,32,.12)", fontSize: ".85rem", fontWeight: 700, letterSpacing: ".04em", textTransform: "uppercase", outline: "none" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            style={{ padding: "9px 16px", borderRadius: 10, border: "none", background: "rgba(11,18,32,.08)", fontWeight: 800, fontSize: ".82rem", cursor: "pointer", color: "rgba(11,18,32,.65)", whiteSpace: "nowrap" }}
+                          >
+                            Aplicar
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(22,163,74,.07)", border: "1px solid rgba(22,163,74,.18)", borderRadius: 10, padding: "8px 12px" }}>
+                          <span style={{ fontSize: ".85rem", fontWeight: 900, color: "#15803d" }}>🎟️ {appliedCoupon.code} (-{appliedCoupon.pct}%)</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: ".88rem", fontWeight: 900, color: "#15803d" }}>-{money(couponDiscount)}</span>
+                            <button
+                              type="button"
+                              onClick={handleRemoveCoupon}
+                              style={{ background: "none", border: "none", cursor: "pointer", fontSize: ".82rem", fontWeight: 800, color: "rgba(11,18,32,.38)", textDecoration: "underline", padding: 0 }}
+                            >
+                              Quitar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      {couponError && <div style={{ fontSize: ".78rem", fontWeight: 700, color: "#dc2626", marginTop: 4 }}>{couponError}</div>}
+                    </div>
 
                     {/* Total */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, borderTop: "1.5px solid #eef2f7", marginTop: 2 }}>
