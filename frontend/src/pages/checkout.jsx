@@ -58,7 +58,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   }, [pathname, embedded]);
 
   // ✅ Carrito
-  const { items, totalPrice, clearCart, calcItemTotal } = useCart();
+  const { items, totalPrice, clearCart, calcItemTotal, updateQty, removeItem } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
   // ✅ Método de pago (único online): Mercado Pago
@@ -91,6 +91,11 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false); // ✅ overlay "Conectando con MP"
   const [error, setError] = useState("");
+  const errorRef = useRef(null);
+  const showError = (msg) => {
+    setError(msg);
+    setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+  };
 
   // ✅ Cupones de descuento
   const [couponInput, setCouponInput] = useState("");
@@ -257,21 +262,21 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     const dniOk = dni.length >= 7 && dni.length <= 8;
 
     if (!name || !address) {
-      setError("Completá Nombre y Dirección para continuar.");
+      showError("Completá Nombre y Dirección para continuar.");
       return;
     }
     if (!dniOk) {
-      setError("Ingresá un DNI válido (7 u 8 dígitos).");
+      showError("Ingresá un DNI válido (7 u 8 dígitos).");
       return;
     }
     if (method === "caba_cod") {
       if (onlyDigits(phone).length < 8) {
-        setError("Para CABA (pagás al recibir) el teléfono es obligatorio.");
+        showError("Para CABA (pagás al recibir) el teléfono es obligatorio.");
         return;
       }
     }
     if (isCartEmpty) {
-      setError("Tu carrito está vacío.");
+      showError("Tu carrito está vacío.");
       return;
     }
 
@@ -487,13 +492,17 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
               {error && (
                 <div
+                  ref={errorRef}
                   style={{
                     background: "#fee2e2",
-                    color: "#ef4444",
-                    padding: "10px",
-                    borderRadius: "8px",
+                    color: "#dc2626",
+                    padding: "12px 16px",
+                    borderRadius: "10px",
                     marginBottom: "15px",
                     fontWeight: 900,
+                    border: "2px solid #dc2626",
+                    fontSize: ".9rem",
+                    animation: "shakeError .4s ease",
                   }}
                 >
                   ⚠️ {error}
@@ -829,10 +838,20 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div style={{ fontWeight: 800, fontSize: "0.88rem", lineHeight: 1.25 }}>{item.name || "Producto"}</div>
-                            <div style={{ fontSize: "0.78rem", color: "rgba(11,18,32,.45)", fontWeight: 700, marginTop: 2 }}>
-                              {item.quantity > 1 ? `x${item.quantity} unidades` : "1 unidad"}
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                              <button
+                                type="button"
+                                onClick={() => item.quantity <= 1 ? removeItem(item.productId) : updateQty(item.productId, item.quantity - 1)}
+                                style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
+                              >{item.quantity <= 1 ? "×" : "−"}</button>
+                              <span style={{ fontSize: "0.82rem", fontWeight: 800, minWidth: 18, textAlign: "center" }}>{item.quantity}</span>
+                              <button
+                                type="button"
+                                onClick={() => updateQty(item.productId, item.quantity + 1)}
+                                style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
+                              >+</button>
                               {item.promo?.type === "bundle2" && item.promo?.discountPct > 0 && (
-                                <span style={{ marginLeft: 6, color: "#16a34a", fontWeight: 800 }}>−{item.promo.discountPct}% PROMO</span>
+                                <span style={{ marginLeft: 4, color: "#16a34a", fontWeight: 800, fontSize: ".75rem" }}>−{item.promo.discountPct}% PROMO</span>
                               )}
                             </div>
                           </div>
@@ -1185,6 +1204,13 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
             @keyframes payPulse{
               0%,100%{ box-shadow:0 8px 28px rgba(11,92,255,.32); }
               50%{ box-shadow:0 12px 38px rgba(11,92,255,.52); }
+            }
+            @keyframes shakeError{
+              0%,100%{ transform:translateX(0); }
+              20%{ transform:translateX(-6px); }
+              40%{ transform:translateX(6px); }
+              60%{ transform:translateX(-4px); }
+              80%{ transform:translateX(4px); }
             }
             button[type="submit"]{
               animation: payPulse 3s ease-in-out infinite;

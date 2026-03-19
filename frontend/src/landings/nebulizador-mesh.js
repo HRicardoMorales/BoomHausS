@@ -169,36 +169,37 @@ const nebulizadorMeshConfig = {
   },
 
   // ── Upsell — productos complementarios ───────────────────
-  upsell: {
-    title: "Complementá tu nebulizador",
-    subtitle: "Agregá accesorios y pagás un solo envío",
-    items: [
-      {
-        slug: "solucion-fisiologica-x10",
-        name: "Solución Fisiológica x10 ampollas",
-        badge: "MAS VENDIDO",
-        fallbackPrice: 3200,
-        fallbackCompareAt: 4800,
-        fallbackImage: "https://m.media-amazon.com/images/I/61JKnXarVgL._AC_SL1500_.jpg",
-      },
-      {
-        slug: "mascaras-repuesto",
-        name: "Set Máscaras de Repuesto (adulto + niño)",
-        badge: "REPUESTO",
-        fallbackPrice: 4500,
-        fallbackCompareAt: 6900,
-        fallbackImage: "https://m.media-amazon.com/images/I/61oKBiAUpTL._AC_SL1500_.jpg",
-      },
-      {
-        slug: "estuche-nebulizador",
-        name: "Estuche Rígido de Transporte",
-        badge: "NUEVO",
-        fallbackPrice: 5800,
-        fallbackCompareAt: 8500,
-        fallbackImage: "https://m.media-amazon.com/images/I/71fmrxJ9GPL._AC_SL1500_.jpg",
-      },
-    ],
-  },
+  // Desactivado por ahora. Descomentar para reactivar.
+  // upsell: {
+  //   title: "Complementá tu nebulizador",
+  //   subtitle: "Agregá accesorios y pagás un solo envío",
+  //   items: [
+  //     {
+  //       slug: "solucion-fisiologica-x10",
+  //       name: "Solución Fisiológica x10 ampollas",
+  //       badge: "MAS VENDIDO",
+  //       fallbackPrice: 3200,
+  //       fallbackCompareAt: 4800,
+  //       fallbackImage: "https://m.media-amazon.com/images/I/61JKnXarVgL._AC_SL1500_.jpg",
+  //     },
+  //     {
+  //       slug: "mascaras-repuesto",
+  //       name: "Set Máscaras de Repuesto (adulto + niño)",
+  //       badge: "REPUESTO",
+  //       fallbackPrice: 4500,
+  //       fallbackCompareAt: 6900,
+  //       fallbackImage: "https://m.media-amazon.com/images/I/61oKBiAUpTL._AC_SL1500_.jpg",
+  //     },
+  //     {
+  //       slug: "estuche-nebulizador",
+  //       name: "Estuche Rígido de Transporte",
+  //       badge: "NUEVO",
+  //       fallbackPrice: 5800,
+  //       fallbackCompareAt: 8500,
+  //       fallbackImage: "https://m.media-amazon.com/images/I/71fmrxJ9GPL._AC_SL1500_.jpg",
+  //     },
+  //   ],
+  // },
 };
 
 export default nebulizadorMeshConfig;
