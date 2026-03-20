@@ -1,3 +1,8 @@
+function genEventId() {
+  try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export function track(eventName, params = {}) {
   if (typeof window === "undefined") return;
 
@@ -7,7 +12,8 @@ export function track(eventName, params = {}) {
     return;
   }
 
-  fbq("track", eventName, params);
+  const eventID = genEventId();
+  fbq("track", eventName, params, { eventID });
 }
 
 export function trackPageView(pathname) {
