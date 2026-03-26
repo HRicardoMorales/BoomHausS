@@ -961,7 +961,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         padding: "1.05rem",
                         fontSize: "1.05rem",
                         fontWeight: 1100,
-                        background: isCod ? "var(--primary)" : "#009ee3",
+                        background: "linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%)",
                         border: "none",
                         boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
                         cursor: (loading || redirecting) ? "not-allowed" : "pointer",

@@ -65,6 +65,41 @@ function clampPct(n) {
 }
 
 /* =========================
+   WhatsApp Tab lateral
+========================= */
+function WaTab({ number, message }) {
+  const [open, setOpen] = useState(false);
+  const timerRef = useRef(null);
+
+  const handleToggle = (e) => {
+    if (!open) {
+      e.preventDefault();
+      setOpen(true);
+      timerRef.current = setTimeout(() => setOpen(false), 4000);
+    }
+    // if open, the <a> navigates normally
+  };
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  const href = `https://wa.me/${number}?text=${encodeURIComponent(message || "Hola!")}`;
+
+  return (
+    <a
+      className={`wa-tab${open ? " wa-tab--open" : ""}`}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={handleToggle}
+      aria-label="Consultar por WhatsApp"
+    >
+      <svg className="wa-tab-icon" viewBox="0 0 32 32" width="22" height="22" fill="#fff"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16.004c0 3.5 1.132 6.744 3.058 9.374L1.058 31.14l5.968-1.97A15.89 15.89 0 0 0 16.004 32C24.826 32 32 24.826 32 16.004S24.826 0 16.004 0Zm9.35 22.616c-.394 1.108-1.95 2.028-3.192 2.296-.85.18-1.96.324-5.696-1.224-4.78-1.98-7.852-6.836-8.09-7.152-.228-.316-1.916-2.552-1.916-4.868 0-2.316 1.214-3.454 1.644-3.926.43-.472.94-.59 1.252-.59.312 0 .624.002.898.016.288.014.674-.11 1.054.804.394.948 1.336 3.264 1.452 3.502.118.238.196.514.04.828-.158.316-.236.514-.472.79-.236.278-.496.62-.71.832-.236.236-.482.492-.206.964.276.472 1.226 2.022 2.634 3.276 1.81 1.612 3.336 2.112 3.808 2.348.472.236.748.198 1.024-.118.276-.316 1.182-1.376 1.496-1.848.316-.472.628-.394 1.06-.236.43.158 2.746 1.296 3.216 1.532.472.236.786.354.902.55.118.196.118 1.128-.276 2.236Z"/></svg>
+      <span className="wa-tab-label">¿Dudas? Escribinos</span>
+    </a>
+  );
+}
+
+/* =========================
    Countdown
 ========================= */
 function CountdownTimer({ storageKey = "pd_countdown", minutes = 18 }) {
@@ -1465,13 +1500,13 @@ export default function ProductDetail() {
 
       <div className="sticky-pro">
         <div className="sticky-pro-left">
-          <div className="sticky-count">
-            <span className="sticky-countLabel">TERMINA EN</span>
-            <CountdownTimer storageKey={`pd_countdown_${id}`} minutes={18} />
-          </div>
           <div className="sticky-prices">
             <span className="sticky-old">{formatARS(oldTotal)}</span>
             <span className="sticky-now">{formatARS(displayTotal)}</span>
+          </div>
+          <div className="sticky-count">
+            <span className="sticky-countLabel">TERMINA EN</span>
+            <CountdownTimer storageKey={`pd_countdown_${id}`} minutes={18} />
           </div>
         </div>
         <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">
@@ -1479,17 +1514,9 @@ export default function ProductDetail() {
         </button>
       </div>
 
-      {/* WhatsApp flotante */}
+      {/* WhatsApp tab lateral */}
       {MC.whatsapp?.show && (
-        <a
-          className="pd-wa-float"
-          href={`https://wa.me/${MC.whatsapp.number}?text=${encodeURIComponent(MC.whatsapp.message || "Hola!")}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Consultar por WhatsApp"
-        >
-          <svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16.004c0 3.5 1.132 6.744 3.058 9.374L1.058 31.14l5.968-1.97A15.89 15.89 0 0 0 16.004 32C24.826 32 32 24.826 32 16.004S24.826 0 16.004 0Zm9.35 22.616c-.394 1.108-1.95 2.028-3.192 2.296-.85.18-1.96.324-5.696-1.224-4.78-1.98-7.852-6.836-8.09-7.152-.228-.316-1.916-2.552-1.916-4.868 0-2.316 1.214-3.454 1.644-3.926.43-.472.94-.59 1.252-.59.312 0 .624.002.898.016.288.014.674-.11 1.054.804.394.948 1.336 3.264 1.452 3.502.118.238.196.514.04.828-.158.316-.236.514-.472.79-.236.278-.496.62-.71.832-.236.236-.482.492-.206.964.276.472 1.226 2.022 2.634 3.276 1.81 1.612 3.336 2.112 3.808 2.348.472.236.748.198 1.024-.118.276-.316 1.182-1.376 1.496-1.848.316-.472.628-.394 1.06-.236.43.158 2.746 1.296 3.216 1.532.472.236.786.354.902.55.118.196.118 1.128-.276 2.236Z"/></svg>
-        </a>
+        <WaTab number={MC.whatsapp.number} message={MC.whatsapp.message} />
       )}
 
       {/* ✅ CSS */}
@@ -1768,9 +1795,9 @@ export default function ProductDetail() {
         align-items:center;
         justify-content:center;
         text-align:center;
-        background: #dc2626;      /* rojo como captura */
+        background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
         color: #fff;
-        box-shadow: 0 18px 55px rgba(220,38,38,.20);
+        box-shadow: 0 18px 55px rgba(11,92,255,.25);
         margin-top: 8px;
       }
       .hero-ctaBig span{
@@ -2620,50 +2647,52 @@ export default function ProductDetail() {
         bottom: 0;
         z-index: 9999;
         display: flex;
-        flex-direction: column;
-        gap: 7px;
+        align-items: center;
+        gap: 10px;
         background: #fff;
         border-top: 1.5px solid rgba(2,8,23,.08);
-        border-radius: 20px 20px 0 0;
-        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-        box-shadow: 0 -6px 36px rgba(10,20,40,.13);
+        border-radius: 16px 16px 0 0;
+        padding: 14px 16px calc(12px + env(safe-area-inset-bottom));
+        box-shadow: 0 -4px 24px rgba(10,20,40,.10);
       }
       @media (min-width: 991px){ .sticky-pro{ display:none; } }
 
       .sticky-pro-left{
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+        flex-shrink: 0;
       }
-      .sticky-count{ display:flex; align-items:center; gap: 6px; }
+      .sticky-count{ display:flex; align-items:center; gap: 4px; }
       .sticky-countLabel{
-        font-size: .70rem;
-        color: rgba(11,18,32,.45);
-        font-weight: 900;
-        letter-spacing: .07em;
+        font-size: .62rem;
+        color: rgba(11,18,32,.40);
+        font-weight: 800;
+        letter-spacing: .06em;
         text-transform: uppercase;
       }
-      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .92rem; }
+      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .78rem; }
 
-      .sticky-prices{ display:flex; align-items: baseline; gap: 8px; }
-      .sticky-old{ color: rgba(11,18,32,.38); font-weight: 700; text-decoration: line-through; font-size: .85rem; }
-      .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: 1.18rem; }
+      .sticky-prices{ display:flex; align-items: baseline; gap: 6px; }
+      .sticky-old{ color: rgba(11,18,32,.35); font-weight: 700; text-decoration: line-through; font-size: .75rem; }
+      .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: 1.05rem; }
 
       .sticky-pro-btn2{
-        width: 100%;
+        flex: 1;
         border: none;
         background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
         color: #fff;
         font-weight: 900;
-        font-size: 1rem;
-        border-radius: 14px;
-        padding: 12px 18px;
+        font-size: .88rem;
+        border-radius: 12px;
+        padding: 10px 14px;
         cursor: pointer;
-        box-shadow: 0 8px 28px rgba(11,92,255,.32);
+        box-shadow: 0 6px 20px rgba(11,92,255,.28);
         letter-spacing: .05em;
         text-transform: uppercase;
         transition: transform .12s ease, box-shadow .12s ease;
+        white-space: nowrap;
       }
       .sticky-pro-btn2:active{
         transform: scale(.98);
@@ -2993,7 +3022,7 @@ export default function ProductDetail() {
       }
       .hero-ctaBig:hover{
         transform: translateY(-2px);
-        box-shadow: 0 22px 60px rgba(220,38,38,.28);
+        box-shadow: 0 22px 60px rgba(11,92,255,.32);
       }
       .hero-ctaBig:active{ transform: translateY(0) scale(.98); }
 
@@ -3084,24 +3113,63 @@ export default function ProductDetail() {
         font-size:.72rem; font-weight:600; color:#15803d; opacity:.75;
       }
 
-      /* ===== WHATSAPP FLOTANTE ===== */
-      .pd-wa-float{
-        position:fixed; bottom:160px; right:16px; z-index:8500;
-        display:flex; align-items:center; justify-content:center;
-        width:52px; height:52px;
+      /* ===== WHATSAPP TAB LATERAL ===== */
+      .wa-tab{
+        position:fixed;
+        left:0;
+        bottom:90px;
+        transform:translateX(calc(-100% + 38px));
+        z-index:8500;
+        display:flex;
+        flex-direction:row-reverse;
+        align-items:center;
+        gap:8px;
         background:#25D366;
-        border-radius:50%;
-        box-shadow:0 4px 18px rgba(37,211,102,.45);
+        border-radius:0 24px 24px 0;
+        padding:10px 12px 10px 14px;
         text-decoration:none;
-        transition:transform .15s, box-shadow .15s;
+        box-shadow:2px 2px 12px rgba(37,211,102,.35);
+        transition:transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+        cursor:pointer;
       }
-      .pd-wa-float:hover{
-        transform:scale(1.08);
-        box-shadow:0 6px 24px rgba(37,211,102,.55);
+      .wa-tab--open{
+        transform:translateX(0);
+        box-shadow:4px 4px 24px rgba(37,211,102,.45);
       }
-      .pd-wa-float:active{ transform:scale(.95); }
+      .wa-tab-icon{
+        flex-shrink:0;
+      }
+      .wa-tab-label{
+        color:#fff;
+        font-size:.82rem;
+        font-weight:800;
+        white-space:nowrap;
+        opacity:0;
+        max-width:0;
+        overflow:hidden;
+        transition:opacity .25s ease .05s, max-width .3s ease;
+      }
+      .wa-tab--open .wa-tab-label{
+        opacity:1;
+        max-width:200px;
+      }
+      .wa-tab:active{
+        transform:translateX(0) scale(.96);
+      }
       @media (min-width:991px){
-        .pd-wa-float{ bottom:24px; right:24px; width:56px; height:56px; }
+        .wa-tab{
+          bottom:24px;
+          padding:12px 14px 12px 16px;
+        }
+        .wa-tab-icon{ width:26px; height:26px; }
+        .wa-tab:hover{
+          transform:translateX(0);
+          box-shadow:4px 4px 24px rgba(37,211,102,.45);
+        }
+        .wa-tab:hover .wa-tab-label{
+          opacity:1;
+          max-width:200px;
+        }
       }
 
       `}</style>
