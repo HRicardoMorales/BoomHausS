@@ -18,6 +18,7 @@ const healthRoutes = require('./routes/health.routes');
 const ordersRoutes = require('./routes/orders.routes');
 const authRoutes = require('./routes/auth.routes');
 const webhooksRoutes = require('./routes/webhooks.router');
+const paymentsRoutes = require('./routes/payments.routes');
 
 const AbandonedCart = require('./models/AbandonedCart');
 
@@ -133,6 +134,7 @@ app.use('/api/products', productsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', webhooksRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 app.post('/api/abandoned-cart', async (req, res) => {
   try {

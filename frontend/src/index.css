@@ -670,19 +670,19 @@ header {
 .pd-ctaPrimary-outline:hover { border-color: var(--primary); color: var(--primary); }
 
 /* Accordion */
-.accordion-wrapper { margin-top: 30px; }
+.accordion-wrapper { margin-top: 16px; }
 .accordion-item { border-bottom: 1px solid #e2e8f0; }
 .accordion-header {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 20px 0;
+  padding: 12px 0;
   background: none;
   border: none;
-  font-weight: 800;
+  font-weight: 700;
   color: #1e293b;
   cursor: pointer;
-  font-size: 1.05rem;
+  font-size: .88rem;
   align-items: center;
 }
 .accordion-content {
@@ -691,8 +691,8 @@ header {
   transition: max-height .25s ease;
   padding-bottom: 0;
   color: #475569;
-  font-size: .95rem;
-  line-height: 1.7;
+  font-size: .82rem;
+  line-height: 1.6;
 }
 .accordion-content.open {
   max-height: 420px;
@@ -1755,18 +1755,18 @@ body.page-checkout .container {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marquee 14s linear infinite;
+  animation: marquee 22s linear infinite;
 }
 
 .marquee__item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 32px;
+  padding: 0 36px;
   white-space: nowrap;
   font-weight: 900;
-  font-size: 15px;
-  letter-spacing: .2px;
+  font-size: 16px;
+  letter-spacing: .3px;
 }
 
 .marquee__item--flash {
@@ -1788,7 +1788,7 @@ body.page-checkout .container {
 
 @media (max-width: 520px) {
   .marquee { height: 38px; }
-  .marquee__item { font-size: 12px; padding: 0 22px; }
+  .marquee__item { font-size: 13px; padding: 0 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

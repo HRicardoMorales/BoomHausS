@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 import Navbar from './components/navbar.jsx';
+import Marquee from './components/marquee.jsx';
 import Footer from './components/Footer.jsx';
 
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -40,9 +41,8 @@ function PrivateRoute({ children }) {
 export default function App() {
   const location = useLocation();
 
-  // ✅ En landing pages no queremos navbar/footer (estilo "página de anuncio")
-  // ✅ Sin navbar/footer en landing pages y en ProductDetail
-  const hideChrome = location.pathname.startsWith('/lp/') || location.pathname.startsWith('/products/');
+  // ✅ Navbar visible en todas las páginas
+  const hideChrome = false;
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -92,6 +92,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <ScrollToTop />
+      {!hideChrome && <Marquee countdownKey="pd_countdown" />}
       {!hideChrome && <Navbar />}
       
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}

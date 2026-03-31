@@ -14,13 +14,20 @@ const nebulizadorMeshConfig = {
   checkoutName: "Nebulizador Recargable Portatil Mesh",
 
   // ── Hero ─────────────────────────────────────────────────
-  heroSubtitle: "Nebulizaciones silenciosas en cualquier lugar  recargable, portátil y listo en segundos",
+  heroSubtitle: "",
   trustBullets: [
-    "🔇 Ultra silencioso — no asusta a chicos ni adultos",
-    "🔋 Batería recargable USB — sin cables durante el uso",
-    "💨 Tecnología Mesh — partículas ultrafinas que llegan donde tienen que llegar",
-    "🚚 Envío gratis a todo el país",
+    "🤫 Ultra silencioso",
+    "⚡ Recargable USB-C",
+    "💪 Mejor respiración, mejor sueño",
   ],
+
+  // ── Textos personalizados del CTA / sticky ──────────────
+  ctaLine1: "QUIERO VIVIR MEJOR",
+  ctaLine2: "LO QUIERO 🚚",
+  stockAlertText: "⚠️ Quedan pocas unidades al precio actual",
+  stickyBtnText: "QUIERO VIVIR MEJOR 🚚",
+
+  // ── Líneas de confianza debajo del CTA ──────────────────
 
   // ── Descripcion corta ────────────────────────────────────
   miniDescription:
@@ -29,18 +36,18 @@ const nebulizadorMeshConfig = {
   // ── Story blocks ─────────────────────────────────────────
   storyBlocks: [
     {
-      title: "NEBULIZACIONES EN CUALQUIER MOMENTO Y LUGAR",
-      text: "No dependas más del nebulizador de mesa, los cables ni el enchufe. Este nebulizador es del tamaño de tu mano, pesa 120 gramos y funciona a batería. Ideal para nebulizar en casa, en el auto, en la guardia o de viaje.",
+      title: "El cansancio no avisa — vos sí podés estar listo",
+      text: "120 gramos que cambian tu día.\nEn la cartera, en el trabajo, de viaje.\nPecho cargado a la mañana →\nalivio antes de que arranque el día.\nSin enchufes. Sin excusas.",
       img: "https://pbs.twimg.com/media/HC_GBrGWgAAr3EW?format=jpg&name=360x360",
     },
     {
-      title: "TECNOLOGÍA MESH: SILENCIOSO Y EFICIENTE",
-      text: "A diferencia de los nebulizadores de pistón que hacen ruido y asustan a los chicos, la tecnología Mesh vibra una malla microscópica para generar una niebla ultrafina sin ruido. Partículas menores a 5 micrones que llegan directo a bronquios y pulmones.",
+      title: "Que no te despierte el remedio que te ayuda a descansar",
+      text: "Silencio absoluto mientras actúa.\nPartículas ultrafinas directo a pulmones.\nTu cuerpo descansa. Tu respiración mejora.\nTe levantás con otra energía.",
       img: "https://pbs.twimg.com/media/HC_HYuSWYAEt3ra?format=jpg&name=medium",
     },
     {
-      title: "RECARGABLE POR USB-C — SIN PILAS NI CABLES",
-      text: "Batería de litio integrada que se carga por USB-C en menos de 2 horas. Una carga completa da para 3 a 4 sesiones de nebulización. Cargalo con el celular, la notebook o cualquier cargador USB. Nunca más comprar pilas.",
+      title: "Cargalo de noche. Respirá mejor mañana.",
+      text: "Enchufalo con el celular antes de dormir.\n2 horas = 3 a 4 sesiones listas.\nSin pilas. Sin cables. Sin perder tiempo\ncuando ya estás agotado.",
       img: "https://pbs.twimg.com/media/HC_IgU9XwAA5LcE?format=jpg&name=medium",
     },
   ],
@@ -106,10 +113,10 @@ const nebulizadorMeshConfig = {
 
   // ── Mini reseñas (carrusel compacto) ─────────────────────
   miniReviews: [
-    { rating: 5, short: "Mi nene de 2 años se nebuliza sin llorar. Con el de pistón era un drama cada vez. Cambió todo.", name: "Carolina P." },
-    { rating: 5, short: "Lo llevé de viaje y me salvó. Mi hija tuvo broncoespasmo y la nebulicé en el hotel sin problema.", name: "Diego A." },
+    { rating: 5, short: "Llevaba semanas sin dormir bien por la congestión. Desde que uso el nebulizador antes de acostarme duermo de un tirón y me levanto con otra energía.", name: "Carolina M." },
+    { rating: 5, short: "No lo compré para dormir mejor... pero ese fue el mayor cambio. La nariz libre cambia todo el día.", name: "Rodrigo T." },
+    { rating: 5, short: "Mi hijo dejó de despertarse de noche. Nosotros también. Dormimos todos mejor y el día rinde el doble.", name: "Valentina R." },
     { rating: 5, short: "Soy asmático. Tener un nebulizador que entra en la mochila y no depende de enchufe es un cambio de vida.", name: "Fernando L." },
-    { rating: 5, short: "Pedí dos, uno para casa y otro para la abuela. Se cargan rápido y funcionan perfecto.", name: "Valentina R." },
     { rating: 5, short: "Lo uso con solución fisiológica para la congestión. En 5 minutos ya se destapó la nariz.", name: "Mariana G." },
     { rating: 4, short: "Muy buena calidad por el precio. Viene con las dos máscaras y el cable. Nada que envidiarle a uno de farmacia.", name: "Sebastián T." },
   ],
@@ -118,14 +125,14 @@ const nebulizadorMeshConfig = {
   reviewsTitle: "TESTIMONIOS",
   reviewsSubtitle: "Lo que dicen quienes ya lo usan",
   reviewsCarousel: [
-    { title: "SALVACIÓN PARA MI NENE",           rating: 5, text: "Mi hijo de 2 años necesita nebulizaciones seguido. Con el de pistón lloraba cada vez que lo prendíamos. Este es tan silencioso que ni se da cuenta. Se queda mirando dibujitos mientras se nebuliza. Un antes y un después.",           name: "Carolina Pereyra",   img: "https://http2.mlstatic.com/D_NQ_NP_2X_636231-MLA75580765321_042024-O.webp" },
-    { title: "IMPRESCINDIBLE PARA VIAJES",       rating: 5, text: "Viajamos a Córdoba y mi hija tuvo un broncoespasmo en plena ruta. Paré en una estación de servicio, saqué el nebulizador de la guantera y la nebulicé ahí mismo. No necesité buscar hospital ni enchufe. Te da una tranquilidad enorme.",  name: "Diego Almada",       img: "https://http2.mlstatic.com/D_NQ_NP_2X_613997-MLA77680834995_072024-O.webp" },
-    { title: "SOY ASMÁTICO Y ES MI ALIADO",      rating: 5, text: "Tengo asma desde chico. Siempre dependí del nebulizador de mesa en casa. Ahora llevo este en la mochila del laburo. Si me agarra una crisis, me nebulizo en 5 minutos sin depender de nadie.",                                      name: "Fernando López",     img: "https://http2.mlstatic.com/D_NQ_NP_2X_966592-MLA107393087635_022026-O.webp" },
-    { title: "COMPRÉ DOS UNIDADES",              rating: 5, text: "Uno para casa y otro para mis viejos que cuidan a mi hija. Se carga en una hora y media y rinde 4 sesiones fácil. La máscara de niños le queda bien y no le molesta. Excelente relación calidad-precio.",                           name: "Valentina Romero",   img: "https://http2.mlstatic.com/D_NQ_NP_2X_944973-MLA82774857070_032025-O.webp" },
-    { title: "FUNCIONA MEJOR QUE EL DE PISTÓN",  rating: 5, text: "Soy kinesióloga respiratoria y lo probé con pacientes. La niebla es más fina que la de un compresor, las sesiones son más cortas y los pacientes lo toleran mucho mejor. Lo recomiendo sin dudas.",                                name: "Mariana García",     img: "https://http2.mlstatic.com/D_NQ_NP_2X_728374-MLA106062370398_022026-O.webp" },
-    { title: "IDEAL PARA CONGESTIÓN",            rating: 5, text: "No tengo nada crónico, pero en invierno me congestion seguido. Cargo solución fisiológica, 5 minutos de nebulización y se me destapa la nariz al instante. Lo uso casi todos los días en época de frío.",                            name: "Sebastián Torres",   img: "https://http2.mlstatic.com/D_NQ_NP_2X_858731-MLA100590488060_122025-O.webp" },
-    { title: "SE LO REGALÉ A MI MAMÁ",           rating: 5, text: "Mi mamá tiene EPOC y necesita nebulizarse varias veces al día. Este le cambió la vida porque puede usarlo acostada, cosa que con el pistón no podía. Silencioso, liviano, perfecto para ella.",                                     name: "Josefina Paz",       img: "https://http2.mlstatic.com/D_NQ_NP_2X_615822-MLA99843960019_112025-O.webp" },
-    { title: "EXCELENTE POR EL PRECIO",          rating: 4, text: "No esperaba mucho por el precio pero me sorprendió para bien. Hace buena niebla, se carga rápido, viene con todo lo necesario. Lo único es que el cepillito de limpieza es medio chico, pero funcional.",                          name: "Renata Blanco",      img: "https://m.media-amazon.com/images/I/51zTfnSPLjL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews" },
+    { title: "DORMÍ TODA LA NOCHE POR PRIMERA VEZ",  rating: 5, text: "Llevaba semanas sin dormir bien por la congestión. Desde que uso el nebulizador antes de acostarme duermo de un tirón y me levanto con otra energía. Un antes y un después.",                                                     name: "Carolina M.",        img: "https://http2.mlstatic.com/D_NQ_NP_2X_636231-MLA75580765321_042024-O.webp" },
+    { title: "LA NARIZ LIBRE CAMBIA TODO",            rating: 5, text: "No lo compré para dormir mejor... pero ese fue el mayor cambio. La nariz libre cambia todo el día. Rindo más en el trabajo y no ando con esa pesadez constante.",                                                                   name: "Rodrigo T.",         img: "https://http2.mlstatic.com/D_NQ_NP_2X_613997-MLA77680834995_072024-O.webp" },
+    { title: "TODA LA FAMILIA DUERME MEJOR",          rating: 5, text: "Mi hijo dejó de despertarse de noche. Nosotros también. Dormimos todos mejor y el día rinde el doble. Es silencioso, lo nebulizo dormido y ni se entera.",                                                                         name: "Valentina R.",       img: "https://http2.mlstatic.com/D_NQ_NP_2X_944973-MLA82774857070_032025-O.webp" },
+    { title: "SOY ASMÁTICO Y ES MI ALIADO",           rating: 5, text: "Tengo asma desde chico. Siempre dependí del nebulizador de mesa en casa. Ahora llevo este en la mochila del laburo. Si me agarra una crisis, me nebulizo en 5 minutos sin depender de nadie.",                                      name: "Fernando L.",        img: "https://http2.mlstatic.com/D_NQ_NP_2X_966592-MLA107393087635_022026-O.webp" },
+    { title: "FUNCIONA MEJOR QUE EL DE PISTÓN",       rating: 5, text: "Soy kinesióloga respiratoria y lo probé con pacientes. La niebla es más fina que la de un compresor, las sesiones son más cortas y los pacientes lo toleran mucho mejor. Lo recomiendo sin dudas.",                                name: "Mariana G.",         img: "https://http2.mlstatic.com/D_NQ_NP_2X_728374-MLA106062370398_022026-O.webp" },
+    { title: "IDEAL PARA CONGESTIÓN",                 rating: 5, text: "No tengo nada crónico, pero en invierno me congestion seguido. Cargo solución fisiológica, 5 minutos de nebulización y se me destapa la nariz al instante. Lo uso casi todos los días en época de frío.",                            name: "Sebastián T.",       img: "https://http2.mlstatic.com/D_NQ_NP_2X_858731-MLA100590488060_122025-O.webp" },
+    { title: "SE LO REGALÉ A MI MAMÁ",                rating: 5, text: "Mi mamá tiene EPOC y necesita nebulizarse varias veces al día. Este le cambió la vida porque puede usarlo acostada, cosa que con el pistón no podía. Silencioso, liviano, perfecto para ella.",                                     name: "Josefina P.",        img: "https://http2.mlstatic.com/D_NQ_NP_2X_615822-MLA99843960019_112025-O.webp" },
+    { title: "EXCELENTE POR EL PRECIO",               rating: 4, text: "No esperaba mucho por el precio pero me sorprendió para bien. Hace buena niebla, se carga rápido, viene con todo lo necesario. Lo único es que el cepillito de limpieza es medio chico, pero funcional.",                          name: "Renata B.",          img: "https://m.media-amazon.com/images/I/51zTfnSPLjL._AC_UC154,154_CACC,154,154_QL85_.jpg?aicid=community-reviews" },
   ],
 
   // ── Quiénes somos ─────────────────────────────────────────

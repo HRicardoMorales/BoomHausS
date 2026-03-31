@@ -1073,13 +1073,10 @@ export default function ProductDetail() {
 
   return (
     <main className="section main-wrapper pd-page">
-      <div className="pd-page">
-        <Marquee countdownKey={`pd_countdown_${id}`} />
-      </div>
+      {/* Marquee movido a App.jsx arriba del navbar */}
 
-      <div className="container pd-container">
-        <div className="pd-grid">
-          {/* MEDIA */}
+      {/* MEDIA — fuera del container para ancho completo */}
+      <section className="pd-media-fullwidth">
           <section className="card pd-media pd-media-sticky">
             <div
               className="pd-mediaMain pd-mediaMain--bigger"
@@ -1150,20 +1147,22 @@ export default function ProductDetail() {
               </div>
             )}
           </section>
+      </section>
 
+      <div className="container pd-container">
           {/* INFO */}
           <aside className="pd-info">
             {/* ====== CAMBIO: HERO COMPACTO COMO LA IMAGEN ====== */}
             <div className="hero-top hero-top--compact">
               {/* (mini carrusel: ya lo tenés en MEDIA) */}
 
-              {/* Trust badges row */}
-              <div className="hero-trustline hero-trustline--logos" aria-label="Reseñas verificadas">
+              {/* Trust badges row — ancho completo */}
+              <div className="hero-trustline hero-trustline--logos hero-trustline--wide" aria-label="Reseñas verificadas">
 
                 {/* Trustpilot */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 126.5 120" xmlns="http://www.w3.org/2000/svg" width="20" height="19">
+                    <svg viewBox="0 0 126.5 120" xmlns="http://www.w3.org/2000/svg" width="24" height="23">
                       <polygon fill="#00B67A" points="63.25,0 82.6,57.9 126.5,57.9 90.9,87.2 104.1,120 63.25,95.5 22.4,120 35.6,87.2 0,57.9 43.9,57.9"/>
                       <polygon fill="#005128" points="90.9,87.2 104.1,120 63.25,95.5 63.25,0 82.6,57.9 126.5,57.9"/>
                     </svg>
@@ -1182,7 +1181,7 @@ export default function ProductDetail() {
                 {/* Facebook */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
                       <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill="#1877F2"/>
                     </svg>
                   </span>
@@ -1200,7 +1199,7 @@ export default function ProductDetail() {
                 {/* Google */}
                 <div className="trust-badge">
                   <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
                       <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
                       <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
                       <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0124 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
@@ -1218,18 +1217,18 @@ export default function ProductDetail() {
 
               </div>
 
+              <h1 className="hero-title hero-title--compact">{MC.heroTitle || product.name}</h1>
 
-
-              <h1 className="hero-title hero-title--compact">{product.name}</h1>
-
-              {/* Rating row */}
-              <div className="hero-ratingRow--compact" style={{display:"flex",alignItems:"center"}}>
-                <StarsInline rating={Math.round(MC.reviewScore || 4.8)} />
-                <span style={{fontWeight:700,fontSize:14,marginLeft:4}}>{MC.reviewScore || "4.8"}</span>
-                <a href="#reviews-section" className="hero-reviews-link" onClick={scrollToReviews}
-                   style={{fontSize:13,marginLeft:6,color:"#555"}}>
-                  ({MC.reviewCount || 650} reseñas)
-                </a>
+              {/* Avatars + rating row */}
+              <div className="hero-avatars-row">
+                <div className="hero-avatars">
+                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="Cliente 1" className="hero-avatar" />
+                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="Cliente 2" className="hero-avatar" />
+                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="Cliente 3" className="hero-avatar" />
+                </div>
+                <span className="hero-avatars-text">
+                  Calificado <strong>4.5/5</strong> basado en <strong>+650 reseñas</strong>
+                </span>
               </div>
 
               {/* Subtítulo corto — viene del config de la landing */}
@@ -1241,10 +1240,26 @@ export default function ProductDetail() {
 
               {/* ✅ Bullets: compactas, tipo check */}
               <ul className="hero-bullets-compact">
-                {(MC.trustBullets || []).slice(0, 4).map((t, i) => (
+                {(MC.trustBullets || []).slice(0, 5).map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
+
+              {/* Tablets: Envío / Cuotas / Garantía */}
+              <div className="hero-tablets">
+                <div className="hero-tablet">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 5h9v2l3.7.8a3 3 0 012.1 1.7l1.8 4c.2.4.3.8.3 1.3V18h-3"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><line x1="15" y1="7" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                  <span>Envío<br/>Gratis</span>
+                </div>
+                <div className="hero-tablet">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <span>Cuotas<br/>sin interés</span>
+                </div>
+                <div className="hero-tablet">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span>Garantía<br/>30 días</span>
+                </div>
+              </div>
 
               {/* Precio: antes tachado + ahora grande + descuento */}
               <div className="hero-priceRow">
@@ -1253,23 +1268,52 @@ export default function ProductDetail() {
                 <span className="hero-off">Descuento {discountPct}%</span>
               </div>
 
-              {/* CTA grande 2 líneas (como la captura) */}
+              {/* CTA grande 2 líneas */}
               <button
                 className="hero-ctaBig"
                 type="button"
                 onClick={handleBuyNow}
               >
-                Pagar Contra Reembolso
-                <span>Envío GRATIS en 24/48Hs</span>
+                {MC.ctaLine1 || "Pagar Contra Reembolso"}
+                <span>{MC.ctaLine2 || "Envío GRATIS en 24/48Hs"}</span>
               </button>
+
+              {/* Pago seguro + iconos de tarjetas */}
+              <div className="hero-payments">
+                <p className="hero-payments-title">Pago Seguro En Línea</p>
+                <div className="hero-payments-icons">
+                  {/* Visa */}
+                  <div className="hero-pay-icon">
+                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg>
+                  </div>
+                  {/* Mastercard */}
+                  <div className="hero-pay-icon">
+                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg>
+                  </div>
+                  {/* Amex */}
+                  <div className="hero-pay-icon">
+                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#2557D6"/><path d="M6 16l3-7h3.5l1.5 3.5V9h4.3l1 3 1-3h4.2v14h-3.5l-1.5-3.3V23H15l-.7-1.8h-2.1L11.5 23H8l3-7zm5 4h1.5l-2.2-5.2L10.2 20H11zm6-7v7h2v-3l2 3h2.5l-2.5-3.5L23.5 13H21l-2 2.5V13h-2zm11-4l-3.5 7.5V23h2.5v-3l3.5-7h-2.5zm4.5 0v14h7.5l2-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2-2.5L39 9h-6.5zm2.5 3h3l-1.2 1.5L37 12h-2zm0 4h3l-1.2 1.5L37 16h-2zm0 4h3l-1.2 1.5L37 20h-2z" fill="#fff"/></svg>
+                  </div>
+                  {/* PayPal */}
+                  <div className="hero-pay-icon">
+                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 8h5.8c2.7 0 4.6 1.8 4.2 4.5-.5 3.3-2.8 5-5.8 5h-1.5c-.4 0-.8.3-.9.8l-.8 4.7h-3c-.3 0-.4-.2-.4-.4L19.5 8z" fill="#253B80"/><path d="M21 18.3l.8-4.8c.1-.4.4-.7.8-.7h3.5c1.5 0 2.7-.5 3.4-1.5-.3 3-2.5 4.7-5.2 4.7h-1.5c-.4 0-.8.3-.9.8l-.9 5.2h-2.5l2.5-3.7z" fill="#179BD7"/></svg>
+                  </div>
+                  {/* Rapipago */}
+                  <div className="hero-pay-icon">
+                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="8" y="10" width="32" height="12" rx="2" fill="#00A650"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="bold" fontFamily="Arial">RAPIPAGO</text></svg>
+                  </div>
+                </div>
+              </div>
 
               {/* Stock limitado */}
               {MC.stockAlert?.show && (
                 <div className="limited-stock-container">
                   <div className="limited-stock-dot"><span style={{visibility:"hidden"}}>.</span></div>
                   <div>
-                    <span className="limited-stock-text1">¡Stock Limitado! </span>
-                    <span className="limited-stock-text2">Pocas piezas disponibles.</span>
+                    {MC.stockAlertText
+                      ? <span className="limited-stock-text1">{MC.stockAlertText}</span>
+                      : <><span className="limited-stock-text1">¡Stock Limitado! </span><span className="limited-stock-text2">Pocas piezas disponibles.</span></>
+                    }
                   </div>
                 </div>
               )}
@@ -1285,7 +1329,14 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* viewing pill — eliminado por decisión de diseño */}
+              {/* Trust lines */}
+              {MC.trustLines && (
+                <div className="pd-trustLines">
+                  {MC.trustLines.map((line, i) => (
+                    <div key={i} className="pd-trustLine">{line}</div>
+                  ))}
+                </div>
+              )}
             </div>
             {/* ====== FIN CAMBIO HERO COMPACTO ====== */}
 
@@ -1363,19 +1414,7 @@ export default function ProductDetail() {
               </button> */}
 
 
-              <div className="pd-addToCartWrap">
-                <button type="button" onClick={handleAddToCart} className="pd-ctaPrimary-outline">
-                  Agregar al carrito
-                </button>
-
-                <button
-                  type="button"
-                  className="pd-howLink"
-                  onClick={() => document.getElementById("howto")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                  Ver cómo se instala →
-                </button>
-              </div>
+              {/* Botones de carrito e instalación eliminados */}
             </div>
 
             <div className="accordion-wrapper">
@@ -1425,13 +1464,50 @@ export default function ProductDetail() {
               </div>
             </div>
           </aside>
-        </div>
 
         <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
       </div>
 
       {/* pd-bands fuera del container → waves a ancho completo de pantalla */}
       <div className="pd-bands">
+        {/* Sección problema / ciclo respiración (si existe en config) */}
+        {MC.problemSection && (
+          <Band variant="light">
+            <div className="pd-sections-new">
+              <section className="pd-problem anim-el">
+                <h2 className="section-title-pro">{MC.problemSection.title}</h2>
+                <p className="pd-problem-text">{MC.problemSection.text}</p>
+                <ul className="pd-problem-steps">
+                  {MC.problemSection.steps.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+                <p className="pd-problem-footer">{MC.problemSection.footer}</p>
+              </section>
+            </div>
+          </Band>
+        )}
+
+        {/* Cómo funciona la compra (si existe en config) */}
+        {MC.howToBuy && (
+          <Band variant="blue">
+            <div className="pd-sections-new">
+              <section className="pd-howToBuy anim-el">
+                <h2 className="section-title-pro" style={{color:"#fff"}}>{MC.howToBuy.title}</h2>
+                <div className="pd-htb-grid">
+                  {MC.howToBuy.steps.map((step, i) => (
+                    <div key={i} className="pd-htb-step">
+                      <span className="pd-htb-icon">{step.icon}</span>
+                      <span className="pd-htb-num">Paso {i + 1}</span>
+                      <p className="pd-htb-text">{step.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </Band>
+        )}
+
         <Band variant="light">
           <div className="pd-sections-new">
             <StoryBlocks mc={MC} />
@@ -1510,7 +1586,7 @@ export default function ProductDetail() {
           </div>
         </div>
         <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">
-          LO QUIERO
+          {MC.stickyBtnText || "LO QUIERO"}
         </button>
       </div>
 
@@ -1635,6 +1711,11 @@ export default function ProductDetail() {
         font-size: 12px;
         opacity: .95;
         margin: 6px 0 8px;
+        flex-wrap: wrap;
+      }
+      .hero-trustline--wide{
+        justify-content: space-evenly;
+        width: 100%;
       }
 
       .hero-trustItem b{ font-weight: 900; }
@@ -1648,12 +1729,12 @@ export default function ProductDetail() {
       .trust-badge{
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
       }
 
       .trust-logo{
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         display: grid;
         place-items: center;
         flex-shrink: 0;
@@ -1666,11 +1747,11 @@ export default function ProductDetail() {
       }
 
       .trust-name{
-        font-size: .62rem;
-        font-weight: 700;
+        font-size: .68rem;
+        font-weight: 800;
         letter-spacing: .05em;
         text-transform: uppercase;
-        color: rgba(11,18,32,.40);
+        color: rgba(11,18,32,.50);
         line-height: 1;
       }
 
@@ -1683,7 +1764,7 @@ export default function ProductDetail() {
 
       .trust-stars{
         color: #F5B301;
-        font-size: 9px;
+        font-size: 10px;
         letter-spacing: 1.5px;
       }
 
@@ -1722,6 +1803,39 @@ export default function ProductDetail() {
         opacity: .85;
       }
 
+      /* Avatars + reseñas row */
+      .hero-avatars-row{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 6px 0 2px;
+        gap: 0;
+      }
+      .hero-avatars{
+        display: flex;
+        margin-right: 6px;
+      }
+      .hero-avatar{
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2.5px solid #fff;
+        margin-left: -8px;
+        object-fit: cover;
+        box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      }
+      .hero-avatar:first-child{ margin-left: 0; }
+      .hero-avatars-text{
+        font-size: 12px;
+        font-weight: 500;
+        color: #868686;
+        line-height: 1.3;
+      }
+      .hero-avatars-text strong{
+        font-weight: 800;
+        color: #2e2f3c;
+      }
+
 
       .hero-subtitle{
         text-align:center;
@@ -1731,55 +1845,58 @@ export default function ProductDetail() {
       }
 
       .hero-bullets-compact{
-        margin: 6px 0 6px;
+        margin: 8px 0 8px;
         padding: 0;
         list-style: none;
         display: grid;
-        gap: 10px;
+        gap: 8px;
       }
       .hero-bullets-compact li{
         display:grid;
-        grid-template-columns: 18px 1fr;
-        gap: 10px;
-        font-size: 15px;
-        line-height: 1.25;
-        align-items: start;
+        grid-template-columns: 20px 1fr;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.3;
+        align-items: center;
+        color: rgba(11,18,32,.85);
       }
       .hero-bullets-compact li::before{
         content: "✓";
-        width:18px;
-        height:18px;
+        width:20px;
+        height:20px;
         display:flex;
         align-items:center;
         justify-content:center;
-        border: 1px solid rgba(0,0,0,.22);
+        background: rgba(22,163,74,.1);
+        color: #16a34a;
         border-radius: 999px;
-        font-size: 12px;
-        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 900;
       }
 
       .hero-priceRow{
         display:flex;
-        align-items: baseline;
-        gap: 12px;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
         justify-content: center;
-        margin: 6px 0 2px;
+        margin: 15px 0;
       }
       .hero-was{
         text-decoration: line-through;
-        opacity: .45;
-        font-size: 18px;
-        font-weight: 900;
+        color: #999;
+        font-size: 22px;
+        font-weight: 400;
       }
       .hero-now{
-        font-size: 34px;
-        font-weight: 1100;
+        font-size: 30px;
+        font-weight: 700;
+        color: #000;
       }
       .hero-off{
         font-size: 18px;
-        font-weight: 1100;
-        color: rgba(220,38,38,.95);
+        font-weight: 600;
+        color: #d80000;
       }
 
       .hero-ctaBig{
@@ -1830,15 +1947,29 @@ export default function ProductDetail() {
       }
 
       @media (max-width: 520px){
-        .hero-title--compact{ font-size: 30px !important; }
-        .hero-now{ font-size: 32px; }
+        .hero-title--compact{ font-size: 26px !important; }
+        .hero-now{ font-size: 26px; }
+        .hero-was{ font-size: 18px; }
+        .hero-off{ font-size: 15px; }
+        .hero-priceRow{ gap: 10px; margin: 12px 0; }
+        .hero-trustline--wide{ padding: 8px 10px; gap: 6px; }
+        .trust-badge{ gap: 5px; }
+        .trust-logo{ width: 26px; height: 26px; }
+        .trust-logo svg{ width: 18px; height: 18px; }
+        .trust-name{ font-size: .58rem; }
+        .trust-stars{ font-size: 9px; letter-spacing: 1px; }
+        .trust-score{ font-size: .85rem; }
+        .hero-trustSep{ height: 28px; }
+        .hero-bullets-compact li{ font-size: 13px; }
+        .hero-avatar{ width: 26px; height: 26px; }
+        .hero-avatars-text{ font-size: 11px; }
       }
       /* ====== FIN CAMBIO CSS HERO COMPACTO ====== */
 
       /* ===== TITULOS PRO ===== */
       .sec-head{
         text-align: center;
-        margin: 26px 0 14px;
+        margin: 18px 0 10px;
       }
       .sec-title{
         margin: 0;
@@ -1858,7 +1989,10 @@ export default function ProductDetail() {
       }
 
       /* ===== IMAGEN PRINCIPAL MÁS GRANDE ===== */
-      .pd-media { padding: 0 !important; }
+      .pd-media-fullwidth{
+        width: 100%;
+      }
+      .pd-media { padding: 0 !important; overflow: hidden; border-radius: 0 !important; box-shadow: none !important; }
       .pd-mediaMain--bigger{
         position: relative;
         width: 100%;
@@ -1876,26 +2010,33 @@ export default function ProductDetail() {
 
       /* thumbs */
       .pd-thumbs-row{
-        display:flex;
-        gap: 10px;
-        padding: 12px;
-        border-top: 1px solid rgba(0,0,0,0.06);
+        display: flex;
+        gap: 6px;
+        padding: 6px 8px;
+        background: transparent;
         overflow-x: auto;
-        background: #fff;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        justify-content: center;
       }
+      .pd-thumbs-row::-webkit-scrollbar{ display: none; }
       .pd-thumb{
-        min-width: 72px;
-        width: 72px;
-        height: 72px;
-        border-radius: 14px;
-        overflow:hidden;
-        border: 2px solid rgba(2,8,23,.10);
-        background: #f1f5f9;
+        flex: 1;
+        min-width: 0;
+        max-width: 90px;
+        aspect-ratio: 4/3;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid rgba(0,0,0,.08);
+        background: #f1f3f5;
         padding: 0;
+        cursor: pointer;
+        transition: border-color .15s ease, opacity .15s ease;
+        opacity: .65;
       }
       .pd-thumb.is-active{
-        border-color: rgba(11,92,255,.85);
-        box-shadow: 0 0 0 3px rgba(11,92,255,.18);
+        border-color: rgba(11,92,255,.7);
+        opacity: 1;
       }
       .pd-thumb img{ width:100%; height:100%; object-fit: cover; display:block; }
 
@@ -1940,8 +2081,8 @@ export default function ProductDetail() {
       }
       .flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
 
-      .pd-sections-new{ margin-top: 20px; padding-bottom: 40px; }
-      .pd-flow{ display:flex; flex-direction: column; gap: 28px; }
+      .pd-sections-new{ margin-top: 14px; padding-bottom: 28px; }
+      .pd-flow{ display:flex; flex-direction: column; gap: 20px; }
       .flow-row{
         display:grid;
         grid-template-columns: 1.1fr .9fr;
@@ -2652,7 +2793,7 @@ export default function ProductDetail() {
         background: #fff;
         border-top: 1.5px solid rgba(2,8,23,.08);
         border-radius: 16px 16px 0 0;
-        padding: 14px 16px calc(12px + env(safe-area-inset-bottom));
+        padding: 10px 12px calc(8px + env(safe-area-inset-bottom));
         box-shadow: 0 -4px 24px rgba(10,20,40,.10);
       }
       @media (min-width: 991px){ .sticky-pro{ display:none; } }
@@ -2666,17 +2807,17 @@ export default function ProductDetail() {
       }
       .sticky-count{ display:flex; align-items:center; gap: 4px; }
       .sticky-countLabel{
-        font-size: .62rem;
+        font-size: .58rem;
         color: rgba(11,18,32,.40);
         font-weight: 800;
         letter-spacing: .06em;
         text-transform: uppercase;
       }
-      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .78rem; }
+      .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .72rem; }
 
-      .sticky-prices{ display:flex; align-items: baseline; gap: 6px; }
-      .sticky-old{ color: rgba(11,18,32,.35); font-weight: 700; text-decoration: line-through; font-size: .75rem; }
-      .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: 1.05rem; }
+      .sticky-prices{ display:flex; align-items: baseline; gap: 5px; }
+      .sticky-old{ color: rgba(11,18,32,.35); font-weight: 700; text-decoration: line-through; font-size: .7rem; }
+      .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: .95rem; }
 
       .sticky-pro-btn2{
         flex: 1;
@@ -2684,19 +2825,31 @@ export default function ProductDetail() {
         background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
         color: #fff;
         font-weight: 900;
-        font-size: .88rem;
+        font-size: .82rem;
         border-radius: 12px;
-        padding: 10px 14px;
+        padding: 10px 12px;
         cursor: pointer;
         box-shadow: 0 6px 20px rgba(11,92,255,.28);
-        letter-spacing: .05em;
+        letter-spacing: .04em;
         text-transform: uppercase;
         transition: transform .12s ease, box-shadow .12s ease;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .sticky-pro-btn2:active{
         transform: scale(.98);
         box-shadow: 0 4px 14px rgba(11,92,255,.22);
+      }
+
+      /* Sticky responsive — pantallas chicas */
+      @media (max-width: 380px){
+        .sticky-pro{ gap: 8px; padding: 8px 10px calc(6px + env(safe-area-inset-bottom)); }
+        .sticky-old{ font-size: .62rem; }
+        .sticky-now{ font-size: .85rem; }
+        .sticky-countLabel{ font-size: .52rem; }
+        .cd{ font-size: .65rem; }
+        .sticky-pro-btn2{ font-size: .75rem; padding: 9px 10px; border-radius: 10px; }
       }
 
       .pd-addToCartWrap{
@@ -2988,7 +3141,7 @@ export default function ProductDetail() {
       /* Section spacing harmony */
       .pd-block{ padding-top: 12px; padding-bottom: 12px; }
       .pd-block:last-child{ padding-bottom: 0; }
-      .pd-sections-new{ padding-top: 12px; padding-bottom: 52px; }
+      .pd-sections-new{ padding-top: 8px; padding-bottom: 36px; }
       #authority{ padding-bottom: 0; margin-bottom: -20px; }
 
       /* Story blocks: smoother image cards */
@@ -3111,6 +3264,110 @@ export default function ProductDetail() {
       }
       .pd-guaranteeText span{
         font-size:.72rem; font-weight:600; color:#15803d; opacity:.75;
+      }
+
+      /* ===== HERO TABLETS (Envío / Soporte / Garantía) ===== */
+      .hero-tablets{
+        display: flex;
+        gap: 0;
+        margin: 6px 0 4px;
+        flex-wrap: nowrap;
+        border-top: 1px solid rgba(0,0,0,.08);
+        border-bottom: 1px solid rgba(0,0,0,.08);
+      }
+      .hero-tablet{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 8px 4px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #2e2f3c;
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+        border-right: 1px solid rgba(0,0,0,.08);
+      }
+      .hero-tablet:last-child{ border-right: none; }
+      }
+
+      /* ===== PAYMENT ICONS ===== */
+      .hero-payments{
+        text-align: center;
+        margin: 6px 0 2px;
+      }
+      .hero-payments-title{
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        margin: 0 0 6px;
+        text-align: center;
+        width: 100%;
+      }
+      .hero-payments-icons{
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .hero-pay-icon{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero-pay-icon svg{
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.07);
+      }
+
+      /* ===== TRUST LINES ===== */
+      .pd-trustLines{
+        display:flex; flex-direction:column; gap:4px; margin-top:10px;
+      }
+      .pd-trustLine{
+        font-size:.78rem; font-weight:700; color:#166534; line-height:1.4;
+      }
+
+      /* ===== PROBLEM / BREATHING CYCLE SECTION ===== */
+      .pd-problem{ text-align:center; max-width:640px; margin:0 auto; }
+      .pd-problem-text{
+        font-size:.92rem; line-height:1.7; color:rgba(11,18,32,.7);
+        white-space:pre-line; margin-top:12px;
+      }
+      .pd-problem-steps{
+        list-style:none; padding:0; margin:16px auto; text-align:left;
+        display:inline-flex; flex-direction:column; gap:6px;
+      }
+      .pd-problem-steps li{
+        font-size:.95rem; font-weight:700; color:rgba(11,18,32,.85); line-height:1.5;
+      }
+      .pd-problem-footer{
+        font-size:1rem; font-weight:800; color:rgba(11,18,32,.9); margin-top:16px;
+        font-style:italic;
+      }
+
+      /* ===== HOW TO BUY SECTION ===== */
+      .pd-howToBuy{ text-align:center; }
+      .pd-htb-grid{
+        display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+        margin-top:20px;
+      }
+      @media (max-width:700px){
+        .pd-htb-grid{ grid-template-columns:1fr; gap:14px; }
+      }
+      .pd-htb-step{
+        background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+        border-radius:16px; padding:24px 16px; text-align:center;
+      }
+      .pd-htb-icon{ font-size:2rem; display:block; margin-bottom:8px; }
+      .pd-htb-num{
+        display:block; font-size:.7rem; font-weight:800; text-transform:uppercase;
+        letter-spacing:.08em; color:rgba(255,255,255,.5); margin-bottom:6px;
+      }
+      .pd-htb-text{
+        font-size:.88rem; font-weight:700; color:rgba(255,255,255,.9); line-height:1.45; margin:0;
       }
 
       /* ===== WHATSAPP TAB LATERAL ===== */

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../services/api";
+import CardPaymentBrick from "../components/CardPaymentBrick.jsx";
 import { getStoredAuth } from "../utils/auth";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
@@ -61,8 +62,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const { items, totalPrice, clearCart, calcItemTotal, updateQty, removeItem } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
-  // ✅ Método de pago (único online): Mercado Pago
-  const paymentMethod = "mercadopago";
+  // ✅ Método de pago online seleccionado: "mercadopago" | "card"
+  const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
 
   // ✅ Datos del negocio
   const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
@@ -90,6 +91,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false); // ✅ overlay "Conectando con MP"
+  const [cardPaymentDone, setCardPaymentDone] = useState(false); // ✅ éxito pago con tarjeta
   const [error, setError] = useState("");
   const errorRef = useRef(null);
   const showError = (msg) => {
@@ -285,7 +287,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
       currency: "ARS",
       content_ids: contentIds,
       content_type: "product",
-      payment_type: method === "caba_cod" ? "cod" : "mercadopago",
+      payment_type: method === "caba_cod" ? "cod" : onlinePayMethod,
     });
 
     setLoading(true);
@@ -302,7 +304,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         customerPhone:   phone,
         shippingAddress: address,
         shippingMethod:  method,
-        paymentMethod:   method === "caba_cod" ? "cod" : "mercadopago",
+        paymentMethod:   method === "caba_cod" ? "cod" : onlinePayMethod,
         notes:           notes.trim(),
         coupon:          appliedCoupon ? appliedCoupon.code : null,
         couponDiscount:  couponDiscount,
@@ -363,6 +365,112 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // ✅ Validación antes de procesar tarjeta (se llama desde CardPaymentBrick)
+  function handleCardBeforeSubmit() {
+    const name    = refName.current.trim();
+    const dni     = onlyDigits(refDni.current);
+    const address = refAddress.current.trim();
+    const method  = refMethod.current;
+    if (!name || !address) {
+      showError("Completá Nombre y Dirección para continuar con el pago.");
+      return false;
+    }
+    if (dni.length < 7 || dni.length > 8) {
+      showError("Ingresá un DNI válido (7 u 8 dígitos).");
+      return false;
+    }
+    if (method === "caba_cod" && onlyDigits(refPhone.current).length < 8) {
+      showError("Para CABA el teléfono es obligatorio.");
+      return false;
+    }
+    if (isCartEmpty) {
+      showError("Tu carrito está vacío.");
+      return false;
+    }
+    return true;
+  }
+
+  // ✅ Pago con tarjeta aprobado → crear orden en backend
+  async function handleCardSuccess(paymentData) {
+    setLoading(true);
+    try {
+      const clientOrderId = getOrCreateClientOrderId();
+      const body = {
+        clientOrderId,
+        customerName:    refName.current.trim(),
+        customerEmail:   refEmail.current.trim(),
+        customerDni:     onlyDigits(refDni.current),
+        customerPhone:   refPhone.current.trim(),
+        shippingAddress: refAddress.current.trim(),
+        shippingMethod:  refMethod.current,
+        paymentMethod:   "card",
+        paymentId:       paymentData.id,
+        notes:           notes.trim(),
+        coupon:          appliedCoupon ? appliedCoupon.code : null,
+        couponDiscount,
+        total:           finalTotal,
+        items: items.map((item) => ({
+          productId: item.productId,
+          name:      item.name,
+          price:     item.price,
+          quantity:  item.quantity,
+        })),
+      };
+      await api.post("/orders", body);
+      clearClientOrderId();
+      track("Purchase", {
+        value:        Number(finalTotal),
+        currency:     "ARS",
+        num_items:    totalItems,
+        content_ids:  contentIds,
+        content_type: "product",
+      });
+      clearCart();
+      setCardPaymentDone(true);
+    } catch (err) {
+      console.error(err);
+      showError("Pago aprobado, pero hubo un error al registrar el pedido. Contactate por WhatsApp.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ✅ Pantalla éxito pago con tarjeta
+  if (cardPaymentDone) {
+    return (
+      <main className="section">
+        <div className="container">
+          <section className="card reveal" style={{ padding: "1.5rem", textAlign: "center", maxWidth: 460, margin: "0 auto" }}>
+            <div style={{ fontSize: "3rem", marginBottom: "10px" }}>🎉</div>
+            <h1 style={{ margin: "0.5rem 0", letterSpacing: "-0.03em" }}>¡Pago aprobado!</h1>
+            <p style={{ color: "#15803d", fontWeight: 800, fontSize: "1rem", margin: "6px 0 14px" }}>
+              Tu pedido está confirmado y en preparación.
+            </p>
+            <div style={{ background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.22)", borderRadius: 14, padding: "12px", fontWeight: 900, color: "#065f46", textAlign: "left" }}>
+              ✅ Recibirás el seguimiento por <b>WhatsApp</b> o email.<br />
+              🚚 Tu pedido llega en <b>1 a 3 días hábiles</b>.
+            </div>
+            <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
+              {waUrl && (
+                <a className="btn btn-primary" href={waUrl} target="_blank" rel="noreferrer" style={{ width: "100%", justifyContent: "center" }}>
+                  Contactar por WhatsApp →
+                </a>
+              )}
+              <Link to="/my-orders" style={{ display: "block", fontWeight: 1000, color: "var(--primary)" }}>
+                Ver mis pedidos
+              </Link>
+              {typeof onClose === "function" && (
+                <button type="button" className="btn btn-ghost" onClick={onClose} style={{ width: "100%", justifyContent: "center" }}>
+                  Volver a la landing
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
+    );
   }
 
   // ✅ Pantalla final COD
@@ -754,50 +862,83 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
             <div className="card" style={{ padding: "1.5rem" }}>
               <h3 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
                 <span style={stepCircleStyle}>3</span>
-                {isCod ? "Confirmación" : "Pago (Seguro)"}
+                {isCod ? "Confirmación" : "Método de Pago"}
               </h3>
 
               {isCod ? (
-                <div
-                  style={{
-                    background: "rgba(16,185,129,.08)",
-                    border: "1px solid rgba(16,185,129,.22)",
-                    borderRadius: 14,
-                    padding: "12px",
-                    fontWeight: 900,
-                    color: "#065f46",
-                  }}
-                >
+                <div style={{ background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.22)", borderRadius: 14, padding: "12px", fontWeight: 900, color: "#065f46" }}>
                   ✅ En CABA abonás al recibir. Podés pagar en <b>efectivo</b> o <b>transferencia en el lugar</b>.
                 </div>
               ) : (
-                <div style={{ display: "grid", gap: "0.8rem" }}>
-                  <div
-                    className="card payment-option"
-                    style={{
-                      padding: "1rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "15px",
-                      border: "2px solid #009ee3",
-                      background: "#f0faff",
-                    }}
+                <div style={{ display: "grid", gap: "10px" }}>
+
+                  {/* Opción: Mercado Pago */}
+                  <label
+                    className={`shipping-option${onlinePayMethod === "mercadopago" ? " selected" : ""}`}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOnlinePayMethod("mercadopago")}
                   >
-                    <div style={{ width: 20, height: 20, borderRadius: 999, background: "#009ee3" }} />
-                    <div>
-                      <div style={{ fontWeight: 1100, color: "#009ee3" }}>Mercado Pago</div>
-                      <div className="muted" style={{ fontSize: "0.9rem" }}>
-                        Pagá con <b>débito</b>, <b>crédito</b>, <b>dinero en cuenta</b> y más.
-                        <br />
-                        <span style={{ fontWeight: 900 }}>3 cuotas sin interés (según tarjeta)</span>.
+                    <input type="radio" name="onlinePay" value="mercadopago" checked={onlinePayMethod === "mercadopago"} onChange={() => setOnlinePayMethod("mercadopago")} style={{ width: 18, height: 18, accentColor: "#009ee3", flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 900, color: "#009ee3", display: "flex", alignItems: "center", gap: 8 }}>
+                        Mercado Pago
+                        <span style={{ fontSize: ".75rem", background: "rgba(0,158,227,.10)", border: "1px solid rgba(0,158,227,.25)", color: "#006fa6", borderRadius: 999, padding: "2px 8px", fontWeight: 800 }}>Recomendado</span>
+                      </div>
+                      <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
+                        Débito, crédito, dinero en cuenta y más.<br />
+                        <span style={{ color: "#b45309", fontWeight: 800 }}>⚡ Serás redirigido a la app de Mercado Pago para completar el pago.</span>
                       </div>
                     </div>
-                    <img
-                      src="https://logowik.com/content/uploads/images/mercado-pago3162.logowik.com.webp"
-                      alt="MP"
-                      style={{ height: "24px", marginLeft: "auto", objectFit: "contain" }}
-                    />
-                  </div>
+                    <svg width="56" height="22" viewBox="0 0 56 22" fill="none" style={{ flexShrink: 0 }}>
+                      <rect width="56" height="22" rx="4" fill="#009ee3"/>
+                      <text x="50%" y="15" textAnchor="middle" fill="white" fontSize="9" fontWeight="700" fontFamily="sans-serif">MercadoPago</text>
+                    </svg>
+                  </label>
+
+                  {/* Opción: Tarjeta */}
+                  <label
+                    className={`shipping-option${onlinePayMethod === "card" ? " selected" : ""}`}
+                    style={{ cursor: "pointer", flexWrap: "wrap", alignItems: "flex-start" }}
+                    onClick={() => setOnlinePayMethod("card")}
+                  >
+                    <input type="radio" name="onlinePay" value="card" checked={onlinePayMethod === "card"} onChange={() => setOnlinePayMethod("card")} style={{ width: 18, height: 18, accentColor: "var(--primary)", flexShrink: 0, marginTop: 2 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 900, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        Tarjeta de crédito / débito
+                        <span style={{ fontSize: ".75rem", background: "rgba(22,163,74,.10)", border: "1px solid rgba(22,163,74,.25)", color: "#15803d", borderRadius: 999, padding: "2px 8px", fontWeight: 800 }}>🔒 Seguro</span>
+                      </div>
+                      <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
+                        Ingresá los datos de tu tarjeta directamente aquí.<br />
+                        <span style={{ color: "#15803d", fontWeight: 800 }}>✅ Pago 100% seguro — encriptado con SSL.</span>
+                      </div>
+                      {/* íconos tarjeta */}
+                      <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                        {["VISA","MC","AMEX"].map(b => (
+                          <span key={b} style={{ fontSize: ".7rem", fontWeight: 900, padding: "3px 8px", borderRadius: 4, background: "#f1f5f9", border: "1px solid #e2e8f0", color: "#475569", letterSpacing: ".04em" }}>{b}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Brick de tarjeta — aparece sólo si seleccionó "card" */}
+                  {onlinePayMethod === "card" && (
+                    <div style={{ marginTop: 4 }}>
+                      {/* Banner seguridad */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "10px 14px", marginBottom: 12 }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span style={{ fontSize: ".85rem", fontWeight: 800, color: "#15803d", lineHeight: 1.4 }}>
+                          Tus datos están <b>100% encriptados</b> con SSL. Nunca guardamos los datos de tu tarjeta.
+                        </span>
+                      </div>
+                      <CardPaymentBrick
+                        amount={finalTotal}
+                        onBeforeSubmit={handleCardBeforeSubmit}
+                        onSuccess={handleCardSuccess}
+                        onError={() => {}}
+                        onSetError={(msg) => showError(msg)}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -946,66 +1087,82 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                       >
                         {isCod
                           ? "Completá Nombre, DNI, Teléfono y Dirección para confirmar el pedido."
+                          : onlinePayMethod === "card"
+                          ? "Completá tus datos personales y dirección, luego ingresá los datos de tu tarjeta arriba."
                           : "Completá Nombre, DNI y Dirección para habilitar el pago."}
                       </div>
                     )}
 
-                    <button
-                      className={`btn btn-primary checkout-pay-btn${loading ? " is-loading" : ""}`}
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={loading || redirecting}
-                      style={{
-                        width: "100%",
-                        marginTop: "0.35rem",
-                        padding: "1.05rem",
-                        fontSize: "1.05rem",
-                        fontWeight: 1100,
-                        background: "linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%)",
-                        border: "none",
-                        boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
-                        cursor: (loading || redirecting) ? "not-allowed" : "pointer",
-                        position: "relative",
-                        overflow: "hidden",
-                        transition: "transform .1s ease, box-shadow .1s ease",
-                      }}
-                    >
-                      {/* Ripple visual on press via CSS */}
-                      <span className="btn-ripple" />
-                      {redirecting
-                        ? "🔄 Conectando con Mercado Pago..."
-                        : loading
-                        ? "⏳ Procesando tu pedido..."
-                        : isCod
-                        ? `Confirmar pedido · ${money(finalTotal)}`
-                        : `Pagar ${money(finalTotal)} en Mercado Pago →`}
-                    </button>
+                    {/* Botón principal: sólo para MP o COD (tarjeta usa el botón del Brick) */}
+                    {(isCod || onlinePayMethod === "mercadopago") && (
+                      <button
+                        className={`btn btn-primary checkout-pay-btn${loading ? " is-loading" : ""}`}
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={loading || redirecting}
+                        style={{
+                          width: "100%",
+                          marginTop: "0.35rem",
+                          padding: "1.05rem",
+                          fontSize: "1.05rem",
+                          fontWeight: 1100,
+                          background: "linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%)",
+                          border: "none",
+                          boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
+                          cursor: (loading || redirecting) ? "not-allowed" : "pointer",
+                          position: "relative",
+                          overflow: "hidden",
+                          transition: "transform .1s ease, box-shadow .1s ease",
+                        }}
+                      >
+                        <span className="btn-ripple" />
+                        {redirecting
+                          ? "🔄 Conectando con Mercado Pago..."
+                          : loading
+                          ? "⏳ Procesando tu pedido..."
+                          : isCod
+                          ? `Confirmar pedido · ${money(finalTotal)}`
+                          : `Pagar ${money(finalTotal)} en Mercado Pago →`}
+                      </button>
+                    )}
 
-                    {/* ✅ Overlay "Conectando con MP" — aparece antes del redirect */}
+                    {/* ✅ Overlay "Conectando con MP" — pantalla completa profesional */}
                     {redirecting && (
-                      <div style={{
-                        position: "fixed",
-                        inset: 0,
-                        zIndex: 99999,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "rgba(0,158,227,0.96)",
-                        backdropFilter: "blur(6px)",
-                        gap: 20,
-                        animation: "mpFadeIn .25s ease",
-                      }}>
-                        <div style={{ fontSize: "3.5rem" }}>💳</div>
-                        <div style={{ fontWeight: 1200, fontSize: "1.45rem", color: "#fff", textAlign: "center", lineHeight: 1.25 }}>
-                          Conectando con<br />Mercado Pago
-                        </div>
-                        <div style={{ fontWeight: 900, fontSize: ".98rem", color: "rgba(255,255,255,.85)", textAlign: "center" }}>
-                          Vas a ser redirigido para completar el pago 🔒
-                        </div>
-                        <div className="mp-spinner" />
-                        <div style={{ fontSize: ".85rem", color: "rgba(255,255,255,.65)", fontWeight: 850 }}>
-                          No cerrés esta pantalla
+                      <div className="mp-overlay">
+                        <div className="mp-overlay-card">
+                          {/* Logo MP */}
+                          <div className="mp-overlay-logo">
+                            <svg viewBox="0 0 40 40" width="52" height="52" fill="none">
+                              <rect width="40" height="40" rx="12" fill="#009ee3"/>
+                              <path d="M10.5 20.8c0-3.4 2.2-6.2 5.2-6.2 1.6 0 2.7.7 3.3 1.5.6-.8 1.7-1.5 3.3-1.5 3 0 5.2 2.8 5.2 6.2 0 4.8-5 9.2-8.5 11.2-3.5-2-8.5-6.4-8.5-11.2z" fill="#fff"/>
+                            </svg>
+                          </div>
+
+                          <h2 className="mp-overlay-title">Conectando con Mercado Pago</h2>
+                          <p className="mp-overlay-sub">Estamos generando tu link de pago seguro</p>
+
+                          {/* Progress bar animada */}
+                          <div className="mp-progress-track">
+                            <div className="mp-progress-bar" />
+                          </div>
+
+                          {/* Trust icons */}
+                          <div className="mp-overlay-trust">
+                            <div className="mp-overlay-trust-item">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                              <span>Pago 100% seguro</span>
+                            </div>
+                            <div className="mp-overlay-trust-item">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                              <span>Datos encriptados</span>
+                            </div>
+                            <div className="mp-overlay-trust-item">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                              <span>Compra protegida</span>
+                            </div>
+                          </div>
+
+                          <p className="mp-overlay-note">No cerrés esta pantalla — serás redirigido en segundos</p>
                         </div>
                       </div>
                     )}
@@ -1077,21 +1234,66 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
               background: rgba(0,130,200,.85) !important;
             }
 
-            /* ✅ Overlay MP spinner */
-            .mp-spinner {
-              width: 44px;
-              height: 44px;
-              border-radius: 999px;
-              border: 4px solid rgba(255,255,255,.25);
-              border-top-color: #fff;
-              animation: mpSpin .75s linear infinite;
+            /* ✅ Overlay MP — pantalla completa profesional */
+            .mp-overlay{
+              position:fixed; inset:0; z-index:99999;
+              display:flex; align-items:center; justify-content:center;
+              background:rgba(0,0,0,.45);
+              backdrop-filter:blur(8px);
+              animation:mpFadeIn .3s ease;
+              padding:20px;
             }
-            @keyframes mpSpin {
-              to { transform: rotate(360deg); }
+            .mp-overlay-card{
+              background:#fff; border-radius:20px;
+              padding:40px 32px 32px; max-width:380px; width:100%;
+              text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.18);
+              animation:mpSlideUp .35s ease;
+            }
+            .mp-overlay-logo{ margin-bottom:20px; }
+            .mp-overlay-title{
+              font-size:1.25rem; font-weight:900; color:#1a1a2e;
+              margin:0 0 6px; line-height:1.3;
+            }
+            .mp-overlay-sub{
+              font-size:.88rem; font-weight:600; color:rgba(26,26,46,.5);
+              margin:0 0 24px;
+            }
+            .mp-progress-track{
+              width:100%; height:4px; border-radius:4px;
+              background:rgba(0,158,227,.12); overflow:hidden;
+              margin-bottom:24px;
+            }
+            .mp-progress-bar{
+              width:30%; height:100%; border-radius:4px;
+              background:linear-gradient(90deg,#009ee3,#00c3ff);
+              animation:mpProgress 1.8s ease-in-out infinite;
+            }
+            .mp-overlay-trust{
+              display:flex; justify-content:center; gap:16px;
+              flex-wrap:wrap; margin-bottom:20px;
+            }
+            .mp-overlay-trust-item{
+              display:flex; align-items:center; gap:5px;
+            }
+            .mp-overlay-trust-item span{
+              font-size:.72rem; font-weight:700; color:rgba(26,26,46,.55);
+            }
+            .mp-overlay-note{
+              font-size:.75rem; font-weight:700; color:rgba(26,26,46,.35);
+              margin:0;
             }
             @keyframes mpFadeIn {
-              from { opacity: 0; transform: scale(.96); }
-              to   { opacity: 1; transform: scale(1); }
+              from { opacity:0; }
+              to   { opacity:1; }
+            }
+            @keyframes mpSlideUp {
+              from { opacity:0; transform:translateY(20px) scale(.97); }
+              to   { opacity:1; transform:translateY(0) scale(1); }
+            }
+            @keyframes mpProgress {
+              0%   { transform:translateX(-100%); }
+              50%  { transform:translateX(250%); }
+              100% { transform:translateX(-100%); }
             }
 
             @media (max-width: 980px){
