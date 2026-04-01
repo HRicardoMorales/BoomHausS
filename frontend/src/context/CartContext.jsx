@@ -85,8 +85,12 @@ export function CartProvider({ children }) {
 
                 copy[idx] = {
                     ...prevItem,
+                    price: Number(product.price) || prevItem.price,
+                    name: product.name || prevItem.name,
+                    imageUrl: product.imageUrl || product.images?.[0] || prevItem.imageUrl,
                     quantity: nextQty,
                     promo: nextPromo,
+                    ...(compareAtPrice != null ? { compareAtPrice } : {}),
                 };
                 return copy;
             }
