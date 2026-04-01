@@ -34,7 +34,7 @@ export default function LandingPage() {
   const [error, setError] = useState('');
   const [openCheckout, setOpenCheckout] = useState(false);
 
-  const { addToCart, items } = useCart();
+  const { addItem, items } = useCart();
 
   useEffect(() => {
     let mounted = true;
@@ -72,13 +72,12 @@ export default function LandingPage() {
     if (!product) return;
     const already = (items || []).some((it) => String(it.productId) === String(product._id || product.id));
     if (!already) {
-      addToCart({
-        productId: product._id || product.id,
-        name: product.title,
+      addItem({
+        _id: product._id || product.id,
+        name: product.title || product.name,
         price: product.price,
-        quantity: 1,
-        image: heroImg,
-      });
+        imageUrl: heroImg,
+      }, 1);
     }
     setOpenCheckout(true);
   };
@@ -188,8 +187,8 @@ export default function LandingPage() {
           padding: 8px 12px;
           border-radius: 999px;
           font-weight: 1100;
-          border: 1px solid rgba(11,92,255,.20);
-          background: rgba(11,92,255,.08);
+          border: 1px solid rgba(27,77,62,.20);
+          background: rgba(27,77,62,.08);
           color: rgba(11,18,32,.85);
         }
         .lpOff{

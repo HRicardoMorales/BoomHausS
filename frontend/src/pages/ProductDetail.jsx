@@ -372,7 +372,7 @@ function MiniReviewsBar({ mc = MARKETING_CONTENT }) {
   if (!data.length) return null;
 
   // paleta de colores para el avatar
-  const avatarColors = ["#0b5cff","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4"];
+  const avatarColors = ["#1B4D3E","#2F855A","#f59e0b","#8b5cf6","#E53E3E","#06b6d4"];
 
   return (
     <div className="mrb anim-el">
@@ -718,8 +718,8 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
         .ups-sheet-title { font-size:1.15rem; font-weight:900; margin:0 0 4px; }
         .ups-sheet-sub { font-size:.78rem; color:rgba(11,18,32,.45); margin:0; font-weight:600; }
         .ups-sheet-ctas { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
-        .ups-sheet-btn-main { width:100%; padding:15px; border:none; border-radius:14px; background:linear-gradient(135deg,#1a6dff 0%,#0b5cff 60%,#0046e0 100%); color:#fff; font-weight:900; font-size:.97rem; letter-spacing:.03em; cursor:pointer; box-shadow:0 8px 28px rgba(11,92,255,.32); transition:transform .12s,box-shadow .12s; }
-        .ups-sheet-btn-main:active { transform:scale(.98); box-shadow:0 4px 14px rgba(11,92,255,.22); }
+        .ups-sheet-btn-main { width:100%; padding:15px; border:none; border-radius:14px; background:linear-gradient(135deg,#1B4D3E 0%,#153D31 60%,#0F2D24 100%); color:#fff; font-weight:900; font-size:.97rem; letter-spacing:.03em; cursor:pointer; box-shadow:0 8px 28px rgba(27,77,62,.32); transition:transform .12s,box-shadow .12s; }
+        .ups-sheet-btn-main:active { transform:scale(.98); box-shadow:0 4px 14px rgba(27,77,62,.22); }
         .ups-sheet-btn-save { font-size:.78rem; font-weight:700; opacity:.85; }
         .ups-sheet-btn-skip { width:100%; padding:12px; border:1.5px solid rgba(11,18,32,.15); border-radius:12px; background:none; color:rgba(11,18,32,.60); font-size:.88rem; font-weight:700; cursor:pointer; text-align:center; transition:border-color .15s,color .15s; }
         .ups-sheet-btn-skip:hover { border-color:rgba(11,18,32,.30); color:rgba(11,18,32,.80); }
@@ -864,7 +864,7 @@ export default function ProductDetail() {
   const compareAt =
     Number(product?.originalPrice) ||
     Number(product?.compareAtPrice) ||
-    60350;
+    0;
 
 
   const pack2Discount = 10;
@@ -1156,80 +1156,19 @@ export default function ProductDetail() {
             <div className="hero-top hero-top--compact">
               {/* (mini carrusel: ya lo tenés en MEDIA) */}
 
-              {/* Trust badges row — ancho completo */}
-              <div className="hero-trustline hero-trustline--logos hero-trustline--wide" aria-label="Reseñas verificadas">
-
-                {/* Trustpilot */}
-                <div className="trust-badge">
-                  <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 126.5 120" xmlns="http://www.w3.org/2000/svg" width="24" height="23">
-                      <polygon fill="#00B67A" points="63.25,0 82.6,57.9 126.5,57.9 90.9,87.2 104.1,120 63.25,95.5 22.4,120 35.6,87.2 0,57.9 43.9,57.9"/>
-                      <polygon fill="#005128" points="90.9,87.2 104.1,120 63.25,95.5 63.25,0 82.6,57.9 126.5,57.9"/>
-                    </svg>
-                  </span>
-                  <div className="trust-text">
-                    <span className="trust-name">Trustpilot</span>
-                    <div className="trust-score-row">
-                      <span className="trust-stars">★★★★★</span>
-                      <b className="trust-score">4.8</b>
-                    </div>
-                  </div>
+              {/* Avatars + reseñas */}
+              <div className="reviews-container">
+                <div className="avatars">
+                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="Cliente 1" className="avatar" />
+                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="Cliente 2" className="avatar" />
+                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="Cliente 3" className="avatar" />
                 </div>
-
-                <span className="hero-trustSep" />
-
-                {/* Facebook */}
-                <div className="trust-badge">
-                  <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
-                      <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill="#1877F2"/>
-                    </svg>
-                  </span>
-                  <div className="trust-text">
-                    <span className="trust-name">Facebook</span>
-                    <div className="trust-score-row">
-                      <span className="trust-stars">★★★★★</span>
-                      <b className="trust-score">4.9</b>
-                    </div>
-                  </div>
-                </div>
-
-                <span className="hero-trustSep" />
-
-                {/* Google */}
-                <div className="trust-badge">
-                  <span className="trust-logo" aria-hidden="true">
-                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
-                      <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
-                      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-                      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0124 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
-                      <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 01-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/>
-                    </svg>
-                  </span>
-                  <div className="trust-text">
-                    <span className="trust-name">Google</span>
-                    <div className="trust-score-row">
-                      <span className="trust-stars">★★★★★</span>
-                      <b className="trust-score">4.8</b>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <h1 className="hero-title hero-title--compact">{MC.heroTitle || product.name}</h1>
-
-              {/* Avatars + rating row */}
-              <div className="hero-avatars-row">
-                <div className="hero-avatars">
-                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="Cliente 1" className="hero-avatar" />
-                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="Cliente 2" className="hero-avatar" />
-                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="Cliente 3" className="hero-avatar" />
-                </div>
-                <span className="hero-avatars-text">
+                <span className="text-grey">
                   Calificado <strong>4.5/5</strong> basado en <strong>+650 reseñas</strong>
                 </span>
               </div>
+
+              <h1 className="hero-title hero-title--compact">{MC.heroTitle || product.name}</h1>
 
               {/* Subtítulo corto — viene del config de la landing */}
               {MC.heroSubtitle && (
@@ -1238,7 +1177,7 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* ✅ Bullets: compactas, tipo check */}
+              {/* Bullets: compactas, tipo check */}
               <ul className="hero-bullets-compact">
                 {(MC.trustBullets || []).slice(0, 5).map((t, i) => (
                   <li key={i}>{t}</li>
@@ -1248,15 +1187,15 @@ export default function ProductDetail() {
               {/* Tablets: Envío / Cuotas / Garantía */}
               <div className="hero-tablets">
                 <div className="hero-tablet">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 5h9v2l3.7.8a3 3 0 012.1 1.7l1.8 4c.2.4.3.8.3 1.3V18h-3"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><line x1="15" y1="7" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 5h9v2l3.7.8a3 3 0 012.1 1.7l1.8 4c.2.4.3.8.3 1.3V18h-3"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><line x1="15" y1="7" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
                   <span>Envío<br/>Gratis</span>
                 </div>
                 <div className="hero-tablet">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                   <span>Cuotas<br/>sin interés</span>
                 </div>
                 <div className="hero-tablet">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   <span>Garantía<br/>30 días</span>
                 </div>
               </div>
@@ -1600,7 +1539,7 @@ export default function ProductDetail() {
       /* ── Upsell sheet: rows (compartidos con UpsellSheet) ── */
       #upsell-section { padding: 0; }
       .ups-head { text-align: center; margin-bottom: 16px; }
-      .ups-head-label { display: inline-block; font-size: .68rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; color: #0b5cff; background: rgba(11,92,255,.08); border-radius: 999px; padding: 3px 12px; margin-bottom: 8px; }
+      .ups-head-label { display: inline-block; font-size: .68rem; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; color: #1B4D3E; background: rgba(27,77,62,.08); border-radius: 999px; padding: 3px 12px; margin-bottom: 8px; }
       .ups-head-title { font-size: 1.12rem; font-weight: 900; margin: 0 0 4px; }
       .ups-head-sub { font-size: .80rem; color: rgba(11,18,32,.50); font-weight: 600; margin: 0; }
       .ups-list { display: flex; flex-direction: column; gap: 10px; }
@@ -1614,7 +1553,7 @@ export default function ProductDetail() {
         transition: border-color .18s, background .18s, box-shadow .18s;
         box-shadow: 0 2px 8px rgba(10,20,40,.05);
       }
-      .ups-row:hover { border-color: rgba(11,92,255,.30); box-shadow: 0 4px 16px rgba(11,92,255,.08); }
+      .ups-row:hover { border-color: rgba(27,77,62,.30); box-shadow: 0 4px 16px rgba(27,77,62,.08); }
       .ups-row--on {
         border-color: #16a34a !important;
         background: rgba(22,163,74,.04) !important;
@@ -1622,7 +1561,7 @@ export default function ProductDetail() {
       }
       .ups-row-img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(2,8,23,.07); flex-shrink: 0; }
       .ups-row-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-      .ups-row-badge { font-size: .62rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #0b5cff; background: rgba(11,92,255,.09); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
+      .ups-row-badge { font-size: .62rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #1B4D3E; background: rgba(27,77,62,.09); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
       .ups-row-name { font-size: .88rem; font-weight: 800; margin: 0; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .ups-row-prices { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
       .ups-row-was { font-size: .76rem; font-weight: 700; color: rgba(11,18,32,.38); text-decoration: line-through; }
@@ -1636,7 +1575,7 @@ export default function ProductDetail() {
         cursor: pointer; display: flex; align-items: center; justify-content: center;
         transition: all .18s;
       }
-      .ups-row-btn:hover:not(:disabled) { border-color: #0b5cff; color: #0b5cff; background: rgba(11,92,255,.07); }
+      .ups-row-btn:hover:not(:disabled) { border-color: #1B4D3E; color: #1B4D3E; background: rgba(27,77,62,.07); }
       .ups-row-btn--on { border-color: #16a34a !important; background: #16a34a !important; color: #fff !important; font-size: 1rem !important; }
       .ups-row-btn:disabled { opacity: .4; cursor: default; }
       .ups-footer { margin-top: 12px; text-align: center; font-size: .76rem; font-weight: 700; color: rgba(11,18,32,.45); }
@@ -1702,77 +1641,35 @@ export default function ProductDetail() {
         padding: 6px 2px 0 !important;
       }
 
-      .hero-trustline{
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        gap: 10px;
-        text-align:center;
+      /* Reviews container */
+      .reviews-container{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px 0;
+      }
+      .avatars{
+        display: flex;
+        margin-right: 5px;
+        margin-left: 7px;
+      }
+      .avatar{
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid white;
+        margin-left: -7px;
+        object-fit: cover;
+      }
+      .text-grey{
+        font-weight: normal;
         font-size: 12px;
-        opacity: .95;
-        margin: 6px 0 8px;
-        flex-wrap: wrap;
+        color: #868686;
+        line-height: 0px;
       }
-      .hero-trustline--wide{
-        justify-content: space-evenly;
-        width: 100%;
-      }
-
-      .hero-trustItem b{ font-weight: 900; }
-      .hero-trustSep{
-        width: 1px;
-        height: 32px;
-        background: rgba(0,0,0,.10);
-        flex-shrink: 0;
-      }
-
-      .trust-badge{
-        display: flex;
-        align-items: center;
-        gap: 7px;
-      }
-
-      .trust-logo{
-        width: 32px;
-        height: 32px;
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
-      }
-
-      .trust-text{
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .trust-name{
-        font-size: .68rem;
+      .text-grey strong{
         font-weight: 800;
-        letter-spacing: .05em;
-        text-transform: uppercase;
-        color: rgba(11,18,32,.50);
-        line-height: 1;
-      }
-
-      .trust-score-row{
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        line-height: 1;
-      }
-
-      .trust-stars{
-        color: #F5B301;
-        font-size: 10px;
-        letter-spacing: 1.5px;
-      }
-
-      .trust-score{
-        font-size: .95rem;
-        font-weight: 900;
-        color: rgba(11,18,32,.90);
-        letter-spacing: -.01em;
+        color: #2e2f3c;
       }
 
       .hero-proof--compact{
@@ -1802,40 +1699,6 @@ export default function ProductDetail() {
         text-decoration: none !important;
         opacity: .85;
       }
-
-      /* Avatars + reseñas row */
-      .hero-avatars-row{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 6px 0 2px;
-        gap: 0;
-      }
-      .hero-avatars{
-        display: flex;
-        margin-right: 6px;
-      }
-      .hero-avatar{
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 2.5px solid #fff;
-        margin-left: -8px;
-        object-fit: cover;
-        box-shadow: 0 1px 4px rgba(0,0,0,.1);
-      }
-      .hero-avatar:first-child{ margin-left: 0; }
-      .hero-avatars-text{
-        font-size: 12px;
-        font-weight: 500;
-        color: #868686;
-        line-height: 1.3;
-      }
-      .hero-avatars-text strong{
-        font-weight: 800;
-        color: #2e2f3c;
-      }
-
 
       .hero-subtitle{
         text-align:center;
@@ -1875,6 +1738,32 @@ export default function ProductDetail() {
         font-weight: 900;
       }
 
+      /* ===== HERO TABLETS (Envío / Cuotas / Garantía) ===== */
+      .hero-tablets{
+        display: flex;
+        gap: 0;
+        margin: 6px 0 4px;
+        flex-wrap: nowrap;
+        border-top: 1px solid rgba(0,0,0,.08);
+        border-bottom: 1px solid rgba(0,0,0,.08);
+      }
+      .hero-tablet{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 10px 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #2e2f3c;
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+        border-right: 1px solid rgba(0,0,0,.08);
+      }
+      .hero-tablet:last-child{ border-right: none; }
+
       .hero-priceRow{
         display:flex;
         align-items: center;
@@ -1896,7 +1785,7 @@ export default function ProductDetail() {
       .hero-off{
         font-size: 18px;
         font-weight: 600;
-        color: #d80000;
+        color: #C53030;
       }
 
       .hero-ctaBig{
@@ -1912,9 +1801,9 @@ export default function ProductDetail() {
         align-items:center;
         justify-content:center;
         text-align:center;
-        background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
+        background: linear-gradient(135deg, #1B4D3E 0%, #153D31 60%, #0F2D24 100%);
         color: #fff;
-        box-shadow: 0 18px 55px rgba(11,92,255,.25);
+        box-shadow: 0 18px 55px rgba(27,77,62,.25);
         margin-top: 8px;
       }
       .hero-ctaBig span{
@@ -1932,8 +1821,8 @@ export default function ProductDetail() {
         justify-content:center;
         gap: 8px;
         font-size: 14px;
-        background: rgba(220,38,38,.08);
-        border: 1px solid rgba(220,38,38,.12);
+        background: rgba(197,48,48,.08);
+        border: 1px solid rgba(197,48,48,.12);
         margin-top: 10px;
         font-weight: 850;
       }
@@ -1942,8 +1831,8 @@ export default function ProductDetail() {
         height: 10px;
         border-radius: 999px;
         display:inline-block;
-        background: #ef4444;
-        box-shadow: 0 10px 25px rgba(239,68,68,.25);
+        background: #E53E3E;
+        box-shadow: 0 10px 25px rgba(229,62,62,.25);
       }
 
       @media (max-width: 520px){
@@ -1952,17 +1841,10 @@ export default function ProductDetail() {
         .hero-was{ font-size: 18px; }
         .hero-off{ font-size: 15px; }
         .hero-priceRow{ gap: 10px; margin: 12px 0; }
-        .hero-trustline--wide{ padding: 8px 10px; gap: 6px; }
-        .trust-badge{ gap: 5px; }
-        .trust-logo{ width: 26px; height: 26px; }
-        .trust-logo svg{ width: 18px; height: 18px; }
-        .trust-name{ font-size: .58rem; }
-        .trust-stars{ font-size: 9px; letter-spacing: 1px; }
-        .trust-score{ font-size: .85rem; }
-        .hero-trustSep{ height: 28px; }
         .hero-bullets-compact li{ font-size: 13px; }
-        .hero-avatar{ width: 26px; height: 26px; }
-        .hero-avatars-text{ font-size: 11px; }
+        .reviews-container{ margin: 4px 0; }
+        .avatar{ width: 24px; height: 24px; }
+        .text-grey{ font-size: 11px; }
       }
       /* ====== FIN CAMBIO CSS HERO COMPACTO ====== */
 
@@ -2035,7 +1917,7 @@ export default function ProductDetail() {
         opacity: .65;
       }
       .pd-thumb.is-active{
-        border-color: rgba(11,92,255,.7);
+        border-color: rgba(27,77,62,.7);
         opacity: 1;
       }
       .pd-thumb img{ width:100%; height:100%; object-fit: cover; display:block; }
@@ -2045,8 +1927,8 @@ export default function ProductDetail() {
       .inc-inline{ display:flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 6px; }
       .inc-chip{
         display:flex; align-items:center; gap: 8px;
-        background: rgba(234,241,255,.78);
-        border: 1px solid rgba(11,92,255,.14);
+        background: rgba(213,245,240,.78);
+        border: 1px solid rgba(27,77,62,.14);
         padding: 10px 12px;
         border-radius: 14px;
         font-weight: 850;
@@ -2097,8 +1979,8 @@ export default function ProductDetail() {
         display:inline-flex;
         padding: 6px 12px;
         border-radius: 999px;
-        background: rgba(11,92,255,.10);
-        border: 1px solid rgba(11,92,255,.18);
+        background: rgba(27,77,62,.10);
+        border: 1px solid rgba(27,77,62,.18);
         font-weight: 1100;
         color: rgba(11,18,32,.78);
         margin-bottom: 10px;
@@ -2211,8 +2093,8 @@ export default function ProductDetail() {
         border-radius: 10px;
         display: grid;
         place-items: center;
-        background: rgba(11,92,255,.07);
-        border: 1px solid rgba(11,92,255,.12);
+        background: rgba(27,77,62,.07);
+        border: 1px solid rgba(27,77,62,.12);
         flex-shrink: 0;
       }
 
@@ -2238,7 +2120,7 @@ export default function ProductDetail() {
       .boxc-item-check{
         font-size: 11px;
         font-weight: 900;
-        color: #10b981;
+        color: #2F855A;
         width: 20px;
         height: 20px;
         border-radius: 999px;
@@ -2288,7 +2170,7 @@ export default function ProductDetail() {
         align-items:center;
       }
       .cmp-head{
-        background: linear-gradient(180deg, rgba(234,241,255,.95), rgba(234,241,255,.65));
+        background: linear-gradient(180deg, rgba(213,245,240,.95), rgba(213,245,240,.65));
         border-bottom: 1px solid rgba(2,8,23,.06);
         font-weight: 1100;
       }
@@ -2296,10 +2178,10 @@ export default function ProductDetail() {
         border-bottom: 1px solid rgba(2,8,23,.06);
         transition: background .18s ease, transform .18s ease;
       }
-      .cmp-row:hover{ background: rgba(11,92,255,.06); transform: translateY(-1px); }
+      .cmp-row:hover{ background: rgba(27,77,62,.06); transform: translateY(-1px); }
       .cmp-row:last-child{ border-bottom: none; }
       .cmp-k, .cmp-col{ padding: 14px 12px; color: rgba(11,18,32,.78); font-weight: 900; font-size: .92rem; }
-      .cmp-a{ color: rgba(11,92,255,.95); font-weight: 1100; }
+      .cmp-a{ color: rgba(27,77,62,.95); font-weight: 1100; }
       .cmp-anim{ animation: popIn .35s ease both; }
 
       /* how img */
@@ -2381,7 +2263,7 @@ export default function ProductDetail() {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: #10b981;
+        background: #2F855A;
         box-shadow: 0 0 10px rgba(16,185,129,.6);
         animation: livePulse 2.2s ease-in-out infinite;
       }
@@ -2435,7 +2317,7 @@ export default function ProductDetail() {
         gap: 6px;
         font-size: .72rem;
         font-weight: 700;
-        color: #10b981;
+        color: #2F855A;
         background: rgba(16,185,129,.10);
         border: 1px solid rgba(16,185,129,.25);
         border-radius: 999px;
@@ -2486,7 +2368,7 @@ export default function ProductDetail() {
         position: absolute;
         left: 0; top: 0; bottom: 0;
         width: 3px;
-        background: linear-gradient(180deg, #0b5cff 0%, #10b981 100%);
+        background: linear-gradient(180deg, #1B4D3E 0%, #2F855A 100%);
       }
 
       .faq-pro-q{
@@ -2512,8 +2394,8 @@ export default function ProductDetail() {
         width: 26px;
         height: 26px;
         border-radius: 999px;
-        border: 1.5px solid rgba(11,92,255,.22);
-        background: rgba(11,92,255,.06);
+        border: 1.5px solid rgba(27,77,62,.22);
+        background: rgba(27,77,62,.06);
         flex-shrink: 0;
         position: relative;
         transition: transform .28s ease, background .2s ease, border-color .2s ease;
@@ -2524,15 +2406,15 @@ export default function ProductDetail() {
         position: absolute;
         top: 50%; left: 50%;
         width: 6px; height: 6px;
-        border-right: 1.5px solid rgba(11,92,255,.85);
-        border-bottom: 1.5px solid rgba(11,92,255,.85);
+        border-right: 1.5px solid rgba(27,77,62,.85);
+        border-bottom: 1.5px solid rgba(27,77,62,.85);
         transform: translate(-50%, -65%) rotate(45deg);
       }
 
       .faq-pro-item.open .faq-pro-ico{
         transform: rotate(180deg);
-        background: rgba(11,92,255,.12);
-        border-color: rgba(11,92,255,.4);
+        background: rgba(27,77,62,.12);
+        border-color: rgba(27,77,62,.4);
       }
 
       .faq-pro-a{
@@ -2556,7 +2438,7 @@ export default function ProductDetail() {
       /* stars */
       .stars-inline{ display:inline-flex; gap: 2px; justify-content: center; }
       .stars-inline .s{ opacity: .25; font-size: 14px; }
-      .stars-inline .s.on{ opacity: 1; color: #F5B301; }
+      .stars-inline .s.on{ opacity: 1; color: #D69E2E; }
 
       /* Reviews carousel */
       .rv-wrap{ position: relative; margin-top: 14px; }
@@ -2585,12 +2467,12 @@ export default function ProductDetail() {
         width: 46px;
         height: 46px;
         border-radius: 999px;
-        background: #ef4444;
+        background: #E53E3E;
         color: #fff;
         display:grid;
         place-items:center;
         font-weight: 1100;
-        box-shadow: 0 16px 40px rgba(239,68,68,.35);
+        box-shadow: 0 16px 40px rgba(229,62,62,.35);
       }
       .rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; }
       .rv-title{ font-weight: 1100; text-transform: uppercase; letter-spacing: .05em; color: rgba(11,18,32,.92); }
@@ -2625,7 +2507,7 @@ export default function ProductDetail() {
         cursor:pointer;
         transition: transform .18s ease, background .18s ease;
       }
-      .rv-dot.on{ background: rgba(11,92,255,.95); transform: scale(1.25); }
+      .rv-dot.on{ background: rgba(27,77,62,.95); transform: scale(1.25); }
 
       /* ===== QUIÉNES SOMOS ===== */
       .about2{
@@ -2654,7 +2536,7 @@ export default function ProductDetail() {
         width: 8px;
         height: 8px;
         border-radius: 999px;
-        background: #10b981;
+        background: #2F855A;
         box-shadow: 0 0 10px rgba(16,185,129,.7);
         flex-shrink: 0;
         animation: livePulse 2.2s ease-in-out infinite;
@@ -2822,14 +2704,14 @@ export default function ProductDetail() {
       .sticky-pro-btn2{
         flex: 1;
         border: none;
-        background: linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%);
+        background: linear-gradient(135deg, #1B4D3E 0%, #153D31 60%, #0F2D24 100%);
         color: #fff;
         font-weight: 900;
         font-size: .82rem;
         border-radius: 12px;
         padding: 10px 12px;
         cursor: pointer;
-        box-shadow: 0 6px 20px rgba(11,92,255,.28);
+        box-shadow: 0 6px 20px rgba(27,77,62,.28);
         letter-spacing: .04em;
         text-transform: uppercase;
         transition: transform .12s ease, box-shadow .12s ease;
@@ -2839,7 +2721,7 @@ export default function ProductDetail() {
       }
       .sticky-pro-btn2:active{
         transform: scale(.98);
-        box-shadow: 0 4px 14px rgba(11,92,255,.22);
+        box-shadow: 0 4px 14px rgba(27,77,62,.22);
       }
 
       /* Sticky responsive — pantallas chicas */
@@ -2867,7 +2749,7 @@ export default function ProductDetail() {
         width: fit-content;
         cursor: pointer;
         font-weight: 1100;
-        color: rgba(11,92,255,.95);
+        color: rgba(27,77,62,.95);
         text-decoration: underline;
         text-underline-offset: 4px;
         letter-spacing: .2px;
@@ -2982,7 +2864,7 @@ export default function ProductDetail() {
         transition: width .22s ease, background .18s ease;
       }
       .mrb-dot.on{
-        background: rgba(11,92,255,.80);
+        background: rgba(27,77,62,.80);
         width: 16px;
       }
 
@@ -3175,7 +3057,7 @@ export default function ProductDetail() {
       }
       .hero-ctaBig:hover{
         transform: translateY(-2px);
-        box-shadow: 0 22px 60px rgba(11,92,255,.32);
+        box-shadow: 0 22px 60px rgba(27,77,62,.32);
       }
       .hero-ctaBig:active{ transform: translateY(0) scale(.98); }
 
@@ -3199,9 +3081,6 @@ export default function ProductDetail() {
         opacity:1;
       }
 
-      /* Trust badges shimmer on hover */
-      .trust-badge{ transition: opacity .18s ease; }
-      .trust-badge:hover{ opacity:.75; }
 
       /* About stats */
       .about2-stat{ transition: transform .18s ease; }
@@ -3215,7 +3094,7 @@ export default function ProductDetail() {
         width:38px;
         height:3px;
         border-radius:999px;
-        background:linear-gradient(90deg,#0b5cff,#10b981);
+        background:linear-gradient(90deg,#1B4D3E,#2F855A);
         margin:10px auto 0;
       }
       .pd-band--blue .sec-head::after{
@@ -3266,31 +3145,6 @@ export default function ProductDetail() {
         font-size:.72rem; font-weight:600; color:#15803d; opacity:.75;
       }
 
-      /* ===== HERO TABLETS (Envío / Soporte / Garantía) ===== */
-      .hero-tablets{
-        display: flex;
-        gap: 0;
-        margin: 6px 0 4px;
-        flex-wrap: nowrap;
-        border-top: 1px solid rgba(0,0,0,.08);
-        border-bottom: 1px solid rgba(0,0,0,.08);
-      }
-      .hero-tablet{
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-        padding: 8px 4px;
-        font-size: 10px;
-        font-weight: 700;
-        color: #2e2f3c;
-        line-height: 1.2;
-        text-align: center;
-        white-space: nowrap;
-        border-right: 1px solid rgba(0,0,0,.08);
-      }
-      .hero-tablet:last-child{ border-right: none; }
       }
 
       /* ===== PAYMENT ICONS ===== */

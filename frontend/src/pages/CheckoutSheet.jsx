@@ -352,7 +352,7 @@ export function CheckoutSheet({ onClose }) {
         }
         .cs-field input:focus, .cs-field select:focus {
           border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(11,92,255,.10);
+          box-shadow: 0 0 0 3px rgba(27,77,62,.10);
         }
         .cs-field input.cs-err, .cs-field select.cs-err { border-color: #c0392b !important; }
         .cs-field label {
@@ -379,7 +379,7 @@ export function CheckoutSheet({ onClose }) {
           padding: 14px 16px; border: 1.5px solid #d0d0d0; border-radius: 10px;
           cursor: pointer; transition: border-color .15s, background .15s;
         }
-        .cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(11,92,255,.04); }
+        .cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(27,77,62,.04); }
         .cs-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
 
         /* Progress bar */
@@ -816,7 +816,7 @@ export function CheckoutSheet({ onClose }) {
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
                           {opt.title}
-                          {opt.badge && <span style={{ fontSize: 11, background: "rgba(11,92,255,.10)", border: "1px solid rgba(11,92,255,.20)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
+                          {opt.badge && <span style={{ fontSize: 11, background: "rgba(27,77,62,.10)", border: "1px solid rgba(27,77,62,.20)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
                         </div>
                         <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginTop: 2 }}>{opt.sub}</div>
                       </div>
