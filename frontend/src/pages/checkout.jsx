@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../services/api";
+
 import CardPaymentBrick from "../components/CardPaymentBrick.jsx";
 import { getStoredAuth } from "../utils/auth";
 import { useCart } from "../context/CartContext.jsx";
@@ -64,6 +65,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
   // ✅ Método de pago online seleccionado: "mercadopago" | "card"
   const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
+  const [cardPaymentDone, setCardPaymentDone] = useState(false);
 
   // ✅ Datos del negocio
   const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
@@ -91,7 +93,6 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false); // ✅ overlay "Conectando con MP"
-  const [cardPaymentDone, setCardPaymentDone] = useState(false); // ✅ éxito pago con tarjeta
   const [error, setError] = useState("");
   const errorRef = useRef(null);
   const showError = (msg) => {
@@ -221,12 +222,10 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
   const waUrl = useMemo(() => {
     if (!whatsapp) return null;
-
     const orderId = orderData?.orderId || orderData?._id || "";
     const msg = orderId
       ? `Hola! 👋 Quiero confirmar la entrega del pedido #${orderId}`
       : `Hola! 👋 Quiero coordinar mi entrega con ${storeName}.`;
-
     return `https://wa.me/${sanitizePhone(whatsapp)}?text=${encodeURIComponent(msg)}`;
   }, [whatsapp, orderData, storeName]);
 
@@ -367,28 +366,16 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
     }
   }
 
-  // ✅ Validación antes de procesar tarjeta (se llama desde CardPaymentBrick)
+  // ✅ Validación antes de procesar tarjeta
   function handleCardBeforeSubmit() {
     const name    = refName.current.trim();
     const dni     = onlyDigits(refDni.current);
     const address = refAddress.current.trim();
     const method  = refMethod.current;
-    if (!name || !address) {
-      showError("Completá Nombre y Dirección para continuar con el pago.");
-      return false;
-    }
-    if (dni.length < 7 || dni.length > 8) {
-      showError("Ingresá un DNI válido (7 u 8 dígitos).");
-      return false;
-    }
-    if (method === "caba_cod" && onlyDigits(refPhone.current).length < 8) {
-      showError("Para CABA el teléfono es obligatorio.");
-      return false;
-    }
-    if (isCartEmpty) {
-      showError("Tu carrito está vacío.");
-      return false;
-    }
+    if (!name || !address) { showError("Completá Nombre y Dirección para continuar con el pago."); return false; }
+    if (dni.length < 7 || dni.length > 8) { showError("Ingresá un DNI válido (7 u 8 dígitos)."); return false; }
+    if (method === "caba_cod" && onlyDigits(refPhone.current).length < 8) { showError("Para CABA el teléfono es obligatorio."); return false; }
+    if (isCartEmpty) { showError("Tu carrito está vacío."); return false; }
     return true;
   }
 
@@ -420,13 +407,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
       };
       await api.post("/orders", body);
       clearClientOrderId();
-      track("Purchase", {
-        value:        Number(finalTotal),
-        currency:     "ARS",
-        num_items:    totalItems,
-        content_ids:  contentIds,
-        content_type: "product",
-      });
+      track("Purchase", { value: Number(finalTotal), currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" });
       clearCart();
       setCardPaymentDone(true);
     } catch (err) {
@@ -885,8 +866,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         <span style={{ fontSize: ".75rem", background: "rgba(0,158,227,.10)", border: "1px solid rgba(0,158,227,.25)", color: "#006fa6", borderRadius: 999, padding: "2px 8px", fontWeight: 800 }}>Recomendado</span>
                       </div>
                       <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
-                        Débito, crédito, dinero en cuenta y más.<br />
-                        <span style={{ color: "#b45309", fontWeight: 800 }}>⚡ Serás redirigido a la app de Mercado Pago para completar el pago.</span>
+                        Débito, crédito, dinero en cuenta y más.
                       </div>
                     </div>
                     <svg width="56" height="22" viewBox="0 0 56 22" fill="none" style={{ flexShrink: 0 }}>
@@ -908,10 +888,8 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         <span style={{ fontSize: ".75rem", background: "rgba(22,163,74,.10)", border: "1px solid rgba(22,163,74,.25)", color: "#15803d", borderRadius: 999, padding: "2px 8px", fontWeight: 800 }}>🔒 Seguro</span>
                       </div>
                       <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
-                        Ingresá los datos de tu tarjeta directamente aquí.<br />
-                        <span style={{ color: "#15803d", fontWeight: 800 }}>✅ Pago 100% seguro — encriptado con SSL.</span>
+                        Ingresá los datos de tu tarjeta directamente aquí.
                       </div>
-                      {/* íconos tarjeta */}
                       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                         {["VISA","MC","AMEX"].map(b => (
                           <span key={b} style={{ fontSize: ".7rem", fontWeight: 900, padding: "3px 8px", borderRadius: 4, background: "#f1f5f9", border: "1px solid #e2e8f0", color: "#475569", letterSpacing: ".04em" }}>{b}</span>
@@ -923,7 +901,6 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                   {/* Brick de tarjeta — aparece sólo si seleccionó "card" */}
                   {onlinePayMethod === "card" && (
                     <div style={{ marginTop: 4 }}>
-                      {/* Banner seguridad */}
                       <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "10px 14px", marginBottom: 12 }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         <span style={{ fontSize: ".85rem", fontWeight: 800, color: "#15803d", lineHeight: 1.4 }}>
@@ -1106,7 +1083,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                           padding: "1.05rem",
                           fontSize: "1.05rem",
                           fontWeight: 1100,
-                          background: "linear-gradient(135deg, #1a6dff 0%, #0b5cff 60%, #0046e0 100%)",
+                          background: "linear-gradient(135deg, #1B6D4F 0%, #1B4D3E 60%, #153D31 100%)",
                           border: "none",
                           boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
                           cursor: (loading || redirecting) ? "not-allowed" : "pointer",

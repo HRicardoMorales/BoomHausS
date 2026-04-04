@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(node -e \":*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Read(//c/Users/Usuario/Downloads/Encontratudo_FINAL_multi_landing_admin_inline_checkout_v2/frontend/src/services/**)"
     ]
   }
 }

@@ -146,20 +146,43 @@ export function CheckoutSheet({ onClose }) {
     return data?._id || data?.orderId || null;
   }
 
-  // ── Flujo MP redirección (Opción B — sin cambios) ──
+  // ── Flujo MP: crear orden y redirigir a la app de Mercado Pago ──
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      track("Purchase", {
-        currency: "ARS", value: totalPrice,
-        content_ids: items.map(i => i.productId),
-        num_items: totalItems,
+      const cartItems = items.map(i => ({
+        productId: i.productId, name: i.name, price: i.price, quantity: i.quantity,
+      }));
+      const res = await api.post("/orders", {
+        customerName:    `${form.nombre} ${form.apellido}`.trim(),
+        customerEmail:   "",
+        customerDni:     "00000000",
+        customerPhone:   form.tel,
+        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", "),
+        shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
+        paymentMethod:   "mercadopago",
+        notes:           "",
+        total:           totalPrice,
+        items:           cartItems,
       });
-      await createOrderInDB();
-      setConfirmedTotal(totalPrice);
-      setConfirmedItems([...items]);
-      clearCart();
-      setStep(4);
+
+      const isProd = import.meta.env.MODE === "production";
+      const url = isProd
+        ? res.data.init_point
+        : res.data.sandbox_init_point || res.data.init_point;
+
+      if (url) {
+        track("InitiateCheckout", {
+          currency: "ARS", value: totalPrice,
+          content_ids: items.map(i => i.productId),
+          num_items: totalItems,
+        });
+        window.location.href = url;
+        return;
+      }
+
+      // Fallback si no hay URL
+      setErrors({ submit: "No se pudo conectar con Mercado Pago. Intentá de nuevo." });
     } catch (err) {
       console.error(err);
       setErrors({ submit: "Error al procesar el pedido. Intentá de nuevo." });
@@ -954,10 +977,10 @@ export function CheckoutSheet({ onClose }) {
                       <div className="cs-pay-panel" style={{ padding: "0 16px 16px" }}>
                         <div style={{ background: "#f0f8ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "14px 16px", marginTop: 8 }}>
                           <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
-                            <span>💙</span> Serás redirigido a Mercado Pago
+                            <span>💙</span> Pagá con Mercado Pago
                           </div>
                           <div style={{ fontSize: 13, color: "rgba(11,18,32,.7)", fontWeight: 600, lineHeight: 1.55 }}>
-                            Al confirmar el pedido, te enviamos un link de pago seguro por WhatsApp. Pagás directamente en Mercado Pago con el método que prefieras — tus datos bancarios nunca pasan por nuestra página.
+                            Al hacer clic en "Pagar ahora" serás redirigido a Mercado Pago para completar el pago con el método que prefieras: tarjeta, débito, dinero en cuenta y más.
                           </div>
                           <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: "#1D9E75", display: "flex", alignItems: "center", gap: 5, borderTop: "1px solid #bfdbfe", paddingTop: 10 }}>
                             🔒 Operación protegida con encriptación SSL
@@ -995,7 +1018,7 @@ export function CheckoutSheet({ onClose }) {
                   }}
                   style={{ marginBottom: payment ? 0 : 4 }}
                 >
-                  {processingPayment ? "Procesando pago..." : submitting ? "Procesando..." : "Pagar ahora"}
+                  {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." : "Pagar ahora"}
                 </button>
                 {!payment && (
                   <div style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "#c0392b", marginTop: 6, marginBottom: 4 }}>

@@ -173,6 +173,7 @@ async function createOrder(req, res, next) {
                                 shippingMethod: existing.shippingMethod,
                             },
                             init_point: result.init_point,
+                            sandbox_init_point: result.sandbox_init_point,
                         });
                     } catch (mpError) {
                         console.error("❌ ERROR MERCADO PAGO (duplicada):", mpError);
@@ -248,11 +249,13 @@ async function createOrder(req, res, next) {
                 const result = await createMpPreference(newOrder._id.toString());
 
                 console.log("✅ LINK GENERADO (init_point):", result.init_point);
+                console.log("✅ LINK SANDBOX:", result.sandbox_init_point);
 
                 return res.status(201).json({
                     ok: true,
                     data: newOrder,
                     init_point: result.init_point,
+                    sandbox_init_point: result.sandbox_init_point,
                 });
             } catch (mpError) {
                 console.error("❌ ERROR MERCADO PAGO:", mpError);
