@@ -11,7 +11,7 @@ const consolaRetroConfig = {
   checkoutName: "Consola Retro M15 Pro — 10.000 Juegos",
 
   // ── Hero ─────────────────────────────────────────────────
-  heroSubtitle: "2 controles inalámbricos + +10.000 juegos retro. Enchufás y jugás.",
+  heroSubtitle: "",
   trustBullets: [
     "🕹️ 2 controles inalámbricos incluidos — jugás de entrada",
     "🎮 +10.000 juegos retro listos — sin descargar nada",
@@ -80,12 +80,7 @@ const consolaRetroConfig = {
 
   // ── Tarjeta de autoridad ──────────────────────────────────
   authority: {
-    show: true,
-    photo: "https://gamerstyle.com.mx/wp-content/uploads/2025/03/Gunnar-Fortnite.jpg",
-    name: "Lic. Martín Cabrera",
-    role: "Especialista en videojuegos retro · Gaming",
-    quote: "La M15 Pro es una de las mejores opciones del mercado para quienes quieren revivir los clásicos sin complicaciones. La combinación de más de 10.000 juegos, salida 4K y dos controles inalámbricos incluidos la pone muy por encima de la competencia en su rango de precio.",
-    disclaimer: "Opinión basada en análisis de producto. Los resultados pueden variar según el uso.",
+    
   },
 
   // ── FAQ ──────────────────────────────────────────────────
