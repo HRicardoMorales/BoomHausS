@@ -115,6 +115,47 @@ export function CheckoutSheet({ onClose }) {
     if (errors[key]) setErrors(e => ({ ...e, [key]: "" }));
   }
 
+  // ── Captura silenciosa de carrito abandonado ──
+  // Se dispara on blur cuando el cliente deja algún dato de contacto.
+  // El backend hace upsert por teléfono o email, así que se puede llamar varias veces.
+  function captureAbandoned(extra = {}) {
+    const phone = (extra.phone ?? form.tel ?? "").trim();
+    const email = (extra.email ?? "").trim();
+    if (!phone && !email) return;
+    if (!items || items.length === 0) return;
+
+    const stepName =
+      step === 0 ? "cart" :
+      step === 1 ? "info" :
+      step === 2 ? "payment" : "unknown";
+
+    const payload = {
+      phone,
+      email,
+      name: `${form.nombre || ""} ${form.apellido || ""}`.trim(),
+      address: form.direccion || "",
+      city: form.ciudad || "",
+      province: form.provincia || "",
+      postalCode: form.cp || "",
+      items: items.map(i => ({
+        productId: i.productId,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+        imageUrl: i.imageUrl || i.image || null,
+      })),
+      total: totalPrice,
+      totalItems,
+      step: stepName,
+      landingSource: typeof window !== "undefined" ? window.location.pathname : "",
+      paymentMethod: payment === "mp" ? "mercadopago" : payment === "card" ? "card" : null,
+      ...extra,
+    };
+
+    // Silencioso: nunca bloquea al usuario
+    api.post("/abandoned-cart", payload).catch(() => {});
+  }
+
   function validateStep1() {
     const e = {};
     if (!form.tel.trim()) e.tel = "El celular es obligatorio.";
@@ -756,6 +797,7 @@ export function CheckoutSheet({ onClose }) {
                   <input
                     value={form.tel}
                     onChange={e => setF("tel", e.target.value)}
+                    onBlur={e => captureAbandoned({ phone: e.target.value })}
                     className={`${form.tel ? "hv" : ""} ${errors.tel ? "cs-err" : ""}`}
                     inputMode="tel"
                     style={{ marginBottom: 0 }}
@@ -796,7 +838,12 @@ export function CheckoutSheet({ onClose }) {
 
                 {/* Dirección */}
                 <div className="cs-field" style={{ marginBottom: 4 }}>
-                  <input value={form.direccion} onChange={e => setF("direccion", e.target.value)} className={`${form.direccion ? "hv" : ""} ${errors.direccion ? "cs-err" : ""}`} />
+                  <input
+                    value={form.direccion}
+                    onChange={e => setF("direccion", e.target.value)}
+                    onBlur={() => captureAbandoned()}
+                    className={`${form.direccion ? "hv" : ""} ${errors.direccion ? "cs-err" : ""}`}
+                  />
                   <label>Dirección *</label>
                 </div>
                 {errors.direccion && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.direccion}</div>}
@@ -849,7 +896,7 @@ export function CheckoutSheet({ onClose }) {
                 </div>
 
                 {/* Buttons */}
-                <button className="cs-cta" onClick={() => { if (validateStep1()) setStep(2); }}>
+                <button className="cs-cta" onClick={() => { if (validateStep1()) { captureAbandoned(); setStep(2); } }}>
                   Continuar con el pago →
                 </button>
                 <div style={{ textAlign: "center", marginTop: 12, marginBottom: 8 }}>

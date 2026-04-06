@@ -233,20 +233,40 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
   const handleAbandonedCapture = async (field, value) => {
     if (!value || String(value).length < 5) return;
 
+    const email = field === "email" ? value : customerEmail;
+    const phone = field === "phone" ? value : customerPhone;
+    if (!email && !phone) return;
+    if (!items || items.length === 0) return;
+
     const abandonedData = {
-      email: field === "email" ? value : customerEmail,
-      phone: field === "phone" ? value : customerPhone,
+      email,
+      phone,
       name: customerName,
-      items: items,
+      address: shippingAddress,
+      items: items.map(i => ({
+        productId: i.productId || i._id || i.id,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+        imageUrl: i.imageUrl || i.image || null,
+      })),
       total: finalTotal,
-      step: "checkout_form",
+      totalItems: items.reduce((a, it) => a + (Number(it?.quantity) || 0), 0),
+      step: "checkout_page",
+      landingSource: typeof window !== "undefined" ? window.location.pathname : "",
+      paymentMethod:
+        shippingMethod === "caba_cod"
+          ? "cod"
+          : onlinePayMethod === "mercadopago"
+          ? "mercadopago"
+          : onlinePayMethod === "card"
+          ? "card"
+          : null,
     };
 
-    if (abandonedData.email || abandonedData.phone) {
-      try {
-        api.post("/abandoned-cart", abandonedData).catch(() => {});
-      } catch (_) {}
-    }
+    try {
+      api.post("/abandoned-cart", abandonedData).catch(() => {});
+    } catch (_) {}
   };
 
   async function handleSubmit(e) {
@@ -815,6 +835,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                   <textarea
                     value={shippingAddress}
                     onChange={(e) => { setShippingAddress(e.target.value); refAddress.current = e.target.value; }}
+                    onBlur={(e) => handleAbandonedCapture("address", e.target.value)}
                     placeholder={
                       shippingMethod === "correo_argentino"
                         ? "Calle, altura, piso, ciudad, código postal..."
