@@ -89,6 +89,9 @@ export function CheckoutSheet({ onClose }) {
   const [cardFormInstance, setCardFormInstance] = useState(null);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [savedOrderId, setSavedOrderId] = useState(null);
+  // MP redirect interstitial (step 3) — evita la redirección abrupta que causa abandono
+  const [mpRedirectUrl, setMpRedirectUrl] = useState(null);
+  const [mpCountdown, setMpCountdown] = useState(4);
   const cardFormRef = useRef(null);
   const processCardPaymentRef = useRef(null);
 
@@ -218,19 +221,36 @@ export function CheckoutSheet({ onClose }) {
           content_ids: items.map(i => i.productId),
           num_items: totalItems,
         });
-        window.location.href = url;
+        // ✅ En lugar de redireccionar abruptamente, mostramos un interstitial
+        // branded con info de seguridad. Esto reduce el abandono en MP porque
+        // el cliente ve que su pedido fue aceptado y entiende qué va a pasar.
+        setMpRedirectUrl(url);
+        setMpCountdown(4);
+        setStep(3);
+        setSubmitting(false);
         return;
       }
 
       // Fallback si no hay URL
       setErrors({ submit: "No se pudo conectar con Mercado Pago. Intentá de nuevo." });
+      setSubmitting(false);
     } catch (err) {
       console.error(err);
       setErrors({ submit: "Error al procesar el pedido. Intentá de nuevo." });
-    } finally {
       setSubmitting(false);
     }
   }
+
+  // ── Countdown del interstitial MP: auto-redirige cuando llega a 0 ──
+  useEffect(() => {
+    if (step !== 3 || !mpRedirectUrl) return;
+    if (mpCountdown <= 0) {
+      window.location.href = mpRedirectUrl;
+      return;
+    }
+    const t = setTimeout(() => setMpCountdown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [step, mpRedirectUrl, mpCountdown]);
 
   // ── Flujo tarjeta: se llama desde el callback onSubmit del CardForm ──
   async function processCardPayment({ token, paymentMethodId, issuerId, installments, amount, email, identificationType, identificationNumber }) {
@@ -473,10 +493,82 @@ export function CheckoutSheet({ onClose }) {
         /* Pay panel */
         .cs-pay-panel { overflow: hidden; animation: csSlideDown .22s ease forwards; }
 
-        /* Benefit bar */
+        /* Benefit bar (legacy) */
         .cs-benefits { background: #f0fdf8; border-bottom: 1px solid #b7f0dc; padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
         .cs-benefits-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: #0a5c3a; }
         .cs-benefits-line { width: 28px; height: 2px; background: #34d399; border-radius: 2px; }
+
+        /* ✨ Hero benefits — envío gratis protagonista + regalos si aplica */
+        .cs-hero-benefits {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding: 14px 16px 12px;
+          background: linear-gradient(180deg, #ecfdf5 0%, #f0fdf8 100%);
+          border-bottom: 1px solid #b7f0dc;
+        }
+        .cs-hero-free,
+        .cs-hero-gifts {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 11px 14px;
+          border-radius: 12px;
+          background: #fff;
+          border: 1.5px solid #34d399;
+          box-shadow: 0 4px 12px rgba(15,157,110,.08);
+        }
+        .cs-hero-gifts {
+          border-color: #f59e0b;
+          background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+          box-shadow: 0 4px 14px rgba(245,158,11,.15);
+          animation: csGiftPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes csGiftPulse {
+          0%,100% { box-shadow: 0 4px 14px rgba(245,158,11,.15); }
+          50%     { box-shadow: 0 6px 22px rgba(245,158,11,.28); }
+        }
+        .cs-hero-free-ico,
+        .cs-hero-gifts-ico {
+          flex-shrink: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          font-size: 20px;
+          background: #d1fae5;
+        }
+        .cs-hero-gifts-ico { background: #fde68a; }
+        .cs-hero-free-txt,
+        .cs-hero-gifts-txt { flex: 1; min-width: 0; }
+        .cs-hero-free-title {
+          font-size: 14px;
+          font-weight: 1000;
+          color: #065f46;
+          letter-spacing: .02em;
+          line-height: 1.15;
+        }
+        .cs-hero-free-sub {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #047857;
+          margin-top: 2px;
+        }
+        .cs-hero-gifts-title {
+          font-size: 14px;
+          font-weight: 1000;
+          color: #92400e;
+          letter-spacing: .02em;
+          line-height: 1.15;
+        }
+        .cs-hero-gifts-sub {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #b45309;
+          margin-top: 2px;
+        }
 
         /* Payment logos */
         .cs-pay-logos { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
@@ -604,6 +696,211 @@ export function CheckoutSheet({ onClose }) {
 
         .mp-loading { text-align: center; padding: 24px; color: #aaa; font-size: 13px; font-weight: 600; }
         .mp-not-ready { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: 700; color: #7c5a00; }
+
+        /* ══════ Mercado Pago panel (step 2) ══════ */
+        .cs-mp-panel {
+          margin-top: 10px;
+          background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+          border: 1.5px solid #009ee3;
+          border-radius: 12px;
+          padding: 14px;
+          box-shadow: 0 6px 20px rgba(0,158,227,.10);
+        }
+        .cs-mp-panel-head {
+          display: flex; align-items: center; gap: 12px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #dbeafe;
+        }
+        .cs-mp-logo-wrap { flex-shrink: 0; }
+        .cs-mp-head-txt { flex: 1; min-width: 0; }
+        .cs-mp-head-title {
+          font-size: 14px; font-weight: 900; color: #0b1220;
+          line-height: 1.2;
+        }
+        .cs-mp-head-sub {
+          font-size: 11.5px; font-weight: 700; color: #475569;
+          margin-top: 3px; line-height: 1.3;
+        }
+        .cs-mp-benefits {
+          list-style: none;
+          margin: 12px 0 10px;
+          padding: 0;
+          display: flex; flex-direction: column; gap: 8px;
+        }
+        .cs-mp-benefits li {
+          display: flex; align-items: flex-start; gap: 8px;
+          font-size: 12.5px; font-weight: 700; color: #1e293b;
+          line-height: 1.4;
+        }
+        .cs-mp-check {
+          flex-shrink: 0;
+          width: 18px; height: 18px;
+          display: inline-flex; align-items: center; justify-content: center;
+          background: #009ee3; color: #fff;
+          border-radius: 50%;
+          font-size: 11px; font-weight: 900;
+          margin-top: 1px;
+        }
+        .cs-mp-trust {
+          display: flex; align-items: center; justify-content: center;
+          gap: 6px; flex-wrap: wrap;
+          padding: 8px 10px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          margin-top: 2px;
+        }
+        .cs-mp-trust-item {
+          font-size: 10.5px; font-weight: 900;
+          color: #0f766e; letter-spacing: .02em;
+        }
+        .cs-mp-trust-dot { color: #cbd5e1; font-weight: 900; }
+
+        /* ══════ Interstitial MP (step 3) ══════ */
+        @keyframes csSpin { to { transform: rotate(360deg); } }
+        @keyframes csPulseRing {
+          0% { box-shadow: 0 0 0 0 rgba(0,158,227,.5); }
+          70% { box-shadow: 0 0 0 18px rgba(0,158,227,0); }
+          100% { box-shadow: 0 0 0 0 rgba(0,158,227,0); }
+        }
+        @keyframes csFadeUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .cs-mp-inter {
+          padding: 28px 22px 24px;
+          text-align: center;
+          animation: csFadeUp .35s ease forwards;
+        }
+        .cs-mp-inter-logo {
+          display: inline-flex;
+          align-items: center; justify-content: center;
+          width: 72px; height: 72px;
+          background: #009ee3;
+          border-radius: 50%;
+          margin: 0 auto 14px;
+          animation: csPulseRing 2s ease-out infinite;
+        }
+        .cs-mp-inter-check {
+          display: inline-flex;
+          align-items: center; justify-content: center;
+          width: 54px; height: 54px;
+          border-radius: 50%;
+          background: #10b981; color: #fff;
+          font-size: 28px; font-weight: 900;
+          margin: 0 auto 12px;
+          box-shadow: 0 10px 24px rgba(16,185,129,.35);
+        }
+        .cs-mp-inter-title {
+          font-size: 20px; font-weight: 900;
+          color: #0b1220;
+          margin: 0 0 6px;
+          line-height: 1.2;
+        }
+        .cs-mp-inter-sub {
+          font-size: 13.5px; font-weight: 600;
+          color: #64748b;
+          margin: 0 0 20px;
+          line-height: 1.5;
+          max-width: 360px;
+          margin-left: auto; margin-right: auto;
+        }
+        .cs-mp-inter-card {
+          background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+          border: 1.5px solid #009ee3;
+          border-radius: 14px;
+          padding: 16px;
+          margin: 0 auto 18px;
+          max-width: 380px;
+          box-shadow: 0 10px 28px rgba(0,158,227,.12);
+        }
+        .cs-mp-inter-brand {
+          display: flex; align-items: center; justify-content: center;
+          gap: 8px;
+          padding-bottom: 12px; margin-bottom: 12px;
+          border-bottom: 1px dashed #bae6fd;
+        }
+        .cs-mp-inter-brand-txt {
+          font-size: 11px; font-weight: 800;
+          color: #0369a1;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+        .cs-mp-inter-total-lbl {
+          font-size: 11px; font-weight: 800;
+          color: #64748b;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+        }
+        .cs-mp-inter-total {
+          font-size: 30px; font-weight: 1000;
+          color: #0b1220;
+          letter-spacing: -.02em;
+          margin-top: 2px;
+          line-height: 1;
+        }
+        .cs-mp-inter-name {
+          font-size: 12.5px; font-weight: 700;
+          color: #475569;
+          margin-top: 8px;
+        }
+        .cs-mp-inter-spinner {
+          width: 22px; height: 22px;
+          border: 2.5px solid #e0f2fe;
+          border-top-color: #009ee3;
+          border-radius: 50%;
+          animation: csSpin .9s linear infinite;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        .cs-mp-inter-count {
+          display: flex; align-items: center; justify-content: center;
+          gap: 10px;
+          font-size: 13px; font-weight: 800;
+          color: #0369a1;
+          margin-bottom: 16px;
+        }
+        .cs-mp-inter-cta {
+          width: 100%;
+          max-width: 380px;
+          margin: 0 auto;
+          padding: 15px 18px;
+          border: none;
+          border-radius: 12px;
+          background: #009ee3;
+          color: #fff;
+          font-size: 15.5px; font-weight: 900;
+          cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          gap: 8px;
+          box-shadow: 0 10px 24px rgba(0,158,227,.30);
+          transition: transform .12s, box-shadow .18s;
+        }
+        .cs-mp-inter-cta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 14px 30px rgba(0,158,227,.38);
+        }
+        .cs-mp-inter-trust {
+          display: flex; align-items: center; justify-content: center;
+          gap: 14px; flex-wrap: wrap;
+          margin-top: 14px;
+          padding-top: 14px;
+          border-top: 1px solid #e2e8f0;
+        }
+        .cs-mp-inter-trust-item {
+          display: flex; align-items: center; gap: 4px;
+          font-size: 10.5px; font-weight: 800;
+          color: #475569;
+          letter-spacing: .02em;
+        }
+        .cs-mp-inter-back {
+          background: none; border: none; cursor: pointer;
+          font-size: 12.5px; font-weight: 700;
+          color: #94a3b8;
+          text-decoration: underline;
+          margin-top: 14px;
+          padding: 6px;
+        }
       `}</style>
 
       <div className="cs-overlay" onClick={handleOverlayClick}>
@@ -681,7 +978,7 @@ export function CheckoutSheet({ onClose }) {
             </div>
           )}
 
-          {step === 4 && (
+          {(step === 3 || step === 4) && (
             <div style={{ display: "flex", justifyContent: "center", padding: "18px 20px 14px", borderBottom: "1px solid var(--border)" }}>
               <span style={{ fontWeight: 900, fontSize: 16 }}>{import.meta.env.VITE_STORE_NAME || "BoomHausS"}</span>
             </div>
@@ -691,19 +988,35 @@ export function CheckoutSheet({ onClose }) {
           <div className="cs-body">
 
             {/* ══════ STEP 0 — CART ══════ */}
-            {step === 0 && (
+            {step === 0 && (() => {
+              // ✅ Detecta si el carrito tiene el Kit Completo del mundial
+              const hasKit = items.some((it) => {
+                const n = (it.name || "").toLowerCase();
+                return n.includes("kit") && n.includes("revendedor");
+              });
+              return (
               <div>
-                {/* Benefits bar */}
-                <div className="cs-benefits">
-                  {[["🎁","Regalos incluidos"],["🚚","Envío gratis"],["⭐","Oferta activa"]].map(([ico, txt], i) => (
-                    <div key={txt} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div className="cs-benefits-item"><span>{ico}</span><span>{txt}</span></div>
-                      {i < 2 && <div className="cs-benefits-line" />}
+                {/* Hero benefits bar — envío gratis protagonista */}
+                <div className="cs-hero-benefits">
+                  <div className="cs-hero-free">
+                    <span className="cs-hero-free-ico" aria-hidden="true">🚚</span>
+                    <div className="cs-hero-free-txt">
+                      <div className="cs-hero-free-title">ENVÍO GRATIS</div>
+                      <div className="cs-hero-free-sub">a todo el país · llega en 3 a 7 días</div>
                     </div>
-                  ))}
+                  </div>
+                  {hasKit && (
+                    <div className="cs-hero-gifts">
+                      <span className="cs-hero-gifts-ico" aria-hidden="true">🎁</span>
+                      <div className="cs-hero-gifts-txt">
+                        <div className="cs-hero-gifts-title">+20 UNIDADES DE REGALO</div>
+                        <div className="cs-hero-gifts-sub">10 Pulseras + 10 Banderas extra incluidas</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div style={{ padding: "6px 16px 4px", textAlign: "center", fontSize: 12, fontWeight: 800, color: "#0a5c3a", background: "#f0fdf8", borderBottom: "1px solid #b7f0dc" }}>
-                  ¡Felicidades! Conseguiste todos los beneficios
+                <div style={{ padding: "8px 16px", textAlign: "center", fontSize: 12, fontWeight: 800, color: "#0a5c3a", background: "#f0fdf8", borderBottom: "1px solid #b7f0dc" }}>
+                  ✓ ¡Felicidades! Desbloqueaste todos los beneficios
                 </div>
 
                 {/* Cart items */}
@@ -785,7 +1098,8 @@ export function CheckoutSheet({ onClose }) {
                   </div>
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* ══════ STEP 1 — INFO + ENTREGA ══════ */}
             {step === 1 && (
@@ -1022,15 +1336,30 @@ export function CheckoutSheet({ onClose }) {
 
                     {payOpen === "mp" && (
                       <div className="cs-pay-panel" style={{ padding: "0 16px 16px" }}>
-                        <div style={{ background: "#f0f8ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "14px 16px", marginTop: 8 }}>
-                          <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
-                            <span>💙</span> Pagá con Mercado Pago
+                        <div className="cs-mp-panel">
+                          <div className="cs-mp-panel-head">
+                            <div className="cs-mp-logo-wrap">
+                              <svg viewBox="0 0 80 22" width="82" height="22" aria-label="Mercado Pago" style={{ display:"block" }}>
+                                <rect width="80" height="22" rx="4" fill="#009ee3"/>
+                                <text x="40" y="15" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="900" fontFamily="Arial,sans-serif" letterSpacing="0.3">MERCADO PAGO</text>
+                              </svg>
+                            </div>
+                            <div className="cs-mp-head-txt">
+                              <div className="cs-mp-head-title">Pagá como quieras, 100% seguro</div>
+                              <div className="cs-mp-head-sub">Tarjeta · Débito · Transferencia · Efectivo · Cuotas</div>
+                            </div>
                           </div>
-                          <div style={{ fontSize: 13, color: "rgba(11,18,32,.7)", fontWeight: 600, lineHeight: 1.55 }}>
-                            Al hacer clic en "Pagar ahora" serás redirigido a Mercado Pago para completar el pago con el método que prefieras: tarjeta, débito, dinero en cuenta y más.
-                          </div>
-                          <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: "#1D9E75", display: "flex", alignItems: "center", gap: 5, borderTop: "1px solid #bfdbfe", paddingTop: 10 }}>
-                            🔒 Operación protegida con encriptación SSL
+                          <ul className="cs-mp-benefits">
+                            <li><span className="cs-mp-check">✓</span> Pagás con el método que prefieras (hasta 12 cuotas)</li>
+                            <li><span className="cs-mp-check">✓</span> Compra protegida: si no recibís el producto, te devolvemos tu dinero</li>
+                            <li><span className="cs-mp-check">✓</span> No guardamos tus datos bancarios — los procesa Mercado Pago</li>
+                          </ul>
+                          <div className="cs-mp-trust">
+                            <span className="cs-mp-trust-item">🔒 SSL 256 bits</span>
+                            <span className="cs-mp-trust-dot">·</span>
+                            <span className="cs-mp-trust-item">PCI-DSS</span>
+                            <span className="cs-mp-trust-dot">·</span>
+                            <span className="cs-mp-trust-item">Encriptado</span>
                           </div>
                         </div>
                       </div>
@@ -1088,6 +1417,69 @@ export function CheckoutSheet({ onClose }) {
                 <div style={{ textAlign: "center", marginTop: 8, marginBottom: 4 }}>
                   <button className="cs-back" onClick={() => setStep(1)}>← Volver</button>
                 </div>
+              </div>
+            )}
+
+            {/* ══════ STEP 3 — INTERSTITIAL MERCADO PAGO ══════ */}
+            {step === 3 && (
+              <div className="cs-mp-inter">
+                <div className="cs-mp-inter-check" aria-hidden="true">✓</div>
+                <h2 className="cs-mp-inter-title">¡Tu pedido está listo!</h2>
+                <p className="cs-mp-inter-sub">
+                  Te estamos llevando a <strong style={{ color: "#009ee3" }}>Mercado Pago</strong> para que completes el pago de forma segura.
+                </p>
+
+                <div className="cs-mp-inter-card">
+                  <div className="cs-mp-inter-brand">
+                    <svg viewBox="0 0 100 24" width="110" height="26" aria-label="Mercado Pago" style={{ display:"block" }}>
+                      <rect width="100" height="24" rx="5" fill="#009ee3"/>
+                      <text x="50" y="16" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="900" fontFamily="Arial,sans-serif" letterSpacing="0.4">MERCADO PAGO</text>
+                    </svg>
+                    <span className="cs-mp-inter-brand-txt">Checkout oficial</span>
+                  </div>
+                  <div className="cs-mp-inter-total-lbl">Total a pagar</div>
+                  <div className="cs-mp-inter-total">{money(totalPrice)}</div>
+                  {(form.nombre || form.apellido) && (
+                    <div className="cs-mp-inter-name">
+                      Pedido a nombre de {form.nombre} {form.apellido}
+                    </div>
+                  )}
+                </div>
+
+                <div className="cs-mp-inter-count">
+                  <span className="cs-mp-inter-spinner" aria-hidden="true" />
+                  <span>
+                    {mpCountdown > 0
+                      ? `Redirigiendo en ${mpCountdown}...`
+                      : "Abriendo Mercado Pago..."}
+                  </span>
+                </div>
+
+                <button
+                  className="cs-mp-inter-cta"
+                  onClick={() => {
+                    if (mpRedirectUrl) window.location.href = mpRedirectUrl;
+                  }}
+                >
+                  Ir a Mercado Pago ahora →
+                </button>
+
+                <div className="cs-mp-inter-trust">
+                  <span className="cs-mp-inter-trust-item">🔒 SSL 256 bits</span>
+                  <span className="cs-mp-inter-trust-item">🛡️ Compra protegida</span>
+                  <span className="cs-mp-inter-trust-item">✓ PCI-DSS</span>
+                </div>
+
+                <button
+                  className="cs-mp-inter-back"
+                  onClick={() => {
+                    setMpRedirectUrl(null);
+                    setMpCountdown(4);
+                    setStep(2);
+                  }}
+                >
+                  ← Volver a los métodos de pago
+                </button>
               </div>
             )}
 

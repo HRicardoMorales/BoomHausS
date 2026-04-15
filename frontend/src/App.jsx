@@ -25,6 +25,7 @@ import Returns from './pages/Returns.jsx';
 import SuccessPayment from './pages/SuccessPayment';
 import AdminHome from './pages/AdminHome.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
+import MundialLanding from './pages/MundialLanding.jsx';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -43,6 +44,8 @@ export default function App() {
 
   // ✅ Navbar visible en todas las páginas
   const hideChrome = false;
+  // ✅ Footer oculto solo en la landing B2B mundial
+  const hideFooter = location.pathname === '/lp/mundial-revendedores';
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -106,6 +109,8 @@ export default function App() {
           <Route path="/public" element={<Home />} />
 
           {/* ✅ Landing pages (ads -> directo acá) */}
+          {/* ✅ Landing B2B mundial revendedores (ANTES del catch-all de slugs) */}
+          <Route path="/lp/mundial-revendedores" element={<MundialLanding />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
 <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
@@ -128,7 +133,7 @@ export default function App() {
         </Routes>
       </div>
 
-      {!hideChrome && <Footer />}
+      {!hideChrome && !hideFooter && <Footer />}
     </div>
   );
 }

@@ -15,7 +15,7 @@ function sanitizeSlug(s) {
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [selectedId, setSelectedId] = useState('');
-  const [form, setForm] = useState({ _id: '', slug: '', name: '', description: '', price: '', compareAtPrice: '', imagesText: '' });
+  const [form, setForm] = useState({ _id: '', slug: '', name: '', description: '', price: '', compareAtPrice: '', imagesText: '', category: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -36,7 +36,7 @@ export default function AdminProducts() {
     setForm({
       _id: p?._id || '', slug: p?.slug || '', name: p?.name || '',
       description: p?.description || '', price: p?.price ?? '', compareAtPrice: p?.compareAtPrice ?? '',
-      imagesText: images.join('\n'),
+      imagesText: images.join('\n'), category: p?.category || '',
     });
   }
 
@@ -67,6 +67,7 @@ export default function AdminProducts() {
         description: String(form.description || '').trim(),
         price: Number(form.price) || 0, compareAtPrice: Number(form.compareAtPrice) || 0,
         images: String(form.imagesText || '').split('\n').map(s => s.trim()).filter(Boolean),
+        category: String(form.category || 'general').trim(),
       };
       if (!payload.slug) throw new Error('Falta slug');
       if (!payload.name) throw new Error('Falta nombre');
@@ -100,7 +101,8 @@ export default function AdminProducts() {
       String(form.price) !== String(selected.price ?? '') ||
       String(form.compareAtPrice) !== String(selected.compareAtPrice ?? '') ||
       form.description !== (selected.description || '') ||
-      form.imagesText !== (selected.images || []).join('\n');
+      form.imagesText !== (selected.images || []).join('\n') ||
+      (form.category || '') !== (selected.category || '');
   }, [form, selected]);
 
   const discount = useMemo(() => {
@@ -229,6 +231,21 @@ export default function AdminProducts() {
                   <span className="ap-label">Slug (URL)</span>
                   <input className="ap-inp" value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="mi-producto" />
                 </div>
+              </div>
+
+              <div>
+                <span className="ap-label">Categoría</span>
+                <select className="ap-inp" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                  <option value="">general</option>
+                  <option value="gorros">gorros</option>
+                  <option value="accesorios">accesorios</option>
+                  <option value="inflables">inflables</option>
+                  <option value="ruido">ruido</option>
+                  <option value="hogar">hogar</option>
+                  <option value="kits">kits</option>
+                  <option value="mundial">mundial</option>
+                  <option value="otro">otro</option>
+                </select>
               </div>
 
               <div>

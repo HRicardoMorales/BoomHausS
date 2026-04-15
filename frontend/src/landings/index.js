@@ -50,6 +50,13 @@ export const LANDING_META = [
     status: 'active',
     emoji: '💨',
   },
+  {
+    slug: 'mundial-revendedores',
+    name: 'Mundial Argentina — Revendedores (B2B)',
+    desc: 'Landing B2B mayorista con calculadora de ganancia. Página propia: MundialLanding.jsx (no usa la plantilla genérica).',
+    status: 'active',
+    emoji: '🇦🇷',
+  },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)
   // 2. Importar arriba y agregar a LANDING_CONFIGS

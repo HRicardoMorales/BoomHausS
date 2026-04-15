@@ -87,10 +87,21 @@ export default function Footer() {
       <style>{`
         /* Apple-minimal footer: aire + orden + nada de “efectos gamer” */
         .af{
-          margin-top: 2.2rem;
+          margin-top: 0;
+          padding-top: 2.2rem;
           background: #070A12;
-          border-top: 1px solid rgba(255,255,255,.08);
+          border-top: none;
           overflow: hidden;
+          position: relative;
+        }
+        /* Smooth gradient transition from page background to dark footer */
+        .af::before {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2.2rem;
+          background: linear-gradient(180deg, var(--bg2, #E8F3EF) 0%, #070A12 100%);
+          pointer-events: none;
         }
         .af__container{
           padding: 1.25rem 0 1.1rem;
