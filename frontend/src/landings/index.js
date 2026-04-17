@@ -4,6 +4,7 @@ import consolaRetro          from './consola-retro';
 import mochilaTransparente   from './mochila-transparente';
 import mochilaFashion        from './mochila-fashion';
 import nebulizadorMesh       from './nebulizador-mesh';
+import soporteNasalSN300     from './soporte-nasal-sn300';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -12,6 +13,7 @@ export const LANDING_CONFIGS = {
   'mochila-fashion':          mochilaFashion,
   'nebulizador-mesh':         nebulizadorMesh,
   'nebulizador':              nebulizadorMesh,
+  'soporte-nasal-sn300':      soporteNasalSN300,
 };
 
 export const LANDING_META = [
@@ -56,6 +58,13 @@ export const LANDING_META = [
     desc: 'Landing B2B mayorista con calculadora de ganancia. Página propia: MundialLanding.jsx (no usa la plantilla genérica).',
     status: 'active',
     emoji: '🇦🇷',
+  },
+  {
+    slug: 'soporte-nasal-sn300',
+    name: 'Soporte Nasal SN-300',
+    desc: 'Kit dual: tiras adhesivas externas + dilatadores internos de silicona. Reduce ronquidos y mejora el sueño. Slug: "soporte-nasal-sn300".',
+    status: 'active',
+    emoji: '👃',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

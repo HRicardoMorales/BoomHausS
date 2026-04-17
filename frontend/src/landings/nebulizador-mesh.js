@@ -157,10 +157,6 @@ const nebulizadorMeshConfig = {
   compareAtPriceFallback: 0,
 
   // ── Garantia visible (debajo del CTA) ────────────────────
-  guarantee: {
-    text: "No te convence? Devolvelo sin drama.",
-    subtext: "Compra protegida con Mercado Pago",
-  },
 
   // ── WhatsApp flotante ────────────────────────────────────
   whatsapp: {

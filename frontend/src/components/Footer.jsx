@@ -8,6 +8,12 @@ function buildWhatsAppLink({ phone, text }) {
   return `https://wa.me/${digits}?text=${encoded}`;
 }
 
+const WA_ICON = (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true" style={{ flexShrink: 0 }}>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+);
+
 export default function Footer() {
   const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "";
@@ -22,303 +28,269 @@ export default function Footer() {
   }, [whatsappNumber, storeName]);
 
   return (
-    <footer className="af">
-      <div className="container af__container">
-        <div className="af__card">
-          {/* Brand row */}
-          <div className="af__row af__row--top">
-            <div className="af__brand">
-              <div className="af__logo" aria-hidden="true" />
-              <div className="af__brandText">
-                <div className="af__name">{storeName}</div>
-                <div className="af__sub">
-                  Pagá con <span className="af__mp">Mercado Pago</span> (débito, crédito o dinero en cuenta)
-                </div>
-              </div>
-            </div>
+    <footer className="ft">
+      <div className="ft__inner">
 
-            <div className="af__cta">
+        {/* ── Brand + tagline ── */}
+        <div className="ft__head">
+          <div className="ft__brand">
+            <span className="ft__brand-dot" aria-hidden="true" />
+            <span className="ft__brand-name">{storeName}</span>
+          </div>
+          <p className="ft__tagline">
+            Pagá con <strong>Mercado Pago</strong> — débito, crédito o dinero en cuenta
+          </p>
+        </div>
+
+        {/* ── Main grid: links + contact ── */}
+        <div className="ft__grid">
+
+          {/* Policies column */}
+          <div className="ft__col">
+            <div className="ft__col-label">Políticas</div>
+            <nav className="ft__nav" aria-label="Políticas del sitio">
+              <Link className="ft__link" to="/privacy">Políticas de Privacidad</Link>
+              <Link className="ft__link" to="/shipping">Políticas de Envío</Link>
+              <Link className="ft__link" to="/returns">Políticas de Devolución</Link>
+              <Link className="ft__link" to="/terms">Términos y Servicios</Link>
+              <Link className="ft__link" to="/contact">Contacto</Link>
+            </nav>
+          </div>
+
+          {/* Contact column */}
+          <div className="ft__col">
+            <div className="ft__col-label">Contacto</div>
+            <div className="ft__contact-list">
               {waLink ? (
-                <a className="af__btn" href={waLink} target="_blank" rel="noreferrer">
-                  WhatsApp
+                <a className="ft__wa-btn" href={waLink} target="_blank" rel="noreferrer">
+                  {WA_ICON}
+                  Escribinos por WhatsApp
                 </a>
               ) : (
-                <span className="af__hint">Configurar WhatsApp</span>
+                <span className="ft__link ft__link--muted">WhatsApp no configurado</span>
               )}
-              {supportEmail ? (
-                <a className="af__mail" href={`mailto:${supportEmail}`}>
-                  {supportEmail}
-                </a>
-              ) : null}
+              {supportEmail && (
+                <a className="ft__link" href={`mailto:${supportEmail}`}>{supportEmail}</a>
+              )}
             </div>
           </div>
 
-          {/* Links row */}
-          <div className="af__row af__row--links">
-            <nav className="af__nav" aria-label="Footer">
-              <Link className="af__link" to="/products">Producto</Link>
-              <Link className="af__link" to="/my-orders">Mis pedidos</Link>
-              <Link className="af__link af__hideMobile" to="/returns">Cambios</Link>
-              <Link className="af__link af__hideMobile" to="/privacy">Privacidad</Link>
-              <Link className="af__link af__hideMobile" to="/terms">Términos</Link>
-            </nav>
-
-            <div className="af__badges">
-              <span className="af__badge">🔒 Datos protegidos</span>
-              <span className="af__badge af__hideMobile">⚡ Checkout simple</span>
-              <span className="af__badge af__hideMobile">🚚 Envíos a todo el país</span>
+          {/* Payment column */}
+          <div className="ft__col">
+            <div className="ft__col-label">Medios de pago</div>
+            <div className="ft__pay-badges">
+              <span className="ft__pay-badge ft__pay-badge--mp">Mercado Pago</span>
+            </div>
+            <div className="ft__pay-methods">
+              <span className="ft__pay-chip">Débito</span>
+              <span className="ft__pay-chip">Crédito</span>
+              <span className="ft__pay-chip">Cuenta MP</span>
             </div>
           </div>
 
-          {/* Bottom row */}
-          <div className="af__row af__row--bottom">
-            <div className="af__copy">
-              © {new Date().getFullYear()} {storeName}
-            </div>
-            <div className="af__meta">
-              <span>Pagos: Mercado Pago</span>
-              <span className="af__dot">•</span>
-              <span className="af__hideXs">Débito · Crédito · Dinero en cuenta</span>
-            </div>
+        </div>
+
+        {/* ── Divider ── */}
+        <div className="ft__divider" />
+
+        {/* ── Bottom bar ── */}
+        <div className="ft__bottom">
+          <span className="ft__copy">© {new Date().getFullYear()} {storeName}. Todos los derechos reservados.</span>
+          <div className="ft__trust">
+            <span className="ft__trust-badge">🔒 Compra 100% segura</span>
+            <span className="ft__trust-badge">🚚 Envíos a todo el país</span>
+            <span className="ft__trust-badge">📦 Seguimiento en tiempo real</span>
           </div>
         </div>
+
       </div>
 
       <style>{`
-        /* Apple-minimal footer: aire + orden + nada de “efectos gamer” */
-        .af{
+        /* ── Footer shell ── */
+        .ft{
+          background: #0b172a;
           margin-top: 0;
-          padding-top: 2.2rem;
-          background: #070A12;
-          border-top: none;
-          overflow: hidden;
-          position: relative;
         }
-        /* Smooth gradient transition from page background to dark footer */
-        .af::before {
-          content: "";
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 2.2rem;
-          background: linear-gradient(180deg, var(--bg2, #E8F3EF) 0%, #070A12 100%);
-          pointer-events: none;
-        }
-        .af__container{
-          padding: 1.25rem 0 1.1rem;
-        }
-        .af__card{
-          border-radius: 20px;
-          background: rgba(255,255,255,.04);
-          border: 1px solid rgba(255,255,255,.10);
-          box-shadow: 0 24px 70px rgba(0,0,0,.45);
-          padding: 18px 18px 14px;
+        .ft__inner{
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 44px 24px 28px;
         }
 
-        .af__row{
-          display:flex;
-          align-items:center;
+        /* ── Head ── */
+        .ft__head{
+          margin-bottom: 32px;
+        }
+        .ft__brand{
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 8px;
+        }
+        .ft__brand-dot{
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          background: #2F855A;
+          box-shadow: 0 0 0 4px rgba(47,133,90,.20);
+          flex-shrink: 0;
+        }
+        .ft__brand-name{
+          font-weight: 800;
+          font-size: 1.1rem;
+          color: rgba(255,255,255,.92);
+          letter-spacing: -.025em;
+        }
+        .ft__tagline{
+          margin: 0;
+          font-size: .82rem;
+          color: rgba(226,232,240,.42);
+          line-height: 1.5;
+        }
+        .ft__tagline strong{
+          color: rgba(226,232,240,.65);
+          font-weight: 600;
+        }
+
+        /* ── Grid ── */
+        .ft__grid{
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 32px 24px;
+          margin-bottom: 32px;
+        }
+        @media (max-width: 680px){
+          .ft__grid{ grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 420px){
+          .ft__grid{ grid-template-columns: 1fr; gap: 24px; }
+        }
+
+        /* ── Columns ── */
+        .ft__col{
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .ft__col-label{
+          font-size: .7rem;
+          font-weight: 700;
+          color: rgba(255,255,255,.35);
+          text-transform: uppercase;
+          letter-spacing: .1em;
+          margin-bottom: 2px;
+        }
+
+        /* ── Nav links ── */
+        .ft__nav{
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+        }
+        .ft__link{
+          text-decoration: none;
+          font-size: .86rem;
+          color: rgba(226,232,240,.68);
+          line-height: 1.45;
+          transition: color .15s ease;
+        }
+        .ft__link:hover{ color: rgba(255,255,255,.95); }
+        .ft__link--muted{ color: rgba(226,232,240,.35); cursor: default; }
+
+        /* ── Contact ── */
+        .ft__contact-list{
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .ft__wa-btn{
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          text-decoration: none;
+          font-size: .84rem;
+          font-weight: 700;
+          color: #fff;
+          background: #25d366;
+          padding: 9px 14px;
+          border-radius: 8px;
+          transition: filter .15s ease, transform .15s ease;
+          align-self: flex-start;
+        }
+        .ft__wa-btn:hover{
+          filter: brightness(.9);
+          transform: translateY(-1px);
+        }
+
+        /* ── Payments ── */
+        .ft__pay-badges{
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .ft__pay-badge{
+          font-size: .78rem;
+          font-weight: 700;
+          padding: 5px 11px;
+          border-radius: 6px;
+          border: 1px solid rgba(255,255,255,.10);
+        }
+        .ft__pay-badge--mp{
+          color: rgba(255,255,255,.82);
+          background: rgba(255,255,255,.06);
+          border-color: rgba(255,255,255,.12);
+        }
+        .ft__pay-methods{
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+          margin-top: 2px;
+        }
+        .ft__pay-chip{
+          font-size: .72rem;
+          color: rgba(226,232,240,.40);
+          padding: 3px 8px;
+          border-radius: 4px;
+          border: 1px solid rgba(255,255,255,.06);
+          background: rgba(255,255,255,.03);
+        }
+
+        /* ── Divider ── */
+        .ft__divider{
+          height: 1px;
+          background: rgba(255,255,255,.07);
+          margin-bottom: 20px;
+        }
+
+        /* ── Bottom bar ── */
+        .ft__bottom{
+          display: flex;
+          align-items: center;
           justify-content: space-between;
           gap: 14px;
+          flex-wrap: wrap;
         }
-        .af__row--links{
-          margin-top: 14px;
-          padding-top: 14px;
-          border-top: 1px solid rgba(255,255,255,.10);
+        .ft__copy{
+          font-size: .74rem;
+          color: rgba(226,232,240,.32);
         }
-        .af__row--bottom{
-          margin-top: 12px;
-          padding-top: 12px;
-          border-top: 1px solid rgba(255,255,255,.10);
-        }
-
-        /* Brand */
-        .af__brand{
-          display:flex;
-          align-items:center;
+        .ft__trust{
+          display: flex;
           gap: 12px;
-          min-width: 0;
-        }
-        .af__logo{
-          width: 14px;
-          height: 14px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.88);
-          box-shadow: 0 0 0 6px rgba(255,255,255,.06);
-          flex-shrink:0;
-        }
-        .af__brandText{ min-width: 0; }
-        .af__name{
-          font-weight: 1200;
-          letter-spacing: -0.04em;
-          color: rgba(255,255,255,.92);
-          line-height: 1.1;
-        }
-        .af__sub{
-          margin-top: 5px;
-          font-weight: 850;
-          font-size: .92rem;
-          color: rgba(226,232,240,.70);
-          line-height: 1.25;
-          max-width: 560px;
-        }
-        .af__mp{
-          padding: 2px 8px;
-          border-radius: 999px;
-          border: 1px solid rgba(0,158,227,.22);
-          background: rgba(0,158,227,.10);
-          color: rgba(255,255,255,.88);
-          font-weight: 1000;
-          white-space: nowrap;
-        }
-
-        /* CTA */
-        .af__cta{
-          display:flex;
-          align-items:center;
-          justify-content:flex-end;
-          gap: 10px;
-          flex-shrink:0;
           flex-wrap: wrap;
+          justify-content: flex-end;
         }
-        .af__btn{
-          text-decoration:none;
-          font-weight: 1100;
-          font-size: .92rem;
-          color: rgba(255,255,255,.92);
-          padding: 10px 12px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.14);
-          background: rgba(255,255,255,.06);
-          transition: transform .15s ease, background .15s ease, border-color .15s ease;
-          white-space: nowrap;
-        }
-        .af__btn:hover{
-          transform: translateY(-1px);
-          background: rgba(255,255,255,.09);
-          border-color: rgba(255,255,255,.18);
-        }
-        .af__mail{
-          text-decoration:none;
-          font-weight: 900;
-          font-size: .88rem;
-          color: rgba(226,232,240,.72);
-          padding: 10px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.10);
-          background: rgba(255,255,255,.03);
-          white-space: nowrap;
-        }
-        .af__mail:hover{ color: rgba(255,255,255,.90); }
-        .af__hint{
-          font-weight: 900;
-          font-size: .88rem;
-          color: rgba(226,232,240,.70);
-          padding: 10px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.10);
-          background: rgba(255,255,255,.03);
+        .ft__trust-badge{
+          font-size: .72rem;
+          color: rgba(226,232,240,.32);
           white-space: nowrap;
         }
 
-        /* Nav + badges */
-        .af__nav{
-          display:flex;
-          gap: 10px;
-          flex-wrap: wrap;
-          align-items:center;
-        }
-        .af__link{
-          text-decoration:none;
-          font-weight: 1000;
-          font-size: .9rem;
-          color: rgba(226,232,240,.80);
-          padding: 8px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.10);
-          background: rgba(255,255,255,.03);
-        }
-        .af__link:hover{ color: rgba(255,255,255,.92); }
-
-        .af__badges{
-          display:flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          justify-content:flex-end;
-          align-items:center;
-        }
-        .af__badge{
-          font-size: .84rem;
-          font-weight: 950;
-          color: rgba(226,232,240,.72);
-          padding: 7px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.10);
-          background: rgba(255,255,255,.03);
-          white-space: nowrap;
-        }
-
-        /* Bottom */
-        .af__copy{
-          font-weight: 950;
-          color: rgba(226,232,240,.70);
-          font-size: .9rem;
-        }
-        .af__meta{
-          font-weight: 850;
-          color: rgba(226,232,240,.62);
-          font-size: .86rem;
-          display:flex;
-          gap: 8px;
-          align-items:center;
-          flex-wrap: wrap;
-          justify-content:flex-end;
-        }
-        .af__dot{ color: rgba(226,232,240,.28); }
-
-        /* Mobile spacing: nada apretado */
-        @media (max-width: 980px){
-          .af__row{
-            flex-direction: column;
-            align-items: stretch;
-          }
-          .af__cta{
-            justify-content:flex-start;
-          }
-          .af__badges{
-            justify-content:flex-start;
-          }
-          .af__sub{ max-width: none; }
-        }
-
-        @media (max-width: 520px){
-          .af__card{ padding: 16px 14px 12px; border-radius: 18px; }
-          .af__sub{
-            font-size: .92rem;
-            margin-top: 6px;
-          }
-          .af__cta{
-            gap: 10px;
-          }
-          .af__btn, .af__mail, .af__hint{
-            width: 100%;
-            text-align: center;
-            padding: 12px 14px; /* más aire */
-          }
-          .af__nav{
-            gap: 10px;
-          }
-          .af__link{
-            flex: 1;
-            text-align:center;
-            padding: 10px 10px;
-          }
-        }
-
-        @media (max-width: 390px){
-          .af__hideXs{ display:none !important; }
-        }
         @media (max-width: 560px){
-          .af__hideMobile{ display:none !important; }
+          .ft__inner{ padding: 36px 18px 24px; }
+          .ft__bottom{ flex-direction: column; align-items: flex-start; gap: 10px; }
+          .ft__trust{ justify-content: flex-start; }
+          .ft__trust-badge:not(:first-child){ display: none; }
         }
       `}</style>
     </footer>

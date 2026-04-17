@@ -244,8 +244,90 @@ function HowToSteps({ mc = MARKETING_CONTENT }) {
   );
 }
 
+function BeforeAfterSlider({ mc = MARKETING_CONTENT }) {
+  const ba = mc.beforeAfter;
+  const containerRef = useRef(null);
+  const [pos, setPos] = useState(50);
+
+  if (!ba) return null;
+
+  const handleInput = (e) => {
+    const v = e.target.value;
+    setPos(v);
+    if (containerRef.current) {
+      containerRef.current.style.setProperty("--position", `${v}%`);
+    }
+  };
+
+  return (
+    <section className="pd-block" id="authority">
+      <SectionHeader
+        title={ba.title || "ANTES Y DESPUÉS"}
+        subtitle={ba.subtitle || ""}
+      />
+      <div className="ba-wrap">
+        <div
+          className="ba-container"
+          ref={containerRef}
+          style={{ "--position": "50%" }}
+        >
+          <div className="ba-img-wrap">
+            {/* AFTER (base, full width) */}
+            <img
+              className="ba-img-after"
+              src={ba.afterImg}
+              alt={ba.afterLabel || "Después"}
+              loading="lazy"
+            />
+            {/* BEFORE (clipped to --position width) */}
+            <img
+              className="ba-img-before"
+              src={ba.beforeImg}
+              alt={ba.beforeLabel || "Antes"}
+              loading="lazy"
+            />
+            {/* Badges */}
+            <span className="ba-badge ba-badge-before">{ba.beforeLabel || "Antes"}</span>
+            <span className="ba-badge ba-badge-after">{ba.afterLabel || "Después"}</span>
+          </div>
+
+          {/* Invisible range input for drag */}
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={pos}
+            onChange={handleInput}
+            aria-label="Porcentaje de imagen Antes mostrada"
+            className="ba-range"
+          />
+
+          {/* Visual divider line */}
+          <div className="ba-line" aria-hidden="true" />
+
+          {/* Handle button */}
+          <div className="ba-handle" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+              <line x1="128" y1="40" x2="128" y2="216" stroke="currentColor" strokeLinecap="round" strokeWidth="20" />
+              <line x1="96"  y1="128" x2="16"  y2="128" stroke="currentColor" strokeLinecap="round" strokeWidth="20" />
+              <polyline points="48 160 16 128 48 96"   fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="20" />
+              <line x1="160" y1="128" x2="240" y2="128" stroke="currentColor" strokeLinecap="round" strokeWidth="20" />
+              <polyline points="208 96 240 128 208 160" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="20" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AuthorityCard({ mc = MARKETING_CONTENT }) {
+  const ba = mc.beforeAfter;
   const auth = mc.authority || {};
+
+  // Si hay config de before/after, mostrar el slider en lugar de la tarjeta
+  if (ba) return <BeforeAfterSlider mc={mc} />;
+
   if (!auth.show || !auth.quote) return null;
 
   const { photo, name, role, quote, disclaimer } = auth;
@@ -299,32 +381,119 @@ function AuthorityCard({ mc = MARKETING_CONTENT }) {
   );
 }
 
+/* =========================
+   Mini acordeones del bloque de compra (estilo Calmora)
+========================= */
+function HeroAccordions({ items = [] }) {
+  const [openIdx, setOpenIdx] = useState(null);
+  if (!items.length) return null;
+  return (
+    <div className="hacc-wrap">
+      {items.map((item, i) => {
+        const isOpen = openIdx === i;
+        return (
+          <div key={i} className={`hacc-item${isOpen ? " hacc-item--open" : ""}`}>
+            <button
+              type="button"
+              className="hacc-q"
+              onClick={() => setOpenIdx(isOpen ? null : i)}
+              aria-expanded={isOpen}
+            >
+              <span className="hacc-ico">{item.icon}</span>
+              <span className="hacc-title">{item.title}</span>
+              <span className="hacc-arrow" aria-hidden="true" />
+            </button>
+            <div className="hacc-body">
+              <div
+                className="hacc-content"
+                dangerouslySetInnerHTML={{ __html: item.html }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function FaqSectionPro({ mc = MARKETING_CONTENT }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { faq, faqTitle } = mc;
 
   return (
-    <section className="pd-block" id="faq-section">
-      <SectionHeader title={faqTitle} />
-      <div className="faq-pro anim-el">
+    <section className="faq-acc-wrap" id="faq-section">
+      {faqTitle && <h2 className="faq-acc-title">{faqTitle}</h2>}
+      <div className="faq-acc anim-el">
         {faq.map((item, i) => {
           const isOpen = openIndex === i;
           return (
-            <div key={i} className={`faq-pro-item ${isOpen ? "open" : ""}`}>
-              <button
-                type="button"
-                className="faq-pro-q"
+            <div key={i} className={`faq-acc-item${isOpen ? " active" : ""}`}>
+              <div
+                className="faq-acc-header"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
                 onClick={() => setOpenIndex(isOpen ? null : i)}
+                onKeyDown={e => (e.key === "Enter" || e.key === " ") && setOpenIndex(isOpen ? null : i)}
               >
                 <span>{item.q}</span>
-                <span className="faq-pro-ico" aria-hidden="true" />
-              </button>
-              <div className="faq-pro-a">
+                <span className="faq-acc-indicator" aria-hidden="true">{isOpen ? "−" : "+"}</span>
+              </div>
+              <div className="faq-acc-content">
                 <p>{item.a}</p>
               </div>
             </div>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+/* =========================
+   Video strip — tres videos verticales estilo Calmora
+========================= */
+function VideoStripSection({ mc = MARKETING_CONTENT }) {
+  const videos = mc.proofVideos;
+  if (!videos?.length) return null;
+  return (
+    <section className="vstrip-section anim-el">
+      {/* Header: kicker + title + subtitle ARRIBA de los videos */}
+      <div className="vstrip-header">
+        <div className="vstrip-kicker">✦ CLIENTES SATISFECHOS</div>
+        {mc.proofVideosTitle && (
+          <h2 className="vstrip-title">{mc.proofVideosTitle}</h2>
+        )}
+        {mc.proofVideosSubtitle && (
+          <div className="vstrip-sub">{mc.proofVideosSubtitle}</div>
+        )}
+      </div>
+
+      {/* Tres videos en columnas — los tres caben en mobile simultáneamente */}
+      <div className="vstrip-row">
+        {videos.map((v, i) => (
+          <div key={i} className="vstrip-item">
+            <div className="vstrip-media">
+              {v.videoUrl ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="vstrip-video"
+                  aria-label={v.label}
+                >
+                  <source src={v.videoUrl} type="video/mp4" />
+                </video>
+              ) : (
+                <div className="vstrip-ph" aria-hidden="true">
+                  <span className="vstrip-ph-ico">▶</span>
+                </div>
+              )}
+            </div>
+            <div className="vstrip-label">{v.label}</div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -336,21 +505,50 @@ function StoryBlocks({ mc = MARKETING_CONTENT }) {
     <section className="pd-flow">
       {blocks.map((b, i) => (
         <div key={i} className="flow-row anim-el">
-          <div className="flow-text">
+          <div className={`flow-text${b.textHtml ? " flow-text--rich" : ""}`}>
             {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
-            <p className="flow-p">{b.text}</p>
+            {b.textHtml ? (
+              <p
+                className="flow-p flow-p--rich"
+                dangerouslySetInnerHTML={{ __html: b.textHtml }}
+              />
+            ) : (
+              <p className="flow-p">{b.text}</p>
+            )}
           </div>
 
           <div className="flow-media">
             <div className="flow-imgBox hover-float">
-              <img
-                src={b.img}
-                alt={b.title}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
+              {b.videoUrl ? (
+                // Video autoplay silencioso en loop (estilo Calmora)
+                <video
+                  src={b.videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  aria-label={b.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              ) : b.gifUrl ? (
+                // GIF animado (alternativa al video)
+                <img
+                  src={b.gifUrl}
+                  alt={b.title}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              ) : (
+                // Fallback imagen estática
+                <img
+                  src={b.img}
+                  alt={b.title}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -729,6 +927,237 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
   );
 }
 
+/* =========================
+   Stats Circles — gráficos circulares animados
+========================= */
+function StatsCircles({ mc = MARKETING_CONTENT }) {
+  const items = mc.statsCircles;
+  if (!items?.length) return null;
+
+  const circleRefs = useRef([]);
+  const animatedRef = useRef(items.map(() => false));
+  const [values, setValues] = useState(() => items.map(() => 0));
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const idx = Number(entry.target.dataset.idx);
+          if (animatedRef.current[idx]) return;
+          animatedRef.current[idx] = true;
+          const target = items[idx].target;
+          let current = 0;
+          const step = () => {
+            if (current <= target) {
+              setValues(prev => {
+                const next = [...prev];
+                next[idx] = current;
+                return next;
+              });
+              current++;
+              requestAnimationFrame(step);
+            }
+          };
+          step();
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.1 }
+    );
+    circleRefs.current.forEach(el => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <section className="sc-section anim-el">
+      {mc.statsTitle && (
+        <h2 className="sc-title">{mc.statsTitle}</h2>
+      )}
+      <div className="sc-list">
+        {items.map((item, i) => (
+          <div
+            key={i}
+            className="sc-row"
+            ref={el => circleRefs.current[i] = el}
+            data-idx={i}
+          >
+            <div className="sc-circle" style={{ "--sc-pct": `${values[i]}%` }}>
+              <span className="sc-pct">{values[i]}%</span>
+            </div>
+            <p
+              className="sc-text"
+              dangerouslySetInnerHTML={{ __html: item.text }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="sc-footer">
+        <p className="sc-footer-note">{mc.statsFooterNote || "*Basado en compras verificadas"}</p>
+        <div className="sc-footer-stats">
+          {mc.soldCount && (
+            <div className="sc-stat">
+              <span className="sc-stat-val">+{mc.soldCount.toLocaleString("es-AR")}</span>
+              <span className="sc-stat-lbl">CLIENTES</span>
+            </div>
+          )}
+          {mc.reviewScore && (
+            <div className="sc-stat">
+              <span className="sc-stat-val">{mc.reviewScore * 20}%</span>
+              <span className="sc-stat-lbl">SATISFACCIÓN</span>
+            </div>
+          )}
+          {mc.reviewCount && (
+            <div className="sc-stat">
+              <span className="sc-stat-val">+{mc.reviewCount}</span>
+              <span className="sc-stat-lbl">RESEÑAS</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =========================
+   Social Comments — estilo Facebook con paginación
+========================= */
+function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
+  const data = mc.facebookComments;
+  if (!data?.pages?.length) return null;
+
+  const [page, setPage] = useState(0);
+  const total = data.pages.length;
+  const sectionRef = useRef(null);
+
+  function goTo(n) {
+    setPage(n);
+    if (sectionRef.current) {
+      setTimeout(() => sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    }
+  }
+
+  const items = data.pages[page] || [];
+
+  return (
+    <section className="fbsc-wrap anim-el" ref={sectionRef}>
+      <div className="fbsc-card">
+        <h3 className="fbsc-title">{data.title || "Comentarios recientes"}</h3>
+
+        <div className="fbsc-write">
+          <svg className="fbsc-fb-icon" viewBox="0 0 24 24" fill="#1877f2" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.885v2.27h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+          </svg>
+          <div className="fbsc-input">Escribe un comentario...</div>
+        </div>
+
+        <div className="fbsc-list">
+          {items.map((item, i) => {
+            if (item.type === "thread") {
+              return (
+                <div key={i} className="fbsc-thread">
+                  {item.comments.map((c, j) =>
+                    c.reply ? (
+                      <div key={j} className="fbsc-reply">
+                        <div className="fbsc-comment">
+                          <img className="fbsc-avatar fbsc-avatar--sm" src={c.avatar} alt={c.name} loading="lazy" />
+                          <div className="fbsc-bubble">
+                            <div className="fbsc-name">{c.name}</div>
+                            <div className="fbsc-text">{c.text}</div>
+                            <div className="fbsc-meta">Me gusta · Responder · {c.meta} <span className="fbsc-likes">👍 {c.likes}</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div key={j} className="fbsc-comment">
+                        <img className="fbsc-avatar" src={c.avatar} alt={c.name} loading="lazy" />
+                        <div className="fbsc-bubble">
+                          <div className="fbsc-name">{c.name}</div>
+                          <div className="fbsc-text">{c.text}</div>
+                          <div className="fbsc-meta">Me gusta · Responder · {c.meta} <span className="fbsc-likes">👍 {c.likes}</span></div>
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              );
+            }
+            return (
+              <div key={i} className="fbsc-comment">
+                <img className="fbsc-avatar" src={item.avatar} alt={item.name} loading="lazy" />
+                <div className="fbsc-bubble">
+                  <div className="fbsc-name">{item.name}</div>
+                  <div className="fbsc-text">{item.text}</div>
+                  <div className="fbsc-meta">Me gusta · Responder · {item.meta} <span className="fbsc-likes">👍 {item.likes}</span></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={`fbsc-pagination${page > 0 ? " fbsc-pagination--dual" : ""}`}>
+          {page > 0 && (
+            <button type="button" className="fbsc-btn fbsc-btn--ghost" onClick={() => goTo(page - 1)}>Volver</button>
+          )}
+          {page < total - 1 && (
+            <button type="button" className="fbsc-btn" onClick={() => goTo(page + 1)}>Ver más comentarios</button>
+          )}
+          {page === total - 1 && total > 1 && (
+            <button type="button" className="fbsc-btn fbsc-btn--ghost" onClick={() => goTo(0)}>Ver desde el principio</button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =========================
+   Guarantee Section — 30 días sin riesgo
+========================= */
+function GuaranteeSection() {
+  const handleCTA = () => {
+    const hero = document.querySelector(".pd-grid");
+    if (hero) {
+      hero.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  return (
+    <section className="pd-block grt-section anim-el" id="guarantee">
+      {/* Sello visual */}
+      <div className="grt-seal-wrap">
+        <div className="grt-seal">
+          <svg className="grt-shield" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M32 4L8 14v18c0 13.3 10.3 25.7 24 29 13.7-3.3 24-15.7 24-29V14L32 4z" fill="#1B4D3E"/>
+            <path d="M32 4L8 14v18c0 13.3 10.3 25.7 24 29 13.7-3.3 24-15.7 24-29V14L32 4z" stroke="rgba(255,255,255,.18)" strokeWidth="1.5"/>
+            <polyline points="22,32 29,39 42,26" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="grt-ring" aria-hidden="true" />
+        </div>
+        <div className="grt-kicker">GARANTÍA TOTAL</div>
+      </div>
+
+      <h2 className="grt-title">30 DÍAS SIN RIESGO</h2>
+      <p className="grt-sub">
+        Si no te convence, te devolvemos el dinero.<br />
+        Sin preguntas. Sin trámites. Sin burocracia.
+      </p>
+
+      <div className="grt-pills">
+        <span className="grt-pill">🔒 Pago protegido con Mercado Pago</span>
+        <span className="grt-pill">↩ Devolución en 30 días</span>
+        <span className="grt-pill">✅ Sin requisitos ni cuestionarios</span>
+      </div>
+
+      <button type="button" className="grt-cta" onClick={handleCTA}>
+        QUIERO PROBARLO →
+      </button>
+    </section>
+  );
+}
+
 // WaveSeparator — implementación fiel al Wave 3 Animated Divider.
 // "from" controla los colores: sección de arriba y sección de abajo.
 // Wave divider — estilo Shopify "gentle wave" con 4 capas parallax
@@ -792,6 +1221,11 @@ export default function ProductDetail() {
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const [bundle, setBundle] = useState(1);
+  const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
+    if (!MC.bundles) return 1;
+    const pop = MC.bundles.findIndex(b => b.popular);
+    return pop >= 0 ? pop : 1;
+  });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isShippingExpanded, setIsShippingExpanded] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -870,14 +1304,23 @@ export default function ProductDetail() {
   const pack2Discount = 10;
   const unitPrice = price;
 
+  // Cuando la landing tiene bundles configurados, selectedBundleIdx conduce todo
+  const activeBundleData = MC.bundles ? MC.bundles[selectedBundleIdx] : null;
+
   const promoOn = bundle === 2;
-  const totalQty = promoOn ? Math.max(2, qty) : 1;
+  const totalQty = activeBundleData
+    ? activeBundleData.qty
+    : (promoOn ? Math.max(2, qty) : 1);
 
-  const displayTotal = promoOn
-    ? Math.round(totalQty * unitPrice * (1 - pack2Discount / 100))
-    : Math.round(totalQty * unitPrice);
+  const displayTotal = activeBundleData
+    ? activeBundleData.price
+    : (promoOn
+        ? Math.round(Math.max(2, qty) * unitPrice * (1 - pack2Discount / 100))
+        : Math.round(unitPrice));
 
-  const oldTotal = Math.round(compareAt * totalQty);
+  const oldTotal = activeBundleData
+    ? activeBundleData.compareAt
+    : Math.round(compareAt * totalQty);
 
   const contentId = useMemo(
     () =>
@@ -1177,75 +1620,200 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Bullets: compactas, tipo check */}
-              <ul className="hero-bullets-compact">
-                {(MC.trustBullets || []).slice(0, 5).map((t, i) => (
-                  <li key={i}>{t}</li>
-                ))}
-              </ul>
-
-              {/* Tablets: Envío / Cuotas / Garantía */}
-              <div className="hero-tablets">
-                <div className="hero-tablet">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 5h9v2l3.7.8a3 3 0 012.1 1.7l1.8 4c.2.4.3.8.3 1.3V18h-3"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><line x1="15" y1="7" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
-                  <span>Envío<br/>Gratis</span>
+              {/* Bullets: emoji limpio cuando hay bundles, checkmarks si no */}
+              {MC.bundles ? (
+                <div className="emoji-bullets">
+                  {(MC.trustBullets || []).slice(0, 5).map((t, i) => (
+                    <div key={i} className="emoji-bullet">{t}</div>
+                  ))}
                 </div>
-                <div className="hero-tablet">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                  <span>Cuotas<br/>sin interés</span>
-                </div>
-                <div className="hero-tablet">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span>Garantía<br/>30 días</span>
-                </div>
-              </div>
+              ) : (
+                <ul className="hero-bullets-compact">
+                  {(MC.trustBullets || []).slice(0, 5).map((t, i) => (
+                    <li key={i}>{t}</li>
+                  ))}
+                </ul>
+              )}
 
-              {/* Precio: antes tachado + ahora grande + descuento */}
-              <div className="hero-priceRow">
-                <span className="hero-was">{moneyARS(compareAt)}</span>
-                <span className="hero-now">{moneyARS(unitPrice)}</span>
-                <span className="hero-off">Descuento {discountPct}%</span>
-              </div>
-
-              {/* CTA grande 2 líneas */}
-              <button
-                className="hero-ctaBig"
-                type="button"
-                onClick={handleBuyNow}
-              >
-                {MC.ctaLine1 || "Pagar Contra Reembolso"}
-                <span>{MC.ctaLine2 || "Envío GRATIS en 24/48Hs"}</span>
-              </button>
-
-              {/* Pago seguro + iconos de tarjetas */}
-              <div className="hero-payments">
-                <p className="hero-payments-title">Pago Seguro En Línea</p>
-                <div className="hero-payments-icons">
-                  {/* Visa */}
-                  <div className="hero-pay-icon">
-                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg>
+              {/* Trust badges estilo Calmora — antes del bundle picker */}
+              {MC.bundles && (
+                <div className="bnd2-tablets">
+                  <div className="bnd2-tablet">
+                    <span className="bnd2-tablet-ico">🚚</span>
+                    <span className="bnd2-tablet-line1">Envío Gratis</span>
+                    <span className="bnd2-tablet-line2">a todo el país</span>
                   </div>
-                  {/* Mastercard */}
-                  <div className="hero-pay-icon">
-                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg>
+                  <div className="bnd2-tablet">
+                    <span className="bnd2-tablet-ico">💳</span>
+                    <span className="bnd2-tablet-line1">Cuotas</span>
+                    <span className="bnd2-tablet-line2">sin interés</span>
                   </div>
-                  {/* Amex */}
-                  <div className="hero-pay-icon">
-                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#2557D6"/><path d="M6 16l3-7h3.5l1.5 3.5V9h4.3l1 3 1-3h4.2v14h-3.5l-1.5-3.3V23H15l-.7-1.8h-2.1L11.5 23H8l3-7zm5 4h1.5l-2.2-5.2L10.2 20H11zm6-7v7h2v-3l2 3h2.5l-2.5-3.5L23.5 13H21l-2 2.5V13h-2zm11-4l-3.5 7.5V23h2.5v-3l3.5-7h-2.5zm4.5 0v14h7.5l2-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2-2.5L39 9h-6.5zm2.5 3h3l-1.2 1.5L37 12h-2zm0 4h3l-1.2 1.5L37 16h-2zm0 4h3l-1.2 1.5L37 20h-2z" fill="#fff"/></svg>
-                  </div>
-                  {/* PayPal */}
-                  <div className="hero-pay-icon">
-                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 8h5.8c2.7 0 4.6 1.8 4.2 4.5-.5 3.3-2.8 5-5.8 5h-1.5c-.4 0-.8.3-.9.8l-.8 4.7h-3c-.3 0-.4-.2-.4-.4L19.5 8z" fill="#253B80"/><path d="M21 18.3l.8-4.8c.1-.4.4-.7.8-.7h3.5c1.5 0 2.7-.5 3.4-1.5-.3 3-2.5 4.7-5.2 4.7h-1.5c-.4 0-.8.3-.9.8l-.9 5.2h-2.5l2.5-3.7z" fill="#179BD7"/></svg>
-                  </div>
-                  {/* Rapipago */}
-                  <div className="hero-pay-icon">
-                    <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="8" y="10" width="32" height="12" rx="2" fill="#00A650"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="bold" fontFamily="Arial">RAPIPAGO</text></svg>
+                  <div className="bnd2-tablet">
+                    <span className="bnd2-tablet-ico">🛡️</span>
+                    <span className="bnd2-tablet-line1">Garantía</span>
+                    <span className="bnd2-tablet-line2">30 días</span>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Stock limitado */}
-              {MC.stockAlert?.show && (
+              {/* ── Bundle picker v2 (si la landing tiene opciones de cantidad) ── */}
+              {MC.bundles && (
+                <div className="bnd2-wrap">
+                  {/* Título de sección */}
+                  <div className="bnd2-section-title">✨ Ofertas por Tiempo Limitado ✨</div>
+
+                  {MC.bundles.map((opt, i) => (
+                    <div
+                      key={i}
+                      className={`bnd2-card${selectedBundleIdx === i ? " bnd2-card--on" : ""}${opt.popular ? " bnd2-card--pop" : ""}`}
+                      onClick={() => setSelectedBundleIdx(i)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => e.key === "Enter" && setSelectedBundleIdx(i)}
+                    >
+                      {opt.popular && (
+                        <span className="bnd2-float-badge">Más Vendido</span>
+                      )}
+                      <div className="bnd2-row">
+                        <input
+                          type="radio"
+                          name="pd-bundle"
+                          className="bnd2-radio"
+                          checked={selectedBundleIdx === i}
+                          onChange={() => setSelectedBundleIdx(i)}
+                          aria-label={opt.label}
+                        />
+                        <div className="bnd2-center">
+                          <span className="bnd2-name">{opt.label}</span>
+                          {opt.badge && (
+                            <span className={`bnd2-badge${opt.popular ? " bnd2-badge--pop" : ""}`}>{opt.badge}</span>
+                          )}
+                        </div>
+                        <div className="bnd2-prices">
+                          <span className="bnd2-was">{moneyARS(opt.compareAt)}</span>
+                          <span className="bnd2-now">{moneyARS(opt.price)}</span>
+                        </div>
+                      </div>
+                      {opt.benefit && (
+                        <div className="bnd2-benefit">{opt.benefit}</div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* CTA */}
+                  <button
+                    className="bnd2-cta"
+                    type="button"
+                    onClick={handleBuyNow}
+                  >
+                    AGREGAR AL CARRITO
+                  </button>
+
+                  {/* Pago seguro + logos */}
+                  <div className="bnd2-payments">
+                    <p className="bnd2-payments-title">Pago Seguro En Línea</p>
+                    <div className="bnd2-payments-icons">
+                      <div className="hero-pay-icon">
+                        <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg>
+                      </div>
+                      <div className="hero-pay-icon">
+                        <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg>
+                      </div>
+                      <div className="hero-pay-icon">
+                        <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#2557D6"/><path d="M6 16l3-7h3.5l1.5 3.5V9h4.3l1 3 1-3h4.2v14h-3.5l-1.5-3.3V23H15l-.7-1.8h-2.1L11.5 23H8l3-7zm5 4h1.5l-2.2-5.2L10.2 20H11zm6-7v7h2v-3l2 3h2.5l-2.5-3.5L23.5 13H21l-2 2.5V13h-2zm11-4l-3.5 7.5V23h2.5v-3l3.5-7h-2.5zm4.5 0v14h7.5l2-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2-2.5L39 9h-6.5zm2.5 3h3l-1.2 1.5L37 12h-2zm0 4h3l-1.2 1.5L37 16h-2zm0 4h3l-1.2 1.5L37 20h-2z" fill="#fff"/></svg>
+                      </div>
+                      <div className="hero-pay-icon">
+                        <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 8h5.8c2.7 0 4.6 1.8 4.2 4.5-.5 3.3-2.8 5-5.8 5h-1.5c-.4 0-.8.3-.9.8l-.8 4.7h-3c-.3 0-.4-.2-.4-.4L19.5 8z" fill="#253B80"/><path d="M21 18.3l.8-4.8c.1-.4.4-.7.8-.7h3.5c1.5 0 2.7-.5 3.4-1.5-.3 3-2.5 4.7-5.2 4.7h-1.5c-.4 0-.8.3-.9.8l-.9 5.2h-2.5l2.5-3.7z" fill="#179BD7"/></svg>
+                      </div>
+                      <div className="hero-pay-icon">
+                        <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="8" y="10" width="32" height="12" rx="2" fill="#00A650"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="bold" fontFamily="Arial">RAPIPAGO</text></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Urgencia */}
+                  <div className="bnd2-urgency">
+                    <span className="bnd2-urgency-dot" />
+                    ¡Últimas unidades!
+                  </div>
+
+                  {/* Acordeones de compra (Regalos / Garantía) */}
+                  {MC.heroAccordions?.length > 0 && (
+                    <HeroAccordions items={MC.heroAccordions} />
+                  )}
+                </div>
+              )}
+
+              {/* Tablets: Envío / Cuotas / Garantía — solo sin bundles (con bundles usa bnd2-tablets arriba) */}
+              {!MC.bundles && (
+                <div className="hero-tablets">
+                  <div className="hero-tablet">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 5h9v2l3.7.8a3 3 0 012.1 1.7l1.8 4c.2.4.3.8.3 1.3V18h-3"/><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><line x1="15" y1="7" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                    <span>Envío<br/>Gratis</span>
+                  </div>
+                  <div className="hero-tablet">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <span>Cuotas<br/>sin interés</span>
+                  </div>
+                  <div className="hero-tablet">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e2f3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Garantía<br/>30 días</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Precio: antes tachado + ahora grande + descuento — oculto cuando hay bundle picker */}
+              {!MC.bundles && (
+                <div className="hero-priceRow">
+                  <span className="hero-was">{moneyARS(compareAt)}</span>
+                  <span className="hero-now">{moneyARS(unitPrice)}</span>
+                  <span className="hero-off">Descuento {discountPct}%</span>
+                </div>
+              )}
+
+              {/* CTA grande 2 líneas — oculto cuando hay bundle picker */}
+              {!MC.bundles && (
+                <button
+                  className="hero-ctaBig"
+                  type="button"
+                  onClick={handleBuyNow}
+                >
+                  {MC.ctaLine1 || "Pagar Contra Reembolso"}
+                  <span>{MC.ctaLine2 || "Envío GRATIS en 24/48Hs"}</span>
+                </button>
+              )}
+
+              {/* Pago seguro + iconos de tarjetas — oculto cuando hay bundle picker */}
+              {!MC.bundles && (
+                <div className="hero-payments">
+                  <p className="hero-payments-title">Pago Seguro En Línea</p>
+                  <div className="hero-payments-icons">
+                    {/* Visa */}
+                    <div className="hero-pay-icon">
+                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg>
+                    </div>
+                    {/* Mastercard */}
+                    <div className="hero-pay-icon">
+                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg>
+                    </div>
+                    {/* Amex */}
+                    <div className="hero-pay-icon">
+                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#2557D6"/><path d="M6 16l3-7h3.5l1.5 3.5V9h4.3l1 3 1-3h4.2v14h-3.5l-1.5-3.3V23H15l-.7-1.8h-2.1L11.5 23H8l3-7zm5 4h1.5l-2.2-5.2L10.2 20H11zm6-7v7h2v-3l2 3h2.5l-2.5-3.5L23.5 13H21l-2 2.5V13h-2zm11-4l-3.5 7.5V23h2.5v-3l3.5-7h-2.5zm4.5 0v14h7.5l2-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2-2.5L39 9h-6.5zm2.5 3h3l-1.2 1.5L37 12h-2zm0 4h3l-1.2 1.5L37 16h-2zm0 4h3l-1.2 1.5L37 20h-2z" fill="#fff"/></svg>
+                    </div>
+                    {/* PayPal */}
+                    <div className="hero-pay-icon">
+                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 8h5.8c2.7 0 4.6 1.8 4.2 4.5-.5 3.3-2.8 5-5.8 5h-1.5c-.4 0-.8.3-.9.8l-.8 4.7h-3c-.3 0-.4-.2-.4-.4L19.5 8z" fill="#253B80"/><path d="M21 18.3l.8-4.8c.1-.4.4-.7.8-.7h3.5c1.5 0 2.7-.5 3.4-1.5-.3 3-2.5 4.7-5.2 4.7h-1.5c-.4 0-.8.3-.9.8l-.9 5.2h-2.5l2.5-3.7z" fill="#179BD7"/></svg>
+                    </div>
+                    {/* Rapipago */}
+                    <div className="hero-pay-icon">
+                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="8" y="10" width="32" height="12" rx="2" fill="#00A650"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="bold" fontFamily="Arial">RAPIPAGO</text></svg>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Stock limitado — oculto cuando hay bundle picker (tiene su propia urgencia) */}
+              {!MC.bundles && MC.stockAlert?.show && (
                 <div className="limited-stock-container">
                   <div className="limited-stock-dot"><span style={{visibility:"hidden"}}>.</span></div>
                   <div>
@@ -1356,55 +1924,11 @@ export default function ProductDetail() {
               {/* Botones de carrito e instalación eliminados */}
             </div>
 
-            <div className="accordion-wrapper">
-              <div className="accordion-item">
-                <button className="accordion-header" onClick={() => setIsDescExpanded(!isDescExpanded)} type="button">
-                  <span>Ficha técnica</span>
-                  <span>{isDescExpanded ? "−" : "+"}</span>
-                </button>
-
-                <div className={`accordion-content ${isDescExpanded ? "open" : ""}`}>
-                  <p>{product.description || MC.miniDescription}</p>
-
-                  <ul className="pd-specs-list">
-                    {product.specs &&
-                      Object.entries(product.specs).map(([key, val]) => (
-                        <li key={key}>
-                          <strong>{key}:</strong> {val}
-                        </li>
-                      ))}
-
-                    {!product.specs && (
-                      <>
-                        <li><strong>Ganancia:</strong> 50 dBi</li>
-                        <li><strong>Largo cable:</strong> 5 metros</li>
-                        <li><strong>Resolución:</strong> 4K / 1080p</li>
-                        <li><strong>Conector:</strong> coaxial universal</li>
-                        <li><strong>Uso:</strong> interior / exterior</li>
-                      </>
-                    )}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="accordion-item">
-                <button className="accordion-header" onClick={() => setIsShippingExpanded(!isShippingExpanded)} type="button">
-                  <span>Envíos y compra protegida</span>
-                  <span>{isShippingExpanded ? "−" : "+"}</span>
-                </button>
-
-                <div className={`accordion-content ${isShippingExpanded ? "open" : ""}`}>
-                  <ul className="pd-ship-list">
-                    <li><strong>Envío gratis:</strong> a todo el país.</li>
-                    <li><strong>Compra protegida:</strong> tu pago se procesa de forma segura.</li>
-                    <li><strong>Soporte:</strong> te ayudamos si necesitás guía para instalar.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
           </aside>
 
-        <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+        {!MC.hideMiniReviews && (
+          <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+        )}
       </div>
 
       {/* pd-bands fuera del container → waves a ancho completo de pantalla */}
@@ -1449,6 +1973,7 @@ export default function ProductDetail() {
 
         <Band variant="light">
           <div className="pd-sections-new">
+            <VideoStripSection mc={MC} />
             <StoryBlocks mc={MC} />
           </div>
         </Band>
@@ -1458,7 +1983,8 @@ export default function ProductDetail() {
         <Band variant="blue">
           <div className="pd-sections-new">
             <BoxContents mc={MC} />
-            <HowToSteps mc={MC} />
+            {!MC.statsCircles && <HowToSteps mc={MC} />}
+            <StatsCircles mc={MC} />
             <AuthorityCard mc={MC} />
           </div>
         </Band>
@@ -1467,18 +1993,13 @@ export default function ProductDetail() {
 
         <Band variant="light">
           <div className="pd-sections-new">
-            <ReviewsCarouselPro productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+            <FaqSectionPro mc={MC} />
+            <SocialCommentsSection mc={MC} />
+            <AboutSection mc={MC} />
           </div>
         </Band>
 
         <WaveSeparator from="light" />
-
-        <Band variant="blue">
-          <div className="pd-sections-new">
-            <FaqSectionPro mc={MC} />
-            <AboutSection mc={MC} />
-          </div>
-        </Band>
       </div>
 
       {showToast && (
@@ -1952,19 +2473,499 @@ export default function ProductDetail() {
       /* story title */
       .flow-title{
         text-align: center;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        font-size: 1.25rem;
-        font-weight: 1100;
+        text-transform: none;
+        letter-spacing: -.02em;
+        font-size: 1.85rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.93);
+        line-height: 1.18;
         margin: 0 0 12px;
       }
       @media (min-width: 900px){
-        .flow-title{ font-size: 1.45rem; }
+        .flow-title{ font-size: 2.1rem; }
       }
-      .flow-p{ margin: 0; color: rgba(11,18,32,.72); line-height: 1.7; font-weight: 650; text-align: center; }
+      @media (max-width: 520px){
+        .flow-title{ font-size: 1.55rem; }
+      }
+      .flow-p{
+        margin: 0;
+        color: rgba(11,18,32,.62);
+        line-height: 1.68;
+        font-weight: 400;
+        font-size: 1.02rem;
+        text-align: center;
+      }
+
+      /* Variante rich — se activa cuando el config tiene textHtml */
+      .flow-p--rich{
+        line-height: 1.68;
+        font-size: 1.02rem;
+        color: rgba(11,18,32,.62);
+        font-weight: 400;
+        letter-spacing: .002em;
+      }
+      .flow-p--rich strong{
+        color: rgba(11,18,32,.90);
+        font-weight: 700;
+      }
+      @media (min-width: 900px){
+        .flow-p--rich{ font-size: 1.05rem; }
+      }
+      @media (max-width: 520px){
+        .flow-p--rich{ font-size: .97rem; line-height: 1.62; }
+      }
+      /* título y badge compactos */
+      .flow-text--rich .flow-title{ margin-bottom: 8px; }
+      .flow-text--rich .flow-badge{ margin-bottom: 6px; }
+
+      /* ===== BUNDLE PICKER v2 ===== */
+      .bnd2-wrap{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 14px 0 4px;
+      }
+      /* Título de sección */
+      .bnd2-section-title{
+        text-align: center;
+        font-size: .88rem;
+        font-weight: 900;
+        color: #1B4D3E;
+        letter-spacing: .04em;
+        margin-bottom: 2px;
+      }
+      /* Card */
+      .bnd2-card{
+        position: relative;
+        border-radius: 14px;
+        border: 1.5px solid rgba(11,18,32,.13);
+        border-left: 4px solid rgba(11,18,32,.10);
+        background: #fff;
+        cursor: pointer;
+        transition: border-color .14s, background .14s, box-shadow .14s, border-left-color .14s;
+        user-select: none;
+        overflow: visible;
+        padding: 13px 14px 13px 12px;
+      }
+      .bnd2-card:hover{
+        border-color: rgba(27,77,62,.30);
+        border-left-color: rgba(27,77,62,.40);
+        background: rgba(27,77,62,.02);
+      }
+      .bnd2-card--on{
+        border-color: #1B4D3E !important;
+        border-left: 4px solid #1B4D3E !important;
+        background: rgba(27,77,62,.04) !important;
+        box-shadow: 0 4px 18px rgba(27,77,62,.10);
+      }
+      .bnd2-card--pop{
+        border-color: rgba(27,77,62,.25);
+        border-left-color: rgba(27,77,62,.30);
+        background: rgba(27,77,62,.02);
+        margin-top: 6px;
+      }
+      .bnd2-card--pop.bnd2-card--on{
+        box-shadow: 0 6px 22px rgba(27,77,62,.15);
+      }
+      /* Floating "Más Vendido" badge */
+      .bnd2-float-badge{
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #1B4D3E, #2F855A);
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 900;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: 3px 14px;
+        border-radius: 999px;
+        white-space: nowrap;
+        box-shadow: 0 3px 10px rgba(27,77,62,.30);
+      }
+      /* Inner row: radio | name+badge | prices */
+      .bnd2-row{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .bnd2-radio{
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        accent-color: #1B4D3E;
+        cursor: pointer;
+      }
+      .bnd2-center{
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .bnd2-name{
+        font-size: .91rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.88);
+        line-height: 1.2;
+      }
+      .bnd2-badge{
+        font-size: .62rem;
+        font-weight: 900;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(27,77,62,.10);
+        color: #1B4D3E;
+        border: 1px solid rgba(27,77,62,.20);
+        white-space: nowrap;
+      }
+      .bnd2-badge--pop{
+        background: linear-gradient(135deg, #1B4D3E, #2F855A);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(27,77,62,.25);
+      }
+      .bnd2-prices{
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1px;
+      }
+      .bnd2-was{
+        font-size: .72rem;
+        color: rgba(11,18,32,.35);
+        text-decoration: line-through;
+        font-weight: 600;
+        line-height: 1.1;
+      }
+      .bnd2-now{
+        font-size: 1.10rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.90);
+        line-height: 1.1;
+      }
+      /* Benefit row — siempre visible en cada card */
+      .bnd2-benefit{
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: rgba(27,77,62,.07);
+        font-size: .80rem;
+        font-weight: 700;
+        color: #1B4D3E;
+        letter-spacing: .01em;
+        line-height: 1.35;
+      }
+      /* CTA button */
+      .bnd2-cta{
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: 14px;
+        border: none;
+        background: linear-gradient(135deg, #1B4D3E 0%, #2a6e59 100%);
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 900;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 6px 22px rgba(27,77,62,.30);
+        transition: transform .12s, box-shadow .12s, background .14s;
+        margin-top: 4px;
+      }
+      .bnd2-cta:hover{
+        background: linear-gradient(135deg, #163d31 0%, #245c4a 100%);
+        box-shadow: 0 8px 28px rgba(27,77,62,.38);
+        transform: translateY(-1px);
+      }
+      .bnd2-cta:active{ transform: translateY(0) scale(.98); }
+      /* Payments below CTA */
+      .bnd2-payments{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+      }
+      .bnd2-payments-title{
+        font-size: .72rem;
+        font-weight: 700;
+        color: rgba(11,18,32,.45);
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .bnd2-payments-icons{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      /* Urgency pill — fondo completo */
+      .bnd2-urgency{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(229,62,62,.08);
+        border: 1px solid rgba(229,62,62,.15);
+        font-size: .80rem;
+        font-weight: 800;
+        color: rgba(180,30,30,.85);
+        letter-spacing: .02em;
+      }
+      .bnd2-urgency-dot{
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e53e3e;
+        flex-shrink: 0;
+        animation: bnd2-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes bnd2-pulse{
+        0%,100%{ box-shadow: 0 0 0 0 rgba(229,62,62,.55); }
+        50%{ box-shadow: 0 0 0 5px rgba(229,62,62,0); }
+      }
+
+      /* ===== EMOJI BULLETS (Calmora style) ===== */
+      .emoji-bullets{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 10px 0 4px;
+        width: 100%;
+      }
+      .emoji-bullet{
+        font-size: .90rem;
+        font-weight: 700;
+        color: rgba(11,18,32,.82);
+        line-height: 1.35;
+        padding: 0;
+      }
+      @media (max-width: 520px){
+        .emoji-bullet{ font-size: .86rem; }
+      }
+
+      /* ===== TRUST BADGES estilo Calmora (bnd2-tablets) ===== */
+      .bnd2-tablets{
+        display: flex;
+        gap: 8px;
+        margin: 12px 0 0;
+        width: 100%;
+      }
+      .bnd2-tablet{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 10px 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(11,18,32,.11);
+        background: #fff;
+        text-align: center;
+      }
+      .bnd2-tablet-ico{
+        font-size: 1.25rem;
+        line-height: 1;
+      }
+      .bnd2-tablet-line1{
+        font-size: .72rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.80);
+        line-height: 1.2;
+      }
+      .bnd2-tablet-line2{
+        font-size: .65rem;
+        font-weight: 600;
+        color: rgba(11,18,32,.48);
+        line-height: 1.2;
+      }
+
+      /* ===== HERO ACCORDIONS (Calmora) ===== */
+      .hacc-wrap{
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(11,18,32,.10);
+        margin-top: 6px;
+      }
+      .hacc-item{
+        background: #fff;
+        border-bottom: 1px solid rgba(11,18,32,.07);
+      }
+      .hacc-item:last-child{ border-bottom: none; }
+      .hacc-item--open{
+        background: rgba(27,77,62,.03);
+      }
+      .hacc-q{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 14px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+      }
+      .hacc-ico{
+        font-size: 1rem;
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      .hacc-title{
+        flex: 1;
+        font-size: .85rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.85);
+        line-height: 1.35;
+      }
+      .hacc-arrow{
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(27,77,62,.22);
+        background: rgba(27,77,62,.06);
+        position: relative;
+        transition: transform .24s ease, background .18s;
+      }
+      .hacc-arrow::before{
+        content: "";
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 5px; height: 5px;
+        border-right: 1.5px solid rgba(27,77,62,.80);
+        border-bottom: 1.5px solid rgba(27,77,62,.80);
+        transform: translate(-50%, -65%) rotate(45deg);
+        transition: transform .24s ease;
+      }
+      .hacc-item--open .hacc-arrow{
+        transform: rotate(180deg);
+        background: rgba(27,77,62,.12);
+        border-color: rgba(27,77,62,.38);
+      }
+      .hacc-body{
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .28s ease;
+      }
+      .hacc-item--open .hacc-body{
+        max-height: 200px;
+      }
+      .hacc-content{
+        padding: 0 14px 14px 38px;
+        font-size: .83rem;
+        font-weight: 500;
+        color: rgba(11,18,32,.68);
+        line-height: 1.6;
+      }
+      .hacc-content strong{
+        color: rgba(11,18,32,.85);
+        font-weight: 800;
+      }
+
+      /* ===== VIDEO STRIP ===== */
+      .vstrip-section{
+        margin-bottom: 28px;
+      }
+      /* Header: kicker + título centrados ARRIBA de los videos */
+      .vstrip-header{
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .vstrip-kicker{
+        display: inline-block;
+        font-size: .68rem;
+        font-weight: 900;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #1B4D3E;
+        background: rgba(27,77,62,.08);
+        border: 1px solid rgba(27,77,62,.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+      }
+      .vstrip-title{
+        font-size: 1.18rem;
+        font-weight: 1000;
+        letter-spacing: -.01em;
+        color: rgba(11,18,32,.88);
+        margin: 0 0 5px;
+        line-height: 1.25;
+      }
+      @media (min-width: 900px){
+        .vstrip-title{ font-size: 1.38rem; }
+      }
+      .vstrip-sub{
+        font-size: .88rem;
+        font-weight: 600;
+        color: rgba(11,18,32,.50);
+        margin: 0;
+      }
+      /* Grid: tres columnas que siempre caben en mobile simultáneamente */
+      .vstrip-row{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .vstrip-item{
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+      }
+      .vstrip-media{
+        aspect-ratio: 9 / 16;
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(11,18,32,.05);
+        position: relative;
+      }
+      .vstrip-video{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      /* Placeholder visual hasta tener el video */
+      .vstrip-ph{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, rgba(27,77,62,.08), rgba(27,77,62,.04));
+        border: 1.5px dashed rgba(27,77,62,.20);
+      }
+      .vstrip-ph-ico{
+        font-size: 2rem;
+        opacity: .35;
+        color: #1B4D3E;
+      }
+      .vstrip-label{
+        text-align: center;
+        font-size: .75rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.55);
+        letter-spacing: .04em;
+        text-transform: uppercase;
+      }
 
       .pd-sections-new{ margin-top: 14px; padding-bottom: 28px; }
-      .pd-flow{ display:flex; flex-direction: column; gap: 20px; }
+      .pd-flow{ display:flex; flex-direction: column; gap: 14px; }
       .flow-row{
         display:grid;
         grid-template-columns: 1.1fr .9fr;
@@ -1977,13 +2978,13 @@ export default function ProductDetail() {
       .flow-text{ display:flex; flex-direction: column; align-items: center; }
       .flow-badge{
         display:inline-flex;
-        padding: 6px 12px;
+        padding: 4px 11px;
         border-radius: 999px;
         background: rgba(27,77,62,.10);
         border: 1px solid rgba(27,77,62,.18);
         font-weight: 1100;
         color: rgba(11,18,32,.78);
-        margin-bottom: 10px;
+        margin-bottom: 6px;
       }
 
       .flow-imgBox{
@@ -2340,100 +3341,78 @@ export default function ProductDetail() {
         .auth3-content { padding: 24px 20px 22px; }
       }
 
-      /* FAQ */
-      .faq-pro{
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        border-radius: 20px;
-        overflow: hidden;
-        border: 1px solid rgba(2,8,23,.09);
-        box-shadow: 0 22px 60px rgba(10,20,40,.11);
-      }
-
-      .faq-pro-item{
-        background: #fff;
-        border-bottom: 1px solid rgba(2,8,23,.07);
-        position: relative;
-        overflow: hidden;
-        transition: background .2s ease;
-      }
-
-      .faq-pro-item:last-child{ border-bottom: none; }
-
-      .faq-pro-item.open{ background: rgba(247,249,255,1); }
-
-      .faq-pro-item.open::before{
-        content: "";
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 3px;
-        background: linear-gradient(180deg, #1B4D3E 0%, #2F855A 100%);
-      }
-
-      .faq-pro-q{
+      /* ===== FAQ ACCORDION ===== */
+      .faq-acc-wrap{
         width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px 0 8px;
+      }
+      .faq-acc-title{
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.90);
+        text-align: center;
+        margin: 0 0 24px;
+        letter-spacing: -.02em;
+        line-height: 1.2;
+      }
+      @media (max-width: 520px){
+        .faq-acc-title{ font-size: 1.25rem; }
+      }
+      .faq-acc{
+        width: 100%;
+        border-radius: 5px;
+      }
+      .faq-acc-item{
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 3px;
+      }
+      .faq-acc-item:last-child{ border-bottom: none; }
+      .faq-acc-header{
+        padding: 14px 8px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 14px;
-        padding: 18px 20px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-weight: 800;
-        font-size: .95rem;
         color: rgba(11,18,32,.88);
-        text-align: left;
+        user-select: none;
         line-height: 1.4;
+        transition: color .2s ease;
       }
-
-      .faq-pro-item.open .faq-pro-q{ color: rgba(11,18,32,1); }
-
-      .faq-pro-ico{
-        width: 26px;
-        height: 26px;
-        border-radius: 999px;
-        border: 1.5px solid rgba(27,77,62,.22);
-        background: rgba(27,77,62,.06);
+      .faq-acc-header:hover{ color: #1B4D3E; }
+      .faq-acc-item.active .faq-acc-header{ color: #1B4D3E; }
+      .faq-acc-indicator{
+        font-size: 1.4em;
+        margin-left: 12px;
         flex-shrink: 0;
-        position: relative;
-        transition: transform .28s ease, background .2s ease, border-color .2s ease;
+        color: #1B4D3E;
+        font-weight: 400;
+        line-height: 1;
+        transition: transform 0.3s ease;
+        display: inline-block;
       }
-
-      .faq-pro-ico::before{
-        content: "";
-        position: absolute;
-        top: 50%; left: 50%;
-        width: 6px; height: 6px;
-        border-right: 1.5px solid rgba(27,77,62,.85);
-        border-bottom: 1.5px solid rgba(27,77,62,.85);
-        transform: translate(-50%, -65%) rotate(45deg);
-      }
-
-      .faq-pro-item.open .faq-pro-ico{
+      .faq-acc-item.active .faq-acc-indicator{
         transform: rotate(180deg);
-        background: rgba(27,77,62,.12);
-        border-color: rgba(27,77,62,.4);
       }
-
-      .faq-pro-a{
+      .faq-acc-content{
         max-height: 0;
         overflow: hidden;
-        transition: max-height .32s ease, padding .28s ease;
-        padding: 0 20px;
-        color: rgba(11,18,32,.65);
-        font-weight: 500;
-        font-size: .9rem;
-        line-height: 1.68;
+        padding: 0 10px;
+        transition: max-height 0.35s ease, padding 0.3s ease;
       }
-
-      .faq-pro-item.open .faq-pro-a{
-        max-height: 340px;
-        padding: 0 20px 20px 23px;
+      .faq-acc-content p{
+        margin: 6px 0 14px;
+        font-size: 13.5px;
+        color: rgba(11,18,32,.62);
+        line-height: 1.6;
       }
-
-      .faq-pro-a p{ margin: 0; }
+      .faq-acc-item.active .faq-acc-content{
+        max-height: 300px;
+        padding: 4px 10px 4px;
+      }
 
       /* stars */
       .stars-inline{ display:inline-flex; gap: 2px; justify-content: center; }
@@ -2955,17 +3934,13 @@ export default function ProductDetail() {
       /* ===== RETOQUE VISUAL GLOBAL ===== */
 
       /* Refined band backgrounds */
+      .pd-bands > section:first-child{ padding-top: 28px; }
       .pd-band--light{ background: #ffffff; }
       .pd-band--blue { background: #0b172a; }
       .pd-band--blue .sec-title{ color: rgba(255,255,255,.92); }
       .pd-band--blue .sec-sub{ color: rgba(255,255,255,.50); }
       .pd-band--blue .flow-title{ color: rgba(255,255,255,.90); }
       .pd-band--blue .flow-p{ color: rgba(255,255,255,.65); }
-      .pd-band--blue .faq-pro{ border-color: rgba(255,255,255,.08); }
-      .pd-band--blue .faq-pro-item{ background: rgba(255,255,255,.04); border-bottom-color: rgba(255,255,255,.07); }
-      .pd-band--blue .faq-pro-item.open{ background: rgba(255,255,255,.08); }
-      .pd-band--blue .faq-pro-q{ color: rgba(255,255,255,.85); }
-      .pd-band--blue .faq-pro-a p{ color: rgba(255,255,255,.62); }
 
       /* ===== WAVE DIVIDER (Shopify gentle-wave) ===== */
       .wave-divider {
@@ -3026,6 +4001,497 @@ export default function ProductDetail() {
       .pd-sections-new{ padding-top: 8px; padding-bottom: 36px; }
       #authority{ padding-bottom: 0; margin-bottom: -20px; }
 
+      /* ===== BEFORE / AFTER SLIDER ===== */
+      .ba-wrap{
+        display: flex;
+        justify-content: center;
+        padding: 4px 0 8px;
+      }
+      .ba-container{
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        --position: 50%;
+        width: 100%;
+        max-width: 680px;
+        box-shadow: 0 16px 48px rgba(0,0,0,.28);
+        cursor: col-resize;
+      }
+      .ba-img-wrap{
+        display: grid;
+        position: relative;
+        user-select: none;
+      }
+      /* After image: base layer, full width */
+      .ba-img-after{
+        display: block;
+        width: 100%;
+        max-height: 460px;
+        object-fit: cover;
+        object-position: center;
+        grid-area: 1/1;
+      }
+      /* Before image: on top, clipped to --position */
+      .ba-img-before{
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: var(--position);
+        height: 100%;
+        object-fit: cover;
+        object-position: left center;
+        grid-area: 1/1;
+      }
+      /* Badges */
+      .ba-badge{
+        position: absolute;
+        bottom: 14px;
+        background: rgba(255,255,255,.92);
+        backdrop-filter: blur(6px);
+        color: #0f172a;
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        pointer-events: none;
+        z-index: 4;
+        box-shadow: 0 2px 8px rgba(0,0,0,.18);
+      }
+      .ba-badge-before{ left: 14px; }
+      .ba-badge-after{  right: 14px; }
+      /* Invisible range — covers whole container for drag */
+      .ba-range{
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: col-resize;
+        z-index: 10;
+        margin: 0;
+        padding: 0;
+        -webkit-appearance: none;
+      }
+      .ba-range:focus-visible ~ .ba-handle{
+        outline: 3px solid #fff;
+        outline-offset: 3px;
+      }
+      /* Divider line */
+      .ba-line{
+        position: absolute;
+        inset: 0;
+        left: var(--position);
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: rgba(255,255,255,.9);
+        pointer-events: none;
+        z-index: 5;
+      }
+      /* Handle button */
+      .ba-handle{
+        position: absolute;
+        top: 50%;
+        left: var(--position);
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,.92);
+        backdrop-filter: blur(4px);
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        z-index: 6;
+        box-shadow: 0 2px 12px rgba(0,0,0,.30);
+        color: #1e293b;
+      }
+      @media (max-width: 520px){
+        .ba-container{ border-radius: 12px; }
+        .ba-img-after, .ba-img-before{ max-height: 280px; }
+      }
+
+      /* ===== STATS CIRCLES ===== */
+      .sc-section{
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 28px 0 16px;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .sc-title{
+        font-size: 1.45rem;
+        font-weight: 1000;
+        color: rgba(11,18,32,.90);
+        text-align: center;
+        margin: 0 0 22px;
+        line-height: 1.2;
+        letter-spacing: -.01em;
+      }
+      @media (max-width: 520px){
+        .sc-title{ font-size: 1.18rem; }
+      }
+      .sc-list{
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sc-row{
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(11,18,32,.06);
+      }
+      .sc-row:last-child{ border-bottom: none; }
+      /* Donut circular animado con conic-gradient */
+      .sc-circle{
+        position: relative;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: conic-gradient(
+          from 0deg,
+          #2F855A 0%,
+          #1B4D3E var(--sc-pct, 0%),
+          rgba(11,18,32,.10) 0%
+        );
+      }
+      /* Donut hole */
+      .sc-circle::after{
+        content: "";
+        position: absolute;
+        top: 12%; left: 12%;
+        width: 76%; height: 76%;
+        background: #fff;
+        border-radius: 50%;
+      }
+      /* Dark band overrides */
+      .pd-band--blue .sc-title{ color: rgba(255,255,255,.92); }
+      .pd-band--blue .sc-row{ border-bottom-color: rgba(255,255,255,.08); }
+      .pd-band--blue .sc-circle{ background: conic-gradient(from 0deg, #2F855A 0%, #4ade80 var(--sc-pct, 0%), rgba(255,255,255,.10) 0%); }
+      .pd-band--blue .sc-circle::after{ background: #0b172a; }
+      .pd-band--blue .sc-pct{ color: #4ade80; }
+      .pd-band--blue .sc-text{ color: rgba(226,232,240,.70); }
+      .pd-band--blue .sc-text strong{ color: rgba(255,255,255,.90); }
+      .pd-band--blue .sc-footer{ border-top-color: rgba(255,255,255,.08); }
+      .pd-band--blue .sc-footer-note{ color: rgba(226,232,240,.40); }
+      .pd-band--blue .sc-stat{ border-right-color: rgba(255,255,255,.08); }
+      .pd-band--blue .sc-stat-val{ color: #4ade80; }
+      .pd-band--blue .sc-stat-lbl{ color: rgba(226,232,240,.45); }
+      .sc-pct{
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 10px;
+        font-weight: 900;
+        color: #1B4D3E;
+        z-index: 1;
+        letter-spacing: -.02em;
+      }
+      .sc-text{
+        font-size: .88rem;
+        font-weight: 500;
+        color: rgba(11,18,32,.70);
+        line-height: 1.5;
+        margin: 0;
+      }
+      .sc-text strong{
+        color: rgba(11,18,32,.88);
+        font-weight: 800;
+      }
+      /* Footer stats */
+      .sc-footer{
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(11,18,32,.08);
+        text-align: center;
+      }
+      .sc-footer-note{
+        font-size: .72rem;
+        color: rgba(11,18,32,.40);
+        margin: 0 0 14px;
+        font-style: italic;
+      }
+      .sc-footer-stats{
+        display: flex;
+        justify-content: center;
+        gap: 0;
+      }
+      .sc-stat{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 0 8px;
+        border-right: 1px solid rgba(11,18,32,.08);
+      }
+      .sc-stat:last-child{ border-right: none; }
+      .sc-stat-val{
+        font-size: 1.10rem;
+        font-weight: 1000;
+        color: #1B4D3E;
+        letter-spacing: -.01em;
+      }
+      .sc-stat-lbl{
+        font-size: .62rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.45);
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      /* ===== SOCIAL COMMENTS (Facebook style) ===== */
+      .fbsc-wrap{
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 24px 0 8px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-card{
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 16px;
+        background: #fff;
+      }
+      .fbsc-title{
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 12px;
+        color: #111;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-write{
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        align-items: center;
+      }
+      .fbsc-fb-icon{
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+      }
+      .fbsc-input{
+        flex: 1;
+        background: #f0f2f5;
+        border-radius: 999px;
+        padding: 9px 14px;
+        color: #65676b;
+        font-size: 13px;
+        cursor: default;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-list{ display: flex; flex-direction: column; }
+      .fbsc-thread{ margin-bottom: 12px; }
+      .fbsc-thread > .fbsc-comment{ margin-bottom: 6px; }
+      .fbsc-comment{
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .fbsc-avatar{
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .fbsc-avatar--sm{
+        width: 36px;
+        height: 36px;
+      }
+      .fbsc-bubble{
+        background: #f0f2f5;
+        border-radius: 14px;
+        padding: 10px 12px;
+        flex: 1;
+        min-width: 0;
+      }
+      .fbsc-name{
+        font-weight: 700;
+        font-size: 13px;
+        color: #1c1e21;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-text{
+        font-size: 13px;
+        margin-top: 4px;
+        color: #1c1e21;
+        line-height: 1.38;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-meta{
+        font-size: 11.5px;
+        color: #65676b;
+        margin-top: 6px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .fbsc-likes{ color: #1877f2; margin-left: 6px; }
+      .fbsc-reply{
+        margin-left: 52px;
+        position: relative;
+        padding-left: 12px;
+        margin-top: 2px;
+        margin-bottom: 8px;
+      }
+      .fbsc-reply::before{
+        content: "";
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 2px;
+        background: #d8dadf;
+        border-radius: 2px;
+      }
+      .fbsc-pagination{
+        text-align: center;
+        margin-top: 12px;
+      }
+      .fbsc-pagination--dual{
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .fbsc-btn{
+        appearance: none;
+        border: 0;
+        background: #1877f2;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: Arial, Helvetica, sans-serif;
+        transition: filter .15s ease;
+      }
+      .fbsc-btn:hover{ filter: brightness(0.93); }
+      .fbsc-btn--ghost{
+        background: #eef1f5;
+        color: #1c1e21;
+      }
+      @media (max-width: 480px){
+        .fbsc-avatar{ width: 38px; height: 38px; }
+        .fbsc-avatar--sm{ width: 34px; height: 34px; }
+        .fbsc-reply{ margin-left: 46px; }
+      }
+
+      /* ===== GARANTÍA — 30 días sin riesgo ===== */
+      .grt-section{
+        text-align: center;
+        padding: 52px 20px 44px;
+      }
+      .grt-seal-wrap{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+      .grt-seal{
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .grt-shield{
+        width: 96px;
+        height: 96px;
+        filter: drop-shadow(0 10px 28px rgba(27,77,62,.60));
+      }
+      .grt-ring{
+        position: absolute;
+        inset: -14px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(27,77,62,.35);
+        animation: grtPulse 2.6s ease-in-out infinite;
+        pointer-events: none;
+      }
+      @keyframes grtPulse{
+        0%,100%{ transform: scale(1);    opacity: .75; }
+        50%    { transform: scale(1.10); opacity: .18; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        .grt-ring{ animation: none; }
+      }
+      .grt-kicker{
+        font-size: .67rem;
+        font-weight: 900;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.38);
+      }
+      .grt-title{
+        margin: 0 0 16px;
+        font-weight: 1100;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-size: 2.3rem;
+        line-height: 1.05;
+        color: #fff;
+      }
+      @media (max-width: 520px){
+        .grt-title{ font-size: 1.75rem; }
+      }
+      .grt-sub{
+        margin: 0 auto 30px;
+        max-width: 400px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: rgba(255,255,255,.68);
+        line-height: 1.65;
+      }
+      .grt-pills{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 34px;
+      }
+      .grt-pill{
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.10);
+        background: rgba(255,255,255,.05);
+        font-weight: 800;
+        font-size: .86rem;
+        color: rgba(255,255,255,.78);
+        white-space: nowrap;
+      }
+      .grt-cta{
+        display: inline-block;
+        padding: 16px 40px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #1B4D3E 0%, #153D31 60%, #0F2D24 100%);
+        color: #fff;
+        font-weight: 1100;
+        font-size: 1rem;
+        letter-spacing: .04em;
+        cursor: pointer;
+        box-shadow: 0 14px 42px rgba(27,77,62,.45);
+        transition: transform .15s ease, box-shadow .15s ease;
+      }
+      .grt-cta:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 20px 52px rgba(27,77,62,.55);
+      }
+      .grt-cta:active{ transform: scale(.98); box-shadow: 0 8px 24px rgba(27,77,62,.35); }
+      @media (max-width: 520px){
+        .grt-section{ padding: 44px 16px 36px; }
+        .grt-pill{ font-size: .82rem; padding: 9px 13px; }
+        .grt-cta{ width: 100%; padding: 16px; }
+      }
+      /* garantía vive en band blue → títulos blancos ya heredados */
+      #guarantee .sec-title, #guarantee .sec-sub{ color: #fff; }
+
       /* Story blocks: smoother image cards */
       .flow-imgBox{
         border-radius: 18px;
@@ -3046,10 +4512,6 @@ export default function ProductDetail() {
         transform: translateY(-4px);
         box-shadow: 0 18px 50px rgba(10,20,40,.16);
       }
-
-      /* FAQ items: add left accent transition */
-      .faq-pro-item::before{ transition: opacity .22s ease; opacity:0; }
-      .faq-pro-item.open::before{ opacity:1; }
 
       /* Global interactive transitions */
       .hero-ctaBig{
