@@ -1413,10 +1413,16 @@ export default function ProductDetail() {
       return;
     }
     // Sin upsell: ir directo al checkout
-    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     const mainOpts = {};
-    if (promo) mainOpts.promo = promo;
-    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    if (activeBundleData) {
+      // Bundle con precio fijo — bypassea el cálculo porcentual
+      mainOpts.bundleTotal = activeBundleData.price;
+      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
+    } else {
+      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+      if (promo) mainOpts.promo = promo;
+      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    }
     addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
     track("InitiateCheckout", {
       content_ids: [String(contentId)],
@@ -1431,10 +1437,15 @@ export default function ProductDetail() {
   const handleUpsellConfirm = (bundle) => {
     setShowUpsellSheet(false);
     // Agregar producto principal
-    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     const mainOpts = {};
-    if (promo) mainOpts.promo = promo;
-    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    if (activeBundleData) {
+      mainOpts.bundleTotal = activeBundleData.price;
+      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
+    } else {
+      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+      if (promo) mainOpts.promo = promo;
+      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    }
     addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
     // Si eligió accesorios, agregarlos también
     if (bundle?.bundles) {
@@ -1469,10 +1480,15 @@ export default function ProductDetail() {
       num_items: Number(totalQty) || 1,
     });
 
-    const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
     const mainOpts = {};
-    if (promo) mainOpts.promo = promo;
-    if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    if (activeBundleData) {
+      mainOpts.bundleTotal = activeBundleData.price;
+      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
+    } else {
+      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
+      if (promo) mainOpts.promo = promo;
+      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
+    }
     addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
 
     setShowToast(true);

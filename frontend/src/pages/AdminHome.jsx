@@ -37,14 +37,14 @@ export default function AdminHome() {
       <div className="container" style={{ maxWidth: 1050 }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'baseline' }}>
+        <div className="adminHomeHeader" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'baseline' }}>
           <div>
-            <h1 style={{ margin: 0, letterSpacing: '-0.05em' }}>Panel BoomHausS</h1>
-            <div className="muted" style={{ marginTop: 6, fontWeight: 900 }}>
+            <h1 className="adminHomeTitle" style={{ margin: 0, letterSpacing: '-0.05em' }}>Panel BoomHausS</h1>
+            <div className="muted" style={{ marginTop: 6, fontWeight: 900, wordBreak: 'break-word' }}>
               Logueado como: <span style={{ color: 'rgba(11,18,32,.9)' }}>{user?.email}</span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div className="adminHomeHeaderBtns" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <Link className="btn btn-ghost" to="/public">Ver home público</Link>
             <Link className="btn btn-primary" to="/admin/orders">Ir a pedidos</Link>
           </div>
@@ -165,6 +165,11 @@ export default function AdminHome() {
           }
           @media (max-width: 900px) {
             .adminHomeGrid { grid-template-columns: 1fr !important; }
+          }
+          @media (max-width: 560px) {
+            .adminHomeTitle { font-size: 1.35rem; }
+            .adminHomeHeaderBtns { width: 100%; }
+            .adminHomeHeaderBtns .btn { flex: 1; font-size: .85rem; padding: 8px 10px; }
           }
         `}</style>
       </div>

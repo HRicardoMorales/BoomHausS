@@ -18,8 +18,8 @@ const soporteNasalSN300Config = {
   heroSubtitle: "Respirá mejor. Roncás menos. Dormís de un tirón.",
   trustBullets: [
     "😴 Menos ronquidos desde la primera noche",
-    "👃 Nariz más abierta — sin remedios",
-    "🩹 Kit completo: tiras + dilatadores internos",
+    "👃 Nariz más abierta sin remedios",
+    "🩹 Kit completo: 15 tiras + 5 dilatadores internos",
     "🚚 Envío gratis a todo el país",
   ],
 
@@ -267,7 +267,7 @@ const soporteNasalSN300Config = {
       // VIDEO: Persona despertándose natural, estirándose, sonriendo.
       // Luz de mañana. Expresión de descanso real. O pareja durmiendo juntos.
       // Formato: vertical 9:16, 5-8s, sin sonido, loop.
-      videoUrl: "https://res.cloudinary.com/duyth9azk/video/upload/v1776405170/20_Facebook_scb2fh.mp4", // ← REEMPLAZAR: ej. "/videos/sn300-resultado.mp4"
+      videoUrl: "https://res.cloudinary.com/duyth9azk/video/upload/v1776470607/saesi_en_TikTok_alad72.mp4", // ← REEMPLAZAR: ej. "/videos/sn300-resultado.mp4"
       label: "SATISFECHO",
     },
   ],

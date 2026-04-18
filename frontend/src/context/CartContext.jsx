@@ -26,20 +26,19 @@ function writeCartToStorage(items) {
 
 // ✅ total por item con promos
 function calcItemTotal(it) {
+    // Bundle con precio fijo (el más común en landings con bundle picker)
+    if (it?.bundleTotal) return Math.round(Number(it.bundleTotal));
+
     const qty = Math.max(0, Number(it?.quantity) || 0);
     const base = Math.max(0, Number(it?.price) || 0);
     if (!qty || !base) return 0;
 
-    // Promo “Lleva 2” (-X% por pares)
+    // Promo "Lleva 2" (-X% por pares)
     if (it?.promo?.type === "bundle2") {
         const discountPct = Math.max(0, Number(it?.promo?.discountPct) || 0);
-        const pairsQty = Math.floor(qty / 2) * 2; // 2,4,6...
+        const pairsQty = Math.floor(qty / 2) * 2;
         const remQty = qty - pairsQty;
-
-        const discounted = pairsQty * base * (1 - discountPct / 100);
-        const remainder = remQty * base;
-
-        return Math.round(discounted + remainder);
+        return Math.round(pairsQty * base * (1 - discountPct / 100) + remQty * base);
     }
 
     return Math.round(qty * base);
@@ -61,6 +60,7 @@ export function CartProvider({ children }) {
         const q = Math.max(1, Number(qty) || 1);
         const promo = options?.promo || null;
         const compareAtPrice = options?.compareAtPrice ? Number(options.compareAtPrice) || null : null;
+        const bundleTotal = options?.bundleTotal ? Number(options.bundleTotal) || null : null;
 
         // 🔥 NUEVO: Disparamos evento para que App.jsx muestre el Popup
         window.dispatchEvent(new CustomEvent('cart:added', {
@@ -75,9 +75,10 @@ export function CartProvider({ children }) {
                 const prevItem = copy[idx];
                 const nextQty = (Number(prevItem.quantity) || 0) + q;
 
-                // ✅ Auto promo si llega a 2 o más
-                const nextPromo =
-                    promo
+                // Si hay bundleTotal fijo, no aplica promo porcentual
+                const nextPromo = bundleTotal
+                    ? null
+                    : promo
                         ? promo
                         : nextQty >= 2
                             ? { type: "bundle2", discountPct: BUNDLE2_DISCOUNT_PCT }
@@ -91,13 +92,15 @@ export function CartProvider({ children }) {
                     quantity: nextQty,
                     promo: nextPromo,
                     ...(compareAtPrice != null ? { compareAtPrice } : {}),
+                    ...(bundleTotal != null ? { bundleTotal } : {}),
                 };
                 return copy;
             }
 
             // ✅ Nuevo item
-            const initialPromo =
-                promo
+            const initialPromo = bundleTotal
+                ? null
+                : promo
                     ? promo
                     : q >= 2
                         ? { type: "bundle2", discountPct: BUNDLE2_DISCOUNT_PCT }
@@ -110,6 +113,7 @@ export function CartProvider({ children }) {
                     name: product.name,
                     price: Number(product.price) || 0,
                     compareAtPrice,
+                    bundleTotal,
                     quantity: q,
                     imageUrl: product.imageUrl || product.images?.[0] || "",
                     promo: initialPromo,
@@ -131,6 +135,11 @@ export function CartProvider({ children }) {
                 .map((x) => {
                     if (x.productId !== productId) return x;
                     const nextQty = Math.max(0, Math.round(q));
+                    // Para items con bundleTotal fijo, no aplicamos promo porcentual
+                    // y mantenemos el bundleTotal (el cliente eligió un pack cerrado)
+                    if (x.bundleTotal) {
+                        return { ...x, quantity: nextQty, promo: null };
+                    }
                     const nextPromo =
                         nextQty >= 2
                             ? { type: "bundle2", discountPct: BUNDLE2_DISCOUNT_PCT }

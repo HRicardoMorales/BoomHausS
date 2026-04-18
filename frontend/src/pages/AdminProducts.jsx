@@ -22,6 +22,7 @@ export default function AdminProducts() {
   const [error, setError] = useState('');
   const [ok, setOk] = useState('');
   const [search, setSearch] = useState('');
+  const [mobileView, setMobileView] = useState('list'); // 'list' | 'editor'
 
   const selected = useMemo(() => products.find((p) => p._id === selectedId) || null, [products, selectedId]);
 
@@ -128,9 +129,19 @@ export default function AdminProducts() {
       <div className="container" style={{ maxWidth: 1150 }}>
         <style>{`
           .ap-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; margin-top: 18px; }
-          @media (max-width: 900px) { .ap-grid { grid-template-columns: 1fr !important; } }
+          .ap-mobile-back { display: none; }
+          @media (max-width: 900px) {
+            .ap-grid { grid-template-columns: 1fr !important; }
+            .ap-list-col { display: var(--apListDisplay, block); }
+            .ap-editor-col { display: var(--apEditorDisplay, none); }
+            .ap-mobile-back { display: inline-flex !important; }
+          }
           .ap-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-          @media (max-width: 600px) { .ap-form-grid { grid-template-columns: 1fr !important; } }
+          @media (max-width: 600px) {
+            .ap-form-grid { grid-template-columns: 1fr !important; }
+            .ap-actions { flex-direction: column !important; }
+            .ap-actions .btn { width: 100%; }
+          }
           .ap-prod-btn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1.5px solid rgba(148,163,184,.18); background: transparent; cursor: pointer; transition: all .15s; }
           .ap-prod-btn:hover { background: rgba(11,92,255,.04); }
           .ap-prod-btn.active { border-color: var(--primary); background: rgba(11,92,255,.06); }
@@ -142,17 +153,22 @@ export default function AdminProducts() {
           .ap-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
           .ap-preview img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid #e0e0e0; }
           .ap-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+          @media (max-width: 560px) {
+            .ap-header h1 { font-size: 1.3rem !important; }
+            .ap-header-actions { width: 100%; }
+            .ap-header-actions .btn { flex: 1; }
+          }
         `}</style>
 
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div className="ap-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div>
             <h1 style={{ margin: 0, fontSize: '1.6rem', letterSpacing: '-0.04em' }}>Productos</h1>
             <div className="muted" style={{ fontWeight: 800, marginTop: 4, fontSize: 13 }}>
               {products.length} producto{products.length !== 1 ? 's' : ''} registrado{products.length !== 1 ? 's' : ''}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="ap-header-actions" style={{ display: 'flex', gap: 8 }}>
             <Link className="btn btn-ghost" to="/admin" style={{ fontSize: 13 }}>Panel</Link>
             <button className="btn btn-ghost" onClick={fetchAll} style={{ fontSize: 13 }}>Recargar</button>
           </div>
@@ -171,12 +187,12 @@ export default function AdminProducts() {
           </div>
         )}
 
-        <div className="ap-grid">
+        <div className="ap-grid" style={{ ['--apListDisplay']: mobileView === 'list' ? 'block' : 'none', ['--apEditorDisplay']: mobileView === 'editor' ? 'block' : 'none' }}>
           {/* Left: Product list */}
-          <div>
+          <div className="ap-list-col">
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <input className="ap-inp" placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} style={{ flex: 1, fontSize: 13 }} />
-              <button className="btn btn-primary" style={{ fontSize: 12, padding: '8px 14px', whiteSpace: 'nowrap' }} onClick={() => { setSelectedId(''); hydrate({ _id: '' }); }}>
+              <button className="btn btn-primary" style={{ fontSize: 12, padding: '8px 14px', whiteSpace: 'nowrap' }} onClick={() => { setSelectedId(''); hydrate({ _id: '' }); setMobileView('editor'); }}>
                 + Nuevo
               </button>
             </div>
@@ -186,7 +202,7 @@ export default function AdminProducts() {
                 const thumb = p.images?.[0];
                 const isActive = selectedId === p._id;
                 return (
-                  <button key={p._id} type="button" className={`ap-prod-btn ${isActive ? 'active' : ''}`} onClick={() => setSelectedId(p._id)}>
+                  <button key={p._id} type="button" className={`ap-prod-btn ${isActive ? 'active' : ''}`} onClick={() => { setSelectedId(p._id); setMobileView('editor'); }}>
                     <div className="ap-thumb">
                       {thumb ? <img src={thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 16, color: '#bbb' }}>img</span>}
                     </div>
@@ -208,8 +224,11 @@ export default function AdminProducts() {
           </div>
 
           {/* Right: Editor */}
-          <div className="card" style={{ padding: '20px', borderRadius: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div className="card ap-editor-col" style={{ padding: '20px', borderRadius: 14 }}>
+            <button type="button" className="btn btn-ghost ap-mobile-back" onClick={() => setMobileView('list')} style={{ fontSize: 12, marginBottom: 12, padding: '6px 10px', alignSelf: 'flex-start' }}>
+              ← Volver a la lista
+            </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, gap: 10, flexWrap: 'wrap' }}>
               <div>
                 <div style={{ fontWeight: 900, fontSize: 16 }}>{form._id ? 'Editar producto' : 'Nuevo producto'}</div>
                 {form.slug && (
@@ -292,7 +311,7 @@ export default function AdminProducts() {
               </div>
 
               {/* Actions */}
-              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <div className="ap-actions" style={{ display: 'flex', gap: 10, marginTop: 4 }}>
                 <button className="btn btn-primary" type="submit" disabled={saving} style={{ flex: 1, justifyContent: 'center', fontSize: 14 }}>
                   {saving ? 'Guardando...' : 'Guardar cambios'}
                 </button>

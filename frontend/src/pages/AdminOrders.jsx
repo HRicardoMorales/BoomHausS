@@ -821,15 +821,44 @@ export default function AdminOrders() {
 .ao-lb-actions{display:flex;gap:10px;justify-content:center;margin-top:14px}
 
 /* Mobile */
+@media(max-width:768px){
+  .ao-wrap{padding:0 12px}
+  .ao-page{padding:16px 0 60px}
+  .ao-tabs{width:100%}
+  .ao-tab{flex:1;text-align:center;padding:8px 10px;font-size:.8rem}
+}
 @media(max-width:640px){
-  .ao-header{flex-direction:column;align-items:flex-start}
-  .ao-stats{grid-template-columns:repeat(3,1fr)}
-  .ao-bar{flex-direction:column}
-  .ao-filter{flex:1}
-  .ao-selectors{flex-direction:column}
-  .ao-info{grid-template-columns:1fr}
-  .ao-row{flex-direction:column;align-items:flex-start;gap:8px}
-  .ao-row-right{flex-direction:row;flex-wrap:wrap}
+  .ao-header{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:16px}
+  .ao-title{font-size:1.3rem}
+  .ao-stats{grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+  .ao-stat{padding:10px 8px}
+  .ao-stat-val{font-size:1rem}
+  .ao-stat-lbl{font-size:.6rem}
+  .ao-bar{flex-direction:column;gap:6px;margin-bottom:14px}
+  .ao-filter{flex:1;width:100%}
+  .ao-search{width:100%}
+  .ao-selectors{flex-direction:column;gap:8px;padding:10px}
+  .ao-info{grid-template-columns:1fr;padding:10px}
+  .ao-row{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+  .ao-row-right{flex-direction:row;flex-wrap:wrap;align-self:stretch;align-items:center;justify-content:flex-start}
+  .ao-actions{gap:6px}
+  .ao-actions .ao-btn{flex:1 1 calc(50% - 4px);justify-content:center;font-size:.78rem;padding:8px 10px}
+  .ao-abandon-header{flex-direction:column;padding:14px;gap:10px}
+  .ao-abandon-title{font-size:1rem}
+  .ao-cart-card{padding:12px}
+  .ao-cart-header{flex-direction:column;gap:8px}
+  .ao-cart-head-right{text-align:left;align-self:stretch;display:flex;justify-content:space-between;align-items:center;padding-top:6px;border-top:1px dashed #e2e8f0}
+  .ao-cart-actions{gap:6px}
+  .ao-cart-actions .ao-btn{flex:1 1 calc(50% - 4px);justify-content:center;font-size:.75rem;padding:7px 8px}
+  .ao-cart-toggle{padding:8px 0}
+  .ao-detail{padding:12px}
+}
+@media(max-width:420px){
+  .ao-stats{grid-template-columns:repeat(2,1fr)}
+  .ao-name{font-size:.88rem}
+  .ao-price{font-size:.88rem}
+  .ao-cart-name{font-size:.9rem}
+  .ao-cart-total{font-size:1rem}
 }
       `}</style>
     </>

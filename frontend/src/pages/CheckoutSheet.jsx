@@ -16,6 +16,7 @@ function money(n) {
 }
 
 function calcItemTotal(it) {
+  if (it?.bundleTotal) return Math.round(Number(it.bundleTotal));
   const qty = Math.max(0, Number(it?.quantity) || 0);
   const base = Math.max(0, Number(it?.price) || 0);
   if (!qty || !base) return 0;
@@ -82,6 +83,8 @@ export function CheckoutSheet({ onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [confirmedTotal, setConfirmedTotal] = useState(0);
   const [confirmedItems, setConfirmedItems] = useState([]);
+  const [showCabaConfirm, setShowCabaConfirm] = useState(false);
+  const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null); // 'cod' | 'mp' | 'card'
 
   // MP states
   const mpPublicKey = import.meta.env.VITE_MP_PUBLIC_KEY || null;
@@ -99,7 +102,11 @@ export function CheckoutSheet({ onClose }) {
   const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
   // Full price (without promos) for savings calc
-  const fullPrice = items.reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0);
+  // For bundle items use compareAtPrice when available (the "tachado" price)
+  const fullPrice = items.reduce((s, i) => {
+    if (i.bundleTotal && i.compareAtPrice) return s + Number(i.compareAtPrice);
+    return s + (Number(i.price) || 0) * (Number(i.quantity) || 0);
+  }, 0);
   const savings = Math.max(0, fullPrice - totalPrice);
 
   // Lock body scroll
@@ -241,6 +248,40 @@ export function CheckoutSheet({ onClose }) {
     }
   }
 
+  // ── Flujo COD (pagar al recibir — solo CABA) ──
+  async function handleCodSubmit() {
+    setSubmitting(true);
+    try {
+      const cartItems = items.map(i => ({
+        productId: i.productId, name: i.name, price: i.price, quantity: i.quantity,
+      }));
+      await api.post("/orders", {
+        customerName:    `${form.nombre} ${form.apellido}`.trim(),
+        customerEmail:   "",
+        customerDni:     "00000000",
+        customerPhone:   form.tel,
+        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", "),
+        shippingMethod:  "caba_cod",
+        paymentMethod:   "cod",
+        notes:           "Pago al recibir",
+        total:           totalPrice,
+        items:           cartItems,
+      });
+      track("Purchase", { currency: "ARS", value: totalPrice, content_ids: items.map(i => i.productId), num_items: totalItems });
+      setConfirmedTotal(totalPrice);
+      setConfirmedItems([...items]);
+      setConfirmedPaymentMethod("cod");
+      clearCart();
+      setShowCabaConfirm(false);
+      setStep(4);
+    } catch (err) {
+      console.error(err);
+      setErrors({ submit: "Error al registrar el pedido. Intentá de nuevo." });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   // ── Countdown del interstitial MP: auto-redirige cuando llega a 0 ──
   useEffect(() => {
     if (step !== 3 || !mpRedirectUrl) return;
@@ -278,6 +319,7 @@ export function CheckoutSheet({ onClose }) {
         track("Purchase", { currency: "ARS", value: Number(amount), content_ids: items.map(i => i.productId), num_items: totalItems });
         setConfirmedTotal(Number(amount));
         setConfirmedItems([...items]);
+        setConfirmedPaymentMethod("card");
         clearCart();
         setStep(4);
       } else if (status === "in_process") {
@@ -903,6 +945,54 @@ export function CheckoutSheet({ onClose }) {
         }
       `}</style>
 
+      {/* ══════ CABA CONFIRM MODAL ══════ */}
+      {showCabaConfirm && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.6)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ background: "#fff", borderRadius: 20, maxWidth: 400, width: "100%", padding: "32px 28px 28px", boxShadow: "0 24px 60px rgba(0,0,0,.25)", textAlign: "center" }}>
+            {/* Icon */}
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#ecfdf5,#d1fae5)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 32, boxShadow: "0 8px 20px rgba(52,211,153,.20)" }}>
+              🛵
+            </div>
+            <h3 style={{ fontWeight: 900, fontSize: 20, color: "#0b1220", margin: "0 0 8px", lineHeight: 1.2 }}>
+              Entrega en CABA
+            </h3>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#64748b", margin: "0 0 20px", lineHeight: 1.6 }}>
+              Esta modalidad de <strong>pago al recibir</strong> está disponible <strong>únicamente para Ciudad Autónoma de Buenos Aires (CABA)</strong>.<br />
+              Confirmá que tu dirección está en CABA para continuar.
+            </p>
+
+            {/* Address preview */}
+            {(form.direccion || form.ciudad) && (
+              <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px", marginBottom: 20, textAlign: "left" }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 4 }}>Tu dirección</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>
+                  {[form.direccion, form.extra, form.ciudad, form.cp].filter(Boolean).join(", ")}
+                </div>
+              </div>
+            )}
+
+            {/* CTA buttons */}
+            <button
+              disabled={submitting}
+              onClick={handleCodSubmit}
+              style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#1b4d3e,#2d7a5e)", color: "#fff", fontWeight: 900, fontSize: 15, cursor: "pointer", marginBottom: 10, boxShadow: "0 8px 20px rgba(27,77,62,.25)", transition: "transform .12s, box-shadow .18s" }}
+            >
+              {submitting ? "Confirmando pedido..." : "Sí, estoy en CABA — Confirmar pedido"}
+            </button>
+            <button
+              onClick={() => setShowCabaConfirm(false)}
+              style={{ width: "100%", padding: "12px 0", borderRadius: 12, border: "1.5px solid #e2e8f0", background: "transparent", color: "#64748b", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+            >
+              Volver y cambiar método de entrega
+            </button>
+
+            {errors.submit && (
+              <div style={{ marginTop: 10, fontSize: 13, fontWeight: 700, color: "#c0392b" }}>{errors.submit}</div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="cs-overlay" onClick={handleOverlayClick}>
         <div className="cs-sheet" ref={sheetRef}>
 
@@ -1026,8 +1116,11 @@ export function CheckoutSheet({ onClose }) {
                   )}
                   {items.map((it, idx) => {
                     const itemTotal = calc(it);
-                    const origTotal = (Number(it.price) || 0) * (Number(it.quantity) || 0);
-                    const hasDiscount = it.promo?.type === "bundle2" && it.promo?.discountPct > 0;
+                    const origTotal = it.bundleTotal && it.compareAtPrice
+                      ? Number(it.compareAtPrice)
+                      : (Number(it.price) || 0) * (Number(it.quantity) || 0);
+                    const hasDiscount = (it.bundleTotal && it.compareAtPrice && Number(it.compareAtPrice) > itemTotal)
+                      || (it.promo?.type === "bundle2" && it.promo?.discountPct > 0);
                     const thumb = it.imageUrl || it.image || null;
                     return (
                       <div key={idx} style={{ display: "flex", gap: 12, alignItems: "center", background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 12px" }}>
@@ -1042,9 +1135,14 @@ export function CheckoutSheet({ onClose }) {
                         {/* Info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.3 }}>{it.name}</div>
-                          {hasDiscount && (
+                          {hasDiscount && it.promo?.discountPct > 0 && (
                             <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", borderRadius: 999, padding: "2px 8px", fontWeight: 800, display: "inline-block", marginTop: 3 }}>
                               -{it.promo.discountPct}% PROMO
+                            </span>
+                          )}
+                          {hasDiscount && it.bundleTotal && (
+                            <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 999, padding: "2px 8px", fontWeight: 800, display: "inline-block", marginTop: 3 }}>
+                              PACK AHORRO
                             </span>
                           )}
                           {/* Qty controls */}
@@ -1210,7 +1308,15 @@ export function CheckoutSheet({ onClose }) {
                 </div>
 
                 {/* Buttons */}
-                <button className="cs-cta" onClick={() => { if (validateStep1()) { captureAbandoned(); setStep(2); } }}>
+                <button className="cs-cta" onClick={() => {
+                  if (!validateStep1()) return;
+                  captureAbandoned();
+                  if (delivery === "caba") {
+                    setShowCabaConfirm(true);
+                  } else {
+                    setStep(2);
+                  }
+                }}>
                   Continuar con el pago →
                 </button>
                 <div style={{ textAlign: "center", marginTop: 12, marginBottom: 8 }}>
@@ -1484,37 +1590,107 @@ export function CheckoutSheet({ onClose }) {
             )}
 
             {/* ══════ STEP 4 — CONFIRMACIÓN ══════ */}
-            {step === 4 && (
+            {step === 4 && (() => {
+              const isCod = confirmedPaymentMethod === "cod";
+              const waNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
+              const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
+              const waText = encodeURIComponent(`Hola ${storeName}! 👋 Acabo de hacer un pedido por ${money(confirmedTotal)} y quería confirmar los detalles de entrega.`);
+              const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : null;
+              return (
               <div className="cs-confirm">
-                <div className="cs-confirm-icon">✅</div>
-                <h2 style={{ fontWeight: 900, fontSize: 24, margin: "0 0 8px", color: "var(--text)" }}>¡Pedido confirmado!</h2>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#888", margin: "0 0 24px", lineHeight: 1.6 }}>
-                  Te contactamos por WhatsApp en breve para coordinar la entrega.
-                </p>
+                {isCod ? (
+                  <>
+                    <div style={{ fontSize: 60, marginBottom: 8 }}>🎉</div>
+                    <h2 style={{ fontWeight: 900, fontSize: 22, margin: "0 0 10px", color: "var(--text)", lineHeight: 1.2 }}>
+                      ¡Felicitaciones!<br/>Tu pedido está confirmado
+                    </h2>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "#64748b", margin: "0 0 20px", lineHeight: 1.6, maxWidth: 320, marginLeft: "auto", marginRight: "auto" }}>
+                      Te vamos a contactar por <strong style={{ color: "#25d366" }}>WhatsApp</strong> para coordinar la entrega y el pago al recibir.
+                    </p>
 
-                {/* Summary card */}
-                <div style={{ background: "#f8faff", border: "1px solid var(--border)", borderRadius: 12, padding: "16px", textAlign: "left", marginBottom: 24 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Productos</span>
-                    <span style={{ fontWeight: 800, fontSize: 13 }}>{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0)} artículo{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0) !== 1 ? "s" : ""}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Total</span>
-                    <span style={{ fontWeight: 900, fontSize: 15 }}>{money(confirmedTotal)}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Método de pago</span>
-                    <span style={{ fontWeight: 800, fontSize: 13 }}>{payment === "mp" ? "Mercado Pago" : payment === "card" ? "Tarjeta" : "—"}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Entrega</span>
-                    <span style={{ fontWeight: 800, fontSize: 13 }}>{delivery === "caba" ? "Pagás al recibir (CABA)" : "Envío a domicilio"}</span>
-                  </div>
-                </div>
+                    {/* COD info card */}
+                    <div style={{ background: "linear-gradient(135deg,#f0fdf4,#ecfdf5)", border: "1.5px solid #34d399", borderRadius: 14, padding: "16px", textAlign: "left", marginBottom: 20, boxShadow: "0 8px 24px rgba(52,211,153,.12)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingBottom: 12, borderBottom: "1px dashed #a7f3d0" }}>
+                        <span style={{ fontSize: 22 }}>📦</span>
+                        <div>
+                          <div style={{ fontWeight: 900, fontSize: 14, color: "#065f46" }}>Resumen del pedido</div>
+                          <div style={{ fontSize: 12, color: "#047857", fontWeight: 700 }}>
+                            {confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0)} artículo{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0) !== 1 ? "s" : ""}
+                          </div>
+                        </div>
+                      </div>
+                      {confirmedItems.map((it, i) => (
+                        <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
+                          <span>{it.name} × {it.quantity}</span>
+                          <span>{money(it.bundleTotal || (it.price * it.quantity))}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 900, color: "#065f46", paddingTop: 10, marginTop: 6, borderTop: "1px solid #a7f3d0" }}>
+                        <span>Total a pagar</span>
+                        <span>{money(confirmedTotal)}</span>
+                      </div>
+                    </div>
 
-                <button className="cs-cta" onClick={onClose}>Seguir comprando</button>
+                    {/* Next steps */}
+                    <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: "14px 16px", textAlign: "left", marginBottom: 20 }}>
+                      <div style={{ fontWeight: 900, fontSize: 11, color: "#0b1220", marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em" }}>Próximos pasos</div>
+                      {[
+                        { icon: "💬", text: "Te contactamos por WhatsApp para confirmar tu dirección" },
+                        { icon: "🚚", text: "Coordinamos la fecha y horario de entrega" },
+                        { icon: "💵", text: "Pagás el total en efectivo cuando recibís el pedido" },
+                      ].map((s, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: i < 2 ? 10 : 0 }}>
+                          <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#334155", lineHeight: 1.4 }}>{s.text}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* WhatsApp CTA */}
+                    {waLink && (
+                      <a
+                        href={waLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "14px 0", borderRadius: 12, background: "#25d366", color: "#fff", fontWeight: 900, fontSize: 15, textDecoration: "none", marginBottom: 12, boxShadow: "0 8px 20px rgba(37,211,102,.25)", transition: "filter .15s" }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Escribinos por WhatsApp
+                      </a>
+                    )}
+                    <button className="cs-cta" style={{ background: "transparent", border: "1.5px solid var(--border2)", color: "var(--text)" }} onClick={onClose}>Seguir viendo productos</button>
+                  </>
+                ) : (
+                  <>
+                    <div className="cs-confirm-icon">✅</div>
+                    <h2 style={{ fontWeight: 900, fontSize: 24, margin: "0 0 8px", color: "var(--text)" }}>¡Pedido confirmado!</h2>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#888", margin: "0 0 24px", lineHeight: 1.6 }}>
+                      Tu pago fue procesado exitosamente. Te contactamos por WhatsApp para coordinar la entrega.
+                    </p>
+                    <div style={{ background: "#f8faff", border: "1px solid var(--border)", borderRadius: 12, padding: "16px", textAlign: "left", marginBottom: 24 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Productos</span>
+                        <span style={{ fontWeight: 800, fontSize: 13 }}>{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0)} artículo{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0) !== 1 ? "s" : ""}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Total</span>
+                        <span style={{ fontWeight: 900, fontSize: 15 }}>{money(confirmedTotal)}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Método de pago</span>
+                        <span style={{ fontWeight: 800, fontSize: 13 }}>{confirmedPaymentMethod === "card" ? "Tarjeta" : "Mercado Pago"}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Entrega</span>
+                        <span style={{ fontWeight: 800, fontSize: 13 }}>Envío a domicilio</span>
+                      </div>
+                    </div>
+                    <button className="cs-cta" onClick={onClose}>Seguir comprando</button>
+                  </>
+                )}
               </div>
-            )}
+              );
+            })()}
 
           </div>
         </div>

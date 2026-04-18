@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node -e \":*)",
       "Bash(npx vite:*)",
-      "Read(//c/Users/Usuario/Downloads/Encontratudo_FINAL_multi_landing_admin_inline_checkout_v2/frontend/src/services/**)"
+      "Read(//c/Users/Usuario/Downloads/Encontratudo_FINAL_multi_landing_admin_inline_checkout_v2/frontend/src/services/**)",
+      "Bash(node -e ' *)"
     ]
   }
 }
