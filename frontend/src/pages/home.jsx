@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { LANDING_CONFIGS } from "../landings/index.js";
 
 /* ── useCountdown — mismo hook que marquee.jsx y ProductDetail.jsx ── */
 /* Misma sessionStorage key "pd_countdown" → sincronizado con el marquee */
@@ -122,6 +123,25 @@ export default function Home() {
       )}`
     : null;
 
+  /* Productos virtuales desde configs de landing (aparecen aunque no estén en DB) */
+  const landingVirtualProducts = useMemo(() => {
+    return Object.entries(LANDING_CONFIGS).map(([slug, cfg]) => {
+      const v0 = cfg.variants?.[0];
+      const img = v0?.thumbImg || v0?.images?.[0] || "";
+      const price = v0?.bundles?.[0]?.price || 0;
+      const compareAt = v0?.bundles?.[0]?.compareAt || 0;
+      return {
+        _id: `lp-${slug}`,
+        name: cfg.checkoutName || slug,
+        slug,
+        images: img ? [img] : [],
+        price,
+        compareAtPrice: compareAt,
+        isActive: true,
+      };
+    });
+  }, []);
+
   /* Fetch */
   useEffect(() => {
     (async () => {
@@ -129,14 +149,20 @@ export default function Home() {
         const res = await api.get("/products");
         const raw = res.data?.data ?? res.data ?? [];
         const arr = Array.isArray(raw) ? raw : [];
-        setProducts(arr.filter((p) => p.isActive !== false));
+        const apiProducts = arr.filter((p) => p.isActive !== false);
+        // Slugs ya presentes en la DB — no duplicar
+        const apiSlugs = new Set(apiProducts.map((p) => p.slug).filter(Boolean));
+        const extras = landingVirtualProducts.filter((p) => !apiSlugs.has(p.slug));
+        setProducts([...extras, ...apiProducts]);
       } catch (e) {
         console.error("Home catalog error:", e);
+        // Si la API falla igual mostramos las landings
+        setProducts(landingVirtualProducts);
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [landingVirtualProducts]);
 
   /* Scroll-reveal — mismo patrón que MundialLanding:
      elementos en viewport → is-visible inmediato (con stagger via transitionDelay)

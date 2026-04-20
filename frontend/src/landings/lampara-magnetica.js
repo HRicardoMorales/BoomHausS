@@ -60,8 +60,8 @@ const lamparaMagneticaConfig = {
       // Fallback images (si el admin no tiene el producto cargado)
       images: [
         "https://pbs.twimg.com/media/HGTuioNXYAAK30b?format=jpg&name=small",
-        "https://acdn-us.mitiendanube.com/stores/005/324/474/products/178935713068e12604a067c1-78026557-c419c227466dbfd98317766358229151-640-0.webp",
-        "https://acdn-us.mitiendanube.com/stores/005/324/474/products/204878835368e12605385b59-97646045-91b73686bb5f9ea28717766358468222-640-0.webp",
+        "https://pbs.twimg.com/media/HGUaZ9nWkAAdyCB?format=png&name=small",
+        "https://pbs.twimg.com/media/HGUacDVaQAAExSw?format=png&name=small",
       ],
       miniDescription:
         "Kit completo en negro mate con cinco piezas: cabezal LED magnético que se desmonta con un click, base de pie estable, pinza para escritorio o borde de mesa, soporte adhesivo de pared y brazo flexible articulado. Es la variante más versátil — la adaptás a cualquier rincón del home office, la usás como linterna portátil o la montás en la pared del cuarto.",
