@@ -5,6 +5,7 @@ import mochilaTransparente   from './mochila-transparente';
 import mochilaFashion        from './mochila-fashion';
 import nebulizadorMesh       from './nebulizador-mesh';
 import soporteNasalSN300     from './soporte-nasal-sn300';
+import lamparaMagnetica      from './lampara-magnetica';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -14,6 +15,7 @@ export const LANDING_CONFIGS = {
   'nebulizador-mesh':         nebulizadorMesh,
   'nebulizador':              nebulizadorMesh,
   'soporte-nasal-sn300':      soporteNasalSN300,
+  'lampara-magnetica':        lamparaMagnetica,
 };
 
 export const LANDING_META = [
@@ -65,6 +67,13 @@ export const LANDING_META = [
     desc: 'Kit dual: tiras adhesivas externas + dilatadores internos de silicona. Reduce ronquidos y mejora el sueño. Slug: "soporte-nasal-sn300".',
     status: 'active',
     emoji: '👃',
+  },
+  {
+    slug: 'lampara-magnetica',
+    name: 'Lámpara Magnética 3 en 1',
+    desc: 'Lámpara inalámbrica con acople magnético, rotación 360°, CCT y batería USB-C. 2 variantes: Negro Kit Completo y Madera Básica.',
+    status: 'active',
+    emoji: '💡',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

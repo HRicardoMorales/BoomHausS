@@ -102,17 +102,18 @@ export default function App() {
 
       <div className="app-body">
         <Routes>
-          {/* ✅ Home privado: panel admin */}
-          <Route path="/" element={<AdminRoute><AdminHome /></AdminRoute>} />
-
-          {/* ✅ Home público opcional */}
+          {/* ✅ Home público — accesible sin login */}
+          <Route path="/" element={<Home />} />
           <Route path="/public" element={<Home />} />
+
+          {/* ✅ Panel admin — requiere rol admin */}
+          <Route path="/admin" element={<AdminRoute><AdminHome /></AdminRoute>} />
 
           {/* ✅ Landing pages (ads -> directo acá) */}
           {/* ✅ Landing B2B mundial revendedores (ANTES del catch-all de slugs) */}
           <Route path="/lp/mundial-revendedores" element={<MundialLanding />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
-<Route path="/lp/:slug" element={<ProductDetail />} />
+          <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />

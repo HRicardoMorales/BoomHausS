@@ -460,7 +460,7 @@ function VideoStripSection({ mc = MARKETING_CONTENT }) {
     <section className="vstrip-section anim-el">
       {/* Header: kicker + title + subtitle ARRIBA de los videos */}
       <div className="vstrip-header">
-        <div className="vstrip-kicker">✦ CLIENTES SATISFECHOS</div>
+        <div className="vstrip-kicker">{mc.proofVideosKicker || "✦ CLIENTES SATISFECHOS"}</div>
         {mc.proofVideosTitle && (
           <h2 className="vstrip-title">{mc.proofVideosTitle}</h2>
         )}
@@ -469,7 +469,7 @@ function VideoStripSection({ mc = MARKETING_CONTENT }) {
         )}
       </div>
 
-      {/* Tres videos en columnas — los tres caben en mobile simultáneamente */}
+      {/* Tres elementos en columnas — los tres caben en mobile simultáneamente */}
       <div className="vstrip-row">
         {videos.map((v, i) => (
           <div key={i} className="vstrip-item">
@@ -485,6 +485,13 @@ function VideoStripSection({ mc = MARKETING_CONTENT }) {
                 >
                   <source src={v.videoUrl} type="video/mp4" />
                 </video>
+              ) : v.imgUrl ? (
+                <img
+                  src={v.imgUrl}
+                  alt={v.label}
+                  className="vstrip-video"
+                  loading="lazy"
+                />
               ) : (
                 <div className="vstrip-ph" aria-hidden="true">
                   <span className="vstrip-ph-ico">▶</span>
@@ -1212,7 +1219,33 @@ export default function ProductDetail() {
   const { addItem } = useCart();
 
   // ✅ Config dinámica: si viene de /lp/:slug usa esa config, si no usa la de porta-cepillos
-  const MC = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
+  const MCRaw = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
+
+  // ── Soporte de variantes ────────────────────────────────────────────────────
+  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
+  const [selectedColorIdx, setSelectedColorIdx] = useState(0);
+  const activeVariant = useMemo(
+    () => (MCRaw.variants ? MCRaw.variants[selectedVariantIdx] || null : null),
+    [MCRaw, selectedVariantIdx]
+  );
+  const activeColorVariant = useMemo(
+    () => activeVariant?.colorVariants?.[selectedColorIdx] || null,
+    [activeVariant, selectedColorIdx]
+  );
+  // MC efectivo: cuando hay variante activa, sobreescribe bundles, bullets y descripción corta
+  const MC = useMemo(() => {
+    if (!activeVariant) return MCRaw;
+    const kitBullets = activeVariant.kitBullets || [];
+    const sharedBenefits = MCRaw.sharedBenefits || [];
+    const mergedBullets = [...kitBullets, ...sharedBenefits];
+    return {
+      ...MCRaw,
+      bundles: activeVariant.bundles || MCRaw.bundles,
+      trustBullets: mergedBullets.length ? mergedBullets : MCRaw.trustBullets,
+      miniDescription: activeVariant.miniDescription || MCRaw.miniDescription,
+    };
+  }, [MCRaw, activeVariant]);
+  // ── Fin soporte variantes ───────────────────────────────────────────────────
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1222,8 +1255,9 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [bundle, setBundle] = useState(1);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
-    if (!MC.bundles) return 1;
-    const pop = MC.bundles.findIndex(b => b.popular);
+    const bundles = activeVariant?.bundles || MCRaw.bundles;
+    if (!bundles) return 1;
+    const pop = bundles.findIndex(b => b.popular);
     return pop >= 0 ? pop : 1;
   });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
@@ -1235,44 +1269,75 @@ export default function ProductDetail() {
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 40;
   const lastViewedRef = useRef(null);
+  // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
+  const hasLoadedOnce = useRef(false);
 
   useEffect(() => {
     async function fetchOne() {
       try {
         setLoading(true);
-        // ✅ Soporte /lp/:slug (por slug) y /products/:id (por id)
-        // MC.productSlug permite que el slug de la URL difiera del slug del producto en admin
-        const fetchSlug = slug ? (MC.productSlug || slug) : null;
+        setError("");
+        // Cuando hay variante activa con su propio productSlug, se fetchea por esa variante.
+        // Fallback: MC.productSlug del config general, o el slug de la URL.
+        const fetchSlug = slug
+          ? (activeVariant?.productSlug || MC.productSlug || slug)
+          : null;
         const res = fetchSlug
           ? await api.get(`/products/slug/${fetchSlug}`)
           : await api.get(`/products/${id}`);
         if (res.data?.ok) setProduct(res.data.data);
         else setError(slug
-          ? `Producto no encontrado. Asegurate de que el producto tenga el slug "${slug}" en el panel de administración (Admin → Productos → Editar → campo Slug).`
+          ? `Producto no encontrado. Asegurate de que el producto tenga el slug "${fetchSlug}" en el panel de administración (Admin → Productos → Editar → campo Slug).`
           : "No se pudo cargar el producto.");
       } catch (err) {
         const is404 = err?.response?.status === 404;
-        setError(slug && is404
-          ? `Producto no encontrado con slug "${slug}". Abrí Admin → Productos, editá el producto y setéalo como slug.`
-          : err?.response?.data?.message || "Error al cargar el producto.");
+        // Si la variante tiene imágenes de fallback en el config, mostramos la landing sin error
+        if (is404 && activeVariant?.images?.length) {
+          setProduct(null);
+          setError("");
+        } else {
+          setError(slug && is404
+            ? `Producto no encontrado con slug "${activeVariant?.productSlug || slug}". Abrí Admin → Productos, editá el producto y setéalo como slug.`
+            : err?.response?.data?.message || "Error al cargar el producto.");
+        }
       } finally {
+        hasLoadedOnce.current = true;
         setLoading(false);
       }
     }
     fetchOne();
-  }, [id, slug]);
+  }, [id, slug, activeVariant?.productSlug]);
+
+  // Al cambiar variante: resetear imagen activa, color e índice de bundle al popular de la nueva variante
+  useEffect(() => {
+    setActiveImgIndex(0);
+    setSelectedColorIdx(0);
+    if (activeVariant?.bundles) {
+      const pop = activeVariant.bundles.findIndex(b => b.popular);
+      setSelectedBundleIdx(pop >= 0 ? pop : 1);
+    }
+  }, [selectedVariantIdx]);
 
   const images = useMemo(() => {
-    if (!product) return [];
+    // Prioridad 1: color variant images (cuando hay selector de color activo)
+    if (activeColorVariant?.images?.length) {
+      return activeColorVariant.images.filter(Boolean);
+    }
+    // Prioridad 2: imágenes del producto fetched desde admin
     const arr = [];
-    if (product.imageUrl) arr.push(product.imageUrl);
-    if (Array.isArray(product.images)) {
-      product.images.forEach((x) => {
+    if (product?.imageUrl) arr.push(product.imageUrl);
+    if (Array.isArray(product?.images)) {
+      product?.images.forEach((x) => {
         if (x && typeof x === "string" && !arr.includes(x)) arr.push(x);
       });
     }
+    if (arr.length) return arr;
+    // Prioridad 3: fallback de imágenes del config de la variante (cuando el producto no está en admin)
+    if (activeVariant?.images?.length) {
+      return activeVariant.images.filter(Boolean);
+    }
     return arr;
-  }, [product]);
+  }, [product, activeVariant, activeColorVariant]);
 
   const nextImage = () => {
     if (images.length > 0) setActiveImgIndex((prev) => (prev + 1) % images.length);
@@ -1348,7 +1413,7 @@ export default function ProductDetail() {
 
   // Scroll-reveal: animar solo los elementos debajo del fold
   useEffect(() => {
-    if (!product) return;
+    if (!product && !activeVariant) return;
     let io = null;
 
     const timer = setTimeout(() => {
@@ -1400,13 +1465,27 @@ export default function ProductDetail() {
     }, 200);
 
     return () => { clearTimeout(timer); io?.disconnect(); };
-  }, [product]);
+  }, [product, activeVariant]);
+
+  // En modo fallback (variante con imágenes de config pero sin producto en admin),
+  // creamos un producto sintético para que el carrito funcione igual.
+  // IMPORTANTE: esta variable debe definirse ANTES de los early returns.
+  const hasVariantFallback = !product && (activeVariant?.images?.length ?? 0) > 0;
+  const effectiveProduct = product || (hasVariantFallback ? {
+    _id: activeVariant.productSlug || slug || "variant-fallback",
+    name: MC.checkoutName || activeVariant?.name || "Producto",
+    price: activeVariant?.bundles?.[selectedBundleIdx]?.price || 0,
+    images: activeVariant?.images || [],
+    imageUrl: activeVariant?.images?.[0] || "",
+  } : null);
 
   // Producto con nombre adaptado a la landing (se muestra así en el resumen del checkout)
-  const cartProduct = product && MC.checkoutName ? { ...product, name: MC.checkoutName } : product;
+  const cartProduct = effectiveProduct && MC.checkoutName
+    ? { ...effectiveProduct, name: MC.checkoutName }
+    : effectiveProduct;
 
   const handleBuyNow = () => {
-    if (!product) return;
+    if (!effectiveProduct) return;
     // Si hay config de upsell, mostrar el sheet de upsell primero
     if (MC.upsell) {
       setShowUpsellSheet(true);
@@ -1470,7 +1549,7 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!effectiveProduct) return;
 
     track("AddToCart", {
       content_ids: [String(contentId)],
@@ -1493,7 +1572,7 @@ export default function ProductDetail() {
 
     setShowToast(true);
     setTimeout(() => setShowToast(false), 5000);
-    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: product?.name || "Producto" } }));
+    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: effectiveProduct?.name || "Producto" } }));
   };
 
   const scrollToReviews = (e) => {
@@ -1501,7 +1580,7 @@ export default function ProductDetail() {
     document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  if (loading)
+  if (loading && !hasLoadedOnce.current)
     return (
       <main className="section">
         <div className="container">
@@ -1510,7 +1589,7 @@ export default function ProductDetail() {
       </main>
     );
 
-  if (error || !product)
+  if (error || (!product && !hasVariantFallback))
     return (
       <main className="section">
         <div className="container">
@@ -1534,6 +1613,8 @@ export default function ProductDetail() {
     <main className="section main-wrapper pd-page">
       {/* Marquee movido a App.jsx arriba del navbar */}
 
+      {/* HERO ROW: en desktop ≥980px se convierte en 2 columnas (imagen izq, controles der) */}
+      <div className="pd-hero-row">
       {/* MEDIA — fuera del container para ancho completo */}
       <section className="pd-media-fullwidth">
           <section className="card pd-media pd-media-sticky">
@@ -1545,9 +1626,10 @@ export default function ProductDetail() {
             >
               {images.length > 0 ? (
                 <img
-                  className="pd-mainImg pd-mainImg--force"
+                  key={`v${selectedVariantIdx}-${activeImgIndex}`}
+                  className="pd-mainImg pd-mainImg--force pd-mainImg--anim"
                   src={images[activeImgIndex]}
-                  alt={product.name}
+                  alt={product?.name || MC.checkoutName || "Producto"}
                   referrerPolicy="no-referrer"
                   crossOrigin="anonymous"
                   loading={activeImgIndex === 0 ? "eager" : "lazy"}
@@ -1627,7 +1709,7 @@ export default function ProductDetail() {
                 </span>
               </div>
 
-              <h1 className="hero-title hero-title--compact">{MC.heroTitle || product.name}</h1>
+              <h1 className="hero-title hero-title--compact">{MC.heroTitle || product?.name || MC.checkoutName}</h1>
 
               {/* Subtítulo corto — viene del config de la landing */}
               {MC.heroSubtitle && (
@@ -1649,6 +1731,72 @@ export default function ProductDetail() {
                     <li key={i}>{t}</li>
                   ))}
                 </ul>
+              )}
+
+              {/* ── Selector de variantes con imagen ── */}
+              {MCRaw.variants && MCRaw.variants.length > 1 && (
+                <div className="vsel2-wrap">
+                  <div className="vsel2-label">Elegí tu versión</div>
+                  <div className="vsel2-grid">
+                    {MCRaw.variants.map((v, i) => {
+                      const img = v.thumbImg ?? v.images?.[0];
+                      const isOn = selectedVariantIdx === i;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          className={`vsel2-card${isOn ? " vsel2-card--on" : ""}`}
+                          onClick={() => setSelectedVariantIdx(i)}
+                          aria-pressed={isOn}
+                        >
+                          <div className="vsel2-img-wrap">
+                            {img
+                              ? <img src={img} alt={v.name} className="vsel2-img" />
+                              : <div className="vsel2-img-ph" />
+                            }
+                            {v.badge && <span className="vsel2-badge">{v.badge}</span>}
+                          </div>
+                          <div className="vsel2-name">{v.name}</div>
+                          {v.bundles?.[0]?.price && (
+                            <div className="vsel2-from">desde {moneyARS(v.bundles[0].price)}</div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Nivel 2: color — solo visible cuando la variante activa tiene colorVariants */}
+                  {activeVariant?.colorVariants?.length > 0 && (
+                    <div className="vsel2-sub">
+                      <div className="vsel2-sub-label">Color</div>
+                      <div className="vsel2-sub-grid">
+                        {activeVariant.colorVariants.map((cv, ci) => {
+                          const img = cv.thumbImg ?? cv.images?.[0];
+                          const isOn = selectedColorIdx === ci;
+                          return (
+                            <button
+                              key={cv.id}
+                              type="button"
+                              className={`vsel2-card${isOn ? " vsel2-card--on" : ""}`}
+                              onClick={() => setSelectedColorIdx(ci)}
+                              aria-pressed={isOn}
+                            >
+                              <div className="vsel2-img-wrap">
+                                {img
+                                  ? <img src={img} alt={cv.name} className="vsel2-img" />
+                                  : <div className="vsel2-img-ph" />
+                                }
+                              </div>
+                              <div className="vsel2-name">{cv.name}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="vsel-divider" />
+                </div>
               )}
 
               {/* Trust badges estilo Calmora — antes del bundle picker */}
@@ -1946,6 +2094,7 @@ export default function ProductDetail() {
           <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
         )}
       </div>
+      </div>{/* /pd-hero-row */}
 
       {/* pd-bands fuera del container → waves a ancho completo de pantalla */}
       <div className="pd-bands">
@@ -2031,7 +2180,7 @@ export default function ProductDetail() {
               />
               <div className="pd-toast-info">
                 <span className="pd-toast-status">✓ ¡Agregado!</span>
-                <span className="pd-toast-name">{product.name}</span>
+                <span className="pd-toast-name">{effectiveProduct?.name || MC.checkoutName}</span>
               </div>
               <button className="pd-toast-close" onClick={() => setShowToast(false)} type="button">
                 ✕
@@ -2407,6 +2556,37 @@ export default function ProductDetail() {
         font-weight: 850;
       }
 
+      /* ===== HERO ROW: 2 columnas en desktop ===== */
+      .pd-hero-row {
+        display: block;
+      }
+      @media (min-width: 980px) {
+        .pd-hero-row {
+          display: flex;
+          align-items: flex-start;
+          max-width: 1180px;
+          margin: 0 auto;
+        }
+        .pd-hero-row .pd-media-fullwidth {
+          flex: 0 0 50%;
+          max-width: 50%;
+          position: sticky;
+          top: 70px;
+          align-self: flex-start;
+        }
+        .pd-hero-row .pd-container {
+          flex: 1;
+          min-width: 0;
+          margin: 0 !important;
+          padding: 0 28px 0 24px;
+          max-width: 50%;
+        }
+        .pd-hero-row .pd-mediaMain--bigger {
+          height: 560px;
+          border-radius: 16px;
+        }
+      }
+
       /* ===== IMAGEN PRINCIPAL MÁS GRANDE ===== */
       .pd-media-fullwidth{
         width: 100%;
@@ -2533,6 +2713,121 @@ export default function ProductDetail() {
       /* título y badge compactos */
       .flow-text--rich .flow-title{ margin-bottom: 8px; }
       .flow-text--rich .flow-badge{ margin-bottom: 6px; }
+
+      /* ===== FADE IMAGEN PRINCIPAL AL CAMBIAR VARIANTE ===== */
+      @keyframes pdImgFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .pd-mainImg--anim {
+        animation: pdImgFadeIn 150ms ease forwards;
+      }
+
+      /* ===== SELECTOR DE VARIANTES CON IMAGEN ===== */
+      .vsel2-wrap {
+        margin: 12px 0 4px;
+      }
+      .vsel2-label {
+        font-size: .70rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.38);
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        margin-bottom: 8px;
+      }
+      .vsel2-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .vsel2-card {
+        border: 2px solid rgba(11,18,32,.10);
+        border-radius: 14px;
+        background: #fff;
+        cursor: pointer;
+        padding: 0;
+        text-align: center;
+        overflow: hidden;
+        transition: border-color .13s, box-shadow .13s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .vsel2-card:hover {
+        border-color: rgba(11,92,255,.30);
+      }
+      .vsel2-card:active {
+        transform: scale(.97);
+      }
+      .vsel2-card--on {
+        border-color: var(--primary, #0B5CFF);
+        box-shadow: 0 0 0 3px rgba(11,92,255,.12);
+      }
+      .vsel2-img-wrap {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        background: #f4f4f6;
+      }
+      .vsel2-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .vsel2-img-ph {
+        width: 100%;
+        height: 100%;
+        background: rgba(11,18,32,.06);
+      }
+      .vsel2-badge {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: .58rem;
+        font-weight: 900;
+        letter-spacing: .05em;
+        color: #fff;
+        background: var(--primary, #0B5CFF);
+        padding: 2px 7px;
+        border-radius: 999px;
+      }
+      .vsel2-name {
+        font-size: .73rem;
+        font-weight: 800;
+        color: rgba(11,18,32,.80);
+        padding: 7px 8px 2px;
+        line-height: 1.25;
+      }
+      .vsel2-from {
+        font-size: .65rem;
+        font-weight: 700;
+        color: rgba(11,18,32,.42);
+        padding: 0 8px 7px;
+      }
+      /* Separador visual entre selector y bundles */
+      .vsel-divider {
+        height: 1px;
+        background: rgba(11,18,32,.07);
+        margin: 10px 0 2px;
+      }
+      /* Nivel 2: selector de color */
+      .vsel2-sub {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(11,18,32,.07);
+      }
+      .vsel2-sub-label {
+        font-size: .70rem;
+        font-weight: 900;
+        color: rgba(11,18,32,.38);
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        margin-bottom: 8px;
+      }
+      .vsel2-sub-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
 
       /* ===== BUNDLE PICKER v2 ===== */
       .bnd2-wrap{
