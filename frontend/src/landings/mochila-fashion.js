@@ -141,6 +141,13 @@ const mochilaFashionConfig = {
   reviewScore: 4.9,
   stockAlert: { show: true, remaining: 7 },
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS SIN RIESGO",
+    sub: "Llevá a tu mascota 30 días con la mochila. Si no quedás conforme con la comodidad, el diseño o los materiales, te devolvemos el dinero completo.",
+    cta: "QUIERO LA MOCHILA →",
+  },
+
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,
 

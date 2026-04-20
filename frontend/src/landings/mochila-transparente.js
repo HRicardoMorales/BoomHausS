@@ -143,6 +143,13 @@ const mochilaTransparenteConfig = {
   reviewScore: 4.8,
   stockAlert: { show: true, remaining: 14 },
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS SIN RIESGO PARA VOS Y TU MASCOTA",
+    sub: "Llevala de paseo durante 30 días. Si tu mascota no se adapta o no quedás conforme con la comodidad y el diseño, te devolvemos el dinero entero.",
+    cta: "QUIERO LA MOCHILA →",
+  },
+
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,
 

@@ -141,6 +141,13 @@ const portaCepillosConfig = {
   reviewScore: 4.7,
   stockAlert: { show: true, remaining: 12 },
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS SIN RIESGO",
+    sub: "Probalo durante 30 días. Si no ves la diferencia en la higiene y el orden de tu baño, te devolvemos el dinero entero. Sin formularios, sin excusas.",
+    cta: "QUIERO EL MÍO →",
+  },
+
   // ── Precio fallback (si el API no trae compareAtPrice) ───
   compareAtPriceFallback: 60350,
 };

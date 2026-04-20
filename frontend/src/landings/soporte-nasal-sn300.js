@@ -197,6 +197,13 @@ const soporteNasalSN300Config = {
     { target: 90, text: `Siguen usándolo al mes <strong>sin necesitar ningún recordatorio</strong>.` },
   ],
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 NOCHES PARA PROBARLO SIN RIESGO",
+    sub: "Dormí con el SN-300 durante 30 noches. Si no notás la diferencia en cómo respirás y descansás, te devolvemos todo el dinero. Sin preguntas, sin trámites.",
+    cta: "QUIERO DORMIR MEJOR →",
+  },
+
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,
 

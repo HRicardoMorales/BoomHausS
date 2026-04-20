@@ -1121,45 +1121,39 @@ function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
 /* =========================
    Guarantee Section — 30 días sin riesgo
 ========================= */
-function GuaranteeSection() {
+function GuaranteeSection({ mc = MARKETING_CONTENT }) {
+  const g = mc.guarantee || {};
+
   const handleCTA = () => {
-    const hero = document.querySelector(".pd-grid");
-    if (hero) {
-      hero.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    const hero = document.querySelector(".bnd2-wrap") || document.querySelector(".pd-hero-row") || document.querySelector(".pd-grid");
+    if (hero) hero.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  if (g.hide) return null;
+
   return (
-    <section className="pd-block grt-section anim-el" id="guarantee">
-      {/* Sello visual */}
-      <div className="grt-seal-wrap">
-        <div className="grt-seal">
-          <svg className="grt-shield" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M32 4L8 14v18c0 13.3 10.3 25.7 24 29 13.7-3.3 24-15.7 24-29V14L32 4z" fill="#1B4D3E"/>
-            <path d="M32 4L8 14v18c0 13.3 10.3 25.7 24 29 13.7-3.3 24-15.7 24-29V14L32 4z" stroke="rgba(255,255,255,.18)" strokeWidth="1.5"/>
-            <polyline points="22,32 29,39 42,26" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="grt-ring" aria-hidden="true" />
+    <section className="grt-section anim-el" id="guarantee">
+      {/* Medalla CSS — círculo dorado con efecto de sello */}
+      <div className="grt-medal" aria-hidden="true">
+        <div className="grt-medal-face">
+          <span className="grt-medal-sup">★ GARANTÍA ★</span>
+          <span className="grt-medal-num">30</span>
+          <span className="grt-medal-bot">DÍAS</span>
         </div>
-        <div className="grt-kicker">GARANTÍA TOTAL</div>
       </div>
 
-      <h2 className="grt-title">30 DÍAS SIN RIESGO</h2>
-      <p className="grt-sub">
-        Si no te convence, te devolvemos el dinero.<br />
-        Sin preguntas. Sin trámites. Sin burocracia.
-      </p>
+      <h2 className="grt-title">{g.title || "30 DÍAS SIN RIESGO"}</h2>
+      <p className="grt-sub">{g.sub || "Si no te convence, te devolvemos el dinero.\nSin preguntas. Sin trámites. Sin burocracia."}</p>
 
       <div className="grt-pills">
-        <span className="grt-pill">🔒 Pago protegido con Mercado Pago</span>
+        <span className="grt-pill">🔒 Pago protegido</span>
         <span className="grt-pill">↩ Devolución en 30 días</span>
-        <span className="grt-pill">✅ Sin requisitos ni cuestionarios</span>
+        <span className="grt-pill">✅ Sin requisitos</span>
       </div>
 
       <button type="button" className="grt-cta" onClick={handleCTA}>
-        QUIERO PROBARLO →
+        {g.cta || "QUIERO PROBARLO →"}
       </button>
     </section>
   );
@@ -1989,16 +1983,6 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Garantia visible */}
-              {MC.guarantee && (
-                <div className="pd-guarantee">
-                  <span className="pd-guaranteeIcon">&#x1F6E1;&#xFE0F;</span>
-                  <div className="pd-guaranteeText">
-                    <strong>{MC.guarantee.text}</strong>
-                    <span>{MC.guarantee.subtext}</span>
-                  </div>
-                </div>
-              )}
 
               {/* Trust lines */}
               {MC.trustLines && (
@@ -2151,6 +2135,7 @@ export default function ProductDetail() {
             {!MC.statsCircles && <HowToSteps mc={MC} />}
             <StatsCircles mc={MC} />
             <AuthorityCard mc={MC} />
+            <GuaranteeSection mc={MC} />
           </div>
         </Band>
 
@@ -4709,114 +4694,167 @@ export default function ProductDetail() {
         .fbsc-reply{ margin-left: 46px; }
       }
 
-      /* ===== GARANTÍA — 30 días sin riesgo ===== */
-      .grt-section{
+      /* ===== GARANTÍA — medalla dorada 30 días ===== */
+      .grt-section {
         text-align: center;
-        padding: 52px 20px 44px;
-      }
-      .grt-seal-wrap{
+        padding: 56px 20px 52px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 14px;
-        margin-bottom: 28px;
       }
-      .grt-seal{
-        position: relative;
-        display: inline-flex;
+
+      /* Medalla CSS — anillo dorado cónico + cara interior oscura */
+      .grt-medal {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 38% 32%, rgba(255,245,120,.55) 0%, transparent 38%),
+          conic-gradient(
+            #9A6B00 0deg,   #FFD700 8deg,   #DAA520 16deg,  #FFD700 24deg,
+            #9A6B00 32deg,  #FFD700 40deg,  #DAA520 48deg,  #FFD700 56deg,
+            #9A6B00 64deg,  #FFD700 72deg,  #DAA520 80deg,  #FFD700 88deg,
+            #9A6B00 96deg,  #FFD700 104deg, #DAA520 112deg, #FFD700 120deg,
+            #9A6B00 128deg, #FFD700 136deg, #DAA520 144deg, #FFD700 152deg,
+            #9A6B00 160deg, #FFD700 168deg, #DAA520 176deg, #FFD700 184deg,
+            #9A6B00 192deg, #FFD700 200deg, #DAA520 208deg, #FFD700 216deg,
+            #9A6B00 224deg, #FFD700 232deg, #DAA520 240deg, #FFD700 248deg,
+            #9A6B00 256deg, #FFD700 264deg, #DAA520 272deg, #FFD700 280deg,
+            #9A6B00 288deg, #FFD700 296deg, #DAA520 304deg, #FFD700 312deg,
+            #9A6B00 320deg, #FFD700 328deg, #DAA520 336deg, #FFD700 344deg,
+            #9A6B00 352deg, #FFD700 360deg
+          );
+        clip-path: polygon(
+          50% 0%,   55% 4%,  62% 2%,  65% 7%,  72% 6%,  74% 12%,
+          81% 12%,  82% 18%, 89% 20%, 88% 27%, 95% 30%, 92% 37%,
+          99% 41%,  95% 48%, 100% 53%, 95% 59%, 99% 65%, 93% 70%,
+          96% 77%,  89% 80%, 90% 87%, 83% 89%, 82% 96%, 74% 96%,
+          71% 100%, 64% 97%, 59% 100%, 53% 97%, 47% 100%, 41% 97%,
+          36% 100%, 29% 97%, 26% 96%, 18% 96%, 17% 89%, 10% 87%,
+          11% 80%,  4% 77%,  7% 70%,  1% 65%,  5% 59%,  0% 53%,
+          5% 48%,   1% 41%,  8% 37%,  5% 30%, 12% 27%, 11% 20%,
+          18% 18%,  19% 12%, 26% 12%, 28% 6%, 35% 7%, 38% 2%, 45% 4%
+        );
+        display: flex;
         align-items: center;
         justify-content: center;
+        margin-bottom: 28px;
+        filter: drop-shadow(0 12px 32px rgba(218,165,32,.60));
+        animation: grtShine 3.5s ease-in-out infinite;
+        flex-shrink: 0;
       }
-      .grt-shield{
-        width: 96px;
-        height: 96px;
-        filter: drop-shadow(0 10px 28px rgba(27,77,62,.60));
+      @keyframes grtShine {
+        0%,100% { filter: drop-shadow(0 10px 28px rgba(218,165,32,.55)); }
+        50%      { filter: drop-shadow(0 14px 44px rgba(255,215,0,.85)); }
       }
-      .grt-ring{
-        position: absolute;
-        inset: -14px;
+      @media (prefers-reduced-motion: reduce) {
+        .grt-medal { animation: none; }
+      }
+      .grt-medal-face {
+        width: 136px;
+        height: 136px;
         border-radius: 50%;
-        border: 1.5px solid rgba(27,77,62,.35);
-        animation: grtPulse 2.6s ease-in-out infinite;
-        pointer-events: none;
+        background: linear-gradient(160deg, #1c1a0e 0%, #0b172a 55%, #060d1a 100%);
+        border: 2px solid rgba(255,215,0,.22);
+        box-shadow: inset 0 3px 10px rgba(0,0,0,.50), inset 0 -1px 4px rgba(255,215,0,.10);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
       }
-      @keyframes grtPulse{
-        0%,100%{ transform: scale(1);    opacity: .75; }
-        50%    { transform: scale(1.10); opacity: .18; }
-      }
-      @media (prefers-reduced-motion: reduce){
-        .grt-ring{ animation: none; }
-      }
-      .grt-kicker{
-        font-size: .67rem;
+      .grt-medal-sup {
+        font-size: .50rem;
         font-weight: 900;
         letter-spacing: .16em;
         text-transform: uppercase;
-        color: rgba(255,255,255,.38);
+        color: #FFD700;
+        line-height: 1.2;
       }
-      .grt-title{
-        margin: 0 0 16px;
+      .grt-medal-num {
+        font-size: 3.6rem;
         font-weight: 1100;
-        letter-spacing: .04em;
+        line-height: .95;
+        color: #FFD700;
+        letter-spacing: -.06em;
+        text-shadow: 0 2px 14px rgba(255,215,0,.50);
+      }
+      .grt-medal-bot {
+        font-size: .65rem;
+        font-weight: 900;
+        letter-spacing: .22em;
         text-transform: uppercase;
-        font-size: 2.3rem;
+        color: rgba(255,215,0,.75);
+        line-height: 1.2;
+      }
+
+      .grt-title {
+        margin: 0 0 14px;
+        font-weight: 1100;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        font-size: 2.1rem;
         line-height: 1.05;
         color: #fff;
       }
-      @media (max-width: 520px){
-        .grt-title{ font-size: 1.75rem; }
+      @media (max-width: 520px) {
+        .grt-title { font-size: 1.6rem; }
+        .grt-medal { width: 148px; height: 148px; }
+        .grt-medal-face { width: 112px; height: 112px; }
+        .grt-medal-num { font-size: 2.9rem; }
       }
-      .grt-sub{
-        margin: 0 auto 30px;
-        max-width: 400px;
+      .grt-sub {
+        margin: 0 auto 28px;
+        max-width: 420px;
         font-weight: 700;
-        font-size: 1.05rem;
-        color: rgba(255,255,255,.68);
-        line-height: 1.65;
+        font-size: 1rem;
+        color: rgba(255,255,255,.65);
+        line-height: 1.70;
+        white-space: pre-line;
       }
-      .grt-pills{
+      .grt-pills {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
         justify-content: center;
-        margin-bottom: 34px;
+        margin-bottom: 32px;
       }
-      .grt-pill{
-        padding: 10px 16px;
+      .grt-pill {
+        padding: 9px 16px;
         border-radius: 999px;
         border: 1px solid rgba(255,255,255,.10);
         background: rgba(255,255,255,.05);
         font-weight: 800;
-        font-size: .86rem;
+        font-size: .83rem;
         color: rgba(255,255,255,.78);
         white-space: nowrap;
       }
-      .grt-cta{
+      .grt-cta {
         display: inline-block;
-        padding: 16px 40px;
+        padding: 16px 42px;
         border: none;
         border-radius: 14px;
-        background: linear-gradient(135deg, #1B4D3E 0%, #153D31 60%, #0F2D24 100%);
-        color: #fff;
+        background: linear-gradient(135deg, #B8860B 0%, #DAA520 40%, #FFD700 100%);
+        color: #0b172a;
         font-weight: 1100;
         font-size: 1rem;
         letter-spacing: .04em;
         cursor: pointer;
-        box-shadow: 0 14px 42px rgba(27,77,62,.45);
+        font-family: inherit;
+        box-shadow: 0 14px 42px rgba(218,165,32,.40);
         transition: transform .15s ease, box-shadow .15s ease;
       }
-      .grt-cta:hover{
+      .grt-cta:hover {
         transform: translateY(-2px);
-        box-shadow: 0 20px 52px rgba(27,77,62,.55);
+        box-shadow: 0 20px 52px rgba(255,215,0,.55);
       }
-      .grt-cta:active{ transform: scale(.98); box-shadow: 0 8px 24px rgba(27,77,62,.35); }
-      @media (max-width: 520px){
-        .grt-section{ padding: 44px 16px 36px; }
-        .grt-pill{ font-size: .82rem; padding: 9px 13px; }
-        .grt-cta{ width: 100%; padding: 16px; }
+      .grt-cta:active { transform: scale(.98); }
+      @media (max-width: 520px) {
+        .grt-section { padding: 44px 16px 40px; }
+        .grt-pill { font-size: .79rem; padding: 8px 12px; }
+        .grt-cta { width: 100%; padding: 16px; }
       }
-      /* garantía vive en band blue → títulos blancos ya heredados */
-      #guarantee .sec-title, #guarantee .sec-sub{ color: #fff; }
+      #guarantee .sec-title, #guarantee .sec-sub { color: #fff; }
 
       /* Story blocks: smoother image cards */
       .flow-imgBox{

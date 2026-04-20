@@ -153,6 +153,13 @@ const nebulizadorMeshConfig = {
   reviewCount: 234,
   reviewScore: 4.8,
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS SIN RIESGO",
+    sub: "Probalo durante 30 días. Si no se convierte en parte de tu rutina o no cumple lo que prometemos, te devolvemos el dinero. Sin preguntas, sin demoras.",
+    cta: "QUIERO EL MÍO →",
+  },
+
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,
 

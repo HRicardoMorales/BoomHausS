@@ -223,9 +223,7 @@ const lamparaMagneticaConfig = {
       label: "EN LA PARED",
     },
     {
-      // FOTO: Lámpara en escritorio — base de pie sobre mesa, setup de trabajo limpio,
-      // cable USB-C desconectado visible para reforzar el aspecto inalámbrico.
-      imgUrl: "https://pbs.twimg.com/media/HGT-KtcWsAAtont?format=jpg&name=small",
+      videoUrl: "https://res.cloudinary.com/duyth9azk/video/upload/v1776707127/Velador_Practiled_L%C3%A1mpara_Desmontable_Con_Accesorios_Negro_rjzem8.mp4",
       label: "EN EL ESCRITORIO",
     },
     {
@@ -366,6 +364,13 @@ const lamparaMagneticaConfig = {
     { target: 88, text: `La usan también <strong>como linterna portátil</strong> en otras partes de la casa.` },
     { target: 93, text: `Recomiendan el producto <strong>a alguien con home office</strong>.` },
   ],
+
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS PARA PROBARLO SIN RIESGO",
+    sub: "Encendela, usala en el escritorio, en la mesita, en la pared.\nSi en 30 días no transformó tu setup, te devolvemos el dinero entero. Sin preguntas, sin vuelta.",
+    cta: "QUIERO MI LÁMPARA →",
+  },
 
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0,

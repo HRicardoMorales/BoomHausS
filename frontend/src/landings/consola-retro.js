@@ -212,6 +212,13 @@ const consolaRetroConfig = {
     { icon: "📋", name: "Manual de uso",                qty: "× 1" },
   ],
 
+  // ── Garantía 30 días ─────────────────────────────────────
+  guarantee: {
+    title: "30 DÍAS DE JUEGO SIN RIESGO",
+    sub: "Jugá los 10.000 títulos durante 30 días. Si no te enganchó o no funcionó como esperabas, te devolvemos el dinero completo. Sin cuestionarios, sin burocracia.",
+    cta: "QUIERO MI CONSOLA →",
+  },
+
   // ── Precio tachado fallback ───────────────────────────────
   compareAtPriceFallback: 0, // lo setéas en el admin al crear el producto
 };
