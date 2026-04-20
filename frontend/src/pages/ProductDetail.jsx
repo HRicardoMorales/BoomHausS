@@ -2738,7 +2738,7 @@ export default function ProductDetail() {
       .vsel2-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 10px;
       }
       .vsel2-card {
         border: 2px solid rgba(11,18,32,.10);
@@ -2824,9 +2824,24 @@ export default function ProductDetail() {
         margin-bottom: 8px;
       }
       .vsel2-sub-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-direction: row;
         gap: 8px;
+      }
+      /* Cards de color: cuadradas y compactas */
+      .vsel2-sub-grid .vsel2-card {
+        width: 68px;
+        flex: 0 0 68px;
+        border-radius: 10px;
+      }
+      .vsel2-sub-grid .vsel2-img-wrap {
+        aspect-ratio: 1 / 1;
+        border-radius: 0;
+      }
+      .vsel2-sub-grid .vsel2-name {
+        font-size: .60rem;
+        padding: 4px 4px 4px;
+        text-align: center;
       }
 
       /* ===== BUNDLE PICKER v2 ===== */

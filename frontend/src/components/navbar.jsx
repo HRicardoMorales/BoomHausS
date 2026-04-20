@@ -84,7 +84,13 @@ export default function Navbar() {
                         </NavLink>
                         <NavLink className={linkBase} to="/checkout">Checkout</NavLink>
                         {currentUser ? <NavLink className={linkBase} to="/my-orders">Mis pedidos</NavLink> : null}
-                        {admin ? <><NavLink className={linkBase} to="/admin/orders">Admin pedidos</NavLink><NavLink className={linkBase} to="/admin/products">Admin productos</NavLink></> : null}
+                        {admin ? (
+                            <>
+                                <NavLink className={linkBase} to="/admin">Admin</NavLink>
+                                <NavLink className={linkBase} to="/admin/orders">Pedidos</NavLink>
+                                <NavLink className={linkBase} to="/admin/products">Productos</NavLink>
+                            </>
+                        ) : null}
 
                         <div style={{ width: 1, height: 26, background: '#e2e8f0', margin: '0 0.35rem' }} />
 
@@ -141,6 +147,14 @@ export default function Navbar() {
                             <NavLink className={linkBase} to="/products">Tienda</NavLink>
                             <NavLink className={linkBase} to="/cart">Carrito ({cartCount})</NavLink>
                             {currentUser ? <NavLink className={linkBase} to="/my-orders">Mis pedidos</NavLink> : null}
+                            {admin ? (
+                                <>
+                                    <div style={{ height: 1, background: '#eee', margin: '0.25rem 0' }} />
+                                    <NavLink className={linkBase} to="/admin">🛠 Admin Home</NavLink>
+                                    <NavLink className={linkBase} to="/admin/orders">📦 Pedidos</NavLink>
+                                    <NavLink className={linkBase} to="/admin/products">🏷 Productos</NavLink>
+                                </>
+                            ) : null}
                             <div style={{ height: 1, background: '#eee', margin: '0.5rem 0' }} />
                             {!currentUser ? (
                                 <><NavLink className={linkBase} to="/login">Ingresar</NavLink><NavLink className="btn btn-primary" to="/register" style={{justifyContent:'center'}}>Registrarse</NavLink></>

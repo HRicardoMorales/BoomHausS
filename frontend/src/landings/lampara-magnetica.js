@@ -115,8 +115,8 @@ const lamparaMagneticaConfig = {
       thumbImg: "https://pbs.twimg.com/media/HGTxO_XXQAA-Pjx?format=jpg&name=small",
       images: [
         "https://pbs.twimg.com/media/HGTxGgzWIAEpI6b?format=jpg&name=small",
-        "https://images.pexels.com/photos/1123262/pexels-photo-1123262.jpeg?auto=compress&cs=tinysrgb&w=1200",
-        "https://images.pexels.com/photos/1166643/pexels-photo-1166643.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "https://cdn.v2.tiendanegocio.com/gallery/31544/img_31544_dpku19hmkmj81xrd9.jpeg?class=xl",
+        "https://http2.mlstatic.com/D_NQ_NP_2X_875148-MLA92302425103_092025-F.webp",
       ],
       miniDescription:
         "Variante básica: solo el cabezal LED magnético y un adhesivo para pared. Lo montás donde quieras sin clavos, sin taladros. Disponible en color madera (estética cálida) o negro mate. Pensada para el setup limpio — la luz que necesitás, sin accesorios de más.",
@@ -162,8 +162,8 @@ const lamparaMagneticaConfig = {
           thumbImg: "https://pbs.twimg.com/media/HGTxO_XXQAA-Pjx?format=jpg&name=small",
           images: [
             "https://pbs.twimg.com/media/HGTxGgzWIAEpI6b?format=jpg&name=small",
-            "https://images.pexels.com/photos/1123262/pexels-photo-1123262.jpeg?auto=compress&cs=tinysrgb&w=1200",
-            "https://images.pexels.com/photos/1166643/pexels-photo-1166643.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://cdn.v2.tiendanegocio.com/gallery/31544/img_31544_dpku19hmkmj81xrd9.jpeg?class=xl",
+        "https://http2.mlstatic.com/D_NQ_NP_2X_875148-MLA92302425103_092025-F.webp",
           ],
         },
         {
@@ -219,19 +219,19 @@ const lamparaMagneticaConfig = {
     {
       // FOTO: Lámpara montada en pared — cabezal sobre adhesivo, encendida, fondo claro/minimalista.
       // Plano vertical que muestre el cabezal en contexto de pared real.
-      imgUrl: "https://http2.mlstatic.com/D_NQ_NP_2X_969567-MLA91899867608_092025-F.webp",
+      imgUrl: "https://pbs.twimg.com/media/HGT9aC7XUAANG3l?format=jpg&name=medium",
       label: "EN LA PARED",
     },
     {
       // FOTO: Lámpara en escritorio — base de pie sobre mesa, setup de trabajo limpio,
       // cable USB-C desconectado visible para reforzar el aspecto inalámbrico.
-      imgUrl: "https://http2.mlstatic.com/D_NQ_NP_2X_785529-MLA91899758632_092025-F.webp",
+      imgUrl: "https://pbs.twimg.com/media/HGT-KtcWsAAtont?format=jpg&name=small",
       label: "EN EL ESCRITORIO",
     },
     {
       // FOTO: Lámpara en mesita de noche — luz cálida encendida, ambiente de lectura/descanso,
       // libro o celular en primer plano para contextualizar el uso nocturno.
-      imgUrl: "PLACEHOLDER_LAMPARA_EN_MESITA",
+      imgUrl: "https://pbs.twimg.com/media/HGUATdcWgAAbTjR?format=jpg&name=small",
       label: "EN LA MESITA DE NOCHE",
     },
   ],
@@ -240,25 +240,25 @@ const lamparaMagneticaConfig = {
   storyBlocks: [
     {
       title: "El escritorio que querés no tiene ese cable colgando",
-      img: "https://images.pexels.com/photos/4050290/pexels-photo-4050290.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      img: "https://pbs.twimg.com/media/HGUBTnWW0AA31SR?format=jpg&name=medium",
       text: "Lámpara con cable que siempre está de más. Enchufe lejos de donde trabajás. Luz general que te hace entrecerrar los ojos. No es culpa tuya — es el diseño viejo del escritorio.",
       textHtml: `Lámpara con cable <strong>que siempre está de más</strong>.<br>Enchufe lejos de donde trabajás.<br><strong>Luz general que te hace entrecerrar los ojos</strong>.<br>No es culpa tuya.<br><strong>Es el diseño viejo del escritorio.</strong>`,
     },
     {
       title: "Una base, un click, luz donde la necesites",
-      img: "https://images.pexels.com/photos/1957478/pexels-photo-1957478.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      img: "https://pbs.twimg.com/media/HGUN2seXIAAIHJn?format=jpg&name=medium",
       text: "El cabezal se acopla magnéticamente a la base. Click y queda firme. Otro click y te la llevás en la mano como linterna para buscar algo en el placard, para leer en la cama, para moverte de cuarto sin prender la luz general.",
       textHtml: `El cabezal <strong>se acopla magnéticamente a la base</strong>.<br>Click y queda firme.<br><strong>Otro click y te la llevás en la mano como linterna</strong>.<br>Para buscar algo en el placard, para leer en la cama,<br>para moverte de cuarto sin prender la luz general.`,
     },
     {
       title: "Luz que se adapta a lo que hagas",
-      img: "https://images.pexels.com/photos/1081685/pexels-photo-1081685.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      img: "https://pbs.twimg.com/media/HGUPnzDWUAAx1mv?format=jpg&name=medium",
       text: "Un toque te cambia entre blanco cálido para leer de noche, neutro para trabajar y frío para las tareas que necesitan precisión. Sin apps, sin configuraciones, sin buscar el control. La tecnología CCT hace todo en un botón.",
       textHtml: `Un toque te cambia entre <strong>blanco cálido para leer de noche</strong>,<br>neutro para trabajar y <strong>frío para las tareas que necesitan precisión</strong>.<br>Sin apps, sin configuraciones, sin buscar el control.<br><strong>La tecnología CCT hace todo en un botón.</strong>`,
     },
     {
       title: "La cargás una vez, dura toda la semana",
-      img: "https://images.pexels.com/photos/3760613/pexels-photo-3760613.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      img: "https://pbs.twimg.com/media/HGURPvYWIAAskK4?format=jpg&name=medium",
       text: "Batería de 1200mAh que carga con el mismo cable USB-C del celular. Una carga completa rinde varios días de uso real. Se queda sin energía mientras dormís y a la mañana la tenés lista, sin que te lo tengas que acordar.",
       textHtml: `Batería de <strong>1200mAh que carga con el mismo cable USB-C del celular</strong>.<br>Una carga completa <strong>rinde varios días de uso real</strong>.<br>Se queda sin energía mientras dormís y a la mañana la tenés lista,<br>sin que te lo tengas que acordar.`,
     },
