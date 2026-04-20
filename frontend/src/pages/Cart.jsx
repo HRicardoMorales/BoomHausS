@@ -9,6 +9,15 @@ function money(n) {
     return `$${num.toFixed(2)}`;
 }
 
+function moneyARS(n) {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(n) || 0);
+}
+
+// Identifica items que provienen de la landing de la lámpara magnética
+function isLamparaItem(it) {
+    return String(it?.productId || '').includes('lampara-magnetica');
+}
+
 function Cart() {
     const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal } = useCart();
     const isEmpty = !Array.isArray(items) || items.length === 0;
@@ -91,6 +100,11 @@ function Cart() {
                                     const hasBundle2 = it?.promo?.type === 'bundle2';
                                     const discountPct = Number(it?.promo?.discountPct) || 0;
 
+                                    const isLampara = isLamparaItem(it);
+                                    const saving = isLampara && it.compareAtPrice && it.bundleTotal
+                                        ? Number(it.compareAtPrice) - Number(it.bundleTotal)
+                                        : 0;
+
                                     return (
                                         <article
                                             key={it.productId}
@@ -98,16 +112,16 @@ function Cart() {
                                             style={{
                                                 padding: '1rem',
                                                 display: 'grid',
-                                                gridTemplateColumns: '80px 1fr', // Imagen un poco más chica en mobile para dar espacio
+                                                gridTemplateColumns: '80px 1fr',
                                                 gap: '1rem',
-                                                alignItems: 'center'
+                                                alignItems: 'start'
                                             }}
                                         >
                                             {/* Imagen */}
                                             <div
                                                 style={{
                                                     width: 80,
-                                                    height: 80, // Cuadrada para mejor consistencia
+                                                    height: 80,
                                                     borderRadius: 14,
                                                     overflow: 'hidden',
                                                     border: '1px solid var(--border)',
@@ -156,37 +170,67 @@ function Cart() {
                                                     </div>
                                                 )}
 
-                                                {/* Controles de Cantidad */}
-                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '5px' }}>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-ghost"
-                                                        style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
-                                                        onClick={() => updateQty(it.productId, Math.max(1, qty - 1))}
-                                                    >
-                                                        −
-                                                    </button>
+                                                {/* Controles de cantidad — ocultos para items de lámpara magnética */}
+                                                {isLampara ? (
+                                                    <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                                                        Cantidad: <strong>{qty}</strong>
+                                                        {' · '}
+                                                        <Link to="/lp/lampara-magnetica" style={{ color: 'var(--primary)', fontSize: '0.76rem' }}>
+                                                            Cambiar cantidad
+                                                        </Link>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '5px' }}>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-ghost"
+                                                            style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
+                                                            onClick={() => updateQty(it.productId, Math.max(1, qty - 1))}
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <input
+                                                            value={qty}
+                                                            onChange={(e) => {
+                                                                const v = Number(e.target.value);
+                                                                if (!Number.isFinite(v)) return;
+                                                                updateQty(it.productId, v);
+                                                            }}
+                                                            inputMode="numeric"
+                                                            className="qty-input input"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-ghost"
+                                                            style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
+                                                            onClick={() => updateQty(it.productId, qty + 1)}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                )}
 
-                                                    <input
-                                                        value={qty}
-                                                        onChange={(e) => {
-                                                            const v = Number(e.target.value);
-                                                            if (!Number.isFinite(v)) return;
-                                                            updateQty(it.productId, v);
-                                                        }}
-                                                        inputMode="numeric"
-                                                        className="qty-input input" // Clase añadida arriba
-                                                    />
-
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-ghost"
-                                                        style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
-                                                        onClick={() => updateQty(it.productId, qty + 1)}
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
+                                                {/* Info de ahorro y confianza — solo para lámpara magnética */}
+                                                {isLampara && (
+                                                    <div style={{
+                                                        marginTop: '6px',
+                                                        padding: '10px 12px',
+                                                        borderRadius: '10px',
+                                                        background: 'rgba(16,185,129,.07)',
+                                                        border: '1px solid rgba(16,185,129,.18)',
+                                                        display: 'grid',
+                                                        gap: '4px',
+                                                        fontSize: '0.80rem',
+                                                        fontWeight: 700,
+                                                        color: '#065f46',
+                                                    }}>
+                                                        {saving > 0 && (
+                                                            <span>✅ Ahorrás {moneyARS(saving)} con esta oferta</span>
+                                                        )}
+                                                        <span>🚚 Envío gratis a todo el país</span>
+                                                        <span>🛡️ Garantía 30 días sin riesgo</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </article>
                                     );

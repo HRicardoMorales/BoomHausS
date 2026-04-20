@@ -1216,7 +1216,7 @@ export default function ProductDetail() {
   const MCRaw = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
 
   // ── Soporte de variantes ────────────────────────────────────────────────────
-  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
+  const [selectedVariantIdx, setSelectedVariantIdx] = useState(() => MCRaw.defaultVariantIdx ?? 0);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const activeVariant = useMemo(
     () => (MCRaw.variants ? MCRaw.variants[selectedVariantIdx] || null : null),
@@ -1249,6 +1249,7 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [bundle, setBundle] = useState(1);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
+    if (MCRaw.defaultBundleIdx !== undefined) return MCRaw.defaultBundleIdx;
     const bundles = activeVariant?.bundles || MCRaw.bundles;
     if (!bundles) return 1;
     const pop = bundles.findIndex(b => b.popular);
@@ -1265,6 +1266,8 @@ export default function ProductDetail() {
   const lastViewedRef = useRef(null);
   // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
   const hasLoadedOnce = useRef(false);
+  // Evita que el useEffect de variante pise el defaultBundleIdx en el mount inicial
+  const didInitBundle = useRef(false);
 
   useEffect(() => {
     async function fetchOne() {
@@ -1302,13 +1305,17 @@ export default function ProductDetail() {
     fetchOne();
   }, [id, slug, activeVariant?.productSlug]);
 
-  // Al cambiar variante: resetear imagen activa, color e índice de bundle al popular de la nueva variante
+  // Al cambiar variante: resetear imagen activa, color e índice de bundle
   useEffect(() => {
     setActiveImgIndex(0);
     setSelectedColorIdx(0);
     if (activeVariant?.bundles) {
-      const pop = activeVariant.bundles.findIndex(b => b.popular);
-      setSelectedBundleIdx(pop >= 0 ? pop : 1);
+      if (MCRaw.defaultBundleIdx !== undefined) {
+        setSelectedBundleIdx(MCRaw.defaultBundleIdx);
+      } else {
+        const pop = activeVariant.bundles.findIndex(b => b.popular);
+        setSelectedBundleIdx(pop >= 0 ? pop : 1);
+      }
     }
   }, [selectedVariantIdx]);
 
@@ -1473,10 +1480,20 @@ export default function ProductDetail() {
     imageUrl: activeVariant?.images?.[0] || "",
   } : null);
 
+  // Nombre del item en carrito: enriquecido con variante + qty cuando aplica
+  const cartItemName = useMemo(() => {
+    const base = MC.checkoutName || effectiveProduct?.name;
+    if (!base || !activeVariant) return base;
+    const label = activeVariant.cartLabel;
+    const qty = activeBundleData?.qty ?? totalQty ?? 1;
+    const qtyStr = qty > 1 ? ` x${qty} unidades` : ` x1`;
+    return label ? `${base} ${label}${qtyStr}` : `${base}${qtyStr}`;
+  }, [MC.checkoutName, effectiveProduct?.name, activeVariant, activeBundleData, totalQty]);
+
   // Producto con nombre adaptado a la landing (se muestra así en el resumen del checkout)
-  const cartProduct = effectiveProduct && MC.checkoutName
-    ? { ...effectiveProduct, name: MC.checkoutName }
-    : effectiveProduct;
+  const cartProduct = effectiveProduct
+    ? { ...effectiveProduct, name: cartItemName || MC.checkoutName || effectiveProduct.name }
+    : null;
 
   const handleBuyNow = () => {
     if (!effectiveProduct) return;
@@ -2187,6 +2204,7 @@ export default function ProductDetail() {
       <div className="sticky-pro">
         <div className="sticky-pro-left">
           <div className="sticky-prices">
+            {totalQty > 1 && <span className="sticky-qty">{totalQty}x</span>}
             <span className="sticky-old">{formatARS(oldTotal)}</span>
             <span className="sticky-now">{formatARS(displayTotal)}</span>
           </div>
@@ -3987,7 +4005,8 @@ export default function ProductDetail() {
       }
       .cd{ font-variant-numeric: tabular-nums; color: #dc2626; font-weight: 900; font-size: .72rem; }
 
-      .sticky-prices{ display:flex; align-items: baseline; gap: 5px; }
+      .sticky-prices{ display:flex; align-items: baseline; gap: 5px; flex-wrap: wrap; }
+      .sticky-qty{ font-size: .68rem; font-weight: 900; color: #fff; background: #1B4D3E; border-radius: 999px; padding: 1px 7px; letter-spacing: .02em; align-self: center; }
       .sticky-old{ color: rgba(11,18,32,.35); font-weight: 700; text-decoration: line-through; font-size: .7rem; }
       .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: .95rem; }
 

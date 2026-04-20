@@ -44,6 +44,11 @@ const lamparaMagneticaConfig = {
   miniDescription:
     "Lámpara LED magnética inalámbrica con sistema de acople instantáneo. Se desmonta con un click para usarla como linterna en la mano. Rotación 360°, batería recargable USB-C 1200mAh y tecnología CCT para ajustar la temperatura de color. Un solo producto reemplaza la lámpara de escritorio, la linterna y la luz de lectura.",
 
+  // ── Selección por defecto al entrar a la landing ─────────────
+  // Arranca en "Solo Lámpara" (índice 1) + pack de 1 unidad (índice 0) = precio mínimo visible
+  defaultVariantIdx: 1,
+  defaultBundleIdx: 0,
+
   // ────────────────────────────────────────────────────────────────
   // VARIANTES DEL PRODUCTO
   // ────────────────────────────────────────────────────────────────
@@ -52,6 +57,7 @@ const lamparaMagneticaConfig = {
       id: "kit-completo",
       productSlug: "lampara-magnetica-negro-kit",
       name: "Kit Completo",
+      cartLabel: "Kit Completo",
       shortDesc: "Cabezal + base + pinza + soporte pared + brazo flexible",
       badge: "KIT PRO",
       startingAtLabel: "Desde",
@@ -108,6 +114,7 @@ const lamparaMagneticaConfig = {
       id: "solo-lampara",
       productSlug: "lampara-magnetica-madera",
       name: "Solo Lámpara",
+      cartLabel: "",
       shortDesc: "Cabezal LED magnético + adhesivo de pared",
       badge: "BÁSICA",
       startingAtLabel: "Desde",
