@@ -179,7 +179,13 @@ export function CheckoutSheet({ onClose }) {
   // ── Crear el pedido en el backend y devolver el orderId ──
   async function createOrderInDB() {
     const cartItems = items.map(i => ({
-      productId: i.productId, name: i.name, price: i.price, quantity: i.quantity,
+      productId:      i.productId,
+      name:           i.name,
+      price:          i.price,
+      quantity:       i.quantity,
+      imageUrl:       i.imageUrl       || undefined,
+      bundleTotal:    i.bundleTotal    || undefined,
+      compareAtPrice: i.compareAtPrice || undefined,
     }));
     const res = await api.post("/orders", {
       customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -202,7 +208,13 @@ export function CheckoutSheet({ onClose }) {
     setSubmitting(true);
     try {
       const cartItems = items.map(i => ({
-        productId: i.productId, name: i.name, price: i.price, quantity: i.quantity,
+        productId:      i.productId,
+        name:           i.name,
+        price:          i.price,
+        quantity:       i.quantity,
+        imageUrl:       i.imageUrl       || undefined,
+        bundleTotal:    i.bundleTotal    || undefined,
+        compareAtPrice: i.compareAtPrice || undefined,
       }));
       const res = await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -223,14 +235,15 @@ export function CheckoutSheet({ onClose }) {
         : res.data.sandbox_init_point || res.data.init_point;
 
       if (url) {
-        track("InitiateCheckout", {
-          currency: "ARS", value: totalPrice,
+        // Purchase se dispara ANTES de la redirección porque una vez que el cliente
+        // sale del sitio hacia MP ya no se puede trackear el evento.
+        track("Purchase", {
+          currency: "ARS",
+          value: totalPrice,
           content_ids: items.map(i => i.productId),
+          content_type: "product",
           num_items: totalItems,
         });
-        // ✅ En lugar de redireccionar abruptamente, mostramos un interstitial
-        // branded con info de seguridad. Esto reduce el abandono en MP porque
-        // el cliente ve que su pedido fue aceptado y entiende qué va a pasar.
         setMpRedirectUrl(url);
         setMpCountdown(4);
         setStep(3);
@@ -253,7 +266,13 @@ export function CheckoutSheet({ onClose }) {
     setSubmitting(true);
     try {
       const cartItems = items.map(i => ({
-        productId: i.productId, name: i.name, price: i.price, quantity: i.quantity,
+        productId:      i.productId,
+        name:           i.name,
+        price:          i.price,
+        quantity:       i.quantity,
+        imageUrl:       i.imageUrl       || undefined,
+        bundleTotal:    i.bundleTotal    || undefined,
+        compareAtPrice: i.compareAtPrice || undefined,
       }));
       await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -1146,15 +1165,21 @@ export function CheckoutSheet({ onClose }) {
                             </span>
                           )}
                           {/* Qty controls */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                            <button onClick={() => it.quantity <= 1 ? removeItem(it.productId) : updateQty(it.productId, it.quantity - 1)}
-                              style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>
-                              {it.quantity <= 1 ? "×" : "−"}
-                            </button>
-                            <span style={{ fontWeight: 800, minWidth: 20, textAlign: "center" }}>{it.quantity}</span>
-                            <button onClick={() => updateQty(it.productId, it.quantity + 1)}
-                              style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>+</button>
-                          </div>
+                          {String(it?.productId || '').includes('lampara-magnetica') ? (
+                            <div style={{ marginTop: 6 }}>
+                              <span style={{ fontSize: 13, fontWeight: 800, color: "rgba(11,18,32,.50)" }}>Cant: {it.quantity}</span>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+                              <button onClick={() => it.quantity <= 1 ? removeItem(it.productId) : updateQty(it.productId, it.quantity - 1)}
+                                style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>
+                                {it.quantity <= 1 ? "×" : "−"}
+                              </button>
+                              <span style={{ fontWeight: 800, minWidth: 20, textAlign: "center" }}>{it.quantity}</span>
+                              <button onClick={() => updateQty(it.productId, it.quantity + 1)}
+                                style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>+</button>
+                            </div>
+                          )}
                         </div>
 
                         {/* Price */}
@@ -1311,6 +1336,13 @@ export function CheckoutSheet({ onClose }) {
                 <button className="cs-cta" onClick={() => {
                   if (!validateStep1()) return;
                   captureAbandoned();
+                  track("AddPaymentInfo", {
+                    value: totalPrice,
+                    currency: "ARS",
+                    content_ids: items.map(i => i.productId),
+                    content_type: "product",
+                    num_items: totalItems,
+                  });
                   if (delivery === "caba") {
                     setShowCabaConfirm(true);
                   } else {

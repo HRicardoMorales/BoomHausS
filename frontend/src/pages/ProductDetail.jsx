@@ -1480,15 +1480,17 @@ export default function ProductDetail() {
     imageUrl: activeVariant?.images?.[0] || "",
   } : null);
 
-  // Nombre del item en carrito: enriquecido con variante + qty cuando aplica
+  // Nombre del item en carrito: enriquecido con variante + color + qty cuando aplica
   const cartItemName = useMemo(() => {
     const base = MC.checkoutName || effectiveProduct?.name;
     if (!base || !activeVariant) return base;
     const label = activeVariant.cartLabel;
+    const colorName = activeColorVariant?.name || '';
     const qty = activeBundleData?.qty ?? totalQty ?? 1;
     const qtyStr = qty > 1 ? ` x${qty} unidades` : ` x1`;
-    return label ? `${base} ${label}${qtyStr}` : `${base}${qtyStr}`;
-  }, [MC.checkoutName, effectiveProduct?.name, activeVariant, activeBundleData, totalQty]);
+    if (label) return `${base} ${label}${colorName ? ` — ${colorName}` : ''}${qtyStr}`;
+    return `${base}${colorName ? ` ${colorName}` : ''}${qtyStr}`;
+  }, [MC.checkoutName, effectiveProduct?.name, activeVariant, activeColorVariant, activeBundleData, totalQty]);
 
   // Producto con nombre adaptado a la landing (se muestra así en el resumen del checkout)
   const cartProduct = effectiveProduct

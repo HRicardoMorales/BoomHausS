@@ -329,10 +329,13 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         couponDiscount:  couponDiscount,
         total:           finalTotal,
         items: items.map((item) => ({
-          productId: item.productId,
-          name:      item.name,
-          price:     item.price,
-          quantity:  item.quantity,
+          productId:      item.productId,
+          name:           item.name,
+          price:          item.price,
+          quantity:       item.quantity,
+          imageUrl:       item.imageUrl       || undefined,
+          bundleTotal:    item.bundleTotal    || undefined,
+          compareAtPrice: item.compareAtPrice || undefined,
         })),
       };
 
@@ -365,10 +368,19 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
       if (url) {
         clearClientOrderId();
-        setRedirecting(true); // ← activa overlay "Conectando con Mercado Pago"
+        // Purchase se dispara ANTES de redirigir — una vez que el cliente sale
+        // del sitio hacia MP ya no se puede trackear el evento.
+        track("Purchase", {
+          value:        Number(finalTotal),
+          currency:     "ARS",
+          num_items:    totalItems,
+          content_ids:  contentIds,
+          content_type: "product",
+        });
+        setRedirecting(true);
         setTimeout(() => {
           window.location.href = url;
-        }, 1200); // pequeño delay para que el usuario vea el feedback
+        }, 1200);
         return;
       }
 
@@ -419,10 +431,13 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         couponDiscount,
         total:           finalTotal,
         items: items.map((item) => ({
-          productId: item.productId,
-          name:      item.name,
-          price:     item.price,
-          quantity:  item.quantity,
+          productId:      item.productId,
+          name:           item.name,
+          price:          item.price,
+          quantity:       item.quantity,
+          imageUrl:       item.imageUrl       || undefined,
+          bundleTotal:    item.bundleTotal    || undefined,
+          compareAtPrice: item.compareAtPrice || undefined,
         })),
       };
       await api.post("/orders", body);
@@ -977,22 +992,28 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div style={{ fontWeight: 800, fontSize: "0.88rem", lineHeight: 1.25 }}>{item.name || "Producto"}</div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                              <button
-                                type="button"
-                                onClick={() => item.quantity <= 1 ? removeItem(item.productId) : updateQty(item.productId, item.quantity - 1)}
-                                style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
-                              >{item.quantity <= 1 ? "×" : "−"}</button>
-                              <span style={{ fontSize: "0.82rem", fontWeight: 800, minWidth: 18, textAlign: "center" }}>{item.quantity}</span>
-                              <button
-                                type="button"
-                                onClick={() => updateQty(item.productId, item.quantity + 1)}
-                                style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
-                              >+</button>
-                              {item.promo?.type === "bundle2" && item.promo?.discountPct > 0 && (
-                                <span style={{ marginLeft: 4, color: "#16a34a", fontWeight: 800, fontSize: ".75rem" }}>−{item.promo.discountPct}% PROMO</span>
-                              )}
-                            </div>
+                            {String(item?.productId || '').includes('lampara-magnetica') ? (
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ fontSize: "0.82rem", fontWeight: 800, color: "rgba(11,18,32,.50)" }}>Cant: {item.quantity}</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                                <button
+                                  type="button"
+                                  onClick={() => item.quantity <= 1 ? removeItem(item.productId) : updateQty(item.productId, item.quantity - 1)}
+                                  style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
+                                >{item.quantity <= 1 ? "×" : "−"}</button>
+                                <span style={{ fontSize: "0.82rem", fontWeight: 800, minWidth: 18, textAlign: "center" }}>{item.quantity}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => updateQty(item.productId, item.quantity + 1)}
+                                  style={{ width: 26, height: 26, borderRadius: 8, border: "1px solid rgba(11,18,32,.15)", background: "rgba(11,18,32,.04)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: ".85rem", fontWeight: 900, color: "rgba(11,18,32,.55)", lineHeight: 1 }}
+                                >+</button>
+                                {item.promo?.type === "bundle2" && item.promo?.discountPct > 0 && (
+                                  <span style={{ marginLeft: 4, color: "#16a34a", fontWeight: 800, fontSize: ".75rem" }}>−{item.promo.discountPct}% PROMO</span>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div style={{ flexShrink: 0, textAlign: "right" }}>
                             {item.compareAtPrice && item.compareAtPrice > item.price && (

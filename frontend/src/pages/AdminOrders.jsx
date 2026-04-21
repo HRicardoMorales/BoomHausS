@@ -437,18 +437,41 @@ export default function AdminOrders() {
 
                             {/* Items */}
                             <div className="ao-items-section">
-                              <div className="ao-items-head">Productos</div>
-                              {(order.items || []).map((it, i) => (
-                                <div key={i} className="ao-item-row">
-                                  <div className="ao-item-left">
-                                    <span className="ao-item-name">{it.name || '—'}</span>
-                                    <span className="ao-item-qty">x{it.quantity} · {money(it.price)} c/u</span>
-                                  </div>
-                                  <span className="ao-item-total">{money(it.price * it.quantity)}</span>
-                                </div>
-                              ))}
+                              <div className="ao-items-head">Productos del pedido</div>
+                              <div className="ao-items-list">
+                                {(order.items || []).map((it, i) => {
+                                  const itemTotal = it.bundleTotal
+                                    ? Number(it.bundleTotal)
+                                    : (Number(it.price) || 0) * (Number(it.quantity) || 1);
+                                  const hasDiscount = it.compareAtPrice && Number(it.compareAtPrice) > itemTotal;
+                                  const saving = hasDiscount ? Number(it.compareAtPrice) - itemTotal : 0;
+                                  return (
+                                    <div key={i} className="ao-item-card">
+                                      {it.imageUrl && (
+                                        <img src={it.imageUrl} alt={it.name} className="ao-item-img" />
+                                      )}
+                                      <div className="ao-item-body">
+                                        <div className="ao-item-name">{it.name || '—'}</div>
+                                        <div className="ao-item-meta">
+                                          <span className="ao-item-pill">x{it.quantity} ud</span>
+                                          <span className="ao-item-uprice">{money(it.price)} c/u</span>
+                                          {hasDiscount && (
+                                            <span className="ao-item-pill ao-item-pill--save">Ahorrás {money(saving)}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="ao-item-prices">
+                                        {hasDiscount && (
+                                          <span className="ao-item-was">{money(it.compareAtPrice)}</span>
+                                        )}
+                                        <span className="ao-item-total">{money(itemTotal)}</span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                               <div className="ao-item-footer">
-                                <span>Total</span>
+                                <span>Total del pedido</span>
                                 <span className="ao-item-grand">{money(order.totalAmount)}</span>
                               </div>
                             </div>
@@ -764,14 +787,21 @@ export default function AdminOrders() {
 
 /* Items section */
 .ao-items-section{border-top:1px solid #e2e8f0;padding-top:12px}
-.ao-items-head{font-size:.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.ao-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:4px}
-.ao-item-left{min-width:0}
-.ao-item-name{font-weight:700;font-size:.85rem;display:block;color:#1e293b}
-.ao-item-qty{font-size:.73rem;color:#64748b}
-.ao-item-total{font-weight:800;font-size:.88rem;color:#16a34a;flex-shrink:0}
-.ao-item-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;font-size:.88rem;color:#475569}
-.ao-item-grand{font-weight:900;font-size:1.05rem;color:#0f172a}
+.ao-items-head{font-size:.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.ao-items-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.ao-item-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ao-item-img{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;flex-shrink:0}
+.ao-item-body{flex:1;min-width:0}
+.ao-item-name{font-weight:700;font-size:.88rem;color:#1e293b;line-height:1.3;margin-bottom:5px}
+.ao-item-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ao-item-pill{font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#475569}
+.ao-item-pill--save{background:#dcfce7;color:#15803d}
+.ao-item-uprice{font-size:.73rem;color:#64748b;font-weight:600}
+.ao-item-prices{text-align:right;flex-shrink:0}
+.ao-item-was{display:block;font-size:.7rem;font-weight:700;color:#94a3b8;text-decoration:line-through}
+.ao-item-total{display:block;font-weight:900;font-size:.95rem;color:#16a34a}
+.ao-item-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:.88rem;color:#475569;font-weight:600}
+.ao-item-grand{font-weight:900;font-size:1.1rem;color:#0f172a}
 
 /* ====== Abandoned carts ====== */
 .ao-abandon-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;padding:20px;border-radius:14px;border:1px solid #fde68a;background:#fefce8}

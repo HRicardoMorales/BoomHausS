@@ -79,6 +79,31 @@ const lamparaMagneticaConfig = {
         "🧱 Soporte adhesivo de pared — sin taladro ni tornillos",
         "🐍 Brazo flexible articulado — enfoque preciso",
       ],
+      // Selector de color del Kit Completo: Negro y Blanco (mismo precio)
+      colorVariants: [
+        {
+          id: "negro",
+          name: "Negro",
+          thumbImg: "https://http2.mlstatic.com/D_Q_NP_2X_995016-MLA91899758620_092025-F.webp",
+          images: [
+            "https://pbs.twimg.com/media/HGTuioNXYAAK30b?format=jpg&name=small",
+            "https://pbs.twimg.com/media/HGUaZ9nWkAAdyCB?format=png&name=small",
+            "https://pbs.twimg.com/media/HGUacDVaQAAExSw?format=png&name=small",
+          ],
+        },
+        {
+          id: "blanco",
+          name: "Blanco",
+          // TODO: reemplazá esta URL por la imagen real del Kit Completo en color blanco
+          thumbImg: "https://http2.mlstatic.com/D_NQ_NP_2X_628602-MLA95832135109_102025-F.webp",
+          images: [
+            // TODO: reemplazá estos placeholders por las imágenes reales del Kit Completo Blanco
+            "https://http2.mlstatic.com/D_NQ_NP_2X_799628-MLA92311642477_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_697280-MLA92312345341_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_914187-MLA82085652933_012025-F.webp",
+          ],
+        },
+      ],
       // Tres opciones de compra
       bundles: [
         {
@@ -126,11 +151,11 @@ const lamparaMagneticaConfig = {
         "https://http2.mlstatic.com/D_NQ_NP_2X_875148-MLA92302425103_092025-F.webp",
       ],
       miniDescription:
-        "Variante básica: solo el cabezal LED magnético y un adhesivo para pared. Lo montás donde quieras sin clavos, sin taladros. Disponible en color madera (estética cálida) o negro mate. Pensada para el setup limpio — la luz que necesitás, sin accesorios de más.",
+        "Variante básica: solo el cabezal LED magnético y un adhesivo para pared. Lo montás donde quieras sin clavos, sin taladros. Disponible en madera (estética cálida), negro mate o blanco. Pensada para el setup limpio — la luz que necesitás, sin accesorios de más.",
       kitBullets: [
         "🧲 Cabezal LED magnético — se desmonta con un click",
         "🧱 Adhesivo de pared incluido — sin clavos ni taladros",
-        "🎨 Disponible en Madera o Negro Mate",
+        "🎨 Disponible en Madera, Negro Mate o Blanco",
       ],
       bundles: [
         {
@@ -170,7 +195,7 @@ const lamparaMagneticaConfig = {
           images: [
             "https://pbs.twimg.com/media/HGTxGgzWIAEpI6b?format=jpg&name=small",
             "https://cdn.v2.tiendanegocio.com/gallery/31544/img_31544_dpku19hmkmj81xrd9.jpeg?class=xl",
-        "https://http2.mlstatic.com/D_NQ_NP_2X_875148-MLA92302425103_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_875148-MLA92302425103_092025-F.webp",
           ],
         },
         {
@@ -181,6 +206,18 @@ const lamparaMagneticaConfig = {
             "https://pbs.twimg.com/media/HGTuioNXYAAK30b?format=jpg&name=small",
             "https://acdn-us.mitiendanube.com/stores/005/324/474/products/178935713068e12604a067c1-78026557-c419c227466dbfd98317766358229151-640-0.webp",
             "https://acdn-us.mitiendanube.com/stores/005/324/474/products/204878835368e12605385b59-97646045-91b73686bb5f9ea28717766358468222-640-0.webp",
+          ],
+        },
+        {
+          id: "blanco",
+          name: "Blanco",
+          // TODO: reemplazá esta URL por la imagen real de la Solo Lámpara en color blanco
+          thumbImg: "https://acdn-us.mitiendanube.com/stores/006/185/930/products/llm2-3cn-y-llm2-3cb-placas-tienda-nube-09-cdc846663b02d9058317564268846464-1024-1024.webp",
+          images: [
+            // TODO: reemplazá estos placeholders por las imágenes reales de la Solo Lámpara Blanca
+            "https://http2.mlstatic.com/D_NQ_NP_2X_830508-MLA91909516064_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_975353-MLA91909526086_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_604370-MLA92312216933_092025-F.webp",
           ],
         },
       ],

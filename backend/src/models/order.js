@@ -7,9 +7,12 @@ const orderItemSchema = new mongoose.Schema(
         // Mixed permite tanto ObjectId reales como slugs (productos de fallback)
         productId: { type: mongoose.Schema.Types.Mixed },
         productName: { type: String },
-        name: { type: String }, // compat
+        name: { type: String }, // nombre enriquecido: incluye variante + color + qty
         price: { type: Number, required: true },
-        quantity: { type: Number, required: true }
+        quantity: { type: Number, required: true },
+        imageUrl: { type: String, default: null },
+        bundleTotal: { type: Number, default: null },   // precio total del pack (precio real cobrado)
+        compareAtPrice: { type: Number, default: null }, // precio tachado (antes de descuento)
     },
     { _id: false }
 );

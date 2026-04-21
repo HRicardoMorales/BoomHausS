@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { track } from '../lib/metaPixel';
 import api from '../services/api';
 
 export default function SuccessPayment() {
@@ -63,18 +62,13 @@ export default function SuccessPayment() {
         return () => { alive = false; };
     }, [paymentId]);
 
-    // 2) Si queda aprobado, limpiamos carrito y trackeamos compra
+    // 2) Si queda aprobado, limpiamos carrito.
+    // Purchase ya fue disparado antes de redirigir a MP (en CheckoutSheet.jsx / checkout.jsx)
+    // para garantizar que se trackee antes de salir del sitio.
     useEffect(() => {
         if (!isApproved) return;
-
         clearCart();
-
-        track('Purchase', {
-            value: 0,
-            currency: 'ARS',
-            payment_type: paymentType || 'mercadopago'
-        });
-    }, [isApproved, clearCart, paymentType]);
+    }, [isApproved, clearCart]);
 
     return (
         <main

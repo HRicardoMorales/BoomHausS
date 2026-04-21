@@ -373,17 +373,54 @@ export default function MyOrders() {
                                                 </div>
                                             ) : null}
 
-                                            <div style={{ marginTop: '0.65rem' }}>
-                                                <div className="muted" style={{ marginBottom: '0.35rem' }}>
-                                                    Productos:
+                                            <div style={{ marginTop: '0.85rem' }}>
+                                                <div className="muted" style={{ marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                    Productos
                                                 </div>
-                                                <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                                                    {(o.items || []).map((it, idx) => (
-                                                        <li key={idx}>
-                                                            {it.productName || it.name || 'Producto'} — {it.quantity} x {money(it.price)}
-                                                        </li>
-                                                    ))}
-                                                </ul>
+                                                <div style={{ display: 'grid', gap: '0.6rem' }}>
+                                                    {(o.items || []).map((it, idx) => {
+                                                        const itemTotal = it.bundleTotal
+                                                            ? Number(it.bundleTotal)
+                                                            : (Number(it.price) || 0) * (Number(it.quantity) || 1);
+                                                        const hasDiscount = it.compareAtPrice && Number(it.compareAtPrice) > itemTotal;
+                                                        return (
+                                                            <div key={idx} style={{
+                                                                display: 'flex', gap: '0.75rem', alignItems: 'center',
+                                                                background: 'rgba(255,255,255,0.04)',
+                                                                border: '1px solid var(--border)',
+                                                                borderRadius: 12,
+                                                                padding: '10px 12px',
+                                                            }}>
+                                                                {/* Imagen */}
+                                                                {it.imageUrl && (
+                                                                    <div style={{ width: 52, height: 52, borderRadius: 9, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
+                                                                        <img src={it.imageUrl} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                                                    </div>
+                                                                )}
+                                                                {/* Info */}
+                                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                                    <div style={{ fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.3 }}>
+                                                                        {it.productName || it.name || 'Producto'}
+                                                                    </div>
+                                                                    <div className="muted" style={{ fontSize: '0.75rem', marginTop: 3 }}>
+                                                                        Cantidad: <strong>{it.quantity}</strong>
+                                                                        {' · '}
+                                                                        {money(it.price)} c/u
+                                                                    </div>
+                                                                </div>
+                                                                {/* Total */}
+                                                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                                                    {hasDiscount && (
+                                                                        <div style={{ fontSize: '0.72rem', textDecoration: 'line-through', color: 'var(--muted)', fontWeight: 700 }}>
+                                                                            {money(it.compareAtPrice)}
+                                                                        </div>
+                                                                    )}
+                                                                    <div style={{ fontWeight: 900, fontSize: '0.9rem' }}>{money(itemTotal)}</div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

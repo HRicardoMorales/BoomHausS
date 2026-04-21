@@ -100,7 +100,16 @@ async function createOrder(req, res, next) {
             if (!Number.isFinite(price) || price < 0)
                 throw badReq(`Item #${idx + 1}: price inválido.`);
 
-            return { productId, name: itemName, price, quantity: qty };
+            const normalized = { productId, name: itemName, price, quantity: qty };
+
+            // Campos opcionales — presentes en items de landings con bundles y variantes
+            if (it?.imageUrl) normalized.imageUrl = normalizeStr(it.imageUrl);
+            const bundleTotal = toNumber(it?.bundleTotal);
+            if (Number.isFinite(bundleTotal) && bundleTotal > 0) normalized.bundleTotal = bundleTotal;
+            const compareAtPrice = toNumber(it?.compareAtPrice);
+            if (Number.isFinite(compareAtPrice) && compareAtPrice > 0) normalized.compareAtPrice = compareAtPrice;
+
+            return normalized;
         });
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
