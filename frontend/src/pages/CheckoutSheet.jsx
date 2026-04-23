@@ -64,8 +64,9 @@ const LogoMP = () => (
 );
 
 const INITIAL_FORM = {
-  tel: "", nombre: "", apellido: "", direccion: "", extra: "",
-  cp: "", ciudad: "", provincia: "Buenos Aires",
+  nombre: "", dni: "", tel: "", email: "",
+  apellido: "", direccion: "", extra: "",
+  cp: "", ciudad: "", provincia: "Buenos Aires", notes: "",
 };
 
 export function CheckoutSheet({ onClose }) {
@@ -130,7 +131,7 @@ export function CheckoutSheet({ onClose }) {
   // El backend hace upsert por teléfono o email, así que se puede llamar varias veces.
   function captureAbandoned(extra = {}) {
     const phone = (extra.phone ?? form.tel ?? "").trim();
-    const email = (extra.email ?? "").trim();
+    const email = (extra.email ?? form.email ?? "").trim();
     if (!phone && !email) return;
     if (!items || items.length === 0) return;
 
@@ -168,10 +169,11 @@ export function CheckoutSheet({ onClose }) {
 
   function validateStep1() {
     const e = {};
+    if (!form.nombre.trim()) e.nombre = "El nombre es obligatorio.";
+    if (!form.dni.trim()) e.dni = "El DNI es obligatorio.";
     if (!form.tel.trim()) e.tel = "El celular es obligatorio.";
-    if (!form.apellido.trim()) e.apellido = "El apellido es obligatorio.";
-    if (!form.direccion.trim()) e.direccion = "La dirección es obligatoria.";
-    if (!form.ciudad.trim()) e.ciudad = "La ciudad es obligatoria.";
+    if (!form.email.trim()) e.email = "El email es obligatorio.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = "Email inválido.";
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -189,13 +191,13 @@ export function CheckoutSheet({ onClose }) {
     }));
     const res = await api.post("/orders", {
       customerName:    `${form.nombre} ${form.apellido}`.trim(),
-      customerEmail:   "",
-      customerDni:     "00000000",
+      customerEmail:   form.email.trim(),
+      customerDni:     form.dni.trim(),
       customerPhone:   form.tel,
-      shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", "),
+      shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
       shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
       paymentMethod:   payment === "mp" ? "mercadopago" : "card",
-      notes:           "",
+      notes:           form.notes || "",
       total:           totalPrice,
       items:           cartItems,
     });
@@ -218,13 +220,13 @@ export function CheckoutSheet({ onClose }) {
       }));
       const res = await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),
-        customerEmail:   "",
-        customerDni:     "00000000",
+        customerEmail:   form.email.trim(),
+        customerDni:     form.dni.trim(),
         customerPhone:   form.tel,
-        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", "),
+        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
         shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
         paymentMethod:   "mercadopago",
-        notes:           "",
+        notes:           form.notes || "",
         total:           totalPrice,
         items:           cartItems,
       });
@@ -276,13 +278,13 @@ export function CheckoutSheet({ onClose }) {
       }));
       await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),
-        customerEmail:   "",
-        customerDni:     "00000000",
+        customerEmail:   form.email.trim(),
+        customerDni:     form.dni.trim(),
         customerPhone:   form.tel,
-        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", "),
+        shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
         shippingMethod:  "caba_cod",
         paymentMethod:   "cod",
-        notes:           "Pago al recibir",
+        notes:           form.notes ? `Pago al recibir. ${form.notes}` : "Pago al recibir",
         total:           totalPrice,
         items:           cartItems,
       });
@@ -513,6 +515,8 @@ export function CheckoutSheet({ onClose }) {
         .cs-field textarea.hv ~ label {
           top: 10px; transform: none; font-size: 11px; color: #999; font-weight: 700;
         }
+        .cs-field textarea { padding-top: 26px; padding-bottom: 10px; }
+        .cs-field textarea ~ label { top: 18px; transform: none; }
         .cs-field-err { font-size: 12px; color: #c0392b; font-weight: 700; margin-top: 4px; }
         .cs-field select ~ label { top: 10px; transform: none; font-size: 11px; color: #999; font-weight: 700; }
 
@@ -1230,18 +1234,60 @@ export function CheckoutSheet({ onClose }) {
 
                 {/* Contacto */}
                 <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: "var(--text)" }}>Contacto</div>
-                <div className="cs-field">
+
+                {/* Nombre */}
+                <div className="cs-field" style={{ marginBottom: 12 }}>
+                  <input
+                    value={form.nombre}
+                    onChange={e => setF("nombre", e.target.value)}
+                    className={`${form.nombre ? "hv" : ""} ${errors.nombre ? "cs-err" : ""}`}
+                    autoComplete="given-name"
+                  />
+                  <label>Nombre *</label>
+                </div>
+                {errors.nombre && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.nombre}</div>}
+
+                {/* DNI */}
+                <div className="cs-field" style={{ marginBottom: 12 }}>
+                  <input
+                    value={form.dni}
+                    onChange={e => setF("dni", e.target.value)}
+                    className={`${form.dni ? "hv" : ""} ${errors.dni ? "cs-err" : ""}`}
+                    inputMode="numeric"
+                    autoComplete="off"
+                  />
+                  <label>DNI *</label>
+                </div>
+                {errors.dni && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.dni}</div>}
+
+                {/* Celular */}
+                <div className="cs-field" style={{ marginBottom: 12 }}>
                   <input
                     value={form.tel}
                     onChange={e => setF("tel", e.target.value)}
                     onBlur={e => captureAbandoned({ phone: e.target.value })}
                     className={`${form.tel ? "hv" : ""} ${errors.tel ? "cs-err" : ""}`}
                     inputMode="tel"
-                    style={{ marginBottom: 0 }}
+                    autoComplete="tel"
                   />
                   <label>Número de celular *</label>
                 </div>
-                {errors.tel && <div className="cs-field-err">{errors.tel}</div>}
+                {errors.tel && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.tel}</div>}
+
+                {/* Email */}
+                <div className="cs-field" style={{ marginBottom: 4 }}>
+                  <input
+                    value={form.email}
+                    onChange={e => setF("email", e.target.value)}
+                    onBlur={e => captureAbandoned({ email: e.target.value })}
+                    className={`${form.email ? "hv" : ""} ${errors.email ? "cs-err" : ""}`}
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                  />
+                  <label>Email *</label>
+                </div>
+                {errors.email && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.email}</div>}
 
                 <div className="cs-divider" />
 
@@ -1256,60 +1302,40 @@ export function CheckoutSheet({ onClose }) {
                   <label>Provincia / Estado</label>
                 </div>
 
-                {/* Nombre + Apellido */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
-                  <div>
-                    <div className="cs-field">
-                      <input value={form.nombre} onChange={e => setF("nombre", e.target.value)} className={form.nombre ? "hv" : ""} />
-                      <label>Nombre (opcional)</label>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="cs-field">
-                      <input value={form.apellido} onChange={e => setF("apellido", e.target.value)} className={`${form.apellido ? "hv" : ""} ${errors.apellido ? "cs-err" : ""}`} />
-                      <label>Apellidos *</label>
-                    </div>
-                    {errors.apellido && <div className="cs-field-err">{errors.apellido}</div>}
-                  </div>
+                {/* Apellido */}
+                <div className="cs-field" style={{ marginBottom: 12 }}>
+                  <input value={form.apellido} onChange={e => setF("apellido", e.target.value)} className={form.apellido ? "hv" : ""} autoComplete="family-name" />
+                  <label>Apellido (opcional)</label>
                 </div>
 
                 {/* Dirección */}
-                <div className="cs-field" style={{ marginBottom: 4 }}>
+                <div className="cs-field" style={{ marginBottom: 12 }}>
                   <input
                     value={form.direccion}
                     onChange={e => setF("direccion", e.target.value)}
                     onBlur={() => captureAbandoned()}
-                    className={`${form.direccion ? "hv" : ""} ${errors.direccion ? "cs-err" : ""}`}
+                    className={form.direccion ? "hv" : ""}
+                    autoComplete="street-address"
                   />
-                  <label>Dirección *</label>
+                  <label>Dirección (opcional)</label>
                 </div>
-                {errors.direccion && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.direccion}</div>}
 
-                <div className="cs-field" style={{ marginBottom: 12, marginTop: errors.direccion ? 0 : 12 }}>
+                <div className="cs-field" style={{ marginBottom: 12 }}>
                   <input value={form.extra} onChange={e => setF("extra", e.target.value)} className={form.extra ? "hv" : ""} />
                   <label>Casa, apartamento, etc. (opcional)</label>
                 </div>
 
                 {/* CP + Ciudad */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
                   <div className="cs-field">
                     <input value={form.cp} onChange={e => setF("cp", e.target.value)} className={form.cp ? "hv" : ""} inputMode="numeric" />
                     <label>Código postal</label>
                   </div>
-                  <div>
-                    <div className="cs-field">
-                      <input value={form.ciudad} onChange={e => setF("ciudad", e.target.value)} className={`${form.ciudad ? "hv" : ""} ${errors.ciudad ? "cs-err" : ""}`} />
-                      <label>Ciudad *</label>
-                    </div>
-                    {errors.ciudad && <div className="cs-field-err">{errors.ciudad}</div>}
+                  <div className="cs-field">
+                    <input value={form.ciudad} onChange={e => setF("ciudad", e.target.value)} className={form.ciudad ? "hv" : ""} />
+                    <label>Ciudad</label>
                   </div>
                 </div>
-
-                {/* Save info checkbox */}
-                <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, fontWeight: 700, color: "rgba(11,18,32,.7)", cursor: "pointer", marginBottom: 20 }}>
-                  <input type="checkbox" style={{ width: 16, height: 16, accentColor: "var(--primary)", flexShrink: 0, marginTop: 1 }} />
-                  Guardar mi información para consultar más rápidamente la próxima vez
-                </label>
 
                 {/* Shipping methods */}
                 <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 10, color: "var(--text)" }}>Método de envío</div>
@@ -1330,6 +1356,18 @@ export function CheckoutSheet({ onClose }) {
                       <div style={{ fontSize: 13, fontWeight: 900, color: "#1D9E75", flexShrink: 0 }}>GRATIS</div>
                     </div>
                   ))}
+                </div>
+
+                {/* Detalles adicionales */}
+                <div className="cs-field" style={{ marginBottom: 20 }}>
+                  <textarea
+                    value={form.notes}
+                    onChange={e => setF("notes", e.target.value)}
+                    className={form.notes ? "hv" : ""}
+                    rows={3}
+                    style={{ resize: "none" }}
+                  />
+                  <label>Detalles adicionales para la entrega (opcional)</label>
                 </div>
 
                 {/* Buttons */}
