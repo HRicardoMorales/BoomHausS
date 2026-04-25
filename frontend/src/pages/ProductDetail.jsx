@@ -1226,24 +1226,39 @@ export default function ProductDetail() {
     () => activeVariant?.colorVariants?.[selectedColorIdx] || null,
     [activeVariant, selectedColorIdx]
   );
-  // MC efectivo: cuando hay variante activa, sobreescribe bundles, bullets y descripción corta
-  const MC = useMemo(() => {
-    if (!activeVariant) return MCRaw;
-    const kitBullets = activeVariant.kitBullets || [];
-    const sharedBenefits = MCRaw.sharedBenefits || [];
-    const mergedBullets = [...kitBullets, ...sharedBenefits];
-    return {
-      ...MCRaw,
-      bundles: activeVariant.bundles || MCRaw.bundles,
-      trustBullets: mergedBullets.length ? mergedBullets : MCRaw.trustBullets,
-      miniDescription: activeVariant.miniDescription || MCRaw.miniDescription,
-    };
-  }, [MCRaw, activeVariant]);
-  // ── Fin soporte variantes ───────────────────────────────────────────────────
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [product, setProduct] = useState(null);
+
+  // MC efectivo: cuando hay variante activa sobreescribe bundles/bullets/descripción;
+  // si el producto del DB tiene bundles guardados, sus precios sobreescriben los del config.
+  const MC = useMemo(() => {
+    let base;
+    if (!activeVariant) {
+      base = MCRaw;
+    } else {
+      const kitBullets = activeVariant.kitBullets || [];
+      const sharedBenefits = MCRaw.sharedBenefits || [];
+      const mergedBullets = [...kitBullets, ...sharedBenefits];
+      base = {
+        ...MCRaw,
+        bundles: activeVariant.bundles || MCRaw.bundles,
+        trustBullets: mergedBullets.length ? mergedBullets : MCRaw.trustBullets,
+        miniDescription: activeVariant.miniDescription || MCRaw.miniDescription,
+      };
+    }
+    // Aplicar precios del DB (editados desde el admin) si existen
+    if (product?.bundles?.length && base.bundles?.length) {
+      const merged = base.bundles.map(cb => {
+        const dbB = product.bundles.find(b => b.qty === cb.qty);
+        if (!dbB) return cb;
+        return { ...cb, price: dbB.price, compareAt: dbB.compareAt ?? cb.compareAt };
+      });
+      return { ...base, bundles: merged };
+    }
+    return base;
+  }, [MCRaw, activeVariant, product]);
+  // ── Fin soporte variantes ───────────────────────────────────────────────────
   const [showToast, setShowToast] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [qty, setQty] = useState(1);

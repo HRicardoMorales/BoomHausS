@@ -6,6 +6,9 @@
 // ─────────────────────────────────────────────────────────────
 
 const consolaRetroConfig = {
+  // ── Slug del producto en el admin ─────────────────────────
+  productSlug: "consola-retro",
+
   // ── SEO ───────────────────────────────────────────────────
   pageTitle: "Consola Retro M15 Pro | BoomHausS",
   checkoutName: "Consola Retro M15 Pro — 10.000 Juegos",

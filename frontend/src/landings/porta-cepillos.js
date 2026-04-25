@@ -6,6 +6,9 @@
 // ─────────────────────────────────────────────────────────────
 
 const portaCepillosConfig = {
+  // ── Slug del producto en el admin ─────────────────────────
+  productSlug: "porta-cepillos",
+
   // ── Datos para el head/SEO ────────────────────────────────
   pageTitle: "Porta Cepillo Esterilizador | BoomHausS",
   checkoutName: "Porta Cepillo Esterilizador UV",

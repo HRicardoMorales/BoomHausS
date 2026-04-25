@@ -58,12 +58,25 @@ const productSchema = new mongoose.Schema(
         variants: {
             type: [
                 {
-                    name: String, // ej: "S", "M", "Negro"
-                    stock: {
-                        type: Number,
-                        default: 0,
-                        min: 0
-                    }
+                    name: String,
+                    stock: { type: Number, default: 0, min: 0 }
+                }
+            ],
+            default: []
+        },
+
+        // Bundles/paquetes con precios editables desde el admin
+        // Sobreescriben los precios del config de la landing
+        bundles: {
+            type: [
+                {
+                    qty:        { type: Number, required: true },
+                    price:      { type: Number, required: true },
+                    compareAt:  { type: Number, default: 0 },
+                    label:      { type: String, default: '' },
+                    badge:      { type: String, default: '' },
+                    benefit:    { type: String, default: '' },
+                    popular:    { type: Boolean, default: false },
                 }
             ],
             default: []

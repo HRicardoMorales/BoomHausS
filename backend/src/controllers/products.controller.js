@@ -89,7 +89,7 @@ async function getAllProducts(req, res, next) {
 // POST /api/products
 async function createProduct(req, res, next) {
     try {
-        const { name, description, price, category, slug, images, compareAtPrice, isActive } = req.body;
+        const { name, description, price, category, slug, images, compareAtPrice, isActive, bundles } = req.body;
 
         if (!name || price === undefined) {
             const err = new Error('Nombre y precio son obligatorios.');
@@ -112,6 +112,7 @@ async function createProduct(req, res, next) {
             images: Array.isArray(images) ? images : undefined,
             compareAtPrice: compareAtPrice ?? undefined,
             isActive: isActive ?? true,
+            bundles: Array.isArray(bundles) ? bundles : [],
         };
 
         // si mandan slug, que sea único
@@ -135,7 +136,7 @@ async function createProduct(req, res, next) {
 async function updateProduct(req, res, next) {
     try {
         const { id } = req.params;
-        const { name, description, price, category, images, isActive, slug, compareAtPrice } = req.body;
+        const { name, description, price, category, images, isActive, slug, compareAtPrice, bundles } = req.body;
 
         const product = await Product.findById(id);
         if (!product) {
@@ -151,6 +152,7 @@ async function updateProduct(req, res, next) {
         if (images !== undefined) product.images = images;
         if (isActive !== undefined) product.isActive = isActive;
         if (compareAtPrice !== undefined) product.compareAtPrice = compareAtPrice;
+        if (bundles !== undefined) product.bundles = Array.isArray(bundles) ? bundles : [];
 
         if (slug !== undefined) {
             const nextSlug = String(slug || '').trim();
