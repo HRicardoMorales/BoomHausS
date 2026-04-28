@@ -88,6 +88,7 @@ export function CheckoutSheet({ onClose }) {
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null); // 'cod' | 'mp' | 'card'
 
   // ── Cupón de descuento ──
+  const [couponOpen, setCouponOpen]       = useState(false);
   const [couponInput, setCouponInput]     = useState("");
   const [couponApplying, setCouponApplying] = useState(false);
   const [couponError, setCouponError]     = useState("");
@@ -690,28 +691,42 @@ export function CheckoutSheet({ onClose }) {
         .cs-total-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: rgba(11,18,32,.65); }
         .cs-total-row.final { font-size: 18px; font-weight: 900; color: var(--text); border-top: 1.5px solid var(--border); padding-top: 10px; margin-top: 4px; }
 
-        /* Coupon field */
-        .cs-coupon-wrap { display: flex; gap: 8px; margin-top: 14px; margin-bottom: 4px; }
-        .cs-coupon-wrap input {
-          flex: 1; height: 44px; border: 1.5px solid var(--border2); border-radius: 9px;
-          padding: 0 12px; font-size: 14px; font-weight: 700; background: #f8faff;
+        /* Coupon field — discreto */
+        .cs-coupon-toggle {
+          display: inline-block; margin-top: 12px;
+          font-size: 12px; font-weight: 600; color: #aaa;
+          cursor: pointer; background: none; border: none; padding: 0;
+          text-decoration: none; letter-spacing: .01em;
+          transition: color .15s;
+        }
+        .cs-coupon-toggle:hover { color: #888; }
+        @keyframes csCouponIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .cs-coupon-body { animation: csCouponIn .18s ease forwards; margin-top: 8px; }
+        .cs-coupon-row { display: flex; gap: 7px; }
+        .cs-coupon-row input {
+          flex: 1; height: 38px; border: 1px solid #ddd; border-radius: 7px;
+          padding: 0 10px; font-size: 13px; font-weight: 700; background: #fafafa;
           color: var(--text); outline: none; text-transform: uppercase; letter-spacing: .5px;
           transition: border-color .15s;
         }
-        .cs-coupon-wrap input:focus { border-color: var(--primary); background: #fff; }
-        .cs-coupon-wrap input.cs-coupon-applied { border-color: #1D9E75; background: #f0fdf4; color: #1D9E75; }
+        .cs-coupon-row input:focus { border-color: #aaa; background: #fff; }
+        .cs-coupon-row input.cs-coupon-applied { border-color: #1D9E75; background: #f0fdf4; color: #1D9E75; }
+        .cs-coupon-row input:disabled { opacity: .8; cursor: default; }
         .cs-coupon-btn {
-          height: 44px; padding: 0 16px; border: none; border-radius: 9px;
-          background: var(--primary); color: #fff; font-size: 13px; font-weight: 800;
-          cursor: pointer; white-space: nowrap; transition: background .15s;
+          height: 38px; padding: 0 13px; border: 1px solid #ccc; border-radius: 7px;
+          background: #f4f4f4; color: #555; font-size: 12px; font-weight: 800;
+          cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s;
           flex-shrink: 0;
         }
-        .cs-coupon-btn:hover:not(:disabled) { background: var(--primary-hover); }
-        .cs-coupon-btn:disabled { opacity: .5; cursor: not-allowed; }
-        .cs-coupon-btn.remove { background: #f1f5f9; color: #64748b; }
-        .cs-coupon-btn.remove:hover { background: #e2e8f0; }
-        .cs-coupon-err { font-size: 12px; font-weight: 700; color: #dc2626; margin-top: 4px; }
-        .cs-coupon-ok  { font-size: 12px; font-weight: 700; color: #1D9E75; margin-top: 4px; }
+        .cs-coupon-btn:hover:not(:disabled) { background: #e8e8e8; border-color: #bbb; }
+        .cs-coupon-btn:disabled { opacity: .45; cursor: not-allowed; }
+        .cs-coupon-btn.remove { background: #f4f4f4; color: #888; border-color: #ddd; }
+        .cs-coupon-btn.remove:hover { background: #eee; }
+        .cs-coupon-err { font-size: 11.5px; font-weight: 700; color: #c0392b; margin-top: 5px; }
+        .cs-coupon-ok  { font-size: 11.5px; font-weight: 700; color: #1D9E75; margin-top: 5px; }
 
         /* CTA button */
         .cs-cta {
@@ -1291,29 +1306,41 @@ export function CheckoutSheet({ onClose }) {
                     </div>
                   </div>
 
-                  {/* Coupon field */}
-                  <div className="cs-coupon-wrap">
-                    <input
-                      type="text"
-                      placeholder="Código de cupón"
-                      value={couponInput}
-                      onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
-                      onKeyDown={e => e.key === "Enter" && !appliedCoupon && applyCoupon()}
-                      className={appliedCoupon ? "cs-coupon-applied" : ""}
-                      disabled={!!appliedCoupon}
-                    />
-                    {appliedCoupon ? (
-                      <button className="cs-coupon-btn remove" onClick={removeCoupon}>Quitar</button>
-                    ) : (
-                      <button className="cs-coupon-btn" onClick={applyCoupon} disabled={couponApplying || !couponInput.trim()}>
-                        {couponApplying ? "..." : "Aplicar"}
-                      </button>
-                    )}
-                  </div>
-                  {couponError && <div className="cs-coupon-err">{couponError}</div>}
-                  {appliedCoupon && !couponError && (
-                    <div className="cs-coupon-ok">
-                      ✓ Cupón aplicado — {appliedCoupon.type === "percent" ? `${appliedCoupon.value}% de descuento` : `${money(appliedCoupon.value)} de descuento`}
+                  {/* Coupon — discreto */}
+                  {!appliedCoupon && (
+                    <button
+                      className="cs-coupon-toggle"
+                      onClick={() => setCouponOpen(o => !o)}
+                    >
+                      ¿Tenés un código de descuento?
+                    </button>
+                  )}
+                  {(couponOpen || appliedCoupon) && (
+                    <div className="cs-coupon-body">
+                      <div className="cs-coupon-row">
+                        <input
+                          type="text"
+                          placeholder="Código de cupón"
+                          value={couponInput}
+                          onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
+                          onKeyDown={e => e.key === "Enter" && !appliedCoupon && applyCoupon()}
+                          className={appliedCoupon ? "cs-coupon-applied" : ""}
+                          disabled={!!appliedCoupon}
+                        />
+                        {appliedCoupon ? (
+                          <button className="cs-coupon-btn remove" onClick={removeCoupon}>Quitar</button>
+                        ) : (
+                          <button className="cs-coupon-btn" onClick={applyCoupon} disabled={couponApplying || !couponInput.trim()}>
+                            {couponApplying ? "..." : "Aplicar"}
+                          </button>
+                        )}
+                      </div>
+                      {couponError && <div className="cs-coupon-err">{couponError}</div>}
+                      {appliedCoupon && !couponError && (
+                        <div className="cs-coupon-ok">
+                          ✓ Cupón aplicado — {appliedCoupon.type === "percent" ? `${appliedCoupon.value}% de descuento` : `${money(appliedCoupon.value)} de descuento`}
+                        </div>
+                      )}
                     </div>
                   )}
 
