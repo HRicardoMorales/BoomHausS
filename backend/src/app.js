@@ -19,6 +19,7 @@ const ordersRoutes = require('./routes/orders.routes');
 const authRoutes = require('./routes/auth.routes');
 const webhooksRoutes = require('./routes/webhooks.router');
 const paymentsRoutes = require('./routes/payments.routes');
+const couponsRoutes = require('./routes/coupons.routes');
 
 const AbandonedCart = require('./models/AbandonedCart');
 
@@ -135,6 +136,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api/coupons', couponsRoutes);
 
 // ──────────────────────────────────────────────────────────────
 //  CARRITOS ABANDONADOS

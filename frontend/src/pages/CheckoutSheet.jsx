@@ -1,5 +1,5 @@
 // src/pages/CheckoutSheet.jsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 import api from "../services/api";
@@ -87,6 +87,13 @@ export function CheckoutSheet({ onClose }) {
   const [showCabaConfirm, setShowCabaConfirm] = useState(false);
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null); // 'cod' | 'mp' | 'card'
 
+  // ── Cupón de descuento ──
+  const [couponInput, setCouponInput]     = useState("");
+  const [couponApplying, setCouponApplying] = useState(false);
+  const [couponError, setCouponError]     = useState("");
+  // appliedCoupon: null | { code, type, value }
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
   // MP states
   const mpPublicKey = import.meta.env.VITE_MP_PUBLIC_KEY || null;
   const [mpLoaded, setMpLoaded] = useState(false);
@@ -109,6 +116,15 @@ export function CheckoutSheet({ onClose }) {
     return s + (Number(i.price) || 0) * (Number(i.quantity) || 0);
   }, 0);
   const savings = Math.max(0, fullPrice - totalPrice);
+
+  // Descuento del cupón — siempre en sincronía con totalPrice actual
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.type === "percent") return Math.round(totalPrice * appliedCoupon.value / 100);
+    return Math.min(appliedCoupon.value, totalPrice);
+  }, [appliedCoupon, totalPrice]);
+
+  const finalTotal = Math.max(0, totalPrice - discountAmount);
 
   // Lock body scroll
   useEffect(() => {
@@ -167,6 +183,34 @@ export function CheckoutSheet({ onClose }) {
     api.post("/abandoned-cart", payload).catch(() => {});
   }
 
+  async function applyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setCouponApplying(true);
+    setCouponError("");
+    try {
+      const res = await api.post("/coupons/validate", { code, cartTotal: totalPrice });
+      if (res.data?.ok) {
+        setAppliedCoupon(res.data.data);
+        setCouponError("");
+      } else {
+        setCouponError(res.data?.message || "Código inválido.");
+        setAppliedCoupon(null);
+      }
+    } catch (err) {
+      setCouponError(err?.response?.data?.message || "Código inválido o expirado.");
+      setAppliedCoupon(null);
+    } finally {
+      setCouponApplying(false);
+    }
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError("");
+  }
+
   function validateStep1() {
     const e = {};
     if (!form.nombre.trim()) e.nombre = "El nombre es obligatorio.";
@@ -197,8 +241,8 @@ export function CheckoutSheet({ onClose }) {
       shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
       shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
       paymentMethod:   payment === "mp" ? "mercadopago" : "card",
-      notes:           form.notes || "",
-      total:           totalPrice,
+      notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
+      total:           finalTotal,
       items:           cartItems,
     });
     const data = res.data?.data || res.data;
@@ -226,8 +270,8 @@ export function CheckoutSheet({ onClose }) {
         shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
         shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
         paymentMethod:   "mercadopago",
-        notes:           form.notes || "",
-        total:           totalPrice,
+        notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
+        total:           finalTotal,
         items:           cartItems,
       });
 
@@ -241,7 +285,7 @@ export function CheckoutSheet({ onClose }) {
         // sale del sitio hacia MP ya no se puede trackear el evento.
         track("Purchase", {
           currency: "ARS",
-          value: totalPrice,
+          value: finalTotal,
           content_ids: items.map(i => i.productId),
           content_type: "product",
           num_items: totalItems,
@@ -284,12 +328,12 @@ export function CheckoutSheet({ onClose }) {
         shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
         shippingMethod:  "caba_cod",
         paymentMethod:   "cod",
-        notes:           form.notes ? `Pago al recibir. ${form.notes}` : "Pago al recibir",
-        total:           totalPrice,
+        notes:           ["Pago al recibir", form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(". "),
+        total:           finalTotal,
         items:           cartItems,
       });
-      track("Purchase", { currency: "ARS", value: totalPrice, content_ids: items.map(i => i.productId), num_items: totalItems });
-      setConfirmedTotal(totalPrice);
+      track("Purchase", { currency: "ARS", value: finalTotal, content_ids: items.map(i => i.productId), num_items: totalItems });
+      setConfirmedTotal(finalTotal);
       setConfirmedItems([...items]);
       setConfirmedPaymentMethod("cod");
       clearCart();
@@ -645,6 +689,29 @@ export function CheckoutSheet({ onClose }) {
         .cs-totals { display: flex; flex-direction: column; gap: 8px; }
         .cs-total-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: rgba(11,18,32,.65); }
         .cs-total-row.final { font-size: 18px; font-weight: 900; color: var(--text); border-top: 1.5px solid var(--border); padding-top: 10px; margin-top: 4px; }
+
+        /* Coupon field */
+        .cs-coupon-wrap { display: flex; gap: 8px; margin-top: 14px; margin-bottom: 4px; }
+        .cs-coupon-wrap input {
+          flex: 1; height: 44px; border: 1.5px solid var(--border2); border-radius: 9px;
+          padding: 0 12px; font-size: 14px; font-weight: 700; background: #f8faff;
+          color: var(--text); outline: none; text-transform: uppercase; letter-spacing: .5px;
+          transition: border-color .15s;
+        }
+        .cs-coupon-wrap input:focus { border-color: var(--primary); background: #fff; }
+        .cs-coupon-wrap input.cs-coupon-applied { border-color: #1D9E75; background: #f0fdf4; color: #1D9E75; }
+        .cs-coupon-btn {
+          height: 44px; padding: 0 16px; border: none; border-radius: 9px;
+          background: var(--primary); color: #fff; font-size: 13px; font-weight: 800;
+          cursor: pointer; white-space: nowrap; transition: background .15s;
+          flex-shrink: 0;
+        }
+        .cs-coupon-btn:hover:not(:disabled) { background: var(--primary-hover); }
+        .cs-coupon-btn:disabled { opacity: .5; cursor: not-allowed; }
+        .cs-coupon-btn.remove { background: #f1f5f9; color: #64748b; }
+        .cs-coupon-btn.remove:hover { background: #e2e8f0; }
+        .cs-coupon-err { font-size: 12px; font-weight: 700; color: #dc2626; margin-top: 4px; }
+        .cs-coupon-ok  { font-size: 12px; font-weight: 700; color: #1D9E75; margin-top: 4px; }
 
         /* CTA button */
         .cs-cta {
@@ -1049,8 +1116,8 @@ export function CheckoutSheet({ onClose }) {
                   <span style={{ fontSize: 11, color: "#888", transform: summaryOpen ? "rotate(180deg)" : "none", display: "inline-block", transition: "transform .2s" }}>▼</span>
                 </span>
                 <div style={{ textAlign: "right" }}>
-                  {savings > 0 && <div style={{ fontSize: 11, color: "#888", textDecoration: "line-through" }}>{money(fullPrice)}</div>}
-                  <div style={{ fontWeight: 900, fontSize: 15, color: "var(--text)" }}>{money(totalPrice)}</div>
+                  {(savings > 0 || discountAmount > 0) && <div style={{ fontSize: 11, color: "#888", textDecoration: "line-through" }}>{money(discountAmount > 0 ? totalPrice : fullPrice)}</div>}
+                  <div style={{ fontWeight: 900, fontSize: 15, color: "var(--text)" }}>{money(finalTotal)}</div>
                 </div>
               </div>
 
@@ -1065,8 +1132,13 @@ export function CheckoutSheet({ onClose }) {
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1D9E75", paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
                     <span>Envío</span><span>GRATIS</span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1D9E75", paddingTop: 6 }}>
+                      <span>Cupón {appliedCoupon?.code}</span><span>-{money(discountAmount)}</span>
+                    </div>
+                  )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 900, paddingTop: 8 }}>
-                    <span>Total</span><span>{money(totalPrice)}</span>
+                    <span>Total</span><span>{money(finalTotal)}</span>
                   </div>
                 </div>
               )}
@@ -1204,8 +1276,46 @@ export function CheckoutSheet({ onClose }) {
                     <div className="cs-total-row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
                     <div className="cs-total-row"><span>Envío</span><span style={{ color: "#1D9E75" }}>GRATIS</span></div>
                     {savings > 0 && <div className="cs-total-row" style={{ color: "#1D9E75" }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
-                    <div className="cs-total-row final"><span>Total</span><span>{money(totalPrice)}</span></div>
+                    {discountAmount > 0 && (
+                      <div className="cs-total-row" style={{ color: "#1D9E75" }}>
+                        <span>Cupón <strong>{appliedCoupon.code}</strong></span>
+                        <span>-{money(discountAmount)}</span>
+                      </div>
+                    )}
+                    <div className="cs-total-row final">
+                      <span>Total</span>
+                      <span>
+                        {discountAmount > 0 && <span style={{ fontSize: 14, fontWeight: 700, textDecoration: "line-through", color: "#aaa", marginRight: 8 }}>{money(totalPrice)}</span>}
+                        {money(finalTotal)}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Coupon field */}
+                  <div className="cs-coupon-wrap">
+                    <input
+                      type="text"
+                      placeholder="Código de cupón"
+                      value={couponInput}
+                      onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
+                      onKeyDown={e => e.key === "Enter" && !appliedCoupon && applyCoupon()}
+                      className={appliedCoupon ? "cs-coupon-applied" : ""}
+                      disabled={!!appliedCoupon}
+                    />
+                    {appliedCoupon ? (
+                      <button className="cs-coupon-btn remove" onClick={removeCoupon}>Quitar</button>
+                    ) : (
+                      <button className="cs-coupon-btn" onClick={applyCoupon} disabled={couponApplying || !couponInput.trim()}>
+                        {couponApplying ? "..." : "Aplicar"}
+                      </button>
+                    )}
+                  </div>
+                  {couponError && <div className="cs-coupon-err">{couponError}</div>}
+                  {appliedCoupon && !couponError && (
+                    <div className="cs-coupon-ok">
+                      ✓ Cupón aplicado — {appliedCoupon.type === "percent" ? `${appliedCoupon.value}% de descuento` : `${money(appliedCoupon.value)} de descuento`}
+                    </div>
+                  )}
 
                   {/* CTA */}
                   <button
@@ -1214,7 +1324,7 @@ export function CheckoutSheet({ onClose }) {
                     disabled={items.length === 0}
                     onClick={() => setStep(1)}
                   >
-                    Finalizar compra · {money(totalPrice)}
+                    Finalizar compra · {money(finalTotal)}
                   </button>
 
                   {/* Payment logos */}
