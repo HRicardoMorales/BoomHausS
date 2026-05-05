@@ -1857,36 +1857,45 @@ export default function ProductDetail() {
                   {MC.bundles.map((opt, i) => (
                     <div
                       key={i}
-                      className={`bnd2-card${selectedBundleIdx === i ? " bnd2-card--on" : ""}${opt.popular ? " bnd2-card--pop" : ""}`}
-                      onClick={() => setSelectedBundleIdx(i)}
+                      className={`bnd2-card${selectedBundleIdx === i && !opt.soldOut ? " bnd2-card--on" : ""}${opt.popular ? " bnd2-card--pop" : ""}${opt.soldOut ? " bnd2-card--sold-out" : ""}`}
+                      onClick={() => !opt.soldOut && setSelectedBundleIdx(i)}
                       role="button"
-                      tabIndex={0}
-                      onKeyDown={e => e.key === "Enter" && setSelectedBundleIdx(i)}
+                      tabIndex={opt.soldOut ? -1 : 0}
+                      aria-disabled={opt.soldOut || undefined}
+                      onKeyDown={e => !opt.soldOut && e.key === "Enter" && setSelectedBundleIdx(i)}
                     >
                       {opt.popular && (
-                        <span className="bnd2-float-badge">Más Vendido</span>
+                        <span className="bnd2-float-badge">{opt.badge || "Más Elegido"}</span>
+                      )}
+                      {opt.soldOut && (
+                        <div className="bnd2-sold-out-overlay">
+                          <span className="bnd2-sold-out-text">AGOTADO</span>
+                        </div>
                       )}
                       <div className="bnd2-row">
                         <input
                           type="radio"
                           name="pd-bundle"
                           className="bnd2-radio"
-                          checked={selectedBundleIdx === i}
-                          onChange={() => setSelectedBundleIdx(i)}
+                          checked={selectedBundleIdx === i && !opt.soldOut}
+                          onChange={() => !opt.soldOut && setSelectedBundleIdx(i)}
+                          disabled={opt.soldOut}
                           aria-label={opt.label}
                         />
                         <div className="bnd2-center">
                           <span className="bnd2-name">{opt.label}</span>
-                          {opt.badge && (
-                            <span className={`bnd2-badge${opt.popular ? " bnd2-badge--pop" : ""}`}>{opt.badge}</span>
+                          {opt.badge && !opt.popular && (
+                            <span className="bnd2-badge">{opt.badge}</span>
                           )}
                         </div>
-                        <div className="bnd2-prices">
-                          <span className="bnd2-was">{moneyARS(opt.compareAt)}</span>
-                          <span className="bnd2-now">{moneyARS(opt.price)}</span>
-                        </div>
+                        {!opt.soldOut && (
+                          <div className="bnd2-prices">
+                            {opt.compareAt > 0 && <span className="bnd2-was">{moneyARS(opt.compareAt)}</span>}
+                            <span className="bnd2-now">{moneyARS(opt.price)}</span>
+                          </div>
+                        )}
                       </div>
-                      {opt.benefit && (
+                      {opt.benefit && !opt.soldOut && (
                         <div className="bnd2-benefit">{opt.benefit}</div>
                       )}
                     </div>
@@ -2913,7 +2922,36 @@ export default function ProductDetail() {
       .bnd2-card--pop.bnd2-card--on{
         box-shadow: 0 6px 22px rgba(27,77,62,.15);
       }
-      /* Floating "Más Vendido" badge */
+      /* Sold out card */
+      .bnd2-card--sold-out{
+        cursor: not-allowed;
+        opacity: .55;
+        pointer-events: all;
+        filter: grayscale(.4);
+      }
+      .bnd2-card--sold-out:hover{
+        border-color: rgba(11,18,32,.13) !important;
+        background: transparent !important;
+      }
+      .bnd2-sold-out-overlay{
+        position: absolute; inset: 0;
+        border-radius: 14px;
+        background: rgba(240,240,240,.55);
+        backdrop-filter: blur(1.5px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2;
+      }
+      .bnd2-sold-out-text{
+        font-size: .75rem; font-weight: 1000;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: #555;
+        background: #fff;
+        border: 1.5px solid #ccc;
+        border-radius: 999px;
+        padding: 4px 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      }
+      /* Floating "Más Elegido" / custom badge */
       .bnd2-float-badge{
         position: absolute;
         top: -11px;

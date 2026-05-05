@@ -57,7 +57,9 @@ function ProductCard({ product, index = 0 }) {
   const navigate = useNavigate();
   const img  = product.images?.[0] || product.imageUrl || "";
   const pct  = discountPct(product.price, product.compareAtPrice);
-  const href = product.slug ? `/lp/${product.slug}` : `/products/${product._id}`;
+  // Solo usar /lp/ si el slug coincide exactamente con una key de LANDING_CONFIGS
+  const isLanding = product.slug && product.slug in LANDING_CONFIGS;
+  const href = isLanding ? `/lp/${product.slug}` : `/products/${product._id}`;
   // Stagger up to 7 cards, after that no extra delay (below fold anyway)
   const delay = Math.min(index, 7) * 70;
 
@@ -123,14 +125,21 @@ export default function Home() {
       )}`
     : null;
 
-  /* Productos virtuales desde configs de landing (aparecen aunque no estén en DB) */
+  /* Productos virtuales desde configs de landing (aparecen aunque no estén en DB).
+     Se deduplican por referencia de config para evitar duplicar aliases
+     (ej: 'nebulizador' y 'nebulizador-mesh' apuntan al mismo objeto). */
   const landingVirtualProducts = useMemo(() => {
-    return Object.entries(LANDING_CONFIGS).map(([slug, cfg]) => {
+    const seenCfgs = new Set();
+    return Object.entries(LANDING_CONFIGS).reduce((acc, [key, cfg]) => {
+      if (seenCfgs.has(cfg)) return acc;
+      seenCfgs.add(cfg);
+      // Usar el productSlug del config como slug canónico (si existe), si no el key
+      const slug = cfg.productSlug || key;
       const v0 = cfg.variants?.[0];
       const img = v0?.thumbImg || v0?.images?.[0] || "";
       const price = v0?.bundles?.[0]?.price || 0;
       const compareAt = v0?.bundles?.[0]?.compareAt || 0;
-      return {
+      acc.push({
         _id: `lp-${slug}`,
         name: cfg.checkoutName || slug,
         slug,
@@ -138,8 +147,9 @@ export default function Home() {
         price,
         compareAtPrice: compareAt,
         isActive: true,
-      };
-    });
+      });
+      return acc;
+    }, []);
   }, []);
 
   /* Fetch */
@@ -153,7 +163,12 @@ export default function Home() {
         // Slugs ya presentes en la DB — no duplicar
         const apiSlugs = new Set(apiProducts.map((p) => p.slug).filter(Boolean));
         const extras = landingVirtualProducts.filter((p) => !apiSlugs.has(p.slug));
-        setProducts([...extras, ...apiProducts]);
+        const merged = [...extras, ...apiProducts];
+        // Filtrar productos sin imagen y sin precio (DB entries incompletos)
+        const visible = merged.filter((p) =>
+          (p.images?.length > 0 && p.images[0]) || p.imageUrl || Number(p.price) > 0
+        );
+        setProducts(visible);
       } catch (e) {
         console.error("Home catalog error:", e);
         // Si la API falla igual mostramos las landings
@@ -419,9 +434,9 @@ export default function Home() {
         /* === TRUST STRIP — tarjetas con icono grande === */
         .hc-trust {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 10px;
-          margin: 14px auto 0;
+          margin: 20px auto 0;
           width: min(var(--container), calc(100% - 2rem));
         }
         .hc-trust-item {
@@ -460,10 +475,7 @@ export default function Home() {
           font-size: .80rem; font-weight: 1000;
           color: var(--text); line-height: 1.2;
         }
-        @media (max-width: 720px) {
-          .hc-trust { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (max-width: 420px) {
+        @media (max-width: 600px) {
           .hc-trust { grid-template-columns: repeat(2, 1fr); gap: 8px; }
           .hc-trust-item { padding: 14px 8px 12px; }
           .hc-trust-ico { font-size: 1.4rem; }
@@ -481,7 +493,7 @@ export default function Home() {
           display: flex; align-items: baseline;
           justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
-          margin-top: 34px;
+          margin-top: 44px;
         }
         .hc-sec-title {
           margin: 0;
@@ -524,7 +536,7 @@ export default function Home() {
         }
         .hc-carousel::-webkit-scrollbar { display: none; }
         .hc-carousel .hc-card {
-          flex: 0 0 200px; width: 200px;
+          flex: 0 0 220px; width: 220px;
           scroll-snap-align: start;
           /* No stagger in carousel */
           transition-delay: 0ms !important;
@@ -536,7 +548,7 @@ export default function Home() {
           pointer-events: none;
         }
         @media (max-width: 480px) {
-          .hc-carousel .hc-card { flex: 0 0 172px; width: 172px; }
+          .hc-carousel .hc-card { flex: 0 0 185px; width: 185px; }
         }
 
         /* === CATEGORY TABS === */
@@ -560,8 +572,11 @@ export default function Home() {
         /* === PRODUCT GRID === */
         .hc-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-          gap: 16px; margin-top: 18px;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 18px; margin-top: 18px;
+        }
+        @media (min-width: 1024px) {
+          .hc-grid { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 500px) {
           .hc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -598,17 +613,18 @@ export default function Home() {
         }
         .hc-card.reveal.is-visible:hover { transform: translateY(-6px); }
 
-        /* Image — 4:5 portrait */
+        /* Image — 1:1 square, mejor para thumbnails de producto */
         .hc-card-img {
           position: relative;
-          aspect-ratio: 4 / 5;
+          aspect-ratio: 1 / 1;
           background: linear-gradient(180deg, #FDFFFE 0%, #EEF5F1 100%);
           overflow: hidden;
         }
         .hc-card-img img {
           width: 100%; height: 100%;
           object-fit: contain; display: block;
-          padding: 10px;
+          padding: 12px;
+          box-sizing: border-box;
           transition: transform .4s var(--ease);
         }
         .hc-card-no-img {
@@ -631,35 +647,37 @@ export default function Home() {
         .hc-card-body {
           padding: 14px 14px 16px;
           display: flex; flex-direction: column;
-          gap: 8px; flex: 1;
+          gap: 6px; flex: 1;
         }
         .hc-card-name {
-          font-size: .93rem; font-weight: 1000;
-          color: var(--text); line-height: 1.28;
+          font-size: .92rem; font-weight: 900;
+          color: var(--text); line-height: 1.3;
           display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+          min-height: calc(1.3em * 2);
         }
         .hc-card-prices {
           display: flex; align-items: baseline;
-          gap: 7px; flex-wrap: wrap; margin-top: auto;
+          gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 4px;
         }
         .hc-price-was {
-          font-size: .80rem; font-weight: 700;
-          color: var(--muted); text-decoration: line-through; opacity: .65;
+          font-size: .78rem; font-weight: 700;
+          color: var(--muted); text-decoration: line-through; opacity: .60;
         }
         .hc-price-now {
-          font-size: 1.45rem; font-weight: 1100;
+          font-size: 1.38rem; font-weight: 1100;
           color: var(--text); letter-spacing: -0.03em; line-height: 1;
         }
         .hc-price-pct {
-          font-size: .70rem; font-weight: 1000; color: #047857;
-          background: rgba(16,185,129,.09);
-          border: 1px solid rgba(16,185,129,.20);
+          font-size: .68rem; font-weight: 1000; color: #047857;
+          background: rgba(16,185,129,.10);
+          border: 1px solid rgba(16,185,129,.22);
           padding: 3px 7px; border-radius: 999px;
+          white-space: nowrap;
         }
         .hc-card-cta {
           width: 100%; justify-content: center;
-          font-size: .84rem; padding: 11px 14px; margin-top: 6px;
+          font-size: .83rem; padding: 11px 14px; margin-top: 8px;
           letter-spacing: .01em;
           transition:
             transform var(--t) var(--ease),
@@ -680,7 +698,7 @@ export default function Home() {
           background-size: 200% 100%;
           animation: hcSkel 1.4s ease-in-out infinite;
         }
-        .hc-card-skeleton .hc-card-img { aspect-ratio: 4/5; }
+        .hc-card-skeleton .hc-card-img { aspect-ratio: 1/1; }
         @keyframes hcSkel {
           0%   { background-position: 200% center; }
           100% { background-position: -200% center; }
@@ -734,10 +752,11 @@ export default function Home() {
         }
 
         @media (max-width: 480px) {
-          .hc-card-body { padding: 10px 11px 13px; }
-          .hc-card-name { font-size: .84rem; }
-          .hc-price-now { font-size: 1.2rem; }
-          .hc-card-cta { font-size: .78rem; padding: 10px 10px; }
+          .hc-card-body { padding: 10px 10px 12px; gap: 5px; }
+          .hc-card-name { font-size: .82rem; min-height: auto; }
+          .hc-price-now { font-size: 1.15rem; }
+          .hc-price-pct { font-size: .64rem; padding: 2px 6px; }
+          .hc-card-cta { font-size: .76rem; padding: 9px 10px; margin-top: 6px; }
         }
       `}</style>
 
