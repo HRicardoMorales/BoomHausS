@@ -11,7 +11,7 @@ import mc from '../landings/parches-detox';
 const BUNDLES = [
   {
     id: 1,
-    label: '6 Parches + 4 de Regalo · Edición Básica',
+    label: '3 cajas + 2 de Regalo · Edición Básica',
     badge: 'OFERTA ESPECIAL',
     price: 48800,
     was: 86000,
@@ -21,7 +21,7 @@ const BUNDLES = [
   },
   {
     id: 2,
-    label: '12 Parches + 8 de Regalo · Kit Familiar',
+    label: '6 cajas + 4 de Regalo · Kit Familiar',
     badge: 'MÁS ELEGIDO',
     price: 58800,
     was: 118200,
@@ -31,7 +31,7 @@ const BUNDLES = [
   },
   {
     id: 3,
-    label: '30 Parches + 10 de Regalo · Kit Premium',
+    label: '15 cajas + 5 de Regalo · Kit Premium',
     badge: 'MEJOR VALOR',
     price: 99800,
     was: 194900,
@@ -514,7 +514,7 @@ export default function ParchesDetoxLanding() {
             <div className="pd-feel-row">
               <div className="pd-feel-img-col">
                 {/* persona cansada mirando el techo a la mañana, luz gris difusa, sábanas arrugadas */}
-                <img className="pd-feel-img" src={imgs[4]} alt="Persona cansada al despertar — se siente pesada y sin energía" />
+                <img className="pd-feel-img" src="https://pbs.twimg.com/media/HHsW_2lWwAMRUNJ?format=jpg&name=small" alt="Persona cansada al despertar — se siente pesada y sin energía" />
               </div>
               <div className="pd-feel-cards-col">
                 {/* TÍTULO EDITABLE: sección síntomas — cambiar "¿Te sentís así?" */}

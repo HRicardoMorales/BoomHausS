@@ -15,7 +15,7 @@ const parchesDetoxConfig = {
   heroSubtitle: "",
 
   trustBullets: [
-    "🌿 2x1 — llevás 2 unidades al precio de 1",
+    "🌿 Cada caja incluye un par de parches",
     "📖 Ebook de bienestar incluido gratis",
     "🚚 Envío gratis a todo el país",
     "💵 CABA: pagás al recibirlo",
