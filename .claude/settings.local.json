@@ -9,7 +9,12 @@
       "Bash(npx --no-install tsc --noEmit --skipLibCheck)",
       "Bash(node node_modules/.bin/vite build --mode development)",
       "Bash(node node_modules/vite/bin/vite.js build --mode development)",
-      "Bash(node -e \"require\\('./backend/src/models/Product.js'\\); console.log\\('OK'\\)\")"
+      "Bash(node -e \"require\\('./backend/src/models/Product.js'\\); console.log\\('OK'\\)\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Format-Table)",
+      "Bash(dir \"c:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" /b)",
+      "Read(//c/Users/Usuario/.claude/projects/c--Users-Usuario-Downloads-Encontratodo-FINAL-multi-landing-admin-inline-checkout_v2/memory/**)"
     ]
   }
 }

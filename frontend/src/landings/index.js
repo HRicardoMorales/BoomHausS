@@ -6,6 +6,7 @@ import mochilaFashion        from './mochila-fashion';
 import nebulizadorMesh       from './nebulizador-mesh';
 import soporteNasalSN300     from './soporte-nasal-sn300';
 import lamparaMagnetica      from './lampara-magnetica';
+import parchesDetox          from './parches-detox';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -16,6 +17,8 @@ export const LANDING_CONFIGS = {
   'nebulizador':              nebulizadorMesh,
   'soporte-nasal-sn300':      soporteNasalSN300,
   'lampara-magnetica':        lamparaMagnetica,
+  // Renderizado por ParchesDetoxLanding.jsx (componente dedicado, ruta /lp/parches-detox)
+  'parches-detox':            parchesDetox,
 };
 
 export const LANDING_META = [
@@ -74,6 +77,13 @@ export const LANDING_META = [
     desc: 'Lámpara inalámbrica con acople magnético, rotación 360°, CCT y batería USB-C. 2 variantes: Negro Kit Completo y Madera Básica.',
     status: 'active',
     emoji: '💡',
+  },
+  {
+    slug: 'parches-detox',
+    name: 'Parches Plantares Detox Kinoki',
+    desc: 'Parches herbales 2x1 + Ebook. Ritual nocturno: se colocan en la planta del pie antes de dormir. Slug admin: "parches-detox". Renderiza ParchesDetoxLanding.jsx.',
+    status: 'active',
+    emoji: '🌿',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)
