@@ -111,7 +111,7 @@ function WaveSeparator({ from }) {
 /* ============================================================
    BEFORE / AFTER SLIDER
 ============================================================ */
-function BeforeAfterSlider() {
+function BeforeAfterSlider({ imgBefore, imgAfter }) {
   const containerRef = useRef(null);
 
   const handleSlider = (e) => {
@@ -126,9 +126,9 @@ function BeforeAfterSlider() {
       <div className="ba-container" ref={containerRef} style={{ '--position': '50%' }}>
         <div className="ba-img-wrap">
           {/* imagen "después": oscuro al despertar — ocupa 100% del contenedor */}
-          <img className="ba-img-after" src="https://pbs.twimg.com/media/HHsZpv3WwAgO1ri?format=jpg&name=small" alt="Parche Detox al despertar — oscuro y manchado" />
+          <img className="ba-img-after" src={imgAfter} alt="Parche Detox al despertar — oscuro y manchado" />
           {/* imagen "antes": blanco — se recorta a width:var(--position) vía CSS, sin inline style */}
-          <img className="ba-img-before" src="https://pbs.twimg.com/media/HHsZMmkXQAw-prn?format=jpg&name=small" alt="Parche Detox antes de usar — blanco y fresco" />
+          <img className="ba-img-before" src={imgBefore} alt="Parche Detox antes de usar — blanco y fresco" />
         </div>
         {/* badges dentro de ba-container (position:relative) para z-index correcto */}
         <span className="ba-badge ba-badge-before">{mc.beforeLabel || 'Antes de dormir'}</span>
@@ -198,7 +198,7 @@ function MiniReviewsBar() {
 /* ============================================================
    REVIEWS CAROUSEL PRO
 ============================================================ */
-function ReviewsCarouselPro() {
+function ReviewsCarouselPro({ reviewImages = [] }) {
   const rowRef = useRef(null);
   const [active, setActive] = useState(0);
   const scrollTo = (i) => {
@@ -216,7 +216,7 @@ function ReviewsCarouselPro() {
             <div className="rv-card">
               <div className="rv-imgBox">
                 {/* foto lifestyle — descripción en REVIEWS const arriba */}
-                <img src={r.src} alt={`Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                <img src={reviewImages[i] || r.src} alt={`Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
                 <div className="rv-quote">"</div>
               </div>
               <div className="rv-body">
@@ -283,7 +283,7 @@ export default function ParchesDetoxLanding() {
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
-      .then(r => setProduct(r.data))
+      .then(r => setProduct(r.data?.data || r.data))
       .catch(() => {});
   }, []);
 
@@ -323,12 +323,29 @@ export default function ParchesDetoxLanding() {
 
   const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
 
-  const images = [
-    '', // imagen 1: caja de parches Kinoki cerrada sobre superficie de madera natural
-    '', // imagen 2: parche blanco colocado en la planta del pie, luz suave nocturna
-    '', // imagen 3: parche oscuro/manchado al despertar — primer plano sobre papel blanco
-    '', // imagen 4: kit completo: 2 parches en empaque + Ebook sobre mesa de noche
-  ];
+  // Hero gallery — mismo patrón que ProductDetail.jsx:
+  //   1. product.imageUrl (campo directo del admin)
+  //   2. product.images[] (array del admin, una URL por línea)
+  //   3. fallback: mc.images[0..3] del config (parches-detox.js)
+  const heroImgs = useMemo(() => {
+    const arr = [];
+    if (product?.imageUrl) arr.push(product.imageUrl);
+    if (Array.isArray(product?.images)) {
+      product.images.forEach(x => {
+        if (x && typeof x === 'string' && !arr.includes(x)) arr.push(x);
+      });
+    }
+    if (arr.length) return arr;
+    return (mc.images || []).slice(0, 4).filter(Boolean);
+  }, [product]);
+
+  // Imágenes de las demás secciones: fallback al config (parches-detox.js → images[]).
+  // Índices: 4 feel | 5 antes | 6 después | 7-10 howto | 11 nocturna | 12-14 vstrip | 15-18 reseñas
+  const imgs = useMemo(() => {
+    const db = (product?.images || []).map(img => img?.url || img || '');
+    const cfg = mc.images || [];
+    return Array.from({ length: 19 }, (_, i) => db[i] || cfg[i] || '');
+  }, [product]);
 
   return (
     <div className="dtx-wrap">
@@ -345,13 +362,13 @@ export default function ParchesDetoxLanding() {
               <img
                 key={activeImgIndex}
                 className="pd-mainImg pd-mainImg--anim"
-                src={images[activeImgIndex]}
+                src={heroImgs[activeImgIndex]}
                 alt="Parches Plantares Detox Kinoki"
                 style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
               />
             </div>
             <div className="pd-thumbs-row">
-              {images.map((img, idx) => (
+              {heroImgs.map((img, idx) => (
                 <button
                   key={idx}
                   className={`pd-thumb${idx === activeImgIndex ? ' is-active' : ''}`}
@@ -497,7 +514,7 @@ export default function ParchesDetoxLanding() {
             <div className="pd-feel-row">
               <div className="pd-feel-img-col">
                 {/* persona cansada mirando el techo a la mañana, luz gris difusa, sábanas arrugadas */}
-                <img className="pd-feel-img" src="https://pbs.twimg.com/media/HHsW_2lWwAMRUNJ?format=jpg&name=small" alt="Persona cansada al despertar — se siente pesada y sin energía" />
+                <img className="pd-feel-img" src={imgs[4]} alt="Persona cansada al despertar — se siente pesada y sin energía" />
               </div>
               <div className="pd-feel-cards-col">
                 {/* TÍTULO EDITABLE: sección síntomas — cambiar "¿Te sentís así?" */}
@@ -532,7 +549,7 @@ export default function ParchesDetoxLanding() {
               <h2 className="sec-title">{mc.beforeAfterTitle}</h2>
               <p className="sec-sub">{mc.beforeAfterSubtitle}</p>
             </div>
-            <BeforeAfterSlider />
+            <BeforeAfterSlider imgBefore={imgs[5]} imgAfter={imgs[6]} />
             <p className="dtx-ba-hint">← Arrastrá el divisor para ver la diferencia →</p>
           </div>
         </section>
@@ -550,14 +567,14 @@ export default function ParchesDetoxLanding() {
             </div>
             <div className="pd-howto-grid">
               {[
-                { num: '01', text: 'Lavá y secá bien la planta del pie antes de acostarte.', src: 'https://pbs.twimg.com/media/HHsa-ZWWQAIV_ZY?format=jpg&name=large' /* manos lavando pie bajo agua tibia — fondo neutro claro */ },
-                { num: '02', text: 'Despegá el adhesivo y posicioná el parche en el centro de la planta.', src: 'https://pbs.twimg.com/media/HHsbKf7WkAY87Hn?format=jpg&name=large' /* manos colocando el parche blanco sobre la planta del pie */ },
-                { num: '03', text: 'Dormí normalmente. El parche actúa durante las 6-8 horas de sueño.', src: 'https://pbs.twimg.com/media/HHsbWDzWEAUUoXf?format=jpg&name=large' /* persona durmiendo cómodamente, sábanas blancas, luz suave de noche */ },
-                { num: '04', text: 'Al despertar, retirá el parche y observá el cambio de color.', src: 'https://pbs.twimg.com/media/HHsbi1qWkAI7U6E?format=jpg&name=large' /* parche oscuro/manchado sostenido en mano — primer plano sobre blanco */ },
+                { num: '01', text: 'Lavá y secá bien la planta del pie antes de acostarte.' },
+                { num: '02', text: 'Despegá el adhesivo y posicioná el parche en el centro de la planta.' },
+                { num: '03', text: 'Dormí normalmente. El parche actúa durante las 6-8 horas de sueño.' },
+                { num: '04', text: 'Al despertar, retirá el parche y observá el cambio de color.' },
               ].map((step, i) => (
                 <div key={i} className="pd-howto-card">
                   <div className="pd-howto-img-wrap">
-                    <img className="pd-howto-img" src={step.src} alt={`Paso ${step.num}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img className="pd-howto-img" src={imgs[7 + i]} alt={`Paso ${step.num}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                   <div className="pd-howto-num">{step.num}</div>
                   <p className="pd-howto-text">{step.text}</p>
@@ -573,7 +590,7 @@ export default function ParchesDetoxLanding() {
         <section className="pd-band pd-band--light">
           <div style={{ paddingTop: 52, paddingBottom: 52 }}>
             <img
-              src="https://nesimu.com/cdn/shop/files/imgi_253_Transformacion_Visible_Nocturna_-_Ad_1_1.webp?v=1770704798&width=1500"
+              src={imgs[11]}
               alt="Transformación visible nocturna — Parches Detox Kinoki"
               style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
             />
@@ -600,13 +617,13 @@ export default function ParchesDetoxLanding() {
               </div>
               <div className="vstrip-row">
                 {[
-                  { label: '✅ Uso nocturno',     src: 'https://pbs.twimg.com/media/HHsZ6enWYAg4BH5?format=jpg&name=large' /* foto vertical 9:16: parche sobre pie en cama, luz nocturna suave */ },
-                  { label: '🌿 Resultado visible', src: 'https://pbs.twimg.com/media/HHsaa7EXwAQUreX?format=jpg&name=large' /* foto vertical 9:16: parche oscuro sobre hoja blanca — resultado AM */ },
-                  { label: '😊 Clientes felices',  src: 'https://pbs.twimg.com/media/HHsan3XXoAIhfR9?format=jpg&name=large' /* foto vertical 9:16: persona sonriendo al despertar, sábanas blancas */ },
+                  { label: '✅ Uso nocturno' },
+                  { label: '🌿 Resultado visible' },
+                  { label: '😊 Clientes felices' },
                 ].map((item, i) => (
                   <div key={i} className="vstrip-item">
                     <div className="vstrip-media">
-                      <img className="vstrip-video" src={item.src} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img className="vstrip-video" src={imgs[12 + i]} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                     </div>
                     <div className="vstrip-label">{item.label}</div>
                   </div>
@@ -627,7 +644,7 @@ export default function ParchesDetoxLanding() {
               {/* SUBTÍTULO EDITABLE: cambiar "+847 reseñas verificadas · Promedio 4.8 ⭐" */}
               <p className="sec-sub">+847 reseñas verificadas · Promedio 4.8 ⭐</p>
             </div>
-            <ReviewsCarouselPro />
+            <ReviewsCarouselPro reviewImages={imgs.slice(15, 19)} />
           </div>
         </section>
 

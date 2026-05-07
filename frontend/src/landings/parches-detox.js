@@ -92,6 +92,39 @@ const parchesDetoxConfig = {
     ],
   },
 
+  // ── Imágenes de la landing ─────────────────────────────────
+  // Editables desde el admin → Productos → Parches Detox → Imágenes (una URL por línea).
+  // El admin sobreescribe estos fallbacks en el mismo orden:
+  //  [0-3]   Galería del hero (imagen principal + 3 miniaturas)
+  //  [4]     Sección "¿Te sentís así?" — persona cansada
+  //  [5]     Slider Antes/Después — imagen ANTES (parche blanco)
+  //  [6]     Slider Antes/Después — imagen DESPUÉS (parche oscuro)
+  //  [7-10]  Pasos "Cómo usarlo" (4 pasos en orden)
+  //  [11]    Transformación nocturna (ancho completo)
+  //  [12-14] Vstrip "Clientes Satisfechos" (3 fotos verticales)
+  //  [15-18] Reseñas carousel (4 fotos, mismo orden que el carousel)
+  images: [
+    "https://nesimu.com/cdn/shop/files/imgi_43_D_NQ_NP_2X_676642-MLA97579090775_112025-F.jpg?v=1770705063&width=1420",
+    "https://pbs.twimg.com/media/HHsZMmkXQAw-prn?format=jpg&name=small",
+    "https://pbs.twimg.com/media/HHsZpv3WwAgO1ri?format=jpg&name=small",
+    "https://nesimu.com/cdn/shop/files/imgi_51_D_NQ_NP_2X_903416-MLA92304661828_092025-F.jpg?v=1770705073&width=1420",
+    "https://pbs.twimg.com/media/HHsW_2lWwAMRUNJ?format=jpg&name=small",
+    "https://pbs.twimg.com/media/HHsZMmkXQAw-prn?format=jpg&name=small",
+    "https://pbs.twimg.com/media/HHsZpv3WwAgO1ri?format=jpg&name=small",
+    "https://pbs.twimg.com/media/HHsa-ZWWQAIV_ZY?format=jpg&name=large",
+    "https://pbs.twimg.com/media/HHsbKf7WkAY87Hn?format=jpg&name=large",
+    "https://pbs.twimg.com/media/HHsbWDzWEAUUoXf?format=jpg&name=large",
+    "https://pbs.twimg.com/media/HHsbi1qWkAI7U6E?format=jpg&name=large",
+    "https://nesimu.com/cdn/shop/files/imgi_253_Transformacion_Visible_Nocturna_-_Ad_1_1.webp?v=1770704798&width=1500",
+    "https://pbs.twimg.com/media/HHsZ6enWYAg4BH5?format=jpg&name=large",
+    "https://pbs.twimg.com/media/HHsaa7EXwAQUreX?format=jpg&name=large",
+    "https://pbs.twimg.com/media/HHsan3XXoAIhfR9?format=jpg&name=large",
+    "https://nesimu.com/cdn/shop/files/imgi_43_D_NQ_NP_2X_676642-MLA97579090775_112025-F.jpg?v=1770705063&width=1420",
+    "https://nesimu.com/cdn/shop/files/imgi_33_713PY4u2yeL.jpg?v=1770705048&width=1420",
+    "https://nesimu.com/cdn/shop/files/imgi_36_71_StcLeTHL.jpg?v=1770705063&width=1420",
+    "https://nesimu.com/cdn/shop/files/imgi_51_D_NQ_NP_2X_903416-MLA92304661828_092025-F.jpg?v=1770705073&width=1420",
+  ],
+
   // ── Bundles / Paquetes ───────────────────────────────────────
   // Editá precio y tachado desde el panel admin → Productos → Parches Detox → Paquetes.
   // Estos valores son el FALLBACK si el admin no tiene el producto cargado.
