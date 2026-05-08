@@ -130,7 +130,7 @@ const parchesDetoxConfig = {
   // Estos valores son el FALLBACK si el admin no tiene el producto cargado.
   bundles: [
     {
-      label:     "6 Parches + 4 de Regalo · Edición Básica",
+      label:     "3 Cajas + 2 de Regalo · Edición Básica",
       qty:       2,
       price:     48900,
       compareAt: 86000,
@@ -139,7 +139,7 @@ const parchesDetoxConfig = {
       benefit:   "🌿 10 parches + Ebook · Envío gratis a todo el país",
     },
     {
-      label:     "12 Parches + 8 de Regalo · Kit Familiar",
+      label:     "6 Cajas + 4 de Regalo · Kit Familiar",
       qty:       3,
       price:     58000,
       compareAt: 119200,
@@ -148,7 +148,7 @@ const parchesDetoxConfig = {
       benefit:   "📦 20 parches + Ebook · Envío gratis · Ideal para compartir",
     },
     {
-      label:     "30 Parches + 10 de Regalo · Kit Premium",
+      label:     "15 Cajas + 5 de Regalo · Kit Premium",
       qty:       5,
       price:     98800,
       compareAt: 194900,

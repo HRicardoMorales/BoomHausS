@@ -198,7 +198,7 @@ function MiniReviewsBar() {
 /* ============================================================
    REVIEWS CAROUSEL PRO
 ============================================================ */
-function ReviewsCarouselPro({ reviewImages = [] }) {
+function ReviewsCarouselPro({ reviewImages = [], imagesReady = true }) {
   const rowRef = useRef(null);
   const [active, setActive] = useState(0);
   const scrollTo = (i) => {
@@ -215,8 +215,10 @@ function ReviewsCarouselPro({ reviewImages = [] }) {
           <div className="rv-slide" key={i}>
             <div className="rv-card">
               <div className="rv-imgBox">
-                {/* foto lifestyle — descripción en REVIEWS const arriba */}
-                <img src={reviewImages[i] || r.src} alt={`Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                {imagesReady
+                  ? <img src={reviewImages[i] || r.src} alt={`Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                  : <div style={{ width:'100%', height:'100%', background:'#eef0f2' }} />
+                }
                 <div className="rv-quote">"</div>
               </div>
               <div className="rv-body">
@@ -275,6 +277,7 @@ function WaTab({ wa }) {
 ============================================================ */
 export default function ParchesDetoxLanding() {
   const [product,        setProduct]       = useState(null);
+  const [productReady,   setProductReady]  = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(BUNDLES[1]);
   const [openFaq,        setOpenFaq]        = useState(null);
@@ -283,24 +286,21 @@ export default function ParchesDetoxLanding() {
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
-      .then(r => setProduct(r.data?.data || r.data))
-      .catch(() => {});
+      .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
+      .catch(() => { setProductReady(true); });
   }, []);
 
-  // Bundles desde el admin (DB) cuando el producto carga; fallback al hardcoded BUNDLES.
-  // El admin edita precio/tachado por paquete desde el panel Productos → Parches Detox.
+  // El código (BUNDLES) es la fuente de verdad para label, badge, benefit, qty, popular.
+  // El admin solo controla precio y precio tachado — editá desde el panel Productos → Parches Detox.
   const displayBundles = useMemo(() => {
-    if (!product?.bundles?.length) return BUNDLES;
-    return product.bundles.map((b, idx) => ({
-      id:      idx + 1,
-      label:   b.label   || BUNDLES[idx]?.label   || '',
-      badge:   b.badge   || BUNDLES[idx]?.badge   || '',
-      price:   b.price   || BUNDLES[idx]?.price   || 0,
-      was:     b.compareAt ?? BUNDLES[idx]?.was    ?? 0,
-      qty:     b.qty     || BUNDLES[idx]?.qty     || 1,
-      popular: b.popular ?? BUNDLES[idx]?.popular ?? false,
-      benefit: b.benefit || BUNDLES[idx]?.benefit || '',
-    }));
+    return BUNDLES.map((b, idx) => {
+      const db = product?.bundles?.[idx];
+      return {
+        ...b,
+        price: db?.price   || b.price,
+        was:   db?.compareAt ?? b.was,
+      };
+    });
   }, [product]);
 
   // Mantiene el bundle seleccionado en sync con el índice correcto al cargar el producto
@@ -346,6 +346,18 @@ export default function ParchesDetoxLanding() {
     const cfg = mc.images || [];
     return Array.from({ length: 19 }, (_, i) => db[i] || cfg[i] || '');
   }, [product]);
+
+  // No renderizar hasta tener los datos reales — elimina el flash del estado inicial de config
+  if (!productReady) {
+    return (
+      <>
+        <style>{`@keyframes _dtxBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+        <div style={{ minHeight:'100vh', background:'#fff' }}>
+          <div style={{ height:3, background:'linear-gradient(90deg,#1B4D3E,#4ade80,#1B4D3E)', backgroundSize:'200% 100%', animation:'_dtxBar 1.1s linear infinite' }} />
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="dtx-wrap">
@@ -466,19 +478,24 @@ export default function ParchesDetoxLanding() {
                   AGREGAR AL CARRITO
                 </button>
 
-                {/* Pago seguro + logos — igual a ProductDetail */}
+                {/* Pago seguro + logos */}
                 <div className="bnd2-payments">
-                  <p className="bnd2-payments-title">Pago Seguro En Línea</p>
+                  <p className="bnd2-payments-title">🔒 Pago Seguro</p>
                   <div className="bnd2-payments-icons">
-                    <div className="hero-pay-icon">
-                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg>
-                    </div>
-                    <div className="hero-pay-icon">
-                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg>
-                    </div>
-                    <div className="hero-pay-icon">
-                      <svg viewBox="0 0 48 32" width="38" height="25"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="8" y="10" width="32" height="12" rx="2" fill="#00A650"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="bold" fontFamily="Arial">RAPIPAGO</text></svg>
-                    </div>
+                    {/* Visa */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><path d="M19.5 21h-3.2l2-12.4h3.2L19.5 21zm12.8-12.1c-.6-.3-1.6-.5-2.9-.5-3.2 0-5.4 1.7-5.4 4.1 0 1.8 1.6 2.8 2.8 3.4 1.2.6 1.7 1 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-1.9-.2-3-.7l-.4-.2-.4 2.7c.7.4 2.1.7 3.5.7 3.4 0 5.5-1.7 5.6-4.2 0-1.4-.8-2.5-2.7-3.4-1.1-.6-1.8-.9-1.8-1.5 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.5-2.7zm8.3-.3h-2.5c-.8 0-1.3.2-1.7 1L32 21h3.4l.7-1.8h4.1l.4 1.8H44l-2.7-12.4h-2.7zm-3.3 8l1.7-4.6.8 4.6h-2.5zM16.3 8.6l-3.1 8.5-.3-1.7c-.6-2-2.4-4.2-4.5-5.2l2.9 10.7h3.4l5.1-12.3h-3.5z" fill="#1A1F71"/><path d="M10.4 8.6H5.1l-.1.3c4 1 6.7 3.5 7.8 6.5l-1.1-5.7c-.2-.8-.8-1-1.3-1.1z" fill="#F9A533"/></svg></div>
+                    {/* Mastercard */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><circle cx="19" cy="16" r="9" fill="#EB001B"/><circle cx="29" cy="16" r="9" fill="#F79E1B"/><path d="M24 9.3a9 9 0 013 6.7 9 9 0 01-3 6.7 9 9 0 01-3-6.7 9 9 0 013-6.7z" fill="#FF5F00"/></svg></div>
+                    {/* American Express */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#016FD0"/><text x="24" y="13" textAnchor="middle" fill="#fff" fontSize="5.5" fontWeight="bold" fontFamily="Arial">AMERICAN</text><text x="24" y="21" textAnchor="middle" fill="#fff" fontSize="5.5" fontWeight="bold" fontFamily="Arial">EXPRESS</text></svg></div>
+                    {/* Mercado Pago */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="4" y="9" width="40" height="14" rx="2" fill="#009EE3"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="6" fontWeight="bold" fontFamily="Arial">MERCADO PAGO</text></svg></div>
+                    {/* Naranja */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#FF6200"/><text x="24" y="20" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="Arial">naranja</text></svg></div>
+                    {/* Galicia */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="4" y="9" width="40" height="14" rx="2" fill="#E31837"/><text x="24" y="19" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="bold" fontFamily="Arial">Galicia</text></svg></div>
+                    {/* BBVA */}
+                    <div className="hero-pay-icon"><svg viewBox="0 0 48 32" width="36" height="24"><rect width="48" height="32" rx="4" fill="#fff" stroke="#ddd" strokeWidth="1"/><rect x="4" y="9" width="40" height="14" rx="2" fill="#004481"/><text x="24" y="19.5" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="Arial">BBVA</text></svg></div>
                   </div>
                 </div>
 
@@ -644,7 +661,7 @@ export default function ParchesDetoxLanding() {
               {/* SUBTÍTULO EDITABLE: cambiar "+847 reseñas verificadas · Promedio 4.8 ⭐" */}
               <p className="sec-sub">+847 reseñas verificadas · Promedio 4.8 ⭐</p>
             </div>
-            <ReviewsCarouselPro reviewImages={imgs.slice(15, 19)} />
+            <ReviewsCarouselPro reviewImages={imgs.slice(15, 19)} imagesReady={productReady} />
           </div>
         </section>
 
@@ -985,14 +1002,14 @@ export default function ParchesDetoxLanding() {
 
         /* ── Sticky bar — píldora flotante centrada ── */
         .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%); z-index:9999; display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:999px; padding:9px 10px 9px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
-        .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; overflow:hidden; }
-        .pd-sticky-prices { display:flex; align-items:baseline; gap:6px; }
-        .pd-sticky-old { color:rgba(11,18,32,.35); font-weight:700; text-decoration:line-through; font-size:.70rem; white-space:nowrap; }
-        .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.95rem; white-space:nowrap; }
-        .pd-sticky-qty { font-size:.60rem; font-weight:700; color:#1B4D3E; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
+        .pd-sticky-prices { display:flex; flex-direction:column; gap:0; }
+        .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
+        .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.92rem; white-space:nowrap; line-height:1.25; }
+        .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; }
         .pd-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#1B4D3E 0%,#153D31 60%,#0F2D24 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(27,77,62,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
         .pd-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(27,77,62,.22); }
-        @media (max-width:380px) { .pd-sticky-bar{padding:8px 8px 8px 16px;gap:8px;} .pd-sticky-now{font-size:.85rem;} .pd-sticky-btn{font-size:.72rem;padding:9px 13px;} }
+        @media (max-width:380px) { .pd-sticky-bar{padding:8px 8px 8px 16px;gap:8px;} .pd-sticky-now{font-size:.82rem;} .pd-sticky-btn{font-size:.72rem;padding:9px 12px;} }
 
         /* ── WhatsApp tab ── */
         .wa-tab { position:fixed; right:16px; bottom:82px; z-index:9998; display:flex; align-items:center; gap:8px; background:#25D366; border-radius:999px; padding:10px; text-decoration:none; box-shadow:0 6px 20px rgba(37,211,102,.38); transition:padding .22s ease,box-shadow .18s ease; }
