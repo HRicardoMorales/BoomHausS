@@ -416,7 +416,7 @@ export default function ParchesDetoxLanding() {
 
               {/* TÍTULO EDITABLE: nombre del producto en el hero */}
               <h1 className="hero-title hero-title--compact">
-                Parches Plantares<br />Detox Kinoki
+                Desintoxica Tu Cuerpo<br />Mientras Duermes
               </h1>
 
               {/* Subtítulo */}
