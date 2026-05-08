@@ -148,13 +148,13 @@ const parchesDetoxConfig = {
       benefit:   "📦 20 parches + Ebook · Envío gratis · Ideal para compartir",
     },
     {
-      label:     "15 Cajas + 5 de Regalo · Kit Premium",
+      label:     "9 Cajas + 6 de Regalo · Kit Premium",
       qty:       5,
-      price:     98800,
+      price:     78800,
       compareAt: 194900,
       badge:     "MEJOR VALOR",
       popular:   false,
-      benefit:   "💎 40 parches + Ebook + Pack sorpresa · Envío gratis",
+      benefit:   "💎 30 parches + Ebook + Pack sorpresa · Envío gratis",
     },
   ],
 };

@@ -290,13 +290,15 @@ export default function ParchesDetoxLanding() {
       .catch(() => { setProductReady(true); });
   }, []);
 
-  // El código (BUNDLES) es la fuente de verdad para label, badge, benefit, qty, popular.
-  // El admin solo controla precio y precio tachado — editá desde el panel Productos → Parches Detox.
+  // Admin puede editar: precio, precio tachado y nombre de cada bundle.
+  // Fuente de verdad del código para: badge, benefit, qty, popular.
+  // Para editar bundles: Panel Admin → Productos → Parches Detox → Paquetes.
   const displayBundles = useMemo(() => {
     return BUNDLES.map((b, idx) => {
       const db = product?.bundles?.[idx];
       return {
         ...b,
+        label: db?.label   || b.label,
         price: db?.price   || b.price,
         was:   db?.compareAt ?? b.was,
       };
@@ -414,9 +416,12 @@ export default function ParchesDetoxLanding() {
                 </span>
               </div>
 
-              {/* TÍTULO EDITABLE: nombre del producto en el hero */}
+              {/* Título del hero — editable desde admin → Productos → nombre */}
               <h1 className="hero-title hero-title--compact">
-                Desintoxica Tu Cuerpo Mientras Duermes<br />Parches Detox Kinoki
+                {product?.name
+                  ? product.name
+                  : <>Desintoxica Tu Cuerpo Mientras Duermes<br />Parches Detox Kinoki</>
+                }
               </h1>
 
               {/* Subtítulo */}

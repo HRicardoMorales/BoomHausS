@@ -24,6 +24,7 @@ import Privacy from './pages/Privacy.jsx';
 import Returns from './pages/Returns.jsx';
 import SuccessPayment from './pages/SuccessPayment';
 import AdminHome from './pages/AdminHome.jsx';
+import AdminCoupons from './pages/AdminCoupons.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import MundialLanding from './pages/MundialLanding.jsx';
 import ParchesDetoxLanding from './pages/ParchesDetoxLanding.jsx';
@@ -127,6 +128,7 @@ export default function App() {
           <Route path="/tienda" element={<TiendaRedirect />} />
           <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
           <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+          <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/returns" element={<Returns />} />

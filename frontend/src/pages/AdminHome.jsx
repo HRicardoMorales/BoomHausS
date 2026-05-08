@@ -27,6 +27,13 @@ const ADMIN_LINKS = [
     cta: 'Ver pedidos',
     emoji: '📦',
   },
+  {
+    title: 'Cupones',
+    desc: 'Crear, activar y desactivar códigos de descuento.',
+    href: '/admin/coupons',
+    cta: 'Gestionar cupones',
+    emoji: '🏷️',
+  },
 ];
 
 export default function AdminHome() {
