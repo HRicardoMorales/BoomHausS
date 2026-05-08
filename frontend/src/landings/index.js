@@ -80,7 +80,7 @@ export const LANDING_META = [
   },
   {
     slug: 'parches-detox',
-    name: 'Parches Plantares Detox Kinoki',
+    name: 'Desintoxica Tu Cuerpo Mientras Duermes',
     desc: 'Parches herbales 2x1 + Ebook. Ritual nocturno: se colocan en la planta del pie antes de dormir. Slug admin: "parches-detox". Renderiza ParchesDetoxLanding.jsx.',
     status: 'active',
     emoji: '🌿',
