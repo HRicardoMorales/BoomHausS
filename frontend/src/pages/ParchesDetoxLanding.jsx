@@ -312,7 +312,11 @@ export default function ParchesDetoxLanding() {
 
   const handleBuy = () => {
     if (!product) return;
-    addItem(product, selectedBundle.qty);
+    addItem(
+      { ...product, name: `Parches Detox — ${selectedBundle.label}` },
+      1,
+      { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.was },
+    );
     track('InitiateCheckout', {
       value: selectedBundle.price / 100,
       currency: 'ARS',

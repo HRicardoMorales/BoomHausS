@@ -1256,9 +1256,11 @@ export function CheckoutSheet({ onClose }) {
                             </span>
                           )}
                           {/* Qty controls */}
-                          {String(it?.productId || '').includes('lampara-magnetica') ? (
+                          {(String(it?.productId || '').includes('lampara-magnetica') || String(it?.productId || '').includes('parches-detox')) ? (
                             <div style={{ marginTop: 6 }}>
-                              <span style={{ fontSize: 13, fontWeight: 800, color: "rgba(11,18,32,.50)" }}>Cant: {it.quantity}</span>
+                              <span style={{ fontSize: 13, fontWeight: 800, color: "rgba(11,18,32,.50)" }}>
+                                {String(it?.productId || '').includes('parches-detox') ? 'Pack seleccionado' : `Cant: ${it.quantity}`}
+                              </span>
                             </div>
                           ) : (
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
