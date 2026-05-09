@@ -45,9 +45,10 @@ const lamparaMagneticaConfig = {
     "Lámpara LED magnética inalámbrica con sistema de acople instantáneo. Se desmonta con un click para usarla como linterna en la mano. Rotación 360°, batería recargable USB-C 1200mAh y tecnología CCT para ajustar la temperatura de color. Un solo producto reemplaza la lámpara de escritorio, la linterna y la luz de lectura.",
 
   // ── Selección por defecto al entrar a la landing ─────────────
-  // Arranca en "Solo Lámpara" (índice 1) + opción más popular (índice 1) = 2+1 gratis
+  // Kit Completo (0) · color negro (0) · 1 unidad (0)
   defaultVariantIdx: 1,
-  defaultBundleIdx: 1,
+  defaultColorIdx: 3,
+  defaultBundleIdx: 0,
 
   // ────────────────────────────────────────────────────────────────
   // VARIANTES DEL PRODUCTO
@@ -204,8 +205,8 @@ const lamparaMagneticaConfig = {
           thumbImg: "https://http2.mlstatic.com/D_Q_NP_2X_995016-MLA91899758620_092025-F.webp",
           images: [
             "https://pbs.twimg.com/media/HGTuioNXYAAK30b?format=jpg&name=small",
-            "https://acdn-us.mitiendanube.com/stores/005/324/474/products/178935713068e12604a067c1-78026557-c419c227466dbfd98317766358229151-640-0.webp",
-            "https://acdn-us.mitiendanube.com/stores/005/324/474/products/204878835368e12605385b59-97646045-91b73686bb5f9ea28717766358468222-640-0.webp",
+            "https://dcdn-us.mitiendanube.com/stores/001/015/069/products/imagen-13-d862a1204998e9b10117526197260766-1024-1024.webp",
+            "https://dcdn-us.mitiendanube.com/stores/001/015/069/products/imagen-18-510fab553500cf844c17526197258270-640-0.webp",
           ],
         },
         {
@@ -215,8 +216,8 @@ const lamparaMagneticaConfig = {
           thumbImg: "https://acdn-us.mitiendanube.com/stores/006/185/930/products/llm2-3cn-y-llm2-3cb-placas-tienda-nube-09-cdc846663b02d9058317564268846464-1024-1024.webp",
           images: [
             // TODO: reemplazá estos placeholders por las imágenes reales de la Solo Lámpara Blanca
-            "https://http2.mlstatic.com/D_NQ_NP_2X_830508-MLA91909516064_092025-F.webp",
-            "https://http2.mlstatic.com/D_NQ_NP_2X_975353-MLA91909526086_092025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_994378-MLA90244421540_082025-F.webp",
+            "https://http2.mlstatic.com/D_NQ_NP_2X_696779-MLA89990596352_082025-F.webp",
             "https://http2.mlstatic.com/D_NQ_NP_2X_604370-MLA92312216933_092025-F.webp",
           ],
         },

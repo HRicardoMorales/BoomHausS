@@ -1217,7 +1217,7 @@ export default function ProductDetail() {
 
   // ── Soporte de variantes ────────────────────────────────────────────────────
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(() => MCRaw.defaultVariantIdx ?? 0);
-  const [selectedColorIdx, setSelectedColorIdx] = useState(0);
+  const [selectedColorIdx, setSelectedColorIdx] = useState(() => MCRaw.defaultColorIdx ?? 0);
   const activeVariant = useMemo(
     () => (MCRaw.variants ? MCRaw.variants[selectedVariantIdx] || null : null),
     [MCRaw, selectedVariantIdx]
