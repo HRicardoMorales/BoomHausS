@@ -196,7 +196,8 @@ export default function AdminProducts() {
   function setBundleField(idx, field, val) {
     setForm(f => {
       const b = [...f.bundles];
-      b[idx] = { ...b[idx], [field]: field === 'popular' ? val : (Number(val) || 0) };
+      const isStr = field === 'label' || field === 'badge' || field === 'benefit';
+      b[idx] = { ...b[idx], [field]: field === 'popular' ? val : isStr ? val : (Number(val) || 0) };
       return { ...f, bundles: b };
     });
   }
@@ -294,8 +295,8 @@ export default function AdminProducts() {
 
   const hasChanges = useMemo(() => {
     if (!selected) return true;
-    const dbBundles = JSON.stringify((selected.bundles || []).map(b => ({ qty: b.qty, price: b.price, compareAt: b.compareAt })));
-    const fmBundles = JSON.stringify((form.bundles || []).map(b => ({ qty: b.qty, price: Number(b.price), compareAt: Number(b.compareAt) })));
+    const dbBundles = JSON.stringify((selected.bundles || []).map(b => ({ qty: b.qty, price: b.price, compareAt: b.compareAt, label: b.label || '' })));
+    const fmBundles = JSON.stringify((form.bundles || []).map(b => ({ qty: b.qty, price: Number(b.price), compareAt: Number(b.compareAt), label: b.label || '' })));
     return form.name !== (selected.name || '') ||
       form.slug !== (selected.slug || '') ||
       String(form.price) !== String(selected.price ?? '') ||
@@ -605,6 +606,9 @@ export default function AdminProducts() {
                     <div>
                       <span className="ap-lbl">Nombre del producto</span>
                       <input className="ap-inp" value={form.name} onChange={e => setF('name', e.target.value)} placeholder="Ej: Lámpara Magnética 3 en 1" />
+                      <div style={{ marginTop: 5, fontSize: 11, fontWeight: 700, color: '#888', lineHeight: 1.4 }}>
+                        Este nombre aparece como <strong>título H1</strong> en la landing.
+                      </div>
                     </div>
                     <div>
                       <span className="ap-lbl">Slug (URL)</span>
@@ -665,13 +669,13 @@ export default function AdminProducts() {
                   <div className="ap-section-head">
                     📦 Paquetes / Bundles
                     <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, color: '#888' }}>
-                      Editá precio y tachado por paquete
+                      Nombre, precio y tachado editables
                     </span>
                   </div>
                   <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {/* Header */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 140px', gap: 10, padding: '0 14px' }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '.04em' }}>Paquete</div>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '.04em' }}>Nombre del paquete ✏️</div>
                       <div style={{ fontSize: 11, fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '.04em' }}>Precio ARS</div>
                       <div style={{ fontSize: 11, fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '.04em' }}>Tachado ARS</div>
                     </div>
@@ -681,13 +685,19 @@ export default function AdminProducts() {
                       return (
                         <div key={i} className={`ap-bundle-row ${b.popular ? 'ap-popular' : ''}`}>
                           <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 5 }}>
                               {b.popular && <span style={{ fontSize: 10, fontWeight: 900, background: '#10b981', color: '#fff', borderRadius: 4, padding: '1px 6px' }}>★ POPULAR</span>}
                               {b.badge && <span style={{ fontSize: 10, fontWeight: 800, background: '#fef3c7', color: '#92400e', borderRadius: 4, padding: '1px 6px', border: '1px solid #fde68a' }}>{b.badge}</span>}
                             </div>
-                            <div style={{ fontWeight: 800, fontSize: 13, marginTop: 3 }}>{b.label || `${b.qty} unidad${b.qty !== 1 ? 'es' : ''}`}</div>
-                            <div style={{ fontSize: 11, color: '#888', fontWeight: 600, marginTop: 2 }}>
-                              {b.qty} und · {b.benefit && b.benefit}
+                            <input
+                              className="ap-bundle-inp"
+                              value={b.label}
+                              onChange={e => setBundleField(i, 'label', e.target.value)}
+                              placeholder={`Nombre del paquete ${i + 1}`}
+                              style={{ fontWeight: 800, fontSize: 13 }}
+                            />
+                            <div style={{ fontSize: 11, color: '#888', fontWeight: 600, marginTop: 4 }}>
+                              {b.qty} und · {b.benefit}
                             </div>
                           </div>
                           <div>
