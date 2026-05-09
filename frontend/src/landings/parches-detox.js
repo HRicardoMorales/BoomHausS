@@ -136,7 +136,7 @@ const parchesDetoxConfig = {
       compareAt: 86000,
       badge:     "OFERTA ESPECIAL",
       popular:   false,
-      benefit:   "🌿 10 parches + Ebook · Envío gratis a todo el país",
+      benefit:   "🌿 20 parches + Ebook · Envío gratis a todo el país",
     },
     {
       label:     "6 Cajas + 4 de Regalo · Kit Familiar",
@@ -145,7 +145,7 @@ const parchesDetoxConfig = {
       compareAt: 119200,
       badge:     "MÁS ELEGIDO",
       popular:   true,
-      benefit:   "📦 20 parches + Ebook · Envío gratis · Ideal para compartir",
+      benefit:   "📦 60 parches + Ebook · Envío gratis · Ideal para compartir",
     },
     {
       label:     "9 Cajas + 6 de Regalo · Kit Premium",
@@ -154,7 +154,7 @@ const parchesDetoxConfig = {
       compareAt: 194900,
       badge:     "MEJOR VALOR",
       popular:   false,
-      benefit:   "💎 30 parches + Ebook + Pack sorpresa · Envío gratis",
+      benefit:   "💎 100 parches + Ebook + Pack sorpresa · Envío gratis",
     },
   ],
 };

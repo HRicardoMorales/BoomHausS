@@ -17,7 +17,7 @@ const BUNDLES = [
     was: 86000,
     qty: 10,
     popular: false,
-    benefit: '🌿 10 parches + Ebook · Envío gratis a todo el país',
+    benefit: '🌿 20 parches + Ebook · Envío gratis a todo el país',
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const BUNDLES = [
     was: 118200,
     qty: 20,
     popular: true,
-    benefit: '📦 20 parches + Ebook · Envío gratis · Ideal para compartir',
+    benefit: '📦 60 parches + Ebook · Envío gratis · Ideal para compartir',
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const BUNDLES = [
     was: 194900,
     qty: 40,
     popular: false,
-    benefit: '💎 40 parches + Ebook + Pack sorpresa · Envío gratis',
+    benefit: '💎 100 parches + Ebook + Pack sorpresa · Envío gratis',
   },
 ];
 
