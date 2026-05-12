@@ -52,14 +52,32 @@ const CAT_LABELS = {
 const VALID_CATS = new Set(Object.keys(CAT_LABELS));
 const catLabel = (k) => CAT_LABELS[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1) : "General");
 
+/* ── Encontrar el landingSlug canónico para un productSlug de DB ──
+   Replica la lógica de findLandingForSlug del admin:
+   1. Clave directa del config (ej: "parches-detox")
+   2. config.productSlug (ej: "lampara-magnetica-negro-kit" → "lampara-magnetica")
+   3. variant.productSlug (variantes de una misma landing) */
+function findLandingSlug(productSlug) {
+  if (!productSlug) return null;
+  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
+    if (landingSlug === productSlug) return landingSlug;
+    if (config.productSlug === productSlug) return landingSlug;
+    if (Array.isArray(config.variants)) {
+      for (const v of config.variants) {
+        if (v.productSlug === productSlug) return landingSlug;
+      }
+    }
+  }
+  return null;
+}
+
 /* ── ProductCard ─────────────────────────────────────────────────── */
 function ProductCard({ product, index = 0 }) {
   const navigate = useNavigate();
   const img  = product.images?.[0] || product.imageUrl || "";
   const pct  = discountPct(product.price, product.compareAtPrice);
-  // Solo usar /lp/ si el slug coincide exactamente con una key de LANDING_CONFIGS
-  const isLanding = product.slug && product.slug in LANDING_CONFIGS;
-  const href = isLanding ? `/lp/${product.slug}` : `/products/${product._id}`;
+  const landingSlug = findLandingSlug(product.slug);
+  const href = landingSlug ? `/lp/${landingSlug}` : `/products/${product._id}`;
   // Stagger up to 7 cards, after that no extra delay (below fold anyway)
   const delay = Math.min(index, 7) * 70;
 

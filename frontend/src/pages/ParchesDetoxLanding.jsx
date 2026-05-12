@@ -35,7 +35,7 @@ const BUNDLES = [
     badge: 'MEJOR VALOR',
     price: 99800,
     was: 194900,
-    qty: 100,
+    qty: 150,
     popular: false,
     benefit: '💎 100 parches + Ebook + Pack sorpresa · Envío gratis',
   },
@@ -476,6 +476,7 @@ export default function ParchesDetoxLanding() {
                       <div className="bnd2-prices">
                         <span className="bnd2-was">{fmt(b.was)}</span>
                         <span className="bnd2-now">{fmt(b.price)}</span>
+                        <span className="bnd2-per-night">Solo {fmt(Math.round(b.price / b.qty))} / noche</span>
                       </div>
                     </div>
                     <div className="bnd2-benefit">{b.benefit}</div>
@@ -828,6 +829,7 @@ export default function ParchesDetoxLanding() {
         .bnd2-prices { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
         .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.35); text-decoration:line-through; font-weight:600; line-height:1.1; }
         .bnd2-now { font-size:1.10rem; font-weight:900; color:rgba(11,18,32,.90); line-height:1.1; }
+        .bnd2-per-night { font-size:.64rem; font-weight:700; color:#1B4D3E; line-height:1.2; text-align:right; white-space:nowrap; }
         .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(27,77,62,.07); font-size:.80rem; font-weight:700; color:#1B4D3E; letter-spacing:.01em; line-height:1.35; }
         .bnd2-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#1B4D3E 0%,#2a6e59 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(27,77,62,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
         .bnd2-cta:hover { background:linear-gradient(135deg,#163d31 0%,#245c4a 100%); box-shadow:0 8px 28px rgba(27,77,62,.38); transform:translateY(-1px); }
