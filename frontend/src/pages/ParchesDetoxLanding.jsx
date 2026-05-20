@@ -27,7 +27,7 @@ const BUNDLES = [
     was: 118200,
     qty: 60,
     popular: true,
-    benefit: '📦 60 parches + Ebook · Envío gratis · Ideal para compartir',
+    benefit: '📦 30 parches + Ebook · Envío gratis · Ideal para compartir',
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const BUNDLES = [
     was: 194900,
     qty: 150,
     popular: false,
-    benefit: '💎 100 parches + Ebook + Pack sorpresa · Envío gratis',
+    benefit: '💎 40 parches + Ebook + Pack sorpresa · Envío gratis',
   },
 ];
 
@@ -487,6 +487,7 @@ export default function ParchesDetoxLanding() {
                 <button className="bnd2-cta" type="button" onClick={handleBuy}>
                   AGREGAR AL CARRITO
                 </button>
+                <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
 
                 {/* Pago seguro + logos */}
                 <div className="bnd2-payments">
@@ -568,16 +569,14 @@ export default function ParchesDetoxLanding() {
 
         <WaveSeparator from="blue" />
 
-        {/* ── ANTES / DESPUÉS ── */}
+        {/* ── IMAGEN TRANSFORMACIÓN NOCTURNA ── */}
         <section className="pd-band pd-band--light">
-          <div className="dtx-container dtx-py">
-            <div className="sec-head">
-              {/* TÍTULO EDITABLE: sección antes/después — cambiar en parches-detox.js → beforeAfterTitle */}
-              <h2 className="sec-title">{mc.beforeAfterTitle}</h2>
-              <p className="sec-sub">{mc.beforeAfterSubtitle}</p>
-            </div>
-            <BeforeAfterSlider imgBefore={imgs[5]} imgAfter={imgs[6]} />
-            <p className="dtx-ba-hint">← Arrastrá el divisor para ver la diferencia →</p>
+          <div style={{ paddingTop: 52, paddingBottom: 52 }}>
+            <img
+              src={imgs[11]}
+              alt="Transformación visible nocturna — Parches Detox Kinoki"
+              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+            />
           </div>
         </section>
 
@@ -613,14 +612,16 @@ export default function ParchesDetoxLanding() {
 
         <WaveSeparator from="blue" />
 
-        {/* ── IMAGEN TRANSFORMACIÓN NOCTURNA ── */}
+        {/* ── ANTES / DESPUÉS ── */}
         <section className="pd-band pd-band--light">
-          <div style={{ paddingTop: 52, paddingBottom: 52 }}>
-            <img
-              src={imgs[11]}
-              alt="Transformación visible nocturna — Parches Detox Kinoki"
-              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
-            />
+          <div className="dtx-container dtx-py">
+            <div className="sec-head">
+              {/* TÍTULO EDITABLE: sección antes/después — cambiar en parches-detox.js → beforeAfterTitle */}
+              <h2 className="sec-title">{mc.beforeAfterTitle}</h2>
+              <p className="sec-sub">{mc.beforeAfterSubtitle}</p>
+            </div>
+            <BeforeAfterSlider imgBefore={imgs[5]} imgAfter={imgs[6]} />
+            <p className="dtx-ba-hint">← Arrastrá el divisor para ver la diferencia →</p>
           </div>
         </section>
 
@@ -699,6 +700,7 @@ export default function ParchesDetoxLanding() {
                 <span className="grt-pill">🚚 Envío gratis</span>
               </div>
               <button className="grt-cta" onClick={handleBuy}>{mc.guarantee.cta}</button>
+              <p className="pd-cta-guarantee pd-cta-guarantee--light">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
             </div>
           </div>
         </section>
@@ -734,16 +736,19 @@ export default function ParchesDetoxLanding() {
           STICKY BAR — visible en todos los tamaños de pantalla
       ============================================================ */}
       <div className="pd-sticky-bar">
-        <div className="pd-sticky-info">
-          <div className="pd-sticky-prices">
-            <span className="pd-sticky-old">{fmt(selectedBundle.was)}</span>
-            <span className="pd-sticky-now">{fmt(selectedBundle.price)}</span>
+        <div className="pd-sticky-inner">
+          <div className="pd-sticky-info">
+            <div className="pd-sticky-prices">
+              <span className="pd-sticky-old">{fmt(selectedBundle.was)}</span>
+              <span className="pd-sticky-now">{fmt(selectedBundle.price)}</span>
+            </div>
+            <span className="pd-sticky-qty">{selectedBundle.qty} parches incluidos</span>
           </div>
-          <span className="pd-sticky-qty">{selectedBundle.qty} parches incluidos</span>
+          <button className="pd-sticky-btn" onClick={handleBuy}>
+            {mc.stickyBtnText}
+          </button>
         </div>
-        <button className="pd-sticky-btn" onClick={handleBuy}>
-          {mc.stickyBtnText}
-        </button>
+        <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
       </div>
 
       <WaTab wa={mc.whatsapp} />
@@ -834,6 +839,8 @@ export default function ParchesDetoxLanding() {
         .bnd2-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#1B4D3E 0%,#2a6e59 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(27,77,62,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
         .bnd2-cta:hover { background:linear-gradient(135deg,#163d31 0%,#245c4a 100%); box-shadow:0 8px 28px rgba(27,77,62,.38); transform:translateY(-1px); }
         .bnd2-cta:active { transform:translateY(0) scale(.98); }
+        .pd-cta-guarantee { margin:6px 0 0; padding:0; text-align:center; font-size:12px; font-weight:600; color:rgba(11,18,32,.42); line-height:1.4; background:none; border:none; }
+        .pd-cta-guarantee--light { color:rgba(255,255,255,.55); }
         .bnd2-urgency { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.80rem; font-weight:800; color:rgba(180,30,30,.85); letter-spacing:.02em; }
         .bnd2-urgency-dot { width:8px; height:8px; border-radius:50%; background:#e53e3e; flex-shrink:0; animation:bnd2Pulse 1.4s ease-in-out infinite; }
         @keyframes bnd2Pulse { 0%,100%{box-shadow:0 0 0 0 rgba(229,62,62,.55);} 50%{box-shadow:0 0 0 5px rgba(229,62,62,0);} }
@@ -1012,7 +1019,9 @@ export default function ParchesDetoxLanding() {
         .faq-acc-item.active .faq-acc-content { max-height:300px; padding:4px 10px 4px; }
 
         /* ── Sticky bar — píldora flotante centrada ── */
-        .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%); z-index:9999; display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:999px; padding:9px 10px 9px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
+        .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
+        .pd-sticky-inner { display:flex; align-items:center; gap:12px; width:100%; }
+        .pd-sticky-bar .pd-cta-guarantee { font-size:11px; margin:0; color:rgba(11,18,32,.38); }
         .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
         .pd-sticky-prices { display:flex; flex-direction:column; gap:0; }
         .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
@@ -1020,7 +1029,7 @@ export default function ParchesDetoxLanding() {
         .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; }
         .pd-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#1B4D3E 0%,#153D31 60%,#0F2D24 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(27,77,62,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
         .pd-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(27,77,62,.22); }
-        @media (max-width:380px) { .pd-sticky-bar{padding:8px 8px 8px 16px;gap:8px;} .pd-sticky-now{font-size:.82rem;} .pd-sticky-btn{font-size:.72rem;padding:9px 12px;} }
+        @media (max-width:380px) { .pd-sticky-bar{padding:8px 8px 6px 16px;} .pd-sticky-inner{gap:8px;} .pd-sticky-now{font-size:.82rem;} .pd-sticky-btn{font-size:.72rem;padding:9px 12px;} }
 
         /* ── WhatsApp tab ── */
         .wa-tab { position:fixed; right:16px; bottom:82px; z-index:9998; display:flex; align-items:center; gap:8px; background:#25D366; border-radius:999px; padding:10px; text-decoration:none; box-shadow:0 6px 20px rgba(37,211,102,.38); transition:padding .22s ease,box-shadow .18s ease; }
