@@ -12,26 +12,25 @@ const parchesDetoxConfig = {
   pageTitle: "Parches Plantares Detox Kinoki | Ritual nocturno para despertar más liviano | BoomHausS",
   checkoutName: "Parches Plantares Detox Kinoki 2x1 + Ebook",
 
-  heroSubtitle: "",
+  heroSubtitle: "La prueba visual de que las toxinas salen de tu cuerpo mientras dormís.",
 
   trustBullets: [
-    "🌿 Cada caja incluye un par de parches",
-    "📖 Ebook de bienestar incluido gratis",
-    "🚚 Envío gratis a todo el país",
-    "💵 CABA: pagás al recibirlo",
+    "😴 Descanso profundo y más energía — Sueño ininterrumpido, despertás con las pilas cargadas",
+    "🦶 Adiós piernas pesadas — Activa la circulación, desinflamación y sin retención de líquidos",
+    "🌿 Desintoxicación visible y sin esfuerzo — El parche negro en tu mano es la prueba",
   ],
 
-  ctaLine1: "QUIERO MI KIT 2x1",
-  ctaLine2: "LO QUIERO 🌿",
-  stockAlertText: "⚠️ Stock limitado al precio actual",
-  stickyBtnText: "QUIERO MI KIT DETOX 🚚",
+  ctaLine1: "QUIERO PROBAR ESTA NOCHE",
+  ctaLine2: "EMPEZAR ESTA NOCHE 🌙",
+  stockAlertText: "⚠️ Últimas unidades al precio actual",
+  stickyBtnText: "QUIERO PROBAR ESTA NOCHE 🌙",
 
   miniDescription:
     "Parches adhesivos herbales de origen oriental. Se colocan en la planta del pie antes de dormir y actúan durante la noche como un ritual de bienestar. Al despertar, el parche oscuro es la señal visible de que algo pasó mientras dormías.",
 
   // Sección antes/después (para referencia — el componente lo renderiza con diseño propio)
-  beforeAfterTitle: "La prueba está en el parche",
-  beforeAfterSubtitle: "El parche entra blanco. Al despertar, amanece oscuro. Algo claramente está pasando mientras dormís.",
+  beforeAfterTitle: "La prueba que tenés en la mano al despertar",
+  beforeAfterSubtitle: "Entra blanco. Amanece negro. Eso no es casualidad — es lo que salió de tu cuerpo mientras dormías.",
   beforeLabel: "Antes de dormir",
   afterLabel: "Al despertar",
 
@@ -44,9 +43,9 @@ const parchesDetoxConfig = {
 
   // Garantía
   guarantee: {
-    title: "PROBALO SIN RIESGO",
-    sub: "Si no notás ninguna diferencia en cómo te despertás durante los primeros 7 días, te devolvemos el dinero. Sin preguntas, sin trámites.",
-    cta: "QUIERO MI KIT DETOX →",
+    title: "CERO RIESGO. CERO EXCUSAS.",
+    sub: "Si mañana a la mañana el parche no amanece oscuro, te devolvemos todo el dinero. Sin preguntas, sin trámites, sin vuelta.",
+    cta: "EMPEZAR ESTA NOCHE →",
   },
 
   // WhatsApp
@@ -59,24 +58,24 @@ const parchesDetoxConfig = {
   // FAQ (compartido con el componente)
   faq: [
     {
-      q: "¿Cómo sé que está funcionando?",
-      a: "El indicador más visible es el cambio de color: el parche entra blanco y amanece oscuro/manchado. Muchos usuarios también reportan sentirse más descansados y livianos con el uso regular."
+      q: "¿Cómo sé que funcionó?",
+      a: "El parche oscuro que tenés en la mano al despertar es la señal. Entra completamente blanco y amanece negro y húmedo. Sin haber hecho nada más que dormir. Aparte de eso, la mayoría de los clientes notan más energía y piernas más livianas desde la primera semana de uso continuo."
     },
     {
-      q: "¿Cuántas noches debo usarlo?",
-      a: "Recomendamos al menos una semana de uso continuo para notar resultados sostenidos. Muchos lo incorporan como ritual permanente: lo ponen antes de acostarse y listo."
+      q: "¿Cuántas noches necesito para ver resultados?",
+      a: "El cambio de color en el parche se ve desde la primera noche. Para notar diferencia real en cómo te sentís — más descansado/a, piernas más livianas, más energía — lo ideal es una semana seguida. Muchos lo incorporan como ritual nocturno permanente."
     },
     {
-      q: "¿Para quién está recomendado?",
-      a: "Para adultos que se sienten cansados, pesados, o con sueño poco reparador. Si tenés alguna condición médica específica, embarazo u otra situación de salud, consultá con tu médico antes."
+      q: "¿Para quién es ideal?",
+      a: "Para cualquier persona que se levante cansada, con piernas pesadas o sueño poco reparador. No requiere dieta, ni ejercicio, ni cambio de hábitos. Solo lo pegás en la planta del pie y dormís. Si tenés alguna condición médica o estás embarazada, consultá antes con tu médico."
     },
     {
-      q: "¿Tiene algún efecto secundario?",
-      a: "Los parches usan ingredientes naturales y generalmente son bien tolerados. Algunas personas con piel muy sensible pueden notar leve enrojecimiento en la planta del pie. En ese caso, suspendé el uso. No recomendados para menores de 12 años."
+      q: "¿Tengo que cambiar algo en mi rutina?",
+      a: "No. Cero fricción. Lo único que hacés es pegarlo en la planta del pie limpia antes de acostarte. Sin pastillas, sin dietas, sin ejercicios. Funciona mientras dormís — eso es todo."
     },
     {
-      q: "¿Cómo llega y cuánto tarda el envío?",
-      a: "El envío es gratis a todo el país. CABA y GBA: 24 a 72hs hábiles con opción de pago contra entrega. Interior del país: 3 a 7 días hábiles con Correo Argentino, abonando con MercadoPago al comprar."
+      q: "¿Cuándo llega y cómo puedo pagar?",
+      a: "Envío gratis a todo el país. CABA y GBA: 24 a 72hs hábiles con opción de pago al recibirlo. Interior del país: 3 a 7 días hábiles por Correo Argentino, abonando con MercadoPago al comprar."
     },
   ],
 

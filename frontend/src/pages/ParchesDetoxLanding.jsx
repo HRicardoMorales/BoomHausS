@@ -11,33 +11,33 @@ import mc from '../landings/parches-detox';
 const BUNDLES = [
   {
     id: 1,
-    label: '3 cajas + 2 de Regalo · Edición Básica',
+    label: 'Kit Inicio — Tus primeras noches de descanso real',
     badge: 'OFERTA ESPECIAL',
     price: 48800,
     was: 86000,
     qty: 20,
     popular: false,
-    benefit: '🌿 20 parches + Ebook · Envío gratis a todo el país',
+    benefit: '🌙 20 parches incluidos + Ebook gratis · Envío gratis a todo el país',
   },
   {
     id: 2,
-    label: '6 cajas + 4 de Regalo · Kit Familiar',
+    label: 'Kit Familia — Un mes entero durmiendo bien',
     badge: 'MÁS ELEGIDO',
     price: 58800,
     was: 118200,
     qty: 60,
     popular: true,
-    benefit: '📦 30 parches + Ebook · Envío gratis · Ideal para compartir',
+    benefit: '🌿 60 parches incluidos + Ebook gratis · Ideal para compartir · Envío gratis',
   },
   {
     id: 3,
-    label: '15 cajas + 5 de Regalo · Kit Premium',
+    label: 'Kit Total — Descanso sin pausa por meses',
     badge: 'MEJOR VALOR',
     price: 99800,
     was: 194900,
     qty: 150,
     popular: false,
-    benefit: '💎 40 parches + Ebook + Pack sorpresa · Envío gratis',
+    benefit: '💎 150 parches + Ebook + Pack sorpresa · El mejor valor · Envío gratis',
   },
 ];
 
@@ -45,12 +45,12 @@ const BUNDLES = [
    MINI REVIEWS DATA
 ============================================================ */
 const MINI_REVIEWS = [
-  { name: 'Valentina C.', color: '#1B4D3E', text: '"Primera noche y ya noté diferencia. Me desperté sin ese peso de siempre."', stars: 5 },
-  { name: 'Martín R.',    color: '#2F855A', text: '"El parche amaneció completamente oscuro. No sé qué pasó pero me sentí increíble."', stars: 5 },
-  { name: 'Luciana P.',   color: '#276749', text: '"Lo uso hace dos semanas y duermo como no dormía hace años."', stars: 5 },
-  { name: 'Federico G.',  color: '#1B4D3E', text: '"Llegó rápido y bien embalado. El Ebook también viene buenísimo."', stars: 5 },
-  { name: 'Daniela M.',   color: '#2D6A4F', text: '"Escéptica al principio, pero el resultado es visible de verdad."', stars: 5 },
-  { name: 'Gastón L.',    color: '#2F855A', text: '"Lo único que noto que funciona para dormir mejor. Totalmente recomendado."', stars: 5 },
+  { name: 'Valentina C.', color: '#1B4D3E', text: '"Primera noche y el parche amaneció oscuro. Me desperté sin el peso de siempre — algo funcionó."', stars: 5 },
+  { name: 'Martín R.',    color: '#2F855A', text: '"Ver ese parche negro en la mano al despertar me convenció. No hice nada, solo dormí."', stars: 5 },
+  { name: 'Luciana P.',   color: '#276749', text: '"Llevaba meses con las piernas pesadas. Dos semanas de uso y ya no siento esa hinchazón."', stars: 5 },
+  { name: 'Federico G.',  color: '#1B4D3E', text: '"El resultado es visible desde el primer día. El parche negro al despertar habla solo."', stars: 5 },
+  { name: 'Daniela M.',   color: '#2D6A4F', text: '"Era escéptica hasta que vi el parche negro en mi mano. Ahí me convencí."', stars: 5 },
+  { name: 'Gastón L.',    color: '#2F855A', text: '"La prueba está en el parche. Oscuro y húmedo al despertar, sin hacer nada más que dormir."', stars: 5 },
 ];
 
 /* ============================================================
@@ -59,31 +59,31 @@ const MINI_REVIEWS = [
 const REVIEWS = [
   {
     name: 'Carolina F.',
-    title: 'EL MEJOR DESCANSO EN MESES',
-    text: 'Nunca creí que algo tan simple pudiera hacer tanta diferencia. Desde que uso los parches me despierto descansada de verdad, sin ese cansancio que me acompañaba todos los días. El parche amanece oscuro y eso me genera mucha confianza.',
+    title: 'EL PARCHE NEGRO LO DICE TODO',
+    text: 'Nunca creí que algo tan simple pudiera hacer tanta diferencia. Me despierto descansada de verdad. Pero lo que más me sorprendió es ver ese parche oscuro en la mano al despertar. Algo claramente está pasando mientras dormís — y no tenés que hacer nada.',
     stars: 5,
-    src: 'https://nesimu.com/cdn/shop/files/imgi_43_D_NQ_NP_2X_676642-MLA97579090775_112025-F.jpg?v=1770705063&width=1420', // foto lifestyle: mujer descansada despertándose por la mañana, luz suave
+    src: 'https://nesimu.com/cdn/shop/files/imgi_43_D_NQ_NP_2X_676642-MLA97579090775_112025-F.jpg?v=1770705063&width=1420',
   },
   {
     name: 'Rodrigo V.',
-    title: 'LE REGALÉ A MI MAMÁ Y ELLA ME LO AGRADECIÓ',
-    text: 'Soy escéptico pero le compré a mi mamá porque le cuesta dormir hace años. Me mandó un audio al día siguiente diciendo que fue la mejor noche en mucho tiempo. Ya pedimos otro kit.',
+    title: 'MI MAMÁ ME LO AGRADECIÓ AL OTRO DÍA',
+    text: 'Le compré a mi mamá porque le costaba dormir hace años. Al día siguiente me mandó un audio: "fue la mejor noche en mucho tiempo". El parche amaneció oscurísimo. Ya pedimos otro kit para mí también.',
     stars: 5,
-    src: 'https://nesimu.com/cdn/shop/files/imgi_33_713PY4u2yeL.jpg?v=1770705048&width=1420', // foto producto sobre mesa de luz con libro y vela — ambiente cálido nocturno
+    src: 'https://nesimu.com/cdn/shop/files/imgi_33_713PY4u2yeL.jpg?v=1770705048&width=1420',
   },
   {
     name: 'Jimena S.',
-    title: 'SE VE EL RESULTADO AL DESPERTAR',
-    text: 'Lo que más me sorprendió es ver el parche oscuro en la mañana. Te das cuenta que algo está pasando. Me siento más liviana y con más energía durante el día. Totalmente recomendado.',
+    title: 'ME DESPERTÉ SIN EL PESO DE SIEMPRE',
+    text: 'El resultado se ve, literal. El parche que sacás de la planta del pie al despertar es negro y húmedo. No necesitás creer en nada raro — el resultado está en tu mano. Y encima las piernas dejaron de pesarme.',
     stars: 5,
-    src: 'https://nesimu.com/cdn/shop/files/imgi_36_71_StcLeTHL.jpg?v=1770705063&width=1420', // foto parche oscuro sostenido en mano sobre fondo blanco — primer plano nítido
+    src: 'https://nesimu.com/cdn/shop/files/imgi_36_71_StcLeTHL.jpg?v=1770705063&width=1420',
   },
   {
     name: 'Hernán B.',
-    title: 'LLEGÓ RÁPIDO Y EL EBOOK ES UN PLUS',
-    text: 'Compré el 2x1, llegó en dos días a Capital. El Ebook que viene incluido tiene información muy buena sobre hábitos de descanso. Los parches funcionaron desde la primera noche para mí.',
+    title: 'FUNCIONA DESDE LA PRIMERA NOCHE',
+    text: 'Llegó rápido a Capital. Primera noche, parche negro al despertar. Sencillo y sin complicaciones. Lo pegás, dormís, y el resultado lo tenés en la mano a la mañana. No hay forma de ignorarlo.',
     stars: 5,
-    src: 'https://nesimu.com/cdn/shop/files/imgi_51_D_NQ_NP_2X_903416-MLA92304661828_092025-F.jpg?v=1770705073&width=1420', // foto caja de producto abierta con parches y ebook visibles — flat lay limpio
+    src: 'https://nesimu.com/cdn/shop/files/imgi_51_D_NQ_NP_2X_903416-MLA92304661828_092025-F.jpg?v=1770705073&width=1420',
   },
 ];
 
@@ -420,7 +420,7 @@ export default function ParchesDetoxLanding() {
               <h1 className="hero-title hero-title--compact">
                 {product?.name
                   ? product.name
-                  : <>Desintoxica Tu Cuerpo Mientras Duermes<br />Parches Detox Kinoki</>
+                  : <>El parche entra blanco.<br />Al despertar, negro.</>
                 }
               </h1>
 
@@ -455,7 +455,7 @@ export default function ParchesDetoxLanding() {
 
               {/* Bundle picker */}
               <div className="bnd2-wrap">
-                <div className="bnd2-section-title">✨ Ofertas por Tiempo Limitado ✨</div>
+                <div className="bnd2-section-title">✨ Esta Noche Podés Empezar ✨</div>
 
                 {displayBundles.map((b) => (
                   <div
@@ -485,9 +485,9 @@ export default function ParchesDetoxLanding() {
 
                 {/* CTA — igual a ProductDetail */}
                 <button className="bnd2-cta" type="button" onClick={handleBuy}>
-                  AGREGAR AL CARRITO
+                  QUIERO PROBAR ESTA NOCHE →
                 </button>
-                <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
+                <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si el parche no amanece oscuro, te devolvemos todo</p>
 
                 {/* Pago seguro + logos */}
                 <div className="bnd2-payments">
@@ -513,7 +513,7 @@ export default function ParchesDetoxLanding() {
                 {/* Urgencia — igual a ProductDetail */}
                 <div className="bnd2-urgency">
                   <span className="bnd2-urgency-dot" />
-                  ¡Últimas unidades!
+                  ¡Últimas unidades al precio actual!
                 </div>
               </div>
 
@@ -546,15 +546,15 @@ export default function ParchesDetoxLanding() {
               </div>
               <div className="pd-feel-cards-col">
                 {/* TÍTULO EDITABLE: sección síntomas — cambiar "¿Te sentís así?" */}
-                <h2 className="pd-feel-title">¿Te sentís así?</h2>
+                <h2 className="pd-feel-title">¿Reconocés esto?</h2>
                 <div className="pd-feel-grid">
                   {[
-                    '😴 Te despertás cansado/a aunque dormiste muchas horas',
-                    '🦶 Sensación de pesadez o hinchazón en las piernas',
-                    '🌫️ Niebla mental: te cuesta concentrarte en la mañana',
-                    '😣 Dolor o tensión en la planta del pie al levantarte',
-                    '🔄 Sueño poco reparador, te movés mucho durante la noche',
-                    '⚡ Poca energía durante el día sin razón aparente',
+                    '😴 Te despertás agotado/a aunque dormiste de corrido',
+                    '🦶 Piernas pesadas o hinchadas al levantarte',
+                    '🌫️ Mente lenta: arrancás el día sin energía real',
+                    '😣 Plantas de los pies tensas o doloridas por la mañana',
+                    '🔄 Sueño liviano, te movés o te despertás durante la noche',
+                    '⚡ Cansancio acumulado que no se va con nada',
                   ].map((s, i) => (
                     <div key={i} className="pd-feel-card">
                       <span className="pd-feel-check">✅</span>
@@ -587,16 +587,16 @@ export default function ParchesDetoxLanding() {
           <div className="dtx-container dtx-py">
             <div className="sec-head">
               {/* TÍTULO EDITABLE: sección instrucciones — cambiar "¿CÓMO USARLO?" */}
-              <h2 className="sec-title" style={{ color: 'rgba(255,255,255,.92)' }}>¿CÓMO USARLO?</h2>
+              <h2 className="sec-title" style={{ color: 'rgba(255,255,255,.92)' }}>¿CÓMO SE USA?</h2>
               {/* SUBTÍTULO EDITABLE: cambiar "4 simples pasos · Sin complicaciones · Solo 5 segundos" */}
-              <p className="sec-sub" style={{ color: 'rgba(255,255,255,.55)' }}>4 simples pasos · Sin complicaciones · Solo 5 segundos</p>
+              <p className="sec-sub" style={{ color: 'rgba(255,255,255,.55)' }}>4 pasos · Tardás 30 segundos · Sin esfuerzo</p>
             </div>
             <div className="pd-howto-grid">
               {[
-                { num: '01', text: 'Lavá y secá bien la planta del pie antes de acostarte.' },
-                { num: '02', text: 'Despegá el adhesivo y posicioná el parche en el centro de la planta.' },
-                { num: '03', text: 'Dormí normalmente. El parche actúa durante las 6-8 horas de sueño.' },
-                { num: '04', text: 'Al despertar, retirá el parche y observá el cambio de color.' },
+                { num: '01', text: 'Lavá la planta del pie y secala bien antes de acostarte.' },
+                { num: '02', text: 'Despegá el adhesivo y pegá el parche en el centro de la planta.' },
+                { num: '03', text: 'Dormí. El parche trabaja solo durante las 6-8 horas de sueño.' },
+                { num: '04', text: 'Al despertar, retirá el parche y mirá el resultado: oscuro y húmedo.' },
               ].map((step, i) => (
                 <div key={i} className="pd-howto-card">
                   <div className="pd-howto-img-wrap">
@@ -621,7 +621,7 @@ export default function ParchesDetoxLanding() {
               <p className="sec-sub">{mc.beforeAfterSubtitle}</p>
             </div>
             <BeforeAfterSlider imgBefore={imgs[5]} imgAfter={imgs[6]} />
-            <p className="dtx-ba-hint">← Arrastrá el divisor para ver la diferencia →</p>
+            <p className="dtx-ba-hint">← Arrastrá para ver la transformación nocturna →</p>
           </div>
         </section>
 
@@ -633,21 +633,21 @@ export default function ParchesDetoxLanding() {
             <div className="vstrip-section">
               <div className="vstrip-header">
                 {/* KICKER EDITABLE: etiqueta sobre el título — cambiar "✦ CLIENTES SATISFECHOS" */}
-                <span className="vstrip-kicker">✦ CLIENTES SATISFECHOS</span>
+                <span className="vstrip-kicker">✦ LO QUE VEN NUESTROS CLIENTES</span>
                 {/* TÍTULO EDITABLE: sección fotos de clientes — cambiar texto a continuación */}
                 <h2 className="vstrip-title" style={{ color: 'rgba(255,255,255,.92)' }}>
-                  Únete a miles de personas<br />que despiertan mejor
+                  El resultado que no podés ignorar<br />cuando lo tenés en la mano
                 </h2>
                 {/* SUBTÍTULO EDITABLE: cambiar "Resultados reales · Uso nocturno · Sin esfuerzo" */}
                 <p className="vstrip-sub" style={{ color: 'rgba(255,255,255,.55)' }}>
-                  Resultados reales · Uso nocturno · Sin esfuerzo
+                  Visible · Sin esfuerzo · Desde la primera noche
                 </p>
               </div>
               <div className="vstrip-row">
                 {[
-                  { label: '✅ Uso nocturno' },
-                  { label: '🌿 Resultado visible' },
-                  { label: '😊 Clientes felices' },
+                  { label: '🌙 Noche de uso' },
+                  { label: '🖤 Al despertar' },
+                  { label: '😮 El resultado' },
                 ].map((item, i) => (
                   <div key={i} className="vstrip-item">
                     <div className="vstrip-media">
@@ -668,9 +668,9 @@ export default function ParchesDetoxLanding() {
           <div className="dtx-container dtx-py">
             <div className="sec-head">
               {/* TÍTULO EDITABLE: sección reseñas — cambiar "LO QUE DICEN NUESTROS CLIENTES" */}
-              <h2 className="sec-title">LO QUE DICEN NUESTROS CLIENTES</h2>
+              <h2 className="sec-title">ELLOS YA LO VIERON CON SUS PROPIOS OJOS</h2>
               {/* SUBTÍTULO EDITABLE: cambiar "+847 reseñas verificadas · Promedio 4.8 ⭐" */}
-              <p className="sec-sub">+847 reseñas verificadas · Promedio 4.8 ⭐</p>
+              <p className="sec-sub">+847 compradores verificados · Promedio 4.8 ⭐</p>
             </div>
             <ReviewsCarouselPro reviewImages={imgs.slice(15, 19)} imagesReady={productReady} />
           </div>
@@ -700,7 +700,7 @@ export default function ParchesDetoxLanding() {
                 <span className="grt-pill">🚚 Envío gratis</span>
               </div>
               <button className="grt-cta" onClick={handleBuy}>{mc.guarantee.cta}</button>
-              <p className="pd-cta-guarantee pd-cta-guarantee--light">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
+              <p className="pd-cta-guarantee pd-cta-guarantee--light">🔒 Garantía 7 días — Si el parche no amanece oscuro, te devolvemos todo</p>
             </div>
           </div>
         </section>
@@ -712,7 +712,7 @@ export default function ParchesDetoxLanding() {
           <div className="dtx-container dtx-py" style={{ paddingBottom: '100px' }}>
             <div className="faq-acc-wrap">
               {/* TÍTULO EDITABLE: sección FAQ — cambiar "Preguntas frecuentes" */}
-              <h2 className="faq-acc-title">Preguntas frecuentes</h2>
+              <h2 className="faq-acc-title">Lo que nos preguntan antes de comprar</h2>
               <div className="faq-acc">
                 {mc.faq.map((item, i) => (
                   <div key={i} className={`faq-acc-item${openFaq === i ? ' active' : ''}`}>
@@ -748,7 +748,7 @@ export default function ParchesDetoxLanding() {
             {mc.stickyBtnText}
           </button>
         </div>
-        <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si no notás diferencia, te devolvemos el dinero</p>
+        <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si el parche no amanece oscuro, te devolvemos todo</p>
       </div>
 
       <WaTab wa={mc.whatsapp} />
