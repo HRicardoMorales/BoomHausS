@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { track } from '../lib/metaPixel';
@@ -17,7 +17,7 @@ const BUNDLES = [
     was: 86000,
     qty: 20,
     popular: false,
-    benefit: '🌙 20 parches incluidos + Ebook gratis · Envío gratis a todo el país',
+    benefit: '🌙 20 parches incluidos + Envío gratis a todo el país',
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const BUNDLES = [
     was: 118200,
     qty: 60,
     popular: true,
-    benefit: '🌿 60 parches incluidos + Ebook gratis · Ideal para compartir · Envío gratis',
+    benefit: '🌿 30 parches incluidos · Envío gratis',
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const BUNDLES = [
     was: 194900,
     qty: 150,
     popular: false,
-    benefit: '💎 150 parches + Ebook + Pack sorpresa · El mejor valor · Envío gratis',
+    benefit: '💎 40 parches + El mejor valor · Envío gratis',
   },
 ];
 
@@ -248,26 +248,16 @@ function ReviewsCarouselPro({ reviewImages = [], imagesReady = true }) {
    WA TAB
 ============================================================ */
 function WaTab({ wa }) {
-  const [open, setOpen] = useState(false);
-  const timerRef = useRef(null);
-  useEffect(() => {
-    timerRef.current = setTimeout(() => setOpen(true), 4000);
-    return () => clearTimeout(timerRef.current);
-  }, []);
   if (!wa?.show) return null;
   const href = `https://wa.me/${wa.number}?text=${encodeURIComponent(wa.message)}`;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className={`wa-tab${open ? ' wa-tab--open' : ''}`}
-      aria-label="WhatsApp"
-      onClick={() => setOpen(false)}
+      className="wa-tab"
+      aria-label="Consultas por WhatsApp"
     >
-      <span className="wa-tab-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-        </svg>
-      </span>
-      {open && <span className="wa-tab-label">¿Consultas?</span>}
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+      </svg>
     </a>
   );
 }
@@ -282,12 +272,28 @@ export default function ParchesDetoxLanding() {
   const [selectedBundle, setSelectedBundle] = useState(BUNDLES[1]);
   const [openFaq,        setOpenFaq]        = useState(null);
   const [showSheet,      setShowSheet]      = useState(false);
+  const [allowCod,       setAllowCod]       = useState(false);
   const { addItem } = useCart();
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
       .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => { setProductReady(true); });
+  }, []);
+
+  // Detección silenciosa de ubicación por IP — solo para condicionar contra entrega CABA.
+  // allowCod arranca en false (restrictivo). Solo pasa a true si confirmamos CABA.
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+    fetch('https://ipapi.co/json/', { signal: controller.signal })
+      .then(r => r.json())
+      .then(d => {
+        if (d?.country_code === 'AR' && d?.region_code === 'C') setAllowCod(true);
+      })
+      .catch(() => {})
+      .finally(() => clearTimeout(timer));
+    return () => { controller.abort(); clearTimeout(timer); };
   }, []);
 
   // Admin puede editar: precio, precio tachado y nombre de cada bundle.
@@ -748,12 +754,13 @@ export default function ParchesDetoxLanding() {
             {mc.stickyBtnText}
           </button>
         </div>
-        <p className="pd-cta-guarantee">🔒 Garantía 7 días — Si el parche no amanece oscuro, te devolvemos todo</p>
+        <p className="pd-cta-guarantee pd-sticky-grt--full">🔒 Garantía 7 días — Si el parche no amanece oscuro, te devolvemos todo</p>
+        <p className="pd-cta-guarantee pd-sticky-grt--short">{mc.stickyGuaranteeShort || '🔒 Garantía 7 días'}</p>
       </div>
 
       <WaTab wa={mc.whatsapp} />
 
-      {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} />}
+      {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} allowCod={allowCod} />}
 
       {/* ============================================================
           ESTILOS — prefijo pd- para secciones nuevas, clases reutilizadas
@@ -1029,13 +1036,19 @@ export default function ParchesDetoxLanding() {
         .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; }
         .pd-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#1B4D3E 0%,#153D31 60%,#0F2D24 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(27,77,62,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
         .pd-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(27,77,62,.22); }
-        @media (max-width:380px) { .pd-sticky-bar{padding:8px 8px 6px 16px;} .pd-sticky-inner{gap:8px;} .pd-sticky-now{font-size:.82rem;} .pd-sticky-btn{font-size:.72rem;padding:9px 12px;} }
+        /* Garantía: texto largo en desktop, corto en mobile */
+        .pd-sticky-grt--short { display:none; }
+        @media (max-width:540px) {
+          .pd-sticky-bar { padding:8px 8px 7px 14px; }
+          .pd-sticky-inner { gap:8px; }
+          .pd-sticky-btn { font-size:.72rem; padding:10px 12px; }
+          .pd-sticky-grt--full { display:none; }
+          .pd-sticky-grt--short { display:block; }
+        }
+        @media (max-width:380px) { .pd-sticky-now{font-size:.82rem;} .pd-sticky-btn{font-size:.68rem;padding:9px 10px;} }
 
         /* ── WhatsApp tab ── */
-        .wa-tab { position:fixed; right:16px; bottom:82px; z-index:9998; display:flex; align-items:center; gap:8px; background:#25D366; border-radius:999px; padding:10px; text-decoration:none; box-shadow:0 6px 20px rgba(37,211,102,.38); transition:padding .22s ease,box-shadow .18s ease; }
-        .wa-tab--open { padding:10px 16px 10px 10px; }
-        .wa-tab-icon { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .wa-tab-label { font-size:.82rem; font-weight:800; color:#fff; white-space:nowrap; }
+        .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
 
       `}</style>
     </div>

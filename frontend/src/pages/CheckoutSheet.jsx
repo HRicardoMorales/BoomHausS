@@ -69,7 +69,7 @@ const INITIAL_FORM = {
   cp: "", ciudad: "", provincia: "Buenos Aires", notes: "",
 };
 
-export function CheckoutSheet({ onClose }) {
+export function CheckoutSheet({ onClose, allowCod = true }) {
   const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal: ctxCalc } = useCart();
   const calc = ctxCalc || calcItemTotal;
 
@@ -1476,26 +1476,30 @@ export function CheckoutSheet({ onClose }) {
                   </div>
                 </div>
 
-                {/* Shipping methods */}
-                <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 10, color: "var(--text)" }}>Método de envío</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                  {[
-                    { val: "correo", title: "Envío a Domicilio (Correo Arg)", sub: "Llega a todo el país · Seguimiento incluido" },
-                    { val: "caba", title: "Pagás al recibir", badge: "Solo CABA", sub: "Entrega coordinada · Pagás cuando te llega" },
-                  ].map(opt => (
-                    <div key={opt.val} className={`cs-opt ${delivery === opt.val ? "cs-opt--active" : ""}`} onClick={() => setDelivery(opt.val)}>
-                      <input type="radio" name="delivery" checked={delivery === opt.val} onChange={() => setDelivery(opt.val)} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                          {opt.title}
-                          {opt.badge && <span style={{ fontSize: 11, background: "rgba(27,77,62,.10)", border: "1px solid rgba(27,77,62,.20)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
+                {/* Shipping methods — solo se muestra si hay más de una opción (CABA) */}
+                {allowCod && (
+                  <>
+                    <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 10, color: "var(--text)" }}>Método de envío</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                      {[
+                        { val: "correo", title: "Envío a Domicilio (Correo Arg)", sub: "Llega a todo el país · Seguimiento incluido" },
+                        { val: "caba", title: "Pagás al recibir", badge: "Solo CABA", sub: "Entrega coordinada · Pagás cuando te llega" },
+                      ].map(opt => (
+                        <div key={opt.val} className={`cs-opt ${delivery === opt.val ? "cs-opt--active" : ""}`} onClick={() => setDelivery(opt.val)}>
+                          <input type="radio" name="delivery" checked={delivery === opt.val} onChange={() => setDelivery(opt.val)} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                              {opt.title}
+                              {opt.badge && <span style={{ fontSize: 11, background: "rgba(27,77,62,.10)", border: "1px solid rgba(27,77,62,.20)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
+                            </div>
+                            <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginTop: 2 }}>{opt.sub}</div>
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: "#1D9E75", flexShrink: 0 }}>GRATIS</div>
                         </div>
-                        <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginTop: 2 }}>{opt.sub}</div>
-                      </div>
-                      <div style={{ fontSize: 13, fontWeight: 900, color: "#1D9E75", flexShrink: 0 }}>GRATIS</div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                )}
 
                 {/* Detalles adicionales */}
                 <div className="cs-field" style={{ marginBottom: 20 }}>

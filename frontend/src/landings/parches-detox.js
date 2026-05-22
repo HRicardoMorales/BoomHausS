@@ -12,18 +12,19 @@ const parchesDetoxConfig = {
   pageTitle: "Parches Plantares Detox Kinoki | Ritual nocturno para despertar más liviano | BoomHausS",
   checkoutName: "Parches Plantares Detox Kinoki 2x1 + Ebook",
 
-  heroSubtitle: "La prueba visual de que las toxinas salen de tu cuerpo mientras dormís.",
+  heroSubtitle: "",
 
   trustBullets: [
-    "😴 Descanso profundo y más energía — Sueño ininterrumpido, despertás con las pilas cargadas",
-    "🦶 Adiós piernas pesadas — Activa la circulación, desinflamación y sin retención de líquidos",
-    "🌿 Desintoxicación visible y sin esfuerzo — El parche negro en tu mano es la prueba",
+    "😴 Descanso profundo y más energía",
+    "🦶 Adiós piernas pesadas",
+    "🌿 Desintoxicación visible y sin esfuerzo",
   ],
 
   ctaLine1: "QUIERO PROBAR ESTA NOCHE",
   ctaLine2: "EMPEZAR ESTA NOCHE 🌙",
   stockAlertText: "⚠️ Últimas unidades al precio actual",
   stickyBtnText: "QUIERO PROBAR ESTA NOCHE 🌙",
+  stickyGuaranteeShort: "🔒 Garantía 7 días",
 
   miniDescription:
     "Parches adhesivos herbales de origen oriental. Se colocan en la planta del pie antes de dormir y actúan durante la noche como un ritual de bienestar. Al despertar, el parche oscuro es la señal visible de que algo pasó mientras dormías.",

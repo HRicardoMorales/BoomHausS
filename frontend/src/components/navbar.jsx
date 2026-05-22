@@ -53,11 +53,6 @@ export default function Navbar() {
 
     return (
         <header style={{ position: 'sticky', top: 0, zIndex: 9000, background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
-            {/* Solo mostramos el Marquee en Desktop */}
-            <div className="desktop-only">
-                <Marquee items={['Envíos gratis a todo el país 🚚', 'Pago por transferencia 💸', 'Soporte por WhatsApp 💬', 'Compra segura ✅']} />
-            </div>
-
             {/* =========================
                 NAVBAR DESKTOP (PC)
                ========================= */}
