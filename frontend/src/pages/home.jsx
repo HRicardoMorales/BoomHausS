@@ -59,6 +59,7 @@ const catLabel = (k) => CAT_LABELS[k] || (k ? k.charAt(0).toUpperCase() + k.slic
    3. variant.productSlug (variantes de una misma landing) */
 function findLandingSlug(productSlug) {
   if (!productSlug) return null;
+  // First pass: exact matches (key, productSlug, variant productSlugs)
   for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
     if (landingSlug === productSlug) return landingSlug;
     if (config.productSlug === productSlug) return landingSlug;
@@ -67,6 +68,12 @@ function findLandingSlug(productSlug) {
         if (v.productSlug === productSlug) return landingSlug;
       }
     }
+  }
+  // Second pass: prefix match — handles slugs like "sillon-puff-inflable-sunfield"
+  // that extend a known productSlug with extra words (e.g. brand name added in admin)
+  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
+    const base = config.productSlug || landingSlug;
+    if (productSlug.startsWith(base + '-')) return landingSlug;
   }
   return null;
 }
@@ -151,12 +158,16 @@ export default function Home() {
     return Object.entries(LANDING_CONFIGS).reduce((acc, [key, cfg]) => {
       if (seenCfgs.has(cfg)) return acc;
       seenCfgs.add(cfg);
-      // Usar el productSlug del config como slug canónico (si existe), si no el key
       const slug = cfg.productSlug || key;
       const v0 = cfg.variants?.[0];
-      const img = v0?.thumbImg || v0?.images?.[0] || "";
-      const price = v0?.bundles?.[0]?.price || 0;
-      const compareAt = v0?.bundles?.[0]?.compareAt || 0;
+      // Fallback para configs sin variants (ej: sillón puff, parches detox):
+      // imagen del primer storyBlock o heroImages, precio del primer bundle
+      const img = v0?.thumbImg || v0?.images?.[0]
+        || (typeof cfg.heroImages?.[0] === 'string' ? cfg.heroImages[0] : cfg.heroImages?.[0]?.src)
+        || cfg.storyBlocks?.[0]?.img
+        || "";
+      const price = v0?.bundles?.[0]?.price || cfg.bundles?.[0]?.price || 0;
+      const compareAt = v0?.bundles?.[0]?.compareAt || cfg.bundles?.[0]?.compareAt || 0;
       acc.push({
         _id: `lp-${slug}`,
         name: cfg.checkoutName || slug,
@@ -178,10 +189,24 @@ export default function Home() {
         const raw = res.data?.data ?? res.data ?? [];
         const arr = Array.isArray(raw) ? raw : [];
         const apiProducts = arr.filter((p) => p.isActive !== false);
-        // Slugs ya presentes en la DB — no duplicar
+        // Slugs de landing configs canónicos — para deduplicación por prefijo
+        const landingProductSlugs = new Set(
+          Object.values(LANDING_CONFIGS).map(cfg => cfg.productSlug).filter(Boolean)
+        );
+        // Slugs exactos ya en DB — excluyen el virtual correspondiente
         const apiSlugs = new Set(apiProducts.map((p) => p.slug).filter(Boolean));
         const extras = landingVirtualProducts.filter((p) => !apiSlugs.has(p.slug));
-        const merged = [...extras, ...apiProducts];
+        // Excluir productos de DB cuyo slug extiende un productSlug de landing
+        // (ej: "sillon-puff-inflable-sunfield" → cubierto por virtual "sillon-puff-inflable")
+        const filteredApiProducts = apiProducts.filter(p => {
+          if (!p.slug) return true;
+          if (landingProductSlugs.has(p.slug)) return true; // match exacto → virtual ya excluido
+          for (const base of landingProductSlugs) {
+            if (p.slug.startsWith(base + '-')) return false; // cubierto por virtual
+          }
+          return true;
+        });
+        const merged = [...extras, ...filteredApiProducts];
         // Filtrar productos sin imagen y sin precio (DB entries incompletos)
         const visible = merged.filter((p) =>
           (p.images?.length > 0 && p.images[0]) || p.imageUrl || Number(p.price) > 0

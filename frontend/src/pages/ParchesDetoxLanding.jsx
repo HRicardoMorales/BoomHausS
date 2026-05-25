@@ -153,39 +153,57 @@ function BeforeAfterSlider({ imgBefore, imgAfter }) {
 }
 
 /* ============================================================
-   MINI REVIEWS BAR
+   MINI REVIEWS BAR — scroll nativo en mobile, grid en desktop
 ============================================================ */
 function MiniReviewsBar() {
   const [active, setActive] = useState(0);
+  const viewportRef = useRef(null);
+
+  // Auto-advance cada 5s
   useEffect(() => {
     const t = setInterval(() => setActive(i => (i + 1) % MINI_REVIEWS.length), 5000);
     return () => clearInterval(t);
   }, []);
+
+  // En mobile: scroll suave al slide activo. En desktop no hace nada visible (grid layout).
+  // Usamos scrollBy sobre el contenedor en lugar de scrollIntoView para evitar que arrastre
+  // la página entera cuando el auto-advance activa y el usuario ya scrolleó hacia abajo.
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const slides = vp.querySelectorAll('.mrb-slide');
+    const slide = slides[active];
+    if (!slide) return;
+    const vpRect = vp.getBoundingClientRect();
+    const slideRect = slide.getBoundingClientRect();
+    vp.scrollBy({ left: slideRect.left - vpRect.left, behavior: 'smooth' });
+  }, [active]);
+
   return (
     <div className="mrb">
       <div className="mrb-label">LO QUE DICEN NUESTROS CLIENTES</div>
-      <div className="mrb-viewport">
-        <div className="mrb-track" style={{ transform: `translateX(-${active * 100}%)` }}>
-          {MINI_REVIEWS.map((rev, i) => (
-            <div className="mrb-slide" key={i}>
-              <div className="mrb-card">
-                <div className="mrb-card-header">
-                  <div className="mrb-card-avatar" style={{ background: rev.color }}>{rev.name[0]}</div>
-                  <div className="mrb-card-meta">
-                    <div className="mrb-card-name">{rev.name}</div>
-                    <div className="mrb-card-stars">
-                      <div className="stars-inline">
-                        {[1,2,3,4,5].map(s => <span key={s} className={`s${s <= rev.stars ? ' on' : ''}`}>★</span>)}
-                      </div>
+      {/* viewport = scroll container en mobile, grid en desktop */}
+      <div className="mrb-viewport" ref={viewportRef}>
+        {MINI_REVIEWS.map((rev, i) => (
+          <div className="mrb-slide" key={i}>
+            <div className="mrb-card">
+              <div className="mrb-card-header">
+                <div className="mrb-card-avatar" style={{ background: rev.color }}>{rev.name[0]}</div>
+                <div className="mrb-card-meta">
+                  <div className="mrb-card-name">{rev.name}</div>
+                  <div className="mrb-card-stars">
+                    <div className="stars-inline">
+                      {[1,2,3,4,5].map(s => <span key={s} className={`s${s <= rev.stars ? ' on' : ''}`}>★</span>)}
                     </div>
                   </div>
                 </div>
-                <p className="mrb-card-text">{rev.text}</p>
               </div>
+              <p className="mrb-card-text">{rev.text}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
+      {/* Dots — solo visibles en desktop */}
       <div className="mrb-dots">
         {MINI_REVIEWS.map((_, i) => (
           <button key={i} className={`mrb-dot${i === active ? ' on' : ''}`} onClick={() => setActive(i)} />
@@ -206,7 +224,12 @@ function ReviewsCarouselPro({ reviewImages = [], imagesReady = true }) {
     const row = rowRef.current;
     if (!row) return;
     const slide = row.children[i];
-    if (slide) slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (!slide) return;
+    // scrollBy sobre el contenedor evita que scrollIntoView arrastre la página
+    // hacia arriba cuando el usuario ya scrolleó debajo del carrusel.
+    const rowRect = row.getBoundingClientRect();
+    const slideRect = slide.getBoundingClientRect();
+    row.scrollBy({ left: slideRect.left - rowRect.left, behavior: 'smooth' });
   };
   return (
     <div className="rv-wrap">
@@ -245,6 +268,43 @@ function ReviewsCarouselPro({ reviewImages = [], imagesReady = true }) {
 }
 
 /* ============================================================
+   MINI FAQ — acordeón compacto (2 preguntas clave)
+============================================================ */
+const MINI_FAQ_ITEMS = [
+  {
+    q: '🚚 ¿Cuándo llega?',
+    a: 'CABA y GBA: 24 a 72hs. Interior: 3 a 7 días por Correo Argentino. Envío gratis.',
+  },
+  {
+    q: '🔒 ¿Tiene garantía?',
+    a: '7 días. Si el parche no amanece oscuro, te devolvemos todo. Sin preguntas.',
+  },
+];
+
+function MiniFaq() {
+  const [open, setOpen] = useState(null);
+  return (
+    <div className="mfaq">
+      {MINI_FAQ_ITEMS.map((item, i) => (
+        <div key={i} className={`mfaq-item${i < MINI_FAQ_ITEMS.length - 1 ? ' mfaq-item--sep' : ''}`}>
+          <button
+            className="mfaq-q"
+            onClick={() => setOpen(open === i ? null : i)}
+            aria-expanded={open === i}
+          >
+            <span>{item.q}</span>
+            <span className="mfaq-arrow" aria-hidden="true">{open === i ? '▲' : '▼'}</span>
+          </button>
+          <div className="mfaq-a" style={{ maxHeight: open === i ? '200px' : '0' }}>
+            <p>{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============================================================
    WA TAB
 ============================================================ */
 function WaTab({ wa }) {
@@ -274,6 +334,25 @@ export default function ParchesDetoxLanding() {
   const [showSheet,      setShowSheet]      = useState(false);
   const [allowCod,       setAllowCod]       = useState(false);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    if (!productReady) return;
+    const heroCTA = document.querySelector('.bnd2-cta');
+    const stickyBar = document.querySelector('.pd-sticky-bar');
+    if (!heroCTA || !stickyBar) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          stickyBar.classList.add('sticky--visible');
+        } else {
+          stickyBar.classList.remove('sticky--visible');
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(heroCTA);
+    return () => observer.disconnect();
+  }, [productReady]);
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
@@ -533,9 +612,10 @@ export default function ParchesDetoxLanding() {
       ============================================================ */}
       <div className="pd-bands">
 
-        {/* Mini reviews bar */}
+        {/* Mini FAQ + Mini reviews bar */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container">
+            <MiniFaq />
             <MiniReviewsBar />
           </div>
         </section>
@@ -577,7 +657,7 @@ export default function ParchesDetoxLanding() {
 
         {/* ── IMAGEN TRANSFORMACIÓN NOCTURNA ── */}
         <section className="pd-band pd-band--light">
-          <div style={{ paddingTop: 52, paddingBottom: 52 }}>
+          <div className="pd-nocturna-wrap">
             <img
               src={imgs[11]}
               alt="Transformación visible nocturna — Parches Detox Kinoki"
@@ -612,6 +692,15 @@ export default function ParchesDetoxLanding() {
                   <p className="pd-howto-text">{step.text}</p>
                 </div>
               ))}
+            </div>
+
+            {/* CAMBIO 5 — CTA después de los pasos */}
+            <div className="howto-cta-block">
+              <p className="howto-cta-pre">¿Listo/a para probarlo?</p>
+              <button className="bnd2-cta" type="button" onClick={handleBuy}>
+                QUIERO PROBAR ESTA NOCHE →
+              </button>
+              <p className="howto-cta-trust">🔒 Garantía 7 días — Envío gratis</p>
             </div>
           </div>
         </section>
@@ -884,19 +973,38 @@ export default function ParchesDetoxLanding() {
         @media (prefers-reduced-motion:reduce) { .parallax1>use,.parallax2>use,.parallax3>use,.parallax4>use { animation:none !important; } }
 
         /* ── Mini reviews bar ── */
-        .mrb { margin-top:14px; background:transparent; padding-bottom:28px; }
+        .mrb { margin-top:14px; background:transparent; padding-bottom:16px; overflow-anchor:none; }
         .mrb-label { font-size:.70rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:rgba(11,18,32,.38); margin-bottom:8px; }
-        .mrb-viewport { overflow:hidden; }
-        .mrb-track { display:flex; width:100%; transition:transform .35s cubic-bezier(.4,0,.2,1); will-change:transform; }
-        .mrb-slide { flex:0 0 100%; width:100%; }
-        .mrb-card { background:#fff; border:1px solid rgba(2,8,23,.09); border-radius:14px; padding:12px 14px; box-shadow:0 2px 12px rgba(10,20,40,.07); display:flex; flex-direction:column; gap:8px; }
+
+        /* Mobile: scroll nativo */
+        .mrb-viewport {
+          display:flex;
+          overflow-x:auto;
+          scroll-snap-type:x mandatory;
+          -webkit-overflow-scrolling:touch;
+          scrollbar-width:none;
+          gap:12px;
+          padding:4px 16px 8px;
+          margin:0 -16px;
+        }
+        .mrb-viewport::-webkit-scrollbar { display:none; }
+        .mrb-slide { flex:0 0 calc(85vw); flex-shrink:0; scroll-snap-align:start; }
+        .mrb-dots { display:none; } /* Ocultos en mobile */
+
+        /* Desktop: grid 3 columnas */
+        @media (min-width:769px) {
+          .mrb-viewport { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; overflow:visible; margin:0; padding:4px 0 8px; }
+          .mrb-slide { flex:unset; width:100%; }
+          .mrb-dots { display:flex; justify-content:center; gap:5px; margin-top:10px; }
+        }
+
+        .mrb-card { background:#fff; border:1px solid rgba(2,8,23,.09); border-radius:14px; padding:12px 14px; box-shadow:0 2px 12px rgba(10,20,40,.07); display:flex; flex-direction:column; gap:8px; height:100%; box-sizing:border-box; }
         .mrb-card-header { display:flex; align-items:center; gap:10px; }
         .mrb-card-avatar { width:34px; height:34px; border-radius:50%; color:#fff; font-weight:900; font-size:.95rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .mrb-card-meta { display:flex; flex-direction:column; gap:2px; min-width:0; }
         .mrb-card-name { font-size:.80rem; font-weight:800; color:rgba(11,18,32,.82); line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .mrb-card-stars .stars-inline .s { font-size:11px; }
         .mrb-card-text { margin:0; font-size:.84rem; font-style:italic; color:rgba(11,18,32,.65); font-weight:500; line-height:1.5; }
-        .mrb-dots { display:flex; justify-content:center; gap:5px; margin-top:10px; }
         .mrb-dot { width:5px; height:5px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; padding:0; transition:width .22s ease,background .18s ease; }
         .mrb-dot.on { background:rgba(27,77,62,.80); width:16px; }
 
@@ -966,9 +1074,26 @@ export default function ParchesDetoxLanding() {
         .vstrip-label { text-align:center; font-size:.75rem; font-weight:800; color:rgba(255,255,255,.65); letter-spacing:.04em; text-transform:uppercase; }
 
         /* ── Reviews carousel ── */
-        .rv-wrap { position:relative; margin-top:14px; }
-        .rv-row { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:10px 6px 16px; -webkit-overflow-scrolling:touch; }
-        .rv-slide { scroll-snap-align:center; flex:0 0 auto; width:min(520px,88vw); }
+        .rv-wrap { position:relative; margin-top:14px; overflow-anchor:none; }
+        /* Mobile: scroll nativo con peek ~35px */
+        .rv-row {
+          display:flex; gap:12px; overflow-x:auto;
+          scroll-snap-type:x mandatory;
+          -webkit-overflow-scrolling:touch;
+          scrollbar-width:none;
+          padding:10px 16px 16px;
+          margin:0 -16px;
+        }
+        .rv-row::-webkit-scrollbar { display:none; }
+        .rv-slide { scroll-snap-align:start; flex:0 0 calc(85vw); flex-shrink:0; width:calc(85vw); }
+        /* Dots ocultos en mobile */
+        .rv-dots { display:none; }
+        /* Desktop: dots visibles, slide más ancho */
+        @media (min-width:769px) {
+          .rv-row { margin:0; padding:10px 6px 16px; gap:16px; }
+          .rv-slide { flex:0 0 auto; width:min(520px,88vw); scroll-snap-align:center; }
+          .rv-dots { display:flex; justify-content:center; gap:8px; margin-top:10px; }
+        }
         .rv-card { background:#fff; border:1px solid rgba(2,8,23,.10); border-radius:22px; box-shadow:0 22px 70px rgba(10,20,40,.16); overflow:hidden; }
         .rv-imgBox { position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; }
         .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#E53E3E; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(229,62,62,.35); font-size:1.5rem; }
@@ -979,7 +1104,6 @@ export default function ParchesDetoxLanding() {
         .rv-nav { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:999px; border:1px solid rgba(2,8,23,.10); background:rgba(255,255,255,.95); box-shadow:0 18px 55px rgba(10,20,40,.18); cursor:pointer; display:grid; place-items:center; font-size:24px; z-index:10; }
         .rv-prev { left:-8px; } .rv-next { right:-8px; }
         @media (max-width:560px) { .rv-nav { display:none; } }
-        .rv-dots { display:flex; justify-content:center; gap:8px; margin-top:10px; }
         .rv-dot { width:8px; height:8px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; transition:transform .18s ease,background .18s ease; padding:0; }
         .rv-dot.on { background:rgba(27,77,62,.95); transform:scale(1.25); }
 
@@ -1026,7 +1150,22 @@ export default function ParchesDetoxLanding() {
         .faq-acc-item.active .faq-acc-content { max-height:300px; padding:4px 10px 4px; }
 
         /* ── Sticky bar — píldora flotante centrada ── */
-        .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
+        /* Por defecto oculta: aparece solo cuando el CTA principal sale del viewport */
+        .pd-sticky-bar {
+          position:fixed; left:50%; bottom:18px;
+          width:min(calc(100% - 24px),560px);
+          transform:translateX(-50%) translateY(120%);
+          opacity:0; pointer-events:none;
+          transition:opacity .3s ease, transform .3s ease;
+          z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px;
+          background:rgba(255,255,255,.97); backdrop-filter:blur(14px);
+          border:1px solid rgba(11,18,32,.10); border-radius:20px;
+          padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden;
+        }
+        .pd-sticky-bar.sticky--visible {
+          opacity:1; transform:translateX(-50%) translateY(0);
+          pointer-events:auto;
+        }
         .pd-sticky-inner { display:flex; align-items:center; gap:12px; width:100%; }
         .pd-sticky-bar .pd-cta-guarantee { font-size:11px; margin:0; color:rgba(11,18,32,.38); }
         .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
@@ -1049,6 +1188,78 @@ export default function ParchesDetoxLanding() {
 
         /* ── WhatsApp tab ── */
         .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
+
+        /* ── Imagen transformación nocturna ── */
+        .pd-nocturna-wrap { padding-top:52px; padding-bottom:52px; }
+
+        /* ══════════════════════════════════════════
+           CAMBIO 1+2 — Reducir espacios en mobile
+           index.css tiene .pd-band { padding: 64px 0 }
+           Aquí lo sobreescribimos a 16px en mobile para
+           que el gap máximo entre secciones sea ≤ 48px.
+        ══════════════════════════════════════════ */
+        @media (max-width:768px) {
+          .pd-band { padding: 16px 0 !important; }
+          .dtx-py { padding-top:28px !important; padding-bottom:28px !important; }
+          .pd-nocturna-wrap { padding: 16px 0 !important; }
+          .grt-section { padding:36px 16px 32px !important; }
+          .faq-acc-wrap { padding:16px 0 6px !important; }
+          .sec-head { margin-bottom:14px !important; }
+          /* Primera sección (mini reviews): el mrb tiene su propio spacing interno */
+          .pd-bands > section:first-child { padding-top: 8px !important; padding-bottom: 0 !important; }
+        }
+
+        /* ══════════════════════════════════════════
+           CAMBIO 4 — Mini FAQ
+        ══════════════════════════════════════════ */
+        .mfaq {
+          background:#F8F8F8;
+          border-left:3px solid #1a3a2a;
+          border-radius:0 6px 6px 0;
+          margin:14px 0 12px;
+          overflow:hidden;
+        }
+        @media (min-width:769px) {
+          .mfaq { max-width:480px; margin:14px auto 12px; }
+        }
+        .mfaq-item--sep { border-bottom:1px solid #e0e0e0; }
+        .mfaq-q {
+          width:100%; display:flex; justify-content:space-between; align-items:center;
+          padding:12px 16px; background:none; border:none; cursor:pointer;
+          font-size:14px; font-weight:700; color:rgba(11,18,32,.88);
+          text-align:left; line-height:1.4; font-family:inherit;
+          transition:color .2s ease;
+        }
+        .mfaq-q:hover { color:#1a3a2a; }
+        .mfaq-arrow { flex-shrink:0; font-size:9px; color:#1a3a2a; margin-left:12px; opacity:.7; }
+        .mfaq-a {
+          overflow:hidden;
+          transition:max-height .3s ease, padding .25s ease;
+          padding:0 16px;
+        }
+        .mfaq-a p { margin:0 0 12px; font-size:13px; color:#555; line-height:1.6; }
+
+        /* ══════════════════════════════════════════
+           CAMBIO 5 — CTA post "¿Cómo se usa?"
+        ══════════════════════════════════════════ */
+        .howto-cta-block {
+          display:flex; flex-direction:column; align-items:center;
+          gap:8px; margin-top:28px;
+        }
+        @media (min-width:769px) {
+          .howto-cta-block { max-width:400px; margin:32px auto 0; }
+        }
+        .howto-cta-pre {
+          font-size:.88rem; font-weight:700;
+          color:rgba(255,255,255,.65);
+          margin:0; text-align:center;
+        }
+        .howto-cta-trust {
+          font-size:.78rem; font-weight:600;
+          color:rgba(255,255,255,.50);
+          margin:0; text-align:center;
+        }
+        /* El .bnd2-cta ya tiene todos sus estilos — heredado directamente */
 
       `}</style>
     </div>

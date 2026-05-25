@@ -1,5 +1,22 @@
 // src/pages/CheckoutSheet.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
+
+function useCountdown(storageKey = "pd_countdown", minutes = 18) {
+  const [left, setLeft] = useState(0);
+  useEffect(() => {
+    const saved = Number(sessionStorage.getItem(storageKey));
+    const target = saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
+    sessionStorage.setItem(storageKey, String(target));
+    const tick = () => setLeft(Math.max(0, target - Date.now()));
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, [storageKey, minutes]);
+  const totalSec = Math.floor(left / 1000);
+  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const ss = String(totalSec % 60).padStart(2, "0");
+  return `${mm}:${ss}`;
+}
 import { useCart } from "../context/CartContext.jsx";
 import { track } from "../lib/metaPixel";
 import api from "../services/api";
@@ -78,7 +95,11 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
   const [payment, setPayment] = useState(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [showExitIntent, setShowExitIntent] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const cartTime = useCountdown("pd_countdown", 18);
+  const socialProofCount = useMemo(() => 18 + Math.floor(Math.random() * 12), []);
   const [sameAddr, setSameAddr] = useState(true);
   const [payOpen, setPayOpen] = useState(null); // null | 'card' | 'mp'
   const [submitting, setSubmitting] = useState(false);
@@ -141,6 +162,23 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
   function setF(key, val) {
     setForm(f => ({ ...f, [key]: val }));
     if (errors[key]) setErrors(e => ({ ...e, [key]: "" }));
+  }
+
+  function touchF(key) {
+    setTouched(t => ({ ...t, [key]: true }));
+  }
+
+  function fieldOk(key) {
+    if (!touched[key]) return false;
+    if (errors[key]) return false;
+    const val = form[key]?.trim() || "";
+    if (key === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    return val.length > 0;
+  }
+
+  function handleClose() {
+    if (step === 0 || step >= 3) { onClose(); return; }
+    setShowExitIntent(true);
   }
 
   // ── Captura silenciosa de carrito abandonado ──
@@ -485,7 +523,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
   }, [payment, mpLoaded, mpPublicKey]);
 
   function handleOverlayClick(e) {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget) handleClose();
   }
 
   function togglePayOption(opt) {
@@ -754,6 +792,27 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         /* Policies */
         .cs-policies { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 11px; }
         .cs-policies a { color: #999; text-decoration: underline; font-weight: 600; }
+
+        /* ✓ Field valid indicator */
+        .cs-field-ok { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #1D9E75; font-size: 16px; font-weight: 900; pointer-events: none; }
+
+        /* Countdown pill in cart */
+        .cs-cd-pill { display: inline-flex; align-items: center; gap: 6px; background: #0b172a; color: #fff; border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 900; letter-spacing: .03em; }
+        .cs-cd-pill-time { font-variant-numeric: tabular-nums; color: #f59e0b; }
+
+        /* Trust row (step 1 bottom) */
+        .cs-trust-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 10px 0 4px; }
+        .cs-trust-item { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: #64748b; }
+
+        /* Exit intent overlay */
+        .cs-exit-overlay { position: fixed; inset: 0; z-index: 10999; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .cs-exit-card { background: #fff; border-radius: 16px; padding: 28px 24px; max-width: 340px; width: 100%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.25); }
+        .cs-exit-emoji { font-size: 44px; margin-bottom: 10px; }
+        .cs-exit-title { font-size: 20px; font-weight: 900; color: #0b1220; margin: 0 0 8px; line-height: 1.2; }
+        .cs-exit-sub { font-size: 13px; font-weight: 600; color: #64748b; margin: 0 0 20px; line-height: 1.5; }
+        .cs-exit-stay { width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: 900; cursor: pointer; background: var(--primary); color: #fff; margin-bottom: 10px; }
+        .cs-exit-leave { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; background: none; color: #aaa; }
+        .cs-exit-leave:hover { color: #666; }
 
         /* ── Card form (inputs manuales, cada campo es una card) ── */
         .cs-card-form {
@@ -1103,11 +1162,11 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
 
           {/* ─── HEADER ─── */}
           {step === 0 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 20px 14px", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px 10px", borderBottom: "1px solid var(--border)" }}>
               <span style={{ fontWeight: 900, fontSize: 17, color: "var(--text)" }}>
                 Tu carrito ({totalItems})
               </span>
-              <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1 }}>✕</button>
+              <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1 }}>✕</button>
             </div>
           )}
 
@@ -1120,7 +1179,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   {import.meta.env.VITE_STORE_NAME || "BoomHausS"}
                 </span>
                 <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                  <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888" }}>✕</button>
+                  <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888" }}>✕</button>
                 </div>
               </div>
 
@@ -1139,9 +1198,17 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
               {summaryOpen && (
                 <div className="cs-summary-items">
                   {items.map((it, i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", fontSize: 13, fontWeight: 700 }}>
-                      <span style={{ color: "var(--text)" }}>{it.name} × {it.quantity}</span>
-                      <span>{money(calc(it))}</span>
+                    <div key={i}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", fontSize: 13, fontWeight: 700 }}>
+                        <span style={{ color: "var(--text)" }}>{it.name} × {it.quantity}</span>
+                        <span>{money(calc(it))}</span>
+                      </div>
+                      {it.gifts?.map((gift, gi) => (
+                        <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0 3px 10px", fontSize: 12, fontWeight: 700 }}>
+                          <span style={{ color: "#1D9E75" }}>🎁 {gift}</span>
+                          <span style={{ color: "#1D9E75", fontWeight: 900 }}>GRATIS</span>
+                        </div>
+                      ))}
                     </div>
                   ))}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1D9E75", paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
@@ -1168,7 +1235,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   <div className={`cs-step-circle ${step === 2 ? "active" : ""}`}>3</div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0 8px" }}>
-                  {["Información", "Envío", "Pago"].map((l, i) => {
+                  {["Tus datos", "Pago", "✓ Confirmación"].map((l, i) => {
                     const done = (i === 0 && step >= 2) || (i === 1 && step >= 2);
                     const active = (i === 0 && step === 1) || (i === 1 && step === 1) || (i === 2 && step === 2);
                     return <span key={l} className={`cs-step-label ${done ? "done" : active ? "active" : ""}`}>{l}</span>;
@@ -1196,31 +1263,14 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
               });
               return (
               <div>
-                {/* Hero benefits bar — envío gratis protagonista */}
-                <div className="cs-hero-benefits">
-                  <div className="cs-hero-free">
-                    <span className="cs-hero-free-ico" aria-hidden="true">🚚</span>
-                    <div className="cs-hero-free-txt">
-                      <div className="cs-hero-free-title">ENVÍO GRATIS</div>
-                      <div className="cs-hero-free-sub">a todo el país · llega en 3 a 7 días</div>
-                    </div>
-                  </div>
-                  {hasKit && (
-                    <div className="cs-hero-gifts">
-                      <span className="cs-hero-gifts-ico" aria-hidden="true">🎁</span>
-                      <div className="cs-hero-gifts-txt">
-                        <div className="cs-hero-gifts-title">+20 UNIDADES DE REGALO</div>
-                        <div className="cs-hero-gifts-sub">10 Pulseras + 10 Banderas extra incluidas</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div style={{ padding: "8px 16px", textAlign: "center", fontSize: 12, fontWeight: 800, color: "#0a5c3a", background: "#f0fdf8", borderBottom: "1px solid #b7f0dc" }}>
-                  ✓ ¡Felicidades! Desbloqueaste todos los beneficios
+                {/* Hero benefits bar — compacta, una línea */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: "#ecfdf5", borderBottom: "1px solid #b7f0dc", flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#0a5c3a" }}>🚚 Envío gratis a todo el país</span>
+                  {hasKit && <span style={{ fontSize: 12, fontWeight: 800, color: "#0a5c3a" }}>· 🎁 +20 unidades de regalo incluidas</span>}
                 </div>
 
                 {/* Cart items */}
-                <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
                   {items.length === 0 && (
                     <div style={{ textAlign: "center", padding: "32px 0", color: "#aaa", fontWeight: 700 }}>Tu carrito está vacío.</div>
                   )}
@@ -1233,7 +1283,8 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                       || (it.promo?.type === "bundle2" && it.promo?.discountPct > 0);
                     const thumb = it.imageUrl || it.image || null;
                     return (
-                      <div key={idx} style={{ display: "flex", gap: 12, alignItems: "center", background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 12px" }}>
+                      <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <div style={{ display: "flex", gap: 12, alignItems: "center", background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 12px" }}>
                         {/* Image + qty badge */}
                         <div style={{ position: "relative", flexShrink: 0 }}>
                           <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#f0f4ff", display: "grid", placeItems: "center" }}>
@@ -1244,7 +1295,17 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
 
                         {/* Info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.3 }}>{it.name}</div>
+                          {(() => {
+                            const parts = it.name.split(' — ');
+                            return parts.length > 1 ? (
+                              <>
+                                <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parts[0]}</div>
+                                <div style={{ fontWeight: 700, fontSize: 11, color: '#888', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parts[1]}</div>
+                              </>
+                            ) : (
+                              <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.name}</div>
+                            );
+                          })()}
                           {hasDiscount && it.promo?.discountPct > 0 && (
                             <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", borderRadius: 999, padding: "2px 8px", fontWeight: 800, display: "inline-block", marginTop: 3 }}>
                               -{it.promo.discountPct}% PROMO
@@ -1256,7 +1317,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                             </span>
                           )}
                           {/* Qty controls */}
-                          {(String(it?.productId || '').includes('lampara-magnetica') || String(it?.productId || '').includes('parches-detox')) ? (
+                          {(it.gifts?.length > 0 || String(it?.productId || '').includes('lampara-magnetica') || String(it?.productId || '').includes('parches-detox')) ? (
                             <div style={{ marginTop: 6 }}>
                               <span style={{ fontSize: 13, fontWeight: 800, color: "rgba(11,18,32,.50)" }}>
                                 {String(it?.productId || '').includes('parches-detox') ? 'Pack seleccionado' : `Cant: ${it.quantity}`}
@@ -1283,14 +1344,24 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                           <div style={{ fontWeight: 900, fontSize: 15, color: hasDiscount ? "#1D9E75" : "var(--text)" }}>{money(itemTotal)}</div>
                         </div>
                       </div>
+                      {it.gifts?.length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {it.gifts.map((gift, gi) => (
+                            <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 8, padding: "5px 10px" }}>
+                              <span style={{ fontSize: 12, fontWeight: 800, color: "#166534" }}>🎁 {gift}</span>
+                              <span style={{ fontSize: 12, fontWeight: 900, color: "#16a34a" }}>GRATIS</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      </div>
                     );
                   })}
                 </div>
 
                 {/* Totals */}
-                <div style={{ padding: "0 16px 16px" }}>
+                <div style={{ padding: "0 16px 10px" }}>
                   <div className="cs-totals">
-                    <div className="cs-total-row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
                     <div className="cs-total-row"><span>Envío</span><span style={{ color: "#1D9E75" }}>GRATIS</span></div>
                     {savings > 0 && <div className="cs-total-row" style={{ color: "#1D9E75" }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
                     {discountAmount > 0 && (
@@ -1346,21 +1417,33 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                     </div>
                   )}
 
+                  {/* Countdown urgency */}
+                  {cartTime !== "00:00" && (
+                    <div style={{ textAlign: "center", marginTop: 12 }}>
+                      <span className="cs-cd-pill">
+                        ⚡ Oferta válida por <span className="cs-cd-pill-time">&nbsp;{cartTime}</span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Social proof */}
+                  <div style={{ textAlign: "center", fontSize: 12, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 8, padding: "6px 10px", marginTop: 10 }}>
+                    🔥 {socialProofCount} personas compraron esto en las últimas 24 horas
+                  </div>
+
                   {/* CTA */}
                   <button
                     className="cs-cta"
-                    style={{ marginTop: 16 }}
+                    style={{ marginTop: 10 }}
                     disabled={items.length === 0}
                     onClick={() => setStep(1)}
                   >
                     Finalizar compra · {money(finalTotal)}
                   </button>
 
-                  {/* Payment logos */}
-                  <div className="cs-pay-logos" style={{ justifyContent: "center", marginTop: 14 }}>
-                    <LogoVisa /><LogoMC /><LogoAmex /><LogoMP />
-                    <span className="cs-logo-badge cs-logo-rapi">Rapipago</span>
-                    <span className="cs-logo-badge cs-logo-pf">Pago Fácil</span>
+                  {/* Guest checkout note */}
+                  <div style={{ textAlign: "center", fontSize: 11, color: "#aaa", fontWeight: 600, marginTop: 6 }}>
+                    🔒 Continuar como invitado · Sin necesidad de crear cuenta
                   </div>
                 </div>
               </div>
@@ -1374,57 +1457,83 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 {/* Contacto */}
                 <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: "var(--text)" }}>Contacto</div>
 
-                {/* Nombre */}
-                <div className="cs-field" style={{ marginBottom: 12 }}>
-                  <input
-                    value={form.nombre}
-                    onChange={e => setF("nombre", e.target.value)}
-                    className={`${form.nombre ? "hv" : ""} ${errors.nombre ? "cs-err" : ""}`}
-                    autoComplete="given-name"
-                  />
-                  <label>Nombre *</label>
+                {/* Nombre + Apellido — dos columnas */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                  <div className="cs-field">
+                    <input
+                      id="cs-nombre" name="given-name" type="text"
+                      value={form.nombre}
+                      onChange={e => setF("nombre", e.target.value)}
+                      onBlur={() => touchF("nombre")}
+                      className={`${form.nombre ? "hv" : ""} ${errors.nombre ? "cs-err" : ""}`}
+                      autoComplete="given-name"
+                    />
+                    <label htmlFor="cs-nombre">Nombre *</label>
+                    {fieldOk("nombre") && <span className="cs-field-ok">✓</span>}
+                  </div>
+                  <div className="cs-field">
+                    <input
+                      id="cs-apellido" name="family-name" type="text"
+                      value={form.apellido}
+                      onChange={e => setF("apellido", e.target.value)}
+                      onBlur={() => touchF("apellido")}
+                      className={`${form.apellido ? "hv" : ""}`}
+                      autoComplete="family-name"
+                    />
+                    <label htmlFor="cs-apellido">Apellido</label>
+                    {fieldOk("apellido") && <span className="cs-field-ok">✓</span>}
+                  </div>
                 </div>
                 {errors.nombre && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.nombre}</div>}
 
                 {/* DNI */}
-                <div className="cs-field" style={{ marginBottom: 12 }}>
+                <div className="cs-field" style={{ marginBottom: 4 }}>
                   <input
+                    id="cs-dni" name="dni" type="text"
                     value={form.dni}
                     onChange={e => setF("dni", e.target.value)}
+                    onBlur={() => touchF("dni")}
                     className={`${form.dni ? "hv" : ""} ${errors.dni ? "cs-err" : ""}`}
                     inputMode="numeric"
                     autoComplete="off"
                   />
-                  <label>DNI *</label>
+                  <label htmlFor="cs-dni">DNI *</label>
+                  {fieldOk("dni") && <span className="cs-field-ok">✓</span>}
+                </div>
+                <div style={{ fontSize: 11, color: "#aaa", fontWeight: 600, marginBottom: 12 }}>
+                  Lo usamos únicamente para emitir tu factura electrónica 🔒
                 </div>
                 {errors.dni && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.dni}</div>}
 
                 {/* Celular */}
                 <div className="cs-field" style={{ marginBottom: 12 }}>
                   <input
+                    id="cs-tel" name="tel" type="tel"
                     value={form.tel}
                     onChange={e => setF("tel", e.target.value)}
-                    onBlur={e => captureAbandoned({ phone: e.target.value })}
+                    onBlur={e => { touchF("tel"); captureAbandoned({ phone: e.target.value }); }}
                     className={`${form.tel ? "hv" : ""} ${errors.tel ? "cs-err" : ""}`}
                     inputMode="tel"
                     autoComplete="tel"
                   />
-                  <label>Número de celular *</label>
+                  <label htmlFor="cs-tel">Número de celular *</label>
+                  {fieldOk("tel") && <span className="cs-field-ok">✓</span>}
                 </div>
                 {errors.tel && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.tel}</div>}
 
                 {/* Email */}
                 <div className="cs-field" style={{ marginBottom: 4 }}>
                   <input
+                    id="cs-email" name="email" type="email"
                     value={form.email}
                     onChange={e => setF("email", e.target.value)}
-                    onBlur={e => captureAbandoned({ email: e.target.value })}
+                    onBlur={e => { touchF("email"); captureAbandoned({ email: e.target.value }); }}
                     className={`${form.email ? "hv" : ""} ${errors.email ? "cs-err" : ""}`}
-                    type="email"
                     inputMode="email"
                     autoComplete="email"
                   />
-                  <label>Email *</label>
+                  <label htmlFor="cs-email">Email *</label>
+                  {fieldOk("email") && <span className="cs-field-ok">✓</span>}
                 </div>
                 {errors.email && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.email}</div>}
 
@@ -1435,44 +1544,58 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
 
                 {/* Provincia */}
                 <div className="cs-field" style={{ marginBottom: 12 }}>
-                  <select value={form.provincia} onChange={e => setF("provincia", e.target.value)}>
+                  <select
+                    id="cs-provincia" name="address-level1"
+                    value={form.provincia} onChange={e => setF("provincia", e.target.value)}
+                    autoComplete="address-level1"
+                  >
                     {PROVINCES.map(p => <option key={p}>{p}</option>)}
                   </select>
-                  <label>Provincia / Estado</label>
-                </div>
-
-                {/* Apellido */}
-                <div className="cs-field" style={{ marginBottom: 12 }}>
-                  <input value={form.apellido} onChange={e => setF("apellido", e.target.value)} className={form.apellido ? "hv" : ""} autoComplete="family-name" />
-                  <label>Apellido (opcional)</label>
+                  <label htmlFor="cs-provincia">Provincia / Estado</label>
                 </div>
 
                 {/* Dirección */}
                 <div className="cs-field" style={{ marginBottom: 12 }}>
                   <input
+                    id="cs-direccion" name="address-line1" type="text"
                     value={form.direccion}
                     onChange={e => setF("direccion", e.target.value)}
-                    onBlur={() => captureAbandoned()}
+                    onBlur={() => { touchF("direccion"); captureAbandoned(); }}
                     className={form.direccion ? "hv" : ""}
                     autoComplete="street-address"
                   />
-                  <label>Dirección (opcional)</label>
+                  <label htmlFor="cs-direccion">Dirección (opcional)</label>
                 </div>
 
                 <div className="cs-field" style={{ marginBottom: 12 }}>
-                  <input value={form.extra} onChange={e => setF("extra", e.target.value)} className={form.extra ? "hv" : ""} />
-                  <label>Casa, apartamento, etc. (opcional)</label>
+                  <input
+                    id="cs-extra" name="address-line2" type="text"
+                    value={form.extra} onChange={e => setF("extra", e.target.value)}
+                    className={form.extra ? "hv" : ""}
+                    autoComplete="address-line2"
+                  />
+                  <label htmlFor="cs-extra">Piso / Dpto / Referencias (opcional)</label>
                 </div>
 
                 {/* CP + Ciudad */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
                   <div className="cs-field">
-                    <input value={form.cp} onChange={e => setF("cp", e.target.value)} className={form.cp ? "hv" : ""} inputMode="numeric" />
-                    <label>Código postal</label>
+                    <input
+                      id="cs-cp" name="postal-code" type="text"
+                      value={form.cp} onChange={e => setF("cp", e.target.value)}
+                      className={form.cp ? "hv" : ""} inputMode="numeric"
+                      autoComplete="postal-code"
+                    />
+                    <label htmlFor="cs-cp">Código postal</label>
                   </div>
                   <div className="cs-field">
-                    <input value={form.ciudad} onChange={e => setF("ciudad", e.target.value)} className={form.ciudad ? "hv" : ""} />
-                    <label>Ciudad</label>
+                    <input
+                      id="cs-ciudad" name="address-level2" type="text"
+                      value={form.ciudad} onChange={e => setF("ciudad", e.target.value)}
+                      className={form.ciudad ? "hv" : ""}
+                      autoComplete="address-level2"
+                    />
+                    <label htmlFor="cs-ciudad">Ciudad</label>
                   </div>
                 </div>
 
@@ -1501,7 +1624,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   </>
                 )}
 
-                {/* Detalles adicionales */}
+                {/* Notas adicionales */}
                 <div className="cs-field" style={{ marginBottom: 20 }}>
                   <textarea
                     value={form.notes}
@@ -1510,7 +1633,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                     rows={3}
                     style={{ resize: "none" }}
                   />
-                  <label>Detalles adicionales para la entrega (opcional)</label>
+                  <label>Notas adicionales para el pedido (opcional)</label>
                 </div>
 
                 {/* Buttons */}
@@ -1532,7 +1655,19 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 }}>
                   Continuar con el pago →
                 </button>
-                <div style={{ textAlign: "center", marginTop: 12, marginBottom: 8 }}>
+
+                {/* Trust signals */}
+                <div className="cs-trust-row" style={{ marginTop: 12 }}>
+                  <span className="cs-trust-item">🔒 SSL 256 bits</span>
+                  <span className="cs-trust-item">🛡️ Compra protegida</span>
+                  <span className="cs-trust-item">✓ Datos encriptados</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "6px 0 4px", flexWrap: "wrap" }}>
+                  <LogoMP /><LogoVisa /><LogoMC /><LogoAmex />
+                  <span style={{ fontSize: 11, color: "#aaa", fontWeight: 700 }}>Rapipago · Pago Fácil</span>
+                </div>
+
+                <div style={{ textAlign: "center", marginTop: 10, marginBottom: 8 }}>
                   <button className="cs-back" onClick={() => setStep(0)}>← Volver al carrito</button>
                 </div>
               </div>
@@ -1646,7 +1781,10 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                       onClick={() => togglePayOption("mp")}
                     >
                       <input type="radio" name="pay" checked={payOpen === "mp"} onChange={() => togglePayOption("mp")} />
-                      <div style={{ flex: 1, fontWeight: 800, fontSize: 14 }}>Mercado Pago</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 800, fontSize: 14 }}>Mercado Pago</div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginTop: 1 }}>Incluye cuotas sin interés, Rapipago, Pago Fácil y más</div>
+                      </div>
                       <div className="cs-pay-logos">
                         <LogoMP /><LogoVisa /><LogoMC />
                         <span style={{ fontSize: 11, color: "#888", fontWeight: 700 }}>+3</span>
@@ -1716,8 +1854,8 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." : "Pagar ahora"}
                 </button>
                 {!payment && (
-                  <div style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "#c0392b", marginTop: 6, marginBottom: 4 }}>
-                    Seleccioná un método de pago para continuar
+                  <div style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "#1D9E75", marginTop: 6, marginBottom: 4 }}>
+                    👆 Elegí tu método de pago preferido para continuar
                   </div>
                 )}
                 {errors.submit && (
@@ -1908,6 +2046,25 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
           </div>
         </div>
       </div>
+
+      {/* ─── EXIT INTENT MODAL ─── */}
+      {showExitIntent && (
+        <div className="cs-exit-overlay" onClick={e => e.target === e.currentTarget && setShowExitIntent(false)}>
+          <div className="cs-exit-card">
+            <div className="cs-exit-emoji">🛒</div>
+            <div className="cs-exit-title">¿Seguro que querés salir?</div>
+            <div className="cs-exit-sub">
+              Tu carrito se guardará y podés volver cuando quieras. ¡No pierdas la oferta!
+            </div>
+            <button className="cs-exit-stay" onClick={() => setShowExitIntent(false)}>
+              Continuar comprando
+            </button>
+            <button className="cs-exit-leave" onClick={() => { setShowExitIntent(false); onClose(); }}>
+              Salir sin comprar
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

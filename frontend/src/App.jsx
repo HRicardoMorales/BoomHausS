@@ -28,6 +28,7 @@ import AdminCoupons from './pages/AdminCoupons.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import MundialLanding from './pages/MundialLanding.jsx';
 import ParchesDetoxLanding from './pages/ParchesDetoxLanding.jsx';
+import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -116,6 +117,8 @@ export default function App() {
           <Route path="/lp/mundial-revendedores" element={<MundialLanding />} />
           {/* ✅ Parches Plantares Detox — componente dedicado con secciones propias */}
           <Route path="/lp/parches-detox" element={<ParchesDetoxLanding />} />
+          {/* ✅ Sillón Puff Inflable Sunfield — componente dedicado */}
+          <Route path="/lp/sillon-puff-inflable" element={<SillonPuffLanding />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />

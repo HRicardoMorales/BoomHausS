@@ -292,6 +292,10 @@ export default function Footer() {
           .ft__trust{ justify-content: flex-start; }
           .ft__trust-badge:not(:first-child){ display: none; }
         }
+        /* CAMBIO 6 — espacio para que el sticky bar no tape los links del footer */
+        @media (max-width: 768px){
+          .ft__inner{ padding-bottom: 104px; }
+        }
       `}</style>
     </footer>
   );

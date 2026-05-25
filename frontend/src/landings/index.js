@@ -7,6 +7,7 @@ import nebulizadorMesh       from './nebulizador-mesh';
 import soporteNasalSN300     from './soporte-nasal-sn300';
 import lamparaMagnetica      from './lampara-magnetica';
 import parchesDetox          from './parches-detox';
+import sillonPuffInflable    from './sillon-puff-inflable';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -19,6 +20,8 @@ export const LANDING_CONFIGS = {
   'lampara-magnetica':        lamparaMagnetica,
   // Renderizado por ParchesDetoxLanding.jsx (componente dedicado, ruta /lp/parches-detox)
   'parches-detox':            parchesDetox,
+  // Renderizado por SillonPuffLanding.jsx (componente dedicado, ruta /lp/sillon-puff-inflable)
+  'sillon-puff-inflable':     sillonPuffInflable,
 };
 
 export const LANDING_META = [
@@ -84,6 +87,13 @@ export const LANDING_META = [
     desc: 'Parches herbales 2x1 + Ebook. Ritual nocturno: se colocan en la planta del pie antes de dormir. Slug admin: "parches-detox". Renderiza ParchesDetoxLanding.jsx.',
     status: 'active',
     emoji: '🌿',
+  },
+  {
+    slug: 'sillon-puff-inflable',
+    name: 'Sillón Puff Inflable Sunfield',
+    desc: 'Kit completo con posapié y compresor de regalo. Material flocado premium. Slug admin: "sillon-puff-inflable". Renderiza SillonPuffLanding.jsx.',
+    status: 'active',
+    emoji: '🛋️',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

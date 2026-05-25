@@ -14,7 +14,10 @@
       "Bash(Select-Object Name, Mode)",
       "Bash(Format-Table)",
       "Bash(dir \"c:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" /b)",
-      "Read(//c/Users/Usuario/.claude/projects/c--Users-Usuario-Downloads-Encontratodo-FINAL-multi-landing-admin-inline-checkout_v2/memory/**)"
+      "Read(//c/Users/Usuario/.claude/projects/c--Users-Usuario-Downloads-Encontratodo-FINAL-multi-landing-admin-inline-checkout_v2/memory/**)",
+      "Bash(xargs grep -l \"countdown\\\\|timer\")",
+      "Read(//c/Users/Usuario/**)",
+      "Bash(xargs grep -l \"validate\\\\|validation\")"
     ]
   }
 }
