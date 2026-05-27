@@ -80,7 +80,6 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
 
   // ⚡ Default a Envío
   const [shippingMethod, setShippingMethod] = useState("correo_argentino");
-  const [notes, setNotes] = useState("");
 
   // ✅ FIX RACE CONDITION: refs que se actualizan síncronamente con cada keystroke.
   // handleSubmit lee desde acá en vez del state (que puede estar un render atrasado).
@@ -324,7 +323,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         shippingAddress: address,
         shippingMethod:  method,
         paymentMethod:   method === "caba_cod" ? "cod" : onlinePayMethod,
-        notes:           notes.trim(),
+        notes:           "",
         coupon:          appliedCoupon ? appliedCoupon.code : null,
         couponDiscount:  couponDiscount,
         total:           finalTotal,
@@ -426,7 +425,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
         shippingMethod:  refMethod.current,
         paymentMethod:   "card",
         paymentId:       paymentData.id,
-        notes:           notes.trim(),
+        notes:           "",
         coupon:          appliedCoupon ? appliedCoupon.code : null,
         couponDiscount,
         total:           finalTotal,
@@ -642,7 +641,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                       onChange={(e) => { setCustomerName(e.target.value); refName.current = e.target.value; }}
                       disabled={isLogged}
                       required
-                      placeholder="Como figura en tu DNI"
+                      placeholder="Nombre y apellido completo"
                     />
                   </label>
 
@@ -660,16 +659,21 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                         DNI inválido (7 u 8 dígitos)
                       </span>
                     ) : (
-                      <span style={{ fontSize: ".82rem", color: "#10b981", fontWeight: 900 }}>
-                        ✅ DNI OK
-                      </span>
+                      <>
+                        <span style={{ fontSize: ".82rem", color: "#10b981", fontWeight: 900 }}>
+                          ✅ DNI OK
+                        </span>
+                        <span style={{ fontSize: ".78rem", color: "rgba(11,18,32,.52)", fontWeight: 750 }}>
+                          Lo usamos únicamente para emitir tu factura electrónica 🔒
+                        </span>
+                      </>
                     )}
                   </label>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
-                    Email (opcional)
+                    Email
                     <input
                       type="email"
                       value={customerEmail}
@@ -678,6 +682,9 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                       disabled={isLogged}
                       placeholder="tu@email.com"
                     />
+                    <span style={{ fontSize: ".78rem", color: "rgba(11,18,32,.55)", fontWeight: 750 }}>
+                      📦 Acá te enviamos el número de seguimiento de tu pedido
+                    </span>
                   </label>
 
                   <label className="muted" style={{ display: "grid", gap: "0.35rem", fontWeight: 900 }}>
@@ -853,7 +860,7 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                     onBlur={(e) => handleAbandonedCapture("address", e.target.value)}
                     placeholder={
                       shippingMethod === "correo_argentino"
-                        ? "Calle, altura, piso, ciudad, código postal..."
+                        ? "Calle, altura, piso, ciudad y código postal (ej: 1414)"
                         : shippingMethod === "caba_cod"
                         ? "Barrio + calle + altura + piso/depto (si aplica)"
                         : "Calle y altura (necesario para el comprobante)"
@@ -864,14 +871,6 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
                   />
                 </label>
 
-                <label className="muted" style={{ display: "grid", gap: "0.35rem", marginTop: "1rem", fontWeight: 900 }}>
-                  Notas (opcional)
-                  <input
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Ej: El timbre no anda, dejar en portería."
-                  />
-                </label>
               </div>
             </div>
 
@@ -1442,6 +1441,39 @@ export function CheckoutContent({ embedded = false, onClose } = {}) {
           `}</style>
         </div>
       </div>
+
+      {/* ─── STICKY MOBILE CTA (P5 fix) ─── */}
+      {!isCartEmpty && (isCod || onlinePayMethod === "mercadopago") && (
+        <div style={{
+          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 999,
+          background: "#fff", borderTop: "1.5px solid #e5e7eb",
+          padding: "10px 16px 14px", display: "none",
+        }} className="ck-sticky-footer">
+          <button
+            className={`btn btn-primary${loading ? " is-loading" : ""}`}
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading || redirecting}
+            style={{
+              width: "100%", padding: "0.95rem", fontSize: "1rem", fontWeight: 1000,
+              background: "linear-gradient(135deg, #1B6D4F 0%, #1B4D3E 60%, #153D31 100%)",
+              border: "none", borderRadius: 14, color: "#fff",
+              cursor: (loading || redirecting) ? "not-allowed" : "pointer",
+            }}
+          >
+            {redirecting
+              ? "🔄 Conectando con Mercado Pago..."
+              : loading
+              ? "⏳ Procesando tu pedido..."
+              : isCod
+              ? `Confirmar pedido · ${money(finalTotal)}`
+              : `Pagar ${money(finalTotal)} en Mercado Pago →`}
+          </button>
+          <style>{`
+            @media (max-width: 768px) { .ck-sticky-footer { display: block !important; } }
+          `}</style>
+        </div>
+      )}
     </main>
   );
 }

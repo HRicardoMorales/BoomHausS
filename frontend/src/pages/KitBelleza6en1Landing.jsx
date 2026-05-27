@@ -3,7 +3,7 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { track } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
-import mc from '../landings/sillon-puff-inflable';
+import mc from '../landings/kit-belleza-6en1';
 
 /* ============================================================
    WAVE SEPARATOR
@@ -29,7 +29,7 @@ function WaveSeparator({ from }) {
 /* ============================================================
    COUNTDOWN TIMER
 ============================================================ */
-function CountdownTimer({ storageKey = 'spf_countdown', minutes = 18 }) {
+function CountdownTimer({ storageKey = 'kbx_countdown', minutes = 18 }) {
   const [left, setLeft] = useState(0);
   useEffect(() => {
     const saved = Number(sessionStorage.getItem(storageKey));
@@ -146,7 +146,7 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
         <div className="ba-img-wrap">
           {imgAfter
             ? <img className="ba-img-after" src={imgAfter} alt={afterLabel} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-            : <div className="ba-img-after ba-img-ph"><span className="ba-img-ph-icon">🛋️</span><span className="ba-img-ph-text">{afterLabel}</span></div>
+            : <div className="ba-img-after ba-img-ph"><span className="ba-img-ph-icon">✂️</span><span className="ba-img-ph-text">{afterLabel}</span></div>
           }
           <div className="ba-img-before">
             {imgBefore
@@ -311,7 +311,7 @@ function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, sco
                 <div className="rv-imgBox">
                   {r.img
                     ? <img src={r.img} alt={r.imgAlt || `Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-                    : <div className="spf-rv-ph" aria-label={r.imgAlt || `Foto de ${r.name}`}>🛋️</div>
+                    : <div className="spf-rv-ph" aria-label={r.imgAlt || `Foto de ${r.name}`}>✂️</div>
                   }
                   <div className="rv-quote">"</div>
                 </div>
@@ -356,7 +356,7 @@ function WaTab({ wa }) {
 /* ============================================================
    MAIN COMPONENT
 ============================================================ */
-export default function SillonPuffLanding() {
+export default function KitBelleza6en1Landing() {
   const [product,      setProduct]      = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -417,11 +417,11 @@ export default function SillonPuffLanding() {
 
   const heroImgs = useMemo(() => {
     const arr = [];
-    if (product?.imageUrl) arr.push({ src: product.imageUrl, alt: 'Sillón Puff Inflable Sunfield' });
+    if (product?.imageUrl) arr.push({ src: product.imageUrl, alt: 'Kit de Belleza 6 en 1 Boxili' });
     if (Array.isArray(product?.images)) {
       product.images.forEach(x => {
         const url = typeof x === 'string' ? x : x?.url;
-        if (url && !arr.find(a => a.src === url)) arr.push({ src: url, alt: 'Sillón Puff Inflable Sunfield' });
+        if (url && !arr.find(a => a.src === url)) arr.push({ src: url, alt: 'Kit de Belleza 6 en 1 Boxili' });
       });
     }
     return arr.length ? arr : mc.heroImages;
@@ -452,13 +452,13 @@ export default function SillonPuffLanding() {
       <>
         <style>{`@keyframes _spfBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
         <div style={{ minHeight:'100vh', background:'#fff' }}>
-          <div style={{ height:3, background:'linear-gradient(90deg,#1B4D3E,#4ade80,#1B4D3E)', backgroundSize:'200% 100%', animation:'_spfBar 1.1s linear infinite' }} />
+          <div style={{ height:3, background:'linear-gradient(90deg,#C2185B,#E91E8C,#C2185B)', backgroundSize:'200% 100%', animation:'_spfBar 1.1s linear infinite' }} />
         </div>
       </>
     );
   }
 
-  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Sillón Puff Inflable Sunfield' };
+  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Kit de Belleza 6 en 1 Boxili' };
 
   return (
     <div className="spf-wrap">
@@ -482,7 +482,7 @@ export default function SillonPuffLanding() {
                   />
                 ) : (
                   <div className="spf-hero-ph" aria-label={activeImg.alt}>
-                    <span className="spf-hero-ph-icon">🛋️</span>
+                    <span className="spf-hero-ph-icon">✂️</span>
                     <span className="spf-hero-ph-text">{activeImg.alt}</span>
                   </div>
                 )
@@ -498,7 +498,7 @@ export default function SillonPuffLanding() {
                 >
                   {img.src
                     ? <img src={img.src} alt={img.alt} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                    : <div className="spf-thumb-ph">🛋️</div>
+                    : <div className="spf-thumb-ph">✂️</div>
                   }
                 </button>
               ))}
@@ -524,7 +524,7 @@ export default function SillonPuffLanding() {
               </div>
 
               <h1 className="hero-title hero-title--compact">
-                {product?.name ? product.name : <>El sillón que querías<br />sin arrastrar nada</>}
+                {product?.name ? product.name : <>Kit de Belleza<br />6 en 1 Boxili</>}
               </h1>
 
               <div className="hero-subtitle">{mc.heroSubtitle}</div>
@@ -536,7 +536,7 @@ export default function SillonPuffLanding() {
               <div className="spf-countdown">
                 <span>⏱</span>
                 <span className="spf-countdown-label">Oferta termina en</span>
-                <CountdownTimer storageKey="spf_countdown" minutes={18} />
+                <CountdownTimer storageKey="kbx_countdown" minutes={18} />
               </div>
 
               <div className="bnd2-tablets">
@@ -652,7 +652,7 @@ export default function SillonPuffLanding() {
                     <div className="flow-imgBox hover-float">
                       {storyImgs[i]
                         ? <img src={storyImgs[i]} alt={b.imgAlt} loading="lazy" referrerPolicy="no-referrer" crossOrigin="anonymous" />
-                        : <div className="spf-flow-ph"><span className="spf-flow-ph-icon">🛋️</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
+                        : <div className="spf-flow-ph"><span className="spf-flow-ph-icon">✂️</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
                       }
                     </div>
                   </div>
@@ -923,9 +923,9 @@ export default function SillonPuffLanding() {
         .spf-soldout-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.38); }
         .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(27,77,62,.07); font-size:.80rem; font-weight:700; color:#1B4D3E; letter-spacing:.01em; line-height:1.35; }
 
-        /* ── CTA rojo ── */
-        .bnd2-cta.spf-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(197,48,48,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
-        .bnd2-cta.spf-cta:hover { background:linear-gradient(135deg,#9B2C2C 0%,#C53030 100%); box-shadow:0 8px 28px rgba(197,48,48,.38); transform:translateY(-1px); }
+        /* ── CTA rosa ── */
+        .bnd2-cta.spf-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#C2185B 0%,#E91E8C 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(194,24,91,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
+        .bnd2-cta.spf-cta:hover { background:linear-gradient(135deg,#880E4F 0%,#C2185B 100%); box-shadow:0 8px 28px rgba(194,24,91,.38); transform:translateY(-1px); }
         .bnd2-cta.spf-cta:active { transform:translateY(0) scale(.98); }
         .bnd2-cta.spf-cta:disabled { opacity:.55; cursor:not-allowed; transform:none; }
         .pd-cta-guarantee { margin:6px 0 0; padding:0; text-align:center; font-size:12px; font-weight:600; color:rgba(11,18,32,.42); line-height:1.4; background:none; border:none; }
@@ -1108,7 +1108,7 @@ export default function SillonPuffLanding() {
         .rv-slide { scroll-snap-align:center; flex:0 0 auto; width:min(520px,88vw); }
         .rv-card { background:#fff; border:1px solid rgba(2,8,23,.10); border-radius:22px; box-shadow:0 22px 70px rgba(10,20,40,.16); overflow:hidden; }
         .rv-imgBox { position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; }
-        .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#C53030; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(197,48,48,.35); font-size:1.5rem; }
+        .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#C2185B; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(194,24,91,.35); font-size:1.5rem; }
         .rv-body { padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; text-align:center; }
         .rv-title { font-weight:1100; text-transform:uppercase; letter-spacing:.05em; color:rgba(11,18,32,.92); font-size:.88rem; }
         .rv-text { margin:0; color:rgba(11,18,32,.70); line-height:1.6; font-weight:650; font-size:.88rem; }
@@ -1141,8 +1141,8 @@ export default function SillonPuffLanding() {
         .grt-sub { margin:0 auto 28px; max-width:420px; font-weight:700; font-size:1rem; color:rgba(255,255,255,.65); line-height:1.70; white-space:pre-line; }
         .grt-pills { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:32px; }
         .grt-pill { padding:9px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05); font-weight:800; font-size:.83rem; color:rgba(255,255,255,.78); white-space:nowrap; }
-        .grt-cta.spf-grt-cta { display:inline-block; padding:16px 42px; border:none; border-radius:14px; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-weight:1100; font-size:1rem; letter-spacing:.04em; cursor:pointer; font-family:inherit; box-shadow:0 14px 42px rgba(197,48,48,.35); transition:transform .15s ease,box-shadow .15s ease; }
-        .grt-cta.spf-grt-cta:hover { transform:translateY(-2px); box-shadow:0 20px 52px rgba(197,48,48,.50); }
+        .grt-cta.spf-grt-cta { display:inline-block; padding:16px 42px; border:none; border-radius:14px; background:linear-gradient(135deg,#C2185B 0%,#E91E8C 100%); color:#fff; font-weight:1100; font-size:1rem; letter-spacing:.04em; cursor:pointer; font-family:inherit; box-shadow:0 14px 42px rgba(194,24,91,.35); transition:transform .15s ease,box-shadow .15s ease; }
+        .grt-cta.spf-grt-cta:hover { transform:translateY(-2px); box-shadow:0 20px 52px rgba(194,24,91,.50); }
         .grt-cta.spf-grt-cta:active { transform:scale(.98); }
         @media (max-width:520px) { .grt-section{padding:44px 16px 40px;} .grt-pill{font-size:.79rem;padding:8px 12px;} .grt-cta.spf-grt-cta{width:100%;padding:16px;} }
 
@@ -1172,8 +1172,8 @@ export default function SillonPuffLanding() {
         .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
         .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.92rem; white-space:nowrap; line-height:1.25; }
         .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(197,48,48,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
-        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(197,48,48,.22); }
+        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#C2185B 0%,#E91E8C 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(194,24,91,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
+        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(194,24,91,.22); }
         .pd-sticky-btn.spf-sticky-btn:disabled { opacity:.50; cursor:not-allowed; }
         .pd-sticky-grt--short { display:none; }
         @media (max-width:540px) {

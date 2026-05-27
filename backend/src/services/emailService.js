@@ -57,7 +57,15 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
             `;
         })();
 
-        // 1. Lista de productos (Diseño limpio y técnico)
+        // 1. Número de seguimiento (condicional)
+        const trackingHtml = order.trackingNumber ? `
+          <div style="margin-top:16px;padding:12px;background:#ecfdf5;border-radius:8px;border:1px solid #bbf7d0;">
+            <p style="margin:0;color:#065f46;font-weight:700;font-size:14px;">
+              📦 Número de seguimiento: <strong>${order.trackingNumber}</strong>
+            </p>
+          </div>` : '';
+
+        // 2. Lista de productos (Diseño limpio y técnico)
         const productsHtml = order.items.map(item => `
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 12px 0;">
                 <span style="color: #333; font-weight: 500;">
@@ -111,6 +119,7 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
                             <div class="order-id">Orden #${order._id}</div>
                             
                             ${productsHtml}
+                            ${trackingHtml}
 
                             <div class="total">
                                 <span>TOTAL</span>
@@ -193,7 +202,74 @@ async function sendPasswordResetEmail(email, resetUrl) {
     }
 }
 
+async function sendAbandonedCartEmail(cart) {
+  if (!resend) return false;
+  if (!cart.email) return false;
+
+  try {
+    const storeName = process.env.STORE_NAME || 'BoomHausS';
+    const whatsappNumber = process.env.WHATSAPP_NUMBER || '';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.boomhauss.com.ar';
+
+    const productsHtml = (cart.items || []).map(item => `
+      <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:10px 0;">
+        <span style="color:#333;font-weight:500;">${item.quantity || 1}x ${item.name}</span>
+        <span style="color:#333;font-weight:bold;">$${item.price}</span>
+      </div>
+    `).join('');
+
+    const waMsg = encodeURIComponent(`Hola ${storeName}! 👋 Quería retomar mi compra, necesito ayuda para completarla.`);
+    const waUrl = whatsappNumber ? `https://wa.me/${whatsappNumber}?text=${waMsg}` : null;
+
+    const htmlContent = `
+    <!DOCTYPE html><html><head><style>
+      body{font-family:'Segoe UI',sans-serif;margin:0;padding:0;background:#f4f6f8;}
+      .container{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;}
+      .header{background:#0B5CFF;padding:30px 20px;text-align:center;}
+      .logo{font-size:24px;font-weight:800;color:#fff;text-transform:uppercase;}
+      .content{padding:36px 28px;}
+      .title{color:#0B5CFF;font-size:22px;font-weight:700;text-align:center;margin-bottom:8px;}
+      .sub{color:#64748b;text-align:center;margin-bottom:28px;font-size:15px;}
+      .order-box{background:#f0f7ff;padding:22px;border-radius:12px;border:1px solid #bfdbfe;margin-bottom:24px;}
+      .total{display:flex;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:2px solid #fff;font-size:18px;font-weight:800;color:#0B5CFF;}
+      .btn{display:block;width:80%;margin:0 auto 12px;padding:15px;background:#0B5CFF;color:#fff;text-align:center;text-decoration:none;font-weight:700;border-radius:50px;font-size:15px;}
+      .btn-wa{background:#25D366;}
+      .footer{background:#f9fafb;padding:18px;text-align:center;font-size:12px;color:#888;border-top:1px solid #eee;}
+    </style></head>
+    <body><div class="container">
+      <div class="header"><div class="logo">${storeName}</div></div>
+      <div class="content">
+        <h1 class="title">¡Olvidaste algo! 🛒</h1>
+        <p class="sub">Hola${cart.name ? ` <strong>${cart.name}</strong>` : ''}, dejaste productos en tu carrito. ¡Todavía están disponibles!</p>
+        <div class="order-box">
+          ${productsHtml}
+          <div class="total"><span>Total</span><span>$${cart.totalAmount || cart.total || 0}</span></div>
+        </div>
+        <a href="${frontendUrl}" class="btn">✅ Completar mi compra →</a>
+        ${waUrl ? `<a href="${waUrl}" class="btn btn-wa">📱 Tengo una pregunta</a>` : ''}
+      </div>
+      <div class="footer"><p><strong>${storeName}</strong> — Si ya completaste tu compra, ignorá este mail.</p></div>
+    </div></body></html>
+    `;
+
+    const result = await resend.emails.send({
+      from: `${storeName} <pedidos@boomhauss.com.ar>`,
+      to: cart.email,
+      subject: `🛒 ¿Olvidaste algo? Tu carrito te espera — ${storeName}`,
+      html: htmlContent,
+    });
+
+    if (result.error) return false;
+    console.log('✅ Email abandoned cart enviado:', result.data?.id);
+    return true;
+  } catch (err) {
+    console.error('❌ Error sendAbandonedCartEmail:', err);
+    return false;
+  }
+}
+
 module.exports = {
     sendOrderConfirmationEmail,
-    sendPasswordResetEmail
+    sendPasswordResetEmail,
+    sendAbandonedCartEmail,
 };

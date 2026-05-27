@@ -3,14 +3,14 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { track } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
-import mc from '../landings/sillon-puff-inflable';
+import mc from '../landings/masajeador-ems-eyes';
 
 /* ============================================================
    WAVE SEPARATOR
 ============================================================ */
 function WaveSeparator({ from }) {
-  const topColor  = from === 'blue' ? '#1B4D3E' : '#ffffff';
-  const fillColor = from === 'blue' ? '#ffffff' : '#1B4D3E';
+  const topColor  = from === 'blue' ? '#8B1A4A' : '#ffffff';
+  const fillColor = from === 'blue' ? '#ffffff' : '#8B1A4A';
   return (
     <div className="wave-divider" style={{ '--wave-top-color': topColor }}>
       <svg className="waves-anim" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
@@ -29,7 +29,7 @@ function WaveSeparator({ from }) {
 /* ============================================================
    COUNTDOWN TIMER
 ============================================================ */
-function CountdownTimer({ storageKey = 'spf_countdown', minutes = 18 }) {
+function CountdownTimer({ storageKey = 'ems_countdown', minutes = 18 }) {
   const [left, setLeft] = useState(0);
   useEffect(() => {
     const saved = Number(sessionStorage.getItem(storageKey));
@@ -51,7 +51,7 @@ function CountdownTimer({ storageKey = 'spf_countdown', minutes = 18 }) {
 ============================================================ */
 function MiniReviewsBar({ reviews = [] }) {
   const [active, setActive] = useState(0);
-  const avatarColors = ['#1B4D3E', '#2F855A', '#276749', '#1B4D3E', '#2D6A4F', '#2F855A', '#1B4D3E'];
+  const avatarColors = ['#8B1A4A', '#C2185B', '#A0154E', '#8B1A4A', '#9C1B55', '#C2185B', '#8B1A4A'];
   useEffect(() => {
     if (!reviews.length) return;
     const t = setInterval(() => setActive(i => (i + 1) % reviews.length), 5000);
@@ -94,8 +94,27 @@ function MiniReviewsBar({ reviews = [] }) {
 }
 
 /* ============================================================
-   VIDEO STRIP — idéntico a ProductDetail (lámpara magnética)
+   VIDEO STRIP — resolución automática de URL
 ============================================================ */
+function resolveMedia(url) {
+  if (!url) return null;
+  // YouTube Shorts
+  const shorts = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+  if (shorts) return { type: 'iframe', src: `https://www.youtube.com/embed/${shorts[1]}?autoplay=1&mute=1&loop=1&playlist=${shorts[1]}&controls=0&playsinline=1&rel=0&modestbranding=1` };
+  // YouTube watch / youtu.be
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (yt) return { type: 'iframe', src: `https://www.youtube.com/embed/${yt[1]}?autoplay=1&mute=1&loop=1&playlist=${yt[1]}&controls=0&playsinline=1&rel=0&modestbranding=1` };
+  // Vimeo
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return { type: 'iframe', src: `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&background=1&byline=0&title=0` };
+  // Video directo (.mp4 .mov .webm .ogg)
+  if (/\.(mp4|mov|webm|ogg)(\?|$)/i.test(url)) return { type: 'video', src: url };
+  // GIF (loop nativo en <img>)
+  if (/\.gif(\?|$)/i.test(url)) return { type: 'gif', src: url };
+  // Imagen estática
+  return { type: 'image', src: url };
+}
+
 function VideoStripSection({ mc }) {
   const videos = mc.proofVideos;
   if (!videos?.length) return null;
@@ -107,24 +126,38 @@ function VideoStripSection({ mc }) {
         {mc.proofVideosSubtitle && <div className="vstrip-sub">{mc.proofVideosSubtitle}</div>}
       </div>
       <div className="vstrip-row">
-        {videos.map((v, i) => (
-          <div key={i} className="vstrip-item">
-            <div className="vstrip-media">
-              {v.videoUrl ? (
-                <video autoPlay muted loop playsInline className="vstrip-video" aria-label={v.label}>
-                  <source src={v.videoUrl} type="video/mp4" />
-                </video>
-              ) : v.imgUrl ? (
-                <img src={v.imgUrl} alt={v.label} className="vstrip-video" loading="lazy" />
-              ) : (
-                <div className="vstrip-ph" aria-hidden="true">
-                  <span className="vstrip-ph-ico">▶</span>
-                </div>
-              )}
+        {videos.map((v, i) => {
+          const resolved = resolveMedia(v.videoUrl || v.imgUrl);
+          return (
+            <div key={i} className="vstrip-item">
+              <div className="vstrip-media">
+                {resolved?.type === 'iframe' ? (
+                  <iframe
+                    className="vstrip-video"
+                    src={resolved.src}
+                    title={v.label}
+                    allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    frameBorder="0"
+                    scrolling="no"
+                  />
+                ) : resolved?.type === 'video' ? (
+                  <video autoPlay muted loop playsInline className="vstrip-video" aria-label={v.label}>
+                    <source src={resolved.src} type="video/mp4" />
+                  </video>
+                ) : v.imgUrl ? (
+                  <img src={v.imgUrl} alt={v.label} className="vstrip-video" loading="lazy" />
+                ) : (
+                  <div className="vstrip-ph" aria-hidden="true">
+                    <span className="vstrip-ph-ico">▶</span>
+                  </div>
+                )}
+              </div>
+              <div className="vstrip-label">{v.label}</div>
+              {v.benefit && <div className="vstrip-benefit">{v.benefit}</div>}
             </div>
-            <div className="vstrip-label">{v.label}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -146,12 +179,12 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
         <div className="ba-img-wrap">
           {imgAfter
             ? <img className="ba-img-after" src={imgAfter} alt={afterLabel} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-            : <div className="ba-img-after ba-img-ph"><span className="ba-img-ph-icon">🛋️</span><span className="ba-img-ph-text">{afterLabel}</span></div>
+            : <div className="ba-img-after ba-img-ph"><span className="ba-img-ph-icon">✨</span><span className="ba-img-ph-text">{afterLabel}</span></div>
           }
           <div className="ba-img-before">
             {imgBefore
               ? <img src={imgBefore} alt={beforeLabel} style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left center', display:'block' }} />
-              : <div className="ba-img-ph ba-img-ph--alt"><span className="ba-img-ph-icon">📦</span><span className="ba-img-ph-text">{beforeLabel}</span></div>
+              : <div className="ba-img-ph ba-img-ph--alt"><span className="ba-img-ph-icon">👁️</span><span className="ba-img-ph-text">{beforeLabel}</span></div>
             }
           </div>
         </div>
@@ -170,7 +203,7 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
 }
 
 /* ============================================================
-   STATS CIRCLES — idéntico a ProductDetail (lámpara magnética)
+   STATS CIRCLES
 ============================================================ */
 function StatsCircles({ mc }) {
   const items = mc.statsCircles;
@@ -213,24 +246,14 @@ function StatsCircles({ mc }) {
 
   return (
     <section className="sc-section anim-el">
-      {mc.statsTitle && (
-        <h2 className="sc-title">{mc.statsTitle}</h2>
-      )}
+      {mc.statsTitle && <h2 className="sc-title">{mc.statsTitle}</h2>}
       <div className="sc-list">
         {items.map((item, i) => (
-          <div
-            key={i}
-            className="sc-row"
-            ref={el => circleRefs.current[i] = el}
-            data-idx={i}
-          >
+          <div key={i} className="sc-row" ref={el => circleRefs.current[i] = el} data-idx={i}>
             <div className="sc-circle" style={{ "--sc-pct": `${values[i]}%` }}>
               <span className="sc-pct">{values[i]}%</span>
             </div>
-            <p
-              className="sc-text"
-              dangerouslySetInnerHTML={{ __html: item.text }}
-            />
+            <p className="sc-text" dangerouslySetInnerHTML={{ __html: item.text }} />
           </div>
         ))}
       </div>
@@ -262,9 +285,9 @@ function StatsCircles({ mc }) {
 }
 
 /* ============================================================
-   REVIEWS WITH BARS — puntuación + barras + carousel
+   REVIEWS WITH BARS
 ============================================================ */
-function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, score = 4.8, count = 0 }) {
+function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, score = 4.9, count = 0 }) {
   const [active, setActive] = useState(0);
   const rowRef = useRef(null);
 
@@ -311,7 +334,7 @@ function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, sco
                 <div className="rv-imgBox">
                   {r.img
                     ? <img src={r.img} alt={r.imgAlt || `Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-                    : <div className="spf-rv-ph" aria-label={r.imgAlt || `Foto de ${r.name}`}>🛋️</div>
+                    : <div className="spf-rv-ph" aria-label={r.imgAlt || `Foto de ${r.name}`}>💡</div>
                   }
                   <div className="rv-quote">"</div>
                 </div>
@@ -321,7 +344,7 @@ function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, sco
                   </div>
                   <div className="rv-title">{r.title}</div>
                   <p className="rv-text">{r.text}</p>
-                  <div className="rv-name">— {r.name}</div>
+                  <div className="rv-name">— {r.name}{r.age ? `, ${r.age} años` : ''}</div>
                 </div>
               </div>
             </div>
@@ -354,9 +377,47 @@ function WaTab({ wa }) {
 }
 
 /* ============================================================
+   TRUST PILLS (3 desplegables debajo del CTA)
+============================================================ */
+function TrustPills() {
+  const [open, setOpen] = useState(null);
+  const pills = [
+    {
+      icon: '🛡️',
+      title: 'Probala 30 días sin riesgo',
+      body: 'Tenemos una política de prueba de 30 días. Si no ves ninguna diferencia en tu piel, podés devolverla y te reembolsamos el dinero entero. Sin formularios, sin preguntas — solo mandás un WhatsApp y listo.',
+    },
+    {
+      icon: '💳',
+      title: '3 cuotas sin interés',
+      body: 'Pagá en 3 cuotas iguales con todas las tarjetas de crédito. Sin recargo, sin costo adicional. El precio que ves es el precio final.\n\nProcesamos todos los pagos a través de MercadoPago.',
+    },
+    {
+      icon: '🚚',
+      title: 'Envío gratis a todo el país',
+      body: 'Realizamos envíos rápidos a todo el país a través de Correo Argentino & Andreani. Todos los pedidos se despachan en menos de 24hs hábiles y se envía el código de seguimiento por WhatsApp.\n\nBuenos Aires y alrededores: 1 a 3 días hábiles.\nResto del país: 2 a 6 días hábiles.',
+    },
+  ];
+  return (
+    <div className="tpills">
+      {pills.map((p, i) => (
+        <div key={i} className={`tpill${open === i ? ' tpill--open' : ''}`} onClick={() => setOpen(open === i ? null : i)}>
+          <div className="tpill-hd">
+            <span className="tpill-ico">{p.icon}</span>
+            <span className="tpill-title">{p.title}</span>
+            <span className="tpill-chevron">{open === i ? '−' : '+'}</span>
+          </div>
+          {open === i && <div className="tpill-body">{p.body}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============================================================
    MAIN COMPONENT
 ============================================================ */
-export default function SillonPuffLanding() {
+export default function MasajeadorEmsEyesLanding() {
   const [product,      setProduct]      = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -417,17 +478,16 @@ export default function SillonPuffLanding() {
 
   const heroImgs = useMemo(() => {
     const arr = [];
-    if (product?.imageUrl) arr.push({ src: product.imageUrl, alt: 'Sillón Puff Inflable Sunfield' });
+    if (product?.imageUrl) arr.push({ src: product.imageUrl, alt: 'Masajeador Facial EMS EYES' });
     if (Array.isArray(product?.images)) {
       product.images.forEach(x => {
         const url = typeof x === 'string' ? x : x?.url;
-        if (url && !arr.find(a => a.src === url)) arr.push({ src: url, alt: 'Sillón Puff Inflable Sunfield' });
+        if (url && !arr.find(a => a.src === url)) arr.push({ src: url, alt: 'Masajeador Facial EMS EYES' });
       });
     }
     return arr.length ? arr : mc.heroImages;
   }, [product]);
 
-  // FIX: story images from config only — never pulled from product.images API array
   const storyImgs = mc.storyBlocks.map(b => b.img || '');
 
   const handleBuy = () => {
@@ -450,22 +510,29 @@ export default function SillonPuffLanding() {
   if (!productReady) {
     return (
       <>
-        <style>{`@keyframes _spfBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+        <style>{`@keyframes _emsBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
         <div style={{ minHeight:'100vh', background:'#fff' }}>
-          <div style={{ height:3, background:'linear-gradient(90deg,#1B4D3E,#4ade80,#1B4D3E)', backgroundSize:'200% 100%', animation:'_spfBar 1.1s linear infinite' }} />
+          <div style={{ height:3, background:'linear-gradient(90deg,#AD1457,#C2185B,#AD1457)', backgroundSize:'200% 100%', animation:'_emsBar 1.1s linear infinite' }} />
         </div>
       </>
     );
   }
 
-  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Sillón Puff Inflable Sunfield' };
+  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Masajeador Facial EMS EYES' };
 
   return (
     <div className="spf-wrap">
 
-      {/* ============================================================
-          HERO — imagen izquierda / info+bundles derecha
-      ============================================================ */}
+      {/* ── MARQUEE PERSONALIZADO ── */}
+      <div className="ems-mq" aria-hidden="true">
+        <div className="ems-mq__track">
+          {['💕 +500 compradoras felices', '✨ Tecnología del consultorio desde tu casa', '🛡️ 30 días de garantía total', '🚚 Envío gratis a todo el país', '💕 +500 compradoras felices', '✨ Tecnología del consultorio desde tu casa', '🛡️ 30 días de garantía total', '🚚 Envío gratis a todo el país'].map((t, i) => (
+            <span key={i} className="ems-mq__item">{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── HERO ── */}
       <div className="pd-hero-row">
 
         <section className="pd-media-fullwidth">
@@ -482,7 +549,7 @@ export default function SillonPuffLanding() {
                   />
                 ) : (
                   <div className="spf-hero-ph" aria-label={activeImg.alt}>
-                    <span className="spf-hero-ph-icon">🛋️</span>
+                    <span className="spf-hero-ph-icon">💡</span>
                     <span className="spf-hero-ph-text">{activeImg.alt}</span>
                   </div>
                 )
@@ -498,7 +565,7 @@ export default function SillonPuffLanding() {
                 >
                   {img.src
                     ? <img src={img.src} alt={img.alt} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                    : <div className="spf-thumb-ph">🛋️</div>
+                    : <div className="spf-thumb-ph">💡</div>
                   }
                 </button>
               ))}
@@ -512,8 +579,8 @@ export default function SillonPuffLanding() {
 
               <div className="reviews-container">
                 <div className="avatars">
-                  {['V','L','S'].map((letter, i) => (
-                    <div key={i} className="avatar spf-avatar-init" style={{ background: ['#1B4D3E','#2F855A','#276749'][i] }}>
+                  {['D','V','C'].map((letter, i) => (
+                    <div key={i} className="avatar spf-avatar-init" style={{ background: ['#8B1A4A','#C2185B','#A0154E'][i] }}>
                       {letter}
                     </div>
                   ))}
@@ -523,39 +590,39 @@ export default function SillonPuffLanding() {
                 </span>
               </div>
 
-              <h1 className="hero-title hero-title--compact">
-                {product?.name ? product.name : <>El sillón que querías<br />sin arrastrar nada</>}
-              </h1>
+              {mc.heroHeadline && (
+                <h1 className="ems-pain-hl">{mc.heroHeadline}</h1>
+              )}
+              <div className="ems-product-name">
+                {product?.name || 'Masajeador Facial EMS EYES'}
+              </div>
 
               <div className="hero-subtitle">{mc.heroSubtitle}</div>
 
-              <div className="emoji-bullets">
-                {mc.trustBullets.map((b, i) => <div key={i} className="emoji-bullet">{b}</div>)}
-              </div>
+              {mc.trustBullets?.length > 0 && (
+                <div className="ems-benefits">
+                  {mc.trustBullets.map((b, i) => (
+                    <div key={i} className="ems-benefit-item">
+                      <span className="ems-benefit-check">✓</span>
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="spf-countdown">
                 <span>⏱</span>
                 <span className="spf-countdown-label">Oferta termina en</span>
-                <CountdownTimer storageKey="spf_countdown" minutes={18} />
+                <CountdownTimer storageKey="ems_countdown" minutes={18} />
               </div>
 
-              <div className="bnd2-tablets">
-                <div className="bnd2-tablet">
-                  <span className="bnd2-tablet-ico">🚚</span>
-                  <span className="bnd2-tablet-line1">Envío Gratis</span>
-                  <span className="bnd2-tablet-line2">a todo el país</span>
+              
+
+              {mc.urgencyBanner && (
+                <div className="ems-urgency-banner">
+                  <span className="ems-urgency-dot" />{mc.urgencyBanner}
                 </div>
-                <div className="bnd2-tablet">
-                  <span className="bnd2-tablet-ico">💳</span>
-                  <span className="bnd2-tablet-line1">Cuotas</span>
-                  <span className="bnd2-tablet-line2">sin interés</span>
-                </div>
-                <div className="bnd2-tablet">
-                  <span className="bnd2-tablet-ico">🛡️</span>
-                  <span className="bnd2-tablet-line1">Garantía</span>
-                  <span className="bnd2-tablet-line2">30 días</span>
-                </div>
-              </div>
+              )}
 
               <div className="bnd2-wrap">
                 <div className="bnd2-section-title">✨ Elegí Tu Kit ✨</div>
@@ -599,6 +666,22 @@ export default function SillonPuffLanding() {
                         }
                       </div>
                     </div>
+                    {(() => {
+                      const imgs = b.imgs?.length > 0 ? b.imgs : (b.img || product?.imageUrl) ? [b.img || product?.imageUrl] : [];
+                      if (!imgs.length) return null;
+                      return (
+                        <div className="bnd2-imgs">
+                          {imgs.map((src, idx) => (
+                            <div key={idx} className="bnd2-imgs-item">
+                              {idx > 0 && <span className="bnd2-imgs-plus">+</span>}
+                              <div className="bnd2-thumb">
+                                <img src={src || product?.imageUrl || ''} alt="" loading="lazy" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                     {!b.soldOut && b.benefit && <div className="bnd2-benefit">{b.benefit}</div>}
                   </div>
                 ))}
@@ -611,11 +694,7 @@ export default function SillonPuffLanding() {
                 >
                   {!product ? 'Cargando…' : `${mc.ctaLine1} →`}
                 </button>
-                <p className="pd-cta-guarantee">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
-                <div className="bnd2-urgency">
-                  <span className="bnd2-urgency-dot" />
-                  {mc.stockAlertText}
-                </div>
+                <TrustPills />
               </div>
 
             </div>
@@ -623,12 +702,9 @@ export default function SillonPuffLanding() {
         </div>
       </div>
 
-      {/* ============================================================
-          BANDAS DE CONTENIDO
-      ============================================================ */}
+      {/* ── BANDAS ── */}
       <div className="pd-bands">
 
-        {/* ── 1. BLANCO — Mini reviews + Video strip + Story blocks ── */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container">
             <MiniReviewsBar reviews={mc.reviews} />
@@ -649,12 +725,38 @@ export default function SillonPuffLanding() {
                     }
                   </div>
                   <div className="flow-media">
-                    <div className="flow-imgBox hover-float">
-                      {storyImgs[i]
-                        ? <img src={storyImgs[i]} alt={b.imgAlt} loading="lazy" referrerPolicy="no-referrer" crossOrigin="anonymous" />
-                        : <div className="spf-flow-ph"><span className="spf-flow-ph-icon">🛋️</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
-                      }
-                    </div>
+                    {(() => {
+                      const mediaUrl = b.img || b.videoUrl || '';
+                      const resolved = resolveMedia(mediaUrl);
+                      if (resolved?.type === 'iframe') return (
+                        <div className="flow-imgBox flow-imgBox--video">
+                          <iframe
+                            src={resolved.src}
+                            title={b.imgAlt}
+                            allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen frameBorder="0" scrolling="no"
+                            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
+                          />
+                        </div>
+                      );
+                      if (resolved?.type === 'video') return (
+                        <div className="flow-imgBox hover-float">
+                          <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} aria-label={b.imgAlt}>
+                            <source src={resolved.src} type="video/mp4" />
+                          </video>
+                        </div>
+                      );
+                      if (resolved?.type === 'gif' || resolved?.type === 'image') return (
+                        <div className="flow-imgBox hover-float">
+                          <img src={resolved.src} alt={b.imgAlt} loading="lazy" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                        </div>
+                      );
+                      return (
+                        <div className="flow-imgBox hover-float">
+                          <div className="spf-flow-ph"><span className="spf-flow-ph-icon">💡</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -664,7 +766,6 @@ export default function SillonPuffLanding() {
 
         <WaveSeparator from="light" />
 
-        {/* ── 2. VERDE — Antes/Después + Garantía ── */}
         <section className="pd-band pd-band--blue">
           <div className="dtx-container dtx-py">
             <div className="sec-head">
@@ -704,7 +805,6 @@ export default function SillonPuffLanding() {
 
         <WaveSeparator from="blue" />
 
-        {/* ── 3. BLANCO — Reseñas con barras ── */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container dtx-py">
             <ReviewsWithBars
@@ -720,7 +820,6 @@ export default function SillonPuffLanding() {
 
         <WaveSeparator from="light" />
 
-        {/* ── 4. VERDE — Estadísticas ── */}
         <section className="pd-band pd-band--blue">
           <div className="dtx-container dtx-py">
             <StatsCircles mc={mc} />
@@ -729,17 +828,17 @@ export default function SillonPuffLanding() {
 
         <WaveSeparator from="blue" />
 
-        {/* ── 5. BLANCO — FAQ ── */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container dtx-py" style={{ paddingBottom: '100px' }}>
             <div className="faq-acc-wrap">
               <h2 className="faq-acc-title">{mc.faqTitle}</h2>
+              {mc.faqSubtitle && <p className="faq-acc-subtitle">{mc.faqSubtitle}</p>}
               <div className="faq-acc">
                 {mc.faq.map((item, i) => (
                   <div key={i} className={`faq-acc-item${openFaq === i ? ' active' : ''}`}>
                     <div className="faq-acc-header" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                       {item.q}
-                      <span className="faq-acc-indicator">▾</span>
+                      <span className="faq-acc-indicator">{openFaq === i ? '−' : '+'}</span>
                     </div>
                     <div className="faq-acc-content">
                       <p>{item.a}</p>
@@ -751,13 +850,13 @@ export default function SillonPuffLanding() {
           </div>
         </section>
 
-      </div>{/* /pd-bands */}
+      </div>
 
       {/* ── FOOTER ── */}
       <footer className="lp-footer">
         <div className="lp-footer-wave" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 52" preserveAspectRatio="none" style={{width:'100%',height:'54px',display:'block'}}>
-            <rect width="150" height="52" fill="#fff"/>
+            <rect width="150" height="52" fill="#FFF5F8"/>
             <path d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v52h-352z" fill="#111827"/>
           </svg>
         </div>
@@ -792,9 +891,7 @@ export default function SillonPuffLanding() {
         </div>
       </footer>
 
-      {/* ============================================================
-          STICKY BAR
-      ============================================================ */}
+      {/* ── STICKY BAR ── */}
       <div className="pd-sticky-bar">
         <div className="pd-sticky-inner">
           <div className="pd-sticky-info">
@@ -826,15 +923,9 @@ export default function SillonPuffLanding() {
 
       {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} allowCod={allowCod} />}
 
-      {/* ============================================================
-          ESTILOS
-      ============================================================ */}
       <style>{`
 
-        /* ── Root ── */
         .spf-wrap { font-family: inherit; }
-
-        /* ── Layout helpers ── */
         .dtx-container { width:100%; max-width:1180px; margin:0 auto; padding:0 16px; }
         .dtx-py { padding-top:44px; padding-bottom:44px; }
         .pd-info { display:flex; flex-direction:column; padding:20px 0; min-width:0; width:100%; max-width:100%; }
@@ -842,7 +933,6 @@ export default function SillonPuffLanding() {
         @media (max-width:980px) { .pd-info { padding:0 4px; box-sizing:border-box; } }
         .hero-top--compact { padding:6px 2px 0 !important; }
 
-        /* ── Hero row ── */
         .pd-hero-row { display:block; }
         @media (min-width:980px) {
           .pd-hero-row { display:flex; align-items:flex-start; max-width:1180px; margin:0 auto; }
@@ -850,7 +940,6 @@ export default function SillonPuffLanding() {
           .pd-hero-row .pd-container { flex:1; min-width:0; margin:0 !important; padding:0 28px 0 24px; max-width:50%; }
         }
 
-        /* ── Product media ── */
         .pd-media-fullwidth { width:100%; }
         .pd-media { padding:0 !important; overflow:hidden; border-radius:0 !important; box-shadow:none !important; }
         .pd-mediaMain--bigger { position:relative; width:100%; background:#f8fafc; overflow:hidden; border-radius:0; height:520px; }
@@ -860,20 +949,17 @@ export default function SillonPuffLanding() {
         .pd-mainImg--anim { animation:spfFadeIn 150ms ease forwards; }
         @keyframes spfFadeIn { from{opacity:0;} to{opacity:1;} }
 
-        /* ── Hero image placeholders ── */
         .spf-hero-ph { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:#f0f4f8; }
         .spf-hero-ph-icon { font-size:3.5rem; }
         .spf-hero-ph-text { font-size:.75rem; font-weight:600; color:rgba(11,18,32,.40); text-align:center; max-width:80%; line-height:1.4; }
         .spf-thumb-ph { width:100%; height:100%; background:#f0f4f8; display:grid; place-items:center; font-size:1.1rem; }
 
-        /* ── Thumbs ── */
         .pd-thumbs-row { display:flex; gap:6px; padding:6px 8px; overflow-x:auto; scrollbar-width:none; justify-content:center; }
         .pd-thumbs-row::-webkit-scrollbar { display:none; }
         .pd-thumb { flex:1; min-width:0; max-width:90px; aspect-ratio:4/3; border-radius:8px; overflow:hidden; border:2px solid rgba(0,0,0,.08); background:#f1f3f5; padding:0; cursor:pointer; transition:border-color .15s ease,opacity .15s ease; opacity:.65; }
-        .pd-thumb.is-active { border-color:rgba(27,77,62,.7); opacity:1; }
+        .pd-thumb.is-active { border-color:rgba(139,26,74,.7); opacity:1; }
         .pd-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 
-        /* ── Hero info ── */
         .reviews-container { display:flex; align-items:center; justify-content:center; margin:5px 0; }
         .avatars { display:flex; margin-right:5px; margin-left:7px; }
         .avatar { width:28px; height:28px; border-radius:50%; border:2px solid #fff; margin-left:-7px; object-fit:cover; }
@@ -884,48 +970,44 @@ export default function SillonPuffLanding() {
         @media (max-width:520px) { .hero-title--compact { font-size:26px !important; } }
         .hero-subtitle { text-align:center; font-weight:900; font-size:16px; margin-top:8px; }
 
-        /* ── Countdown ── */
         .spf-countdown { display:flex; align-items:center; justify-content:center; gap:6px; margin:10px 0 4px; padding:8px 14px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.82rem; font-weight:800; color:rgba(180,30,30,.85); }
         .spf-countdown-label { color:rgba(11,18,32,.60); font-weight:700; }
         .spf-cd { font-variant-numeric:tabular-nums; letter-spacing:.04em; font-weight:900; color:rgba(180,30,30,.90); }
 
-        /* ── Emoji bullets ── */
         .emoji-bullets { display:flex; flex-direction:column; gap:8px; margin:10px 0 4px; width:100%; }
         .emoji-bullet { font-size:.90rem; font-weight:700; color:rgba(11,18,32,.82); line-height:1.35; }
         @media (max-width:520px) { .emoji-bullet { font-size:.86rem; } }
 
-        /* ── Trust tablets ── */
         .bnd2-tablets { display:flex; gap:8px; margin:12px 0 0; width:100%; }
         .bnd2-tablet { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 6px; border-radius:12px; border:1px solid rgba(11,18,32,.11); background:#fff; text-align:center; }
         .bnd2-tablet-ico   { font-size:1.25rem; line-height:1; }
         .bnd2-tablet-line1 { font-size:.72rem; font-weight:800; color:rgba(11,18,32,.80); line-height:1.2; }
         .bnd2-tablet-line2 { font-size:.65rem; font-weight:600; color:rgba(11,18,32,.48); line-height:1.2; }
 
-        /* ── Bundle picker ── */
         .bnd2-wrap { display:flex; flex-direction:column; gap:10px; margin:14px 0 4px; }
         .bnd2-card { position:relative; border-radius:14px; border:1.5px solid rgba(11,18,32,.13); border-left:4px solid rgba(11,18,32,.10); background:#fff; cursor:pointer; transition:border-color .14s,background .14s,box-shadow .14s,border-left-color .14s; user-select:none; overflow:visible; padding:13px 14px 13px 12px; }
-        .bnd2-card:hover:not(.spf-card--sold) { border-color:rgba(27,77,62,.30); border-left-color:rgba(27,77,62,.40); background:rgba(27,77,62,.02); }
-        .bnd2-card--on { border-color:#1B4D3E !important; border-left:4px solid #1B4D3E !important; background:rgba(27,77,62,.04) !important; box-shadow:0 4px 18px rgba(27,77,62,.10); }
-        .bnd2-card--pop { border-color:rgba(27,77,62,.25); border-left-color:rgba(27,77,62,.30); background:rgba(27,77,62,.02); margin-top:6px; }
-        .bnd2-card--pop.bnd2-card--on { box-shadow:0 6px 22px rgba(27,77,62,.15); }
+        .bnd2-card:hover:not(.spf-card--sold) { border-color:rgba(139,26,74,.30); border-left-color:rgba(139,26,74,.40); background:rgba(139,26,74,.02); }
+        .bnd2-card--on { border-color:#8B1A4A !important; border-left:4px solid #8B1A4A !important; background:rgba(139,26,74,.04) !important; box-shadow:0 4px 18px rgba(139,26,74,.10); }
+        .bnd2-card--pop { border-color:rgba(139,26,74,.25); border-left-color:rgba(139,26,74,.30); background:rgba(139,26,74,.02); margin-top:6px; }
+        .bnd2-card--pop.bnd2-card--on { box-shadow:0 6px 22px rgba(139,26,74,.15); }
         .spf-card--sold { opacity:.50; cursor:not-allowed; border-left-color:rgba(11,18,32,.10) !important; }
-        .bnd2-float-badge { position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1B4D3E,#2F855A); color:#fff; font-size:.68rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; padding:3px 14px; border-radius:999px; white-space:nowrap; box-shadow:0 3px 10px rgba(27,77,62,.30); }
+        .bnd2-float-badge { position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#8B1A4A,#C2185B); color:#fff; font-size:.68rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; padding:3px 14px; border-radius:999px; white-space:nowrap; box-shadow:0 3px 10px rgba(139,26,74,.30); }
         .spf-sold-badge { background:rgba(11,18,32,.45); box-shadow:none; }
         .bnd2-row { display:flex; align-items:center; gap:10px; }
-        .bnd2-radio { width:18px; height:18px; flex-shrink:0; accent-color:#1B4D3E; cursor:pointer; }
+        .bnd2-radio { width:18px; height:18px; flex-shrink:0; accent-color:#8B1A4A; cursor:pointer; }
         .bnd2-center { flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
         .bnd2-name { font-size:.91rem; font-weight:800; color:rgba(11,18,32,.88); line-height:1.2; }
-        .bnd2-badge { font-size:.62rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:rgba(27,77,62,.10); color:#1B4D3E; border:1px solid rgba(27,77,62,.20); white-space:nowrap; }
-        .bnd2-badge--pop { background:linear-gradient(135deg,#1B4D3E,#2F855A); color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(27,77,62,.25); }
+        .bnd2-badge { font-size:.62rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:rgba(139,26,74,.10); color:#8B1A4A; border:1px solid rgba(139,26,74,.20); white-space:nowrap; }
+        .bnd2-badge--pop { background:linear-gradient(135deg,#8B1A4A,#C2185B); color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(139,26,74,.25); }
         .bnd2-prices { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
         .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.35); text-decoration:line-through; font-weight:600; line-height:1.1; }
         .bnd2-now { font-size:1.10rem; font-weight:900; color:rgba(11,18,32,.90); line-height:1.1; }
         .spf-soldout-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.38); }
-        .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(27,77,62,.07); font-size:.80rem; font-weight:700; color:#1B4D3E; letter-spacing:.01em; line-height:1.35; }
+        .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(139,26,74,.07); font-size:.80rem; font-weight:700; color:#8B1A4A; letter-spacing:.01em; line-height:1.35; }
 
-        /* ── CTA rojo ── */
-        .bnd2-cta.spf-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(197,48,48,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
-        .bnd2-cta.spf-cta:hover { background:linear-gradient(135deg,#9B2C2C 0%,#C53030 100%); box-shadow:0 8px 28px rgba(197,48,48,.38); transform:translateY(-1px); }
+        /* ── CTA rosa ── */
+        .bnd2-cta.spf-cta { width:100%; padding:16px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,#AD1457 0%,#C2185B 100%); color:#fff; font-size:1.05rem; font-weight:900; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; box-shadow:0 6px 22px rgba(173,20,87,.30); transition:transform .12s,box-shadow .12s,background .14s; margin-top:4px; }
+        .bnd2-cta.spf-cta:hover { background:linear-gradient(135deg,#880E4F 0%,#AD1457 100%); box-shadow:0 8px 28px rgba(173,20,87,.38); transform:translateY(-1px); }
         .bnd2-cta.spf-cta:active { transform:translateY(0) scale(.98); }
         .bnd2-cta.spf-cta:disabled { opacity:.55; cursor:not-allowed; transform:none; }
         .pd-cta-guarantee { margin:6px 0 0; padding:0; text-align:center; font-size:12px; font-weight:600; color:rgba(11,18,32,.42); line-height:1.4; background:none; border:none; }
@@ -933,20 +1015,17 @@ export default function SillonPuffLanding() {
         .bnd2-urgency { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.80rem; font-weight:800; color:rgba(180,30,30,.85); letter-spacing:.02em; }
         .bnd2-urgency-dot { width:8px; height:8px; border-radius:50%; background:#e53e3e; flex-shrink:0; animation:spfPulse 1.4s ease-in-out infinite; }
         @keyframes spfPulse { 0%,100%{box-shadow:0 0 0 0 rgba(229,62,62,.55);} 50%{box-shadow:0 0 0 5px rgba(229,62,62,0);} }
-        .bnd2-section-title { text-align:center; font-size:.88rem; font-weight:900; color:#1B4D3E; letter-spacing:.04em; margin-bottom:2px; }
+        .bnd2-section-title { text-align:center; font-size:.88rem; font-weight:900; color:#8B1A4A; letter-spacing:.04em; margin-bottom:2px; }
 
-        /* ── Bands ── */
         .pd-bands > section:first-child { padding-top:28px; }
-        .pd-band--light { background:#ffffff; }
-        .pd-band--blue  { background:#1B4D3E; }
+        .pd-band--light { background:#FFF5F8; }
+        .pd-band--blue  { background:#8B1A4A; }
 
-        /* ── Sec head ── */
         .sec-head { text-align:center; margin:0 0 20px; }
         .sec-title { margin:0; font-weight:1100; letter-spacing:.06em; text-transform:uppercase; font-size:1.55rem; color:rgba(11,18,32,.92); }
         @media (min-width:900px) { .sec-title { font-size:1.85rem; } }
         .sec-sub { margin-top:8px; color:rgba(11,18,32,.60); font-weight:850; font-size:.95rem; }
 
-        /* ── Wave divider ── */
         .wave-divider { position:relative; width:100%; overflow:hidden; background:var(--wave-top-color); line-height:0; pointer-events:none; margin-top:-1px; margin-bottom:-1px; }
         .waves-anim { display:block; width:100%; height:auto; max-height:3rem; margin:0; }
         @media (min-width:1000px) { .waves-anim { max-height:6rem; } }
@@ -960,7 +1039,6 @@ export default function SillonPuffLanding() {
         @keyframes wMove4 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)}  }
         @media (prefers-reduced-motion:reduce) { .parallax1>use,.parallax2>use,.parallax3>use,.parallax4>use { animation:none !important; } }
 
-        /* ── Mini reviews bar ── */
         .mrb { margin-top:14px; background:transparent; padding-bottom:28px; }
         .mrb-label { font-size:.70rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:rgba(11,18,32,.38); margin-bottom:8px; }
         .mrb-viewport { overflow:hidden; }
@@ -975,21 +1053,20 @@ export default function SillonPuffLanding() {
         .mrb-card-text { margin:0; font-size:.84rem; font-style:italic; color:rgba(11,18,32,.65); font-weight:500; line-height:1.5; }
         .mrb-dots { display:flex; justify-content:center; gap:5px; margin-top:10px; }
         .mrb-dot { width:5px; height:5px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; padding:0; transition:width .22s ease,background .18s ease; }
-        .mrb-dot.on { background:rgba(27,77,62,.80); width:16px; }
+        .mrb-dot.on { background:rgba(139,26,74,.80); width:16px; }
 
-        /* ── Stars ── */
         .stars-inline { display:inline-flex; gap:2px; justify-content:center; }
         .stars-inline .s { opacity:.25; font-size:14px; }
         .stars-inline .s.on { opacity:1; color:#D69E2E; }
 
-        /* ── Story blocks — pd-flow (idéntico a lámpara magnética) ── */
         .pd-flow { display:flex; flex-direction:column; gap:14px; }
         .flow-row { display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; }
         @media (max-width:900px) { .flow-row { grid-template-columns:1fr; } }
         .flow-text { display:flex; flex-direction:column; align-items:center; }
-        .flow-badge { display:inline-flex; padding:4px 11px; border-radius:999px; background:rgba(27,77,62,.10); border:1px solid rgba(27,77,62,.18); font-weight:1100; color:rgba(11,18,32,.78); margin-bottom:6px; }
+        .flow-badge { display:inline-flex; padding:4px 11px; border-radius:999px; background:rgba(139,26,74,.10); border:1px solid rgba(139,26,74,.18); font-weight:1100; color:rgba(11,18,32,.78); margin-bottom:6px; }
         .flow-media { width:100%; }
         .flow-imgBox { width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; overflow:hidden; border:1px solid rgba(2,8,23,.08); background:#fff; margin-left:auto; box-shadow:0 8px 32px rgba(10,20,40,.10); transition:transform .28s ease,box-shadow .28s ease; }
+        .flow-imgBox--video { position:relative; aspect-ratio:16/9; }
         @media (max-width:900px) { .flow-imgBox { margin:0 auto; max-width:520px; } }
         .flow-imgBox img { width:100%; height:100%; object-fit:cover; display:block; }
         .flow-imgBox:hover { transform:translateY(-5px) scale(1.01); box-shadow:0 20px 56px rgba(10,20,40,.16); }
@@ -1002,29 +1079,27 @@ export default function SillonPuffLanding() {
         @media (min-width:900px) { .flow-p--rich { font-size:1.05rem; } }
         @media (max-width:520px) { .flow-p--rich { font-size:.97rem; line-height:1.62; } }
         .flow-text--rich .flow-title { margin-bottom:8px; }
-        .flow-text--rich .flow-badge { margin-bottom:6px; }
         .spf-flow-ph { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; box-sizing:border-box; }
         .spf-flow-ph-icon { font-size:3.5rem; }
         .spf-flow-ph-text { font-size:.78rem; font-weight:600; color:rgba(11,18,32,.38); text-align:center; line-height:1.45; }
 
-        /* ── Video strip ── */
         .vstrip-section { margin-bottom:28px; }
         .vstrip-header { text-align:center; margin-bottom:16px; }
-        .vstrip-kicker { display:inline-block; font-size:.68rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#1B4D3E; background:rgba(27,77,62,.08); border:1px solid rgba(27,77,62,.15); padding:4px 12px; border-radius:999px; margin-bottom:10px; }
+        .vstrip-kicker { display:inline-block; font-size:.68rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#8B1A4A; background:rgba(139,26,74,.08); border:1px solid rgba(139,26,74,.15); padding:4px 12px; border-radius:999px; margin-bottom:10px; }
         .vstrip-title { font-size:1.18rem; font-weight:1000; letter-spacing:-.01em; color:rgba(11,18,32,.88); margin:0 0 5px; line-height:1.25; }
         @media (min-width:900px) { .vstrip-title { font-size:1.38rem; } }
         .vstrip-sub { font-size:.88rem; font-weight:600; color:rgba(11,18,32,.50); margin:0; }
         .vstrip-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
         .vstrip-item { display:flex; flex-direction:column; gap:7px; min-width:0; }
         .vstrip-media { aspect-ratio:9/16; border-radius:20px; overflow:hidden; background:rgba(11,18,32,.05); position:relative; }
-        .vstrip-video { width:100%; height:100%; object-fit:cover; display:block; }
-        .vstrip-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,rgba(27,77,62,.08),rgba(27,77,62,.04)); border:1.5px dashed rgba(27,77,62,.20); }
-        .vstrip-ph-ico { font-size:2rem; opacity:.35; color:#1B4D3E; }
+        .vstrip-video { width:100%; height:100%; object-fit:cover; display:block; border:none; }
+        .vstrip-media iframe.vstrip-video { position:absolute; top:50%; left:50%; width:calc(100% + 2px); height:calc(100% + 2px); transform:translate(-50%,-50%) scale(1.05); pointer-events:none; }
+        .vstrip-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,rgba(139,26,74,.08),rgba(139,26,74,.04)); border:1.5px dashed rgba(139,26,74,.20); }
+        .vstrip-ph-ico { font-size:2rem; opacity:.35; color:#8B1A4A; }
         .vstrip-label { text-align:center; font-size:.75rem; font-weight:800; color:rgba(11,18,32,.55); letter-spacing:.04em; text-transform:uppercase; }
 
-        /* ── Before/After slider ── */
         .ba-wrap { display:flex; justify-content:center; padding:4px 0 8px; }
-        .ba-container { position:relative; overflow:hidden; border-radius:16px; --position:50%; width:100%; max-width:680px; box-shadow:0 16px 48px rgba(0,0,0,.28); cursor:col-resize; }
+        .ba-container { position:relative; overflow:hidden; border-radius:16px; --position:50%; width:100%; max-width:680px; box-shadow:0 16px 48px rgba(0,0,0,.28); }
         .ba-img-wrap { display:grid; position:relative; user-select:none; min-height:280px; }
         .ba-img-after { display:block; width:100%; max-height:460px; min-height:280px; grid-area:1/1; object-fit:cover; object-position:center; }
         .ba-img-before { position:absolute; inset:0; width:var(--position); height:100%; overflow:hidden; }
@@ -1041,16 +1116,15 @@ export default function SillonPuffLanding() {
         .spf-ba-hint { text-align:center; margin-top:14px; font-size:.85rem; color:rgba(255,255,255,.45); font-weight:600; }
         @media (max-width:520px) { .ba-container{border-radius:12px;} .ba-img-after{max-height:280px;} }
 
-        /* ── Stats circles — sc-section (idéntico a lámpara magnética) ── */
         .sc-section { display:flex; flex-direction:column; gap:0; padding:28px 0 16px; width:100%; max-width:500px; margin:0 auto; }
         .sc-title { font-size:1.45rem; font-weight:1000; color:rgba(11,18,32,.90); text-align:center; margin:0 0 22px; line-height:1.2; letter-spacing:-.01em; }
         @media (max-width:520px) { .sc-title { font-size:1.18rem; } }
         .sc-list { display:flex; flex-direction:column; gap:0; }
         .sc-row { display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid rgba(11,18,32,.06); }
         .sc-row:last-child { border-bottom:none; }
-        .sc-circle { position:relative; width:58px; height:58px; border-radius:50%; flex-shrink:0; background:conic-gradient(from 0deg,#2F855A 0%,#1B4D3E var(--sc-pct,0%),rgba(11,18,32,.10) 0%); }
+        .sc-circle { position:relative; width:58px; height:58px; border-radius:50%; flex-shrink:0; background:conic-gradient(from 0deg,#C2185B 0%,#8B1A4A var(--sc-pct,0%),rgba(11,18,32,.10) 0%); }
         .sc-circle::after { content:""; position:absolute; top:12%; left:12%; width:76%; height:76%; background:#fff; border-radius:50%; }
-        .sc-pct { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; font-weight:900; color:#1B4D3E; z-index:1; letter-spacing:-.02em; }
+        .sc-pct { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; font-weight:900; color:#8B1A4A; z-index:1; letter-spacing:-.02em; }
         .sc-text { font-size:.88rem; font-weight:500; color:rgba(11,18,32,.70); line-height:1.5; margin:0; }
         .sc-text strong { color:rgba(11,18,32,.88); font-weight:800; }
         .sc-footer { margin-top:22px; padding-top:18px; border-top:1px solid rgba(11,18,32,.08); text-align:center; }
@@ -1058,33 +1132,21 @@ export default function SillonPuffLanding() {
         .sc-footer-stats { display:flex; justify-content:center; gap:0; }
         .sc-stat { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:0 8px; border-right:1px solid rgba(11,18,32,.08); }
         .sc-stat:last-child { border-right:none; }
-        .sc-stat-val { font-size:1.10rem; font-weight:1000; color:#1B4D3E; letter-spacing:-.01em; }
+        .sc-stat-val { font-size:1.10rem; font-weight:1000; color:#8B1A4A; letter-spacing:-.01em; }
         .sc-stat-lbl { font-size:.62rem; font-weight:800; color:rgba(11,18,32,.45); letter-spacing:.08em; text-transform:uppercase; }
         .pd-band--blue .sc-title { color:rgba(255,255,255,.92); }
         .pd-band--blue .sc-row { border-bottom-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-circle { background:conic-gradient(from 0deg,#2F855A 0%,#4ade80 var(--sc-pct,0%),rgba(255,255,255,.10) 0%); }
-        .pd-band--blue .sc-circle::after { background:#1B4D3E; }
-        .pd-band--blue .sc-pct { color:#4ade80; }
+        .pd-band--blue .sc-circle { background:conic-gradient(from 0deg,#C2185B 0%,#F8BBD9 var(--sc-pct,0%),rgba(255,255,255,.10) 0%); }
+        .pd-band--blue .sc-circle::after { background:#8B1A4A; }
+        .pd-band--blue .sc-pct { color:#F8BBD9; }
         .pd-band--blue .sc-text { color:rgba(226,232,240,.70); }
         .pd-band--blue .sc-text strong { color:rgba(255,255,255,.90); }
         .pd-band--blue .sc-footer { border-top-color:rgba(255,255,255,.08); }
         .pd-band--blue .sc-footer-note { color:rgba(226,232,240,.40); }
         .pd-band--blue .sc-stat { border-right-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-stat-val { color:#4ade80; }
+        .pd-band--blue .sc-stat-val { color:#F8BBD9; }
         .pd-band--blue .sc-stat-lbl { color:rgba(226,232,240,.45); }
 
-        /* ── Cómo se usa ── */
-        .pd-howto-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:24px; }
-        @media (min-width:900px) { .pd-howto-grid { grid-template-columns:repeat(4,1fr); gap:24px; } }
-        .pd-howto-card { display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
-        .pd-howto-img-wrap { width:100%; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); }
-        .pd-howto-img { width:100%; height:100%; object-fit:cover; display:block; }
-        .pd-howto-num { width:40px; height:40px; border-radius:50%; border:2px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:900; color:rgba(255,255,255,.90); flex-shrink:0; }
-        .pd-howto-text { margin:0; font-size:.84rem; font-weight:700; color:rgba(255,255,255,.75); line-height:1.45; }
-        .spf-howto-ph { width:100%; height:100%; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; }
-        .spf-howto-ph-num { font-size:2rem; font-weight:1100; color:rgba(255,255,255,.20); }
-
-        /* ── Reviews with bars ── */
         .spf-rwb { width:100%; }
         .spf-rwb-score-row { display:flex; flex-direction:column; align-items:center; gap:20px; margin:0 0 8px; }
         @media (min-width:640px) { .spf-rwb-score-row { flex-direction:row; align-items:flex-start; justify-content:center; gap:40px; } }
@@ -1097,10 +1159,9 @@ export default function SillonPuffLanding() {
         .spf-rwb-bar-row { display:flex; align-items:center; gap:8px; }
         .spf-rwb-bar-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.65); white-space:nowrap; min-width:18px; text-align:right; }
         .spf-rwb-bar-track { flex:1; height:8px; border-radius:999px; background:rgba(11,18,32,.10); overflow:hidden; }
-        .spf-rwb-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#1B4D3E,#2F855A); transition:width .6s cubic-bezier(.4,0,.2,1); }
+        .spf-rwb-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#8B1A4A,#C2185B); transition:width .6s cubic-bezier(.4,0,.2,1); }
         .spf-rwb-bar-pct { font-size:.72rem; font-weight:700; color:rgba(11,18,32,.45); white-space:nowrap; min-width:30px; }
 
-        /* ── Reviews carousel ── */
         .spf-rv-ph { width:100%; height:100%; background:#f0f4f8; display:grid; place-items:center; font-size:3rem; }
         .rv-wrap { position:relative; margin-top:14px; }
         .rv-row { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:10px 6px 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
@@ -1108,7 +1169,7 @@ export default function SillonPuffLanding() {
         .rv-slide { scroll-snap-align:center; flex:0 0 auto; width:min(520px,88vw); }
         .rv-card { background:#fff; border:1px solid rgba(2,8,23,.10); border-radius:22px; box-shadow:0 22px 70px rgba(10,20,40,.16); overflow:hidden; }
         .rv-imgBox { position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; }
-        .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#C53030; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(197,48,48,.35); font-size:1.5rem; }
+        .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#AD1457; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(173,20,87,.35); font-size:1.5rem; }
         .rv-body { padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; text-align:center; }
         .rv-title { font-weight:1100; text-transform:uppercase; letter-spacing:.05em; color:rgba(11,18,32,.92); font-size:.88rem; }
         .rv-text { margin:0; color:rgba(11,18,32,.70); line-height:1.6; font-weight:650; font-size:.88rem; }
@@ -1118,9 +1179,8 @@ export default function SillonPuffLanding() {
         @media (max-width:560px) { .rv-nav { display:none; } }
         .rv-dots { display:flex; justify-content:center; gap:8px; margin-top:10px; }
         .rv-dot { width:8px; height:8px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; transition:transform .18s ease,background .18s ease; padding:0; }
-        .rv-dot.on { background:rgba(27,77,62,.95); transform:scale(1.25); }
+        .rv-dot.on { background:rgba(139,26,74,.95); transform:scale(1.25); }
 
-        /* ── Guarantee medal ── */
         .grt-section { text-align:center; padding:56px 20px 52px; display:flex; flex-direction:column; align-items:center; }
         .grt-medal {
           width:180px; height:180px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:28px; flex-shrink:0;
@@ -1141,28 +1201,26 @@ export default function SillonPuffLanding() {
         .grt-sub { margin:0 auto 28px; max-width:420px; font-weight:700; font-size:1rem; color:rgba(255,255,255,.65); line-height:1.70; white-space:pre-line; }
         .grt-pills { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:32px; }
         .grt-pill { padding:9px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05); font-weight:800; font-size:.83rem; color:rgba(255,255,255,.78); white-space:nowrap; }
-        .grt-cta.spf-grt-cta { display:inline-block; padding:16px 42px; border:none; border-radius:14px; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-weight:1100; font-size:1rem; letter-spacing:.04em; cursor:pointer; font-family:inherit; box-shadow:0 14px 42px rgba(197,48,48,.35); transition:transform .15s ease,box-shadow .15s ease; }
-        .grt-cta.spf-grt-cta:hover { transform:translateY(-2px); box-shadow:0 20px 52px rgba(197,48,48,.50); }
+        .grt-cta.spf-grt-cta { display:inline-block; padding:16px 42px; border:none; border-radius:14px; background:linear-gradient(135deg,#AD1457 0%,#C2185B 100%); color:#fff; font-weight:1100; font-size:1rem; letter-spacing:.04em; cursor:pointer; font-family:inherit; box-shadow:0 14px 42px rgba(173,20,87,.35); transition:transform .15s ease,box-shadow .15s ease; }
+        .grt-cta.spf-grt-cta:hover { transform:translateY(-2px); box-shadow:0 20px 52px rgba(173,20,87,.50); }
         .grt-cta.spf-grt-cta:active { transform:scale(.98); }
         @media (max-width:520px) { .grt-section{padding:44px 16px 40px;} .grt-pill{font-size:.79rem;padding:8px 12px;} .grt-cta.spf-grt-cta{width:100%;padding:16px;} }
 
-        /* ── FAQ ── */
-        .faq-acc-wrap { width:100%; max-width:760px; margin:0 auto; padding:24px 0 8px; }
-        .faq-acc-title { font-size:1.55rem; font-weight:900; color:rgba(11,18,32,.90); text-align:center; margin:0 0 24px; letter-spacing:-.02em; line-height:1.2; }
-        @media (max-width:520px) { .faq-acc-title{font-size:1.25rem;} }
-        .faq-acc { width:100%; border-radius:5px; }
-        .faq-acc-item { border-bottom:1px solid #ccc; margin-bottom:3px; }
-        .faq-acc-item:last-child { border-bottom:none; }
-        .faq-acc-header { padding:14px 8px; cursor:pointer; font-weight:700; font-size:14px; display:flex; justify-content:space-between; align-items:center; color:rgba(11,18,32,.88); user-select:none; line-height:1.4; transition:color .2s ease; }
-        .faq-acc-header:hover { color:#1B4D3E; }
-        .faq-acc-item.active .faq-acc-header { color:#1B4D3E; }
-        .faq-acc-indicator { font-size:1.4em; margin-left:12px; flex-shrink:0; color:#1B4D3E; font-weight:400; line-height:1; transition:transform .3s ease; display:inline-block; }
-        .faq-acc-item.active .faq-acc-indicator { transform:rotate(180deg); }
-        .faq-acc-content { max-height:0; overflow:hidden; padding:0 10px; transition:max-height .35s ease,padding .3s ease; }
-        .faq-acc-content p { margin:6px 0 14px; font-size:13.5px; color:rgba(11,18,32,.62); line-height:1.6; }
-        .faq-acc-item.active .faq-acc-content { max-height:300px; padding:4px 10px 4px; }
+        .faq-acc-wrap { width:100%; max-width:780px; margin:0 auto; padding:24px 0 8px; }
+        .faq-acc-title { font-size:1.55rem; font-weight:900; color:rgba(11,18,32,.90); text-align:center; margin:0 0 6px; letter-spacing:-.02em; line-height:1.2; }
+        .faq-acc-subtitle { text-align:center; font-size:.92rem; color:rgba(11,18,32,.50); font-weight:600; margin:0 0 28px; }
+        @media (max-width:520px) { .faq-acc-title{font-size:1.25rem;} .faq-acc-subtitle{font-size:.86rem;} }
+        .faq-acc { width:100%; border-top:1px solid rgba(11,18,32,.10); }
+        .faq-acc-item { border-bottom:1px solid rgba(11,18,32,.10); }
+        .faq-acc-header { padding:16px 4px; cursor:pointer; font-weight:700; font-size:15px; display:flex; justify-content:space-between; align-items:center; color:rgba(11,18,32,.88); user-select:none; line-height:1.4; transition:color .15s; gap:14px; }
+        .faq-acc-header:hover { color:#8B1A4A; }
+        .faq-acc-item.active .faq-acc-header { color:rgba(11,18,32,.90); }
+        .faq-acc-indicator { font-size:1.15rem; font-weight:400; color:rgba(11,18,32,.55); flex-shrink:0; width:22px; text-align:center; line-height:1; transition:color .15s; }
+        .faq-acc-item.active .faq-acc-indicator { color:#8B1A4A; }
+        .faq-acc-content { max-height:0; overflow:hidden; transition:max-height .35s ease,padding .25s ease; padding:0 4px; }
+        .faq-acc-content p { margin:0 0 16px; font-size:14px; color:rgba(11,18,32,.62); line-height:1.65; }
+        .faq-acc-item.active .faq-acc-content { max-height:320px; padding:0 4px 4px; }
 
-        /* ── Sticky bar ── */
         .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%) translateY(100%); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
         .pd-sticky-bar.sticky--visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
         .pd-sticky-inner { display:flex; align-items:center; gap:12px; width:100%; }
@@ -1171,9 +1229,9 @@ export default function SillonPuffLanding() {
         .pd-sticky-prices { display:flex; flex-direction:column; gap:0; }
         .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
         .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.92rem; white-space:nowrap; line-height:1.25; }
-        .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#C53030 0%,#E53E3E 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(197,48,48,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
-        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(197,48,48,.22); }
+        .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#8B1A4A; white-space:nowrap; line-height:1.3; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#AD1457 0%,#C2185B 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(173,20,87,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
+        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(173,20,87,.22); }
         .pd-sticky-btn.spf-sticky-btn:disabled { opacity:.50; cursor:not-allowed; }
         .pd-sticky-grt--short { display:none; }
         @media (max-width:540px) {
@@ -1191,8 +1249,54 @@ export default function SillonPuffLanding() {
           .pd-sticky-btn.spf-sticky-btn { font-size:.66rem; padding:9px 10px; }
         }
 
-        /* ── WhatsApp tab ── */
         .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
+
+        /* ── Pain headline ── */
+        .ems-pain-hl { margin:8px 0 4px; text-align:center; font-size:1.55rem; font-weight:1000; line-height:1.15; color:rgba(11,18,32,.93); letter-spacing:-.02em; }
+        @media (max-width:520px) { .ems-pain-hl { font-size:1.25rem; } }
+        @media (min-width:980px) { .ems-pain-hl { font-size:1.75rem; } }
+        .ems-product-name { text-align:center; font-size:.80rem; font-weight:700; color:rgba(11,18,32,.40); letter-spacing:.06em; text-transform:uppercase; margin-bottom:2px; }
+
+        /* ── Urgency banner ── */
+        .ems-urgency-banner { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; margin:0 0 4px; border-radius:12px; background:rgba(229,62,62,.07); border:1px solid rgba(229,62,62,.18); font-size:.82rem; font-weight:800; color:rgba(180,30,30,.88); letter-spacing:.01em; }
+        .ems-urgency-dot { width:7px; height:7px; border-radius:50%; background:#e53e3e; flex-shrink:0; animation:spfPulse 1.4s ease-in-out infinite; }
+
+        /* ── Proof video benefit ── */
+        .vstrip-benefit { text-align:center; font-size:.68rem; font-weight:700; color:rgba(139,26,74,.80); letter-spacing:.01em; line-height:1.35; padding:0 4px; }
+
+        /* ── Marquee personalizado EMS (oculta el global) ── */
+        .marquee { display:none !important; }
+        .ems-mq { overflow:hidden; background:#8B1A4A; padding:8px 0; }
+        .ems-mq__track { display:flex; gap:0; width:max-content; animation:emsMqScroll 28s linear infinite; }
+        .ems-mq__item { white-space:nowrap; font-size:.76rem; font-weight:700; color:rgba(255,255,255,.90); letter-spacing:.03em; padding:0 28px; }
+        .ems-mq__item::after { content:"·"; margin-left:28px; opacity:.45; }
+        @keyframes emsMqScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @media (prefers-reduced-motion:reduce) { .ems-mq__track{animation:none;} }
+
+        /* ── Benefit bullets en hero ── */
+        .ems-benefits { display:flex; flex-direction:column; gap:6px; margin:10px 0 4px; padding:0 2px; }
+        .ems-benefit-item { display:flex; align-items:flex-start; gap:7px; font-size:.88rem; font-weight:700; color:rgba(11,18,32,.80); line-height:1.35; }
+        .ems-benefit-check { color:#8B1A4A; font-weight:900; flex-shrink:0; font-size:.95rem; line-height:1.3; }
+        @media (max-width:520px) { .ems-benefit-item { font-size:.84rem; } }
+
+        /* ── Trust pills (desplegables debajo del CTA) ── */
+        .tpills { display:flex; flex-direction:column; gap:0; margin:12px 0 0; border:1px solid rgba(11,18,32,.10); border-radius:14px; overflow:hidden; background:#fff; }
+        .tpill { border-bottom:1px solid rgba(11,18,32,.08); cursor:pointer; transition:background .12s; }
+        .tpill:last-child { border-bottom:none; }
+        .tpill--open { background:#FFF5F8; }
+        .tpill:hover { background:#FFF5F8; }
+        .tpill-hd { display:flex; align-items:center; gap:10px; padding:12px 14px; user-select:none; }
+        .tpill-ico { font-size:1rem; flex-shrink:0; }
+        .tpill-title { flex:1; font-size:.84rem; font-weight:800; color:rgba(11,18,32,.85); }
+        .tpill-chevron { font-size:1.1rem; font-weight:700; color:#8B1A4A; flex-shrink:0; width:20px; text-align:center; line-height:1; }
+        .tpill-body { padding:0 14px 12px 38px; font-size:.80rem; font-weight:500; color:#8B1A4A; line-height:1.6; white-space:pre-line; }
+
+        /* ── Bundle thumbnails (fila propia, debajo del radio+nombre+precio) ── */
+        .bnd2-imgs { display:flex; align-items:center; gap:0; margin:8px 0 0 26px; }
+        .bnd2-imgs-item { display:flex; align-items:center; gap:4px; }
+        .bnd2-imgs-plus { font-size:.68rem; font-weight:900; color:rgba(139,26,74,.50); line-height:1; padding:0 2px; }
+        .bnd2-thumb { width:42px; height:42px; border-radius:9px; overflow:hidden; flex-shrink:0; background:#f9f0f4; border:1px solid rgba(139,26,74,.14); }
+        .bnd2-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 
         /* ── Landing Footer ── */
         .lp-footer { font-family:inherit; }

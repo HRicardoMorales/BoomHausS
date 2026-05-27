@@ -5,8 +5,8 @@ import { useCart } from '../context/CartContext.jsx';
 
 function money(n) {
     const num = Number(n);
-    if (Number.isNaN(num)) return '$0.00';
-    return `$${num.toFixed(2)}`;
+    if (Number.isNaN(num)) return '$0';
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
 }
 
 function moneyARS(n) {

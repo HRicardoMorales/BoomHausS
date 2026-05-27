@@ -8,6 +8,8 @@ import soporteNasalSN300     from './soporte-nasal-sn300';
 import lamparaMagnetica      from './lampara-magnetica';
 import parchesDetox          from './parches-detox';
 import sillonPuffInflable    from './sillon-puff-inflable';
+import kitBelleza6en1        from './kit-belleza-6en1';
+import masajeadorEmsEyes     from './masajeador-ems-eyes';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -22,6 +24,10 @@ export const LANDING_CONFIGS = {
   'parches-detox':            parchesDetox,
   // Renderizado por SillonPuffLanding.jsx (componente dedicado, ruta /lp/sillon-puff-inflable)
   'sillon-puff-inflable':     sillonPuffInflable,
+  // Renderizado por KitBelleza6en1Landing.jsx (componente dedicado, ruta /lp/kit-belleza-6en1)
+  'kit-belleza-6en1':         kitBelleza6en1,
+  // Renderizado por MasajeadorEmsEyesLanding.jsx (componente dedicado, ruta /lp/masajeador-ems-eyes)
+  'masajeador-ems-eyes':      masajeadorEmsEyes,
 };
 
 export const LANDING_META = [
@@ -94,6 +100,20 @@ export const LANDING_META = [
     desc: 'Kit completo con posapié y compresor de regalo. Material flocado premium. Slug admin: "sillon-puff-inflable". Renderiza SillonPuffLanding.jsx.',
     status: 'active',
     emoji: '🛋️',
+  },
+  {
+    slug: 'kit-belleza-6en1',
+    name: 'Kit de Belleza 6 en 1 Boxili',
+    desc: 'Multifunción BXL-833: 6 cabezales intercambiables (depila, afeita, limpia, exfolia, masajea, recorta). Recarga USB-C. Slug admin: "kit-belleza-6en1". Renderiza KitBelleza6en1Landing.jsx.',
+    status: 'active',
+    emoji: '✂️',
+  },
+  {
+    slug: 'masajeador-ems-eyes',
+    name: 'Masajeador Facial EMS EYES',
+    desc: '4 tecnologías: EMS + Luz Roja 620-630nm + Vibración Sónica + Calor 42°C. Cabezal 270°, sensor inteligente, USB-C. Slug admin: "masajeador-ems-eyes". Renderiza MasajeadorEmsEyesLanding.jsx.',
+    status: 'active',
+    emoji: '💡',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

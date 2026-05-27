@@ -29,6 +29,8 @@ import AdminRoute from './components/AdminRoute.jsx';
 import MundialLanding from './pages/MundialLanding.jsx';
 import ParchesDetoxLanding from './pages/ParchesDetoxLanding.jsx';
 import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
+import KitBelleza6en1Landing from './pages/KitBelleza6en1Landing.jsx';
+import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -119,6 +121,10 @@ export default function App() {
           <Route path="/lp/parches-detox" element={<ParchesDetoxLanding />} />
           {/* ✅ Sillón Puff Inflable Sunfield — componente dedicado */}
           <Route path="/lp/sillon-puff-inflable" element={<SillonPuffLanding />} />
+          {/* ✅ Kit de Belleza 6 en 1 Boxili — componente dedicado */}
+          <Route path="/lp/kit-belleza-6en1" element={<KitBelleza6en1Landing />} />
+          {/* ✅ Masajeador Facial EMS EYES — componente dedicado */}
+          <Route path="/lp/masajeador-ems-eyes" element={<MasajeadorEmsEyesLanding />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />

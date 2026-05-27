@@ -786,6 +786,14 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         /* Back link */
         .cs-back { background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text); text-decoration: underline; padding: 0; }
 
+        /* Sticky CTA footer — always visible at bottom of modal */
+        .cs-footer {
+          flex-shrink: 0;
+          padding: 12px 20px 16px;
+          border-top: 1.5px solid var(--border);
+          background: #fff;
+        }
+
         /* Total box step 2 */
         .cs-total-box { display: flex; align-items: center; gap: 14px; background: #f8faff; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; }
 
@@ -1166,7 +1174,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
               <span style={{ fontWeight: 900, fontSize: 17, color: "var(--text)" }}>
                 Tu carrito ({totalItems})
               </span>
-              <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1 }}>✕</button>
+              <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1, minWidth: 44, minHeight: 44, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
             </div>
           )}
 
@@ -1179,7 +1187,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   {import.meta.env.VITE_STORE_NAME || "BoomHausS"}
                 </span>
                 <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                  <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888" }}>✕</button>
+                  <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888", minWidth: 44, minHeight: 44, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
                 </div>
               </div>
 
@@ -1431,20 +1439,6 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                     🔥 {socialProofCount} personas compraron esto en las últimas 24 horas
                   </div>
 
-                  {/* CTA */}
-                  <button
-                    className="cs-cta"
-                    style={{ marginTop: 10 }}
-                    disabled={items.length === 0}
-                    onClick={() => setStep(1)}
-                  >
-                    Finalizar compra · {money(finalTotal)}
-                  </button>
-
-                  {/* Guest checkout note */}
-                  <div style={{ textAlign: "center", fontSize: 11, color: "#aaa", fontWeight: 600, marginTop: 6 }}>
-                    🔒 Continuar como invitado · Sin necesidad de crear cuenta
-                  </div>
                 </div>
               </div>
               );
@@ -1636,38 +1630,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   <label>Notas adicionales para el pedido (opcional)</label>
                 </div>
 
-                {/* Buttons */}
-                <button className="cs-cta" onClick={() => {
-                  if (!validateStep1()) return;
-                  captureAbandoned();
-                  track("AddPaymentInfo", {
-                    value: totalPrice,
-                    currency: "ARS",
-                    content_ids: items.map(i => i.productId),
-                    content_type: "product",
-                    num_items: totalItems,
-                  });
-                  if (delivery === "caba") {
-                    setShowCabaConfirm(true);
-                  } else {
-                    setStep(2);
-                  }
-                }}>
-                  Continuar con el pago →
-                </button>
-
-                {/* Trust signals */}
-                <div className="cs-trust-row" style={{ marginTop: 12 }}>
-                  <span className="cs-trust-item">🔒 SSL 256 bits</span>
-                  <span className="cs-trust-item">🛡️ Compra protegida</span>
-                  <span className="cs-trust-item">✓ Datos encriptados</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "6px 0 4px", flexWrap: "wrap" }}>
-                  <LogoMP /><LogoVisa /><LogoMC /><LogoAmex />
-                  <span style={{ fontSize: 11, color: "#aaa", fontWeight: 700 }}>Rapipago · Pago Fácil</span>
-                </div>
-
-                <div style={{ textAlign: "center", marginTop: 10, marginBottom: 8 }}>
+                <div style={{ textAlign: "center", marginTop: 16, marginBottom: 8 }}>
                   <button className="cs-back" onClick={() => setStep(0)}>← Volver al carrito</button>
                 </div>
               </div>
@@ -1837,32 +1800,6 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                     {savings > 0 && <div style={{ fontSize: 12, fontWeight: 800, color: "#1D9E75" }}>Ahorrás {money(savings)}</div>}
                   </div>
                 </div>
-
-                {/* CTA */}
-                <button
-                  className="cs-cta"
-                  disabled={!payment || submitting || processingPayment}
-                  onClick={() => {
-                    if (payment === "card" && cardFormInstance) {
-                      cardFormInstance.submit();
-                    } else if (payment === "mp") {
-                      handleSubmit();
-                    }
-                  }}
-                  style={{ marginBottom: payment ? 0 : 4 }}
-                >
-                  {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." : "Pagar ahora"}
-                </button>
-                {!payment && (
-                  <div style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "#1D9E75", marginTop: 6, marginBottom: 4 }}>
-                    👆 Elegí tu método de pago preferido para continuar
-                  </div>
-                )}
-                {errors.submit && (
-                  <div style={{ textAlign: "center", fontSize: 13, fontWeight: 700, color: "#c0392b", marginTop: 6 }}>
-                    {errors.submit}
-                  </div>
-                )}
 
                 {/* Policies */}
                 <div className="cs-policies" style={{ marginTop: 14, marginBottom: 8 }}>
@@ -2044,6 +1981,62 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
             })()}
 
           </div>
+
+          {/* ─── STICKY CTA FOOTER (P1+P2 fix) ─── */}
+          {step === 0 && (
+            <div className="cs-footer">
+              <button className="cs-cta" disabled={items.length === 0} onClick={() => setStep(1)}>
+                Finalizar compra · {money(finalTotal)}
+              </button>
+              <div style={{ textAlign:"center", fontSize:11, color:"#aaa", fontWeight:600, marginTop:6 }}>
+                🔒 Continuar como invitado · Sin necesidad de crear cuenta
+              </div>
+            </div>
+          )}
+          {step === 1 && (
+            <div className="cs-footer">
+              <button className="cs-cta" onClick={() => {
+                if (!validateStep1()) return;
+                captureAbandoned();
+                track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
+                if (delivery === "caba") { setShowCabaConfirm(true); } else { setStep(2); }
+              }}>
+                Continuar con el pago →
+              </button>
+              <div className="cs-trust-row" style={{ marginTop:8 }}>
+                <span className="cs-trust-item">🔒 SSL 256 bits</span>
+                <span className="cs-trust-item">🛡️ Compra protegida</span>
+                <span className="cs-trust-item">✓ Datos encriptados</span>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, paddingTop:4, flexWrap:"wrap" }}>
+                <LogoMP /><LogoVisa /><LogoMC /><LogoAmex />
+              </div>
+            </div>
+          )}
+          {step === 2 && (
+            <div className="cs-footer">
+              <button
+                className="cs-cta"
+                disabled={!payment || submitting || processingPayment}
+                onClick={() => {
+                  if (payment === "card" && cardFormInstance) { cardFormInstance.submit(); }
+                  else if (payment === "mp") { handleSubmit(); }
+                }}
+              >
+                {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." : "Pagar ahora"}
+              </button>
+              {!payment && (
+                <div style={{ textAlign:"center", fontSize:12, fontWeight:700, color:"#1D9E75", marginTop:6 }}>
+                  👆 Elegí tu método de pago preferido para continuar
+                </div>
+              )}
+              {errors.submit && (
+                <div style={{ textAlign:"center", fontSize:13, fontWeight:700, color:"#c0392b", marginTop:6 }}>
+                  {errors.submit}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
