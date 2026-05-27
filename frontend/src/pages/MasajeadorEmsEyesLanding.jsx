@@ -449,13 +449,11 @@ export default function MasajeadorEmsEyesLanding() {
     const heroCTA = document.querySelector('.bnd2-cta');
     const stickyBar = document.querySelector('.pd-sticky-bar');
     if (!heroCTA || !stickyBar) return;
+    let ctaSeen = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) {
-          stickyBar.classList.add('sticky--visible');
-        } else {
-          stickyBar.classList.remove('sticky--visible');
-        }
+        if (entry.isIntersecting) ctaSeen = true;
+        stickyBar.classList.toggle('sticky--visible', ctaSeen && !entry.isIntersecting);
       },
       { threshold: 0 }
     );
