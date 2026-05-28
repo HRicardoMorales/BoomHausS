@@ -1,7 +1,7 @@
 // src/pages/checkout.jsx
 // Checkout fullpage — 3 pasos, mobile-first, estilo TiendaNube
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import CardPaymentBrick from "../components/CardPaymentBrick.jsx";
 import { getStoredAuth } from "../utils/auth";
@@ -80,6 +80,72 @@ function ProgressBar({ step, isCaba }) {
           </Fragment>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Accordion resumen (pasos 1 y 2) ────────────────────────────────────────
+function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, couponDiscount, appliedCoupon }) {
+  const [open, setOpen] = useState(false);
+  const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
+  const fullTotal = items.reduce((a, it) => {
+    if (it.bundleTotal && it.compareAtPrice) return a + Number(it.compareAtPrice);
+    return a + (Number(it.price) || 0) * (Number(it.quantity) || 0);
+  }, 0);
+  const savings = Math.max(0, fullTotal - totalPrice);
+
+  return (
+    <div className="ckfp-sa">
+      <button type="button" className="ckfp-sa-header" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <div className="ckfp-sa-header-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1B4D3E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span className="ckfp-sa-title">{open ? "Ocultar" : "Ver"} pedido</span>
+          <span className="ckfp-sa-badge">{totalItems}</span>
+          <svg className={`ckfp-sa-chevron${open ? " open" : ""}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div className="ckfp-sa-header-right">
+          {savings > 0 && <span className="ckfp-sa-savings">−{money(savings)}</span>}
+          <span className="ckfp-sa-amount">{money(finalTotal)}</span>
+        </div>
+      </button>
+      <div className={`ckfp-sa-body${open ? " open" : ""}`}>
+        <div className="ckfp-sa-items">
+          {items.map((item, i) => {
+            const thumb = item.imageUrl || item.image || null;
+            const itemTotal = calcItemTotal(item);
+            const origTotal = item.bundleTotal && item.compareAtPrice
+              ? Number(item.compareAtPrice)
+              : (Number(item.price) || 0) * (Number(item.quantity) || 0);
+            const hasDisc = origTotal > itemTotal;
+            return (
+              <div key={i} className="ckfp-sa-item">
+                <div className="ckfp-sa-item-img-wrap">
+                  {thumb ? <img src={thumb} alt={item.name} className="ckfp-sa-item-img" /> : <span className="ckfp-sa-item-ph">📦</span>}
+                  <span className="ckfp-sa-item-qty">{item.quantity}</span>
+                </div>
+                <div className="ckfp-sa-item-name">{item.name}</div>
+                <div className="ckfp-sa-item-price">
+                  {hasDisc && <span className="ckfp-sa-item-was">{money(origTotal)}</span>}
+                  <span className={hasDisc ? "ckfp-sa-item-sale" : ""}>{money(itemTotal)}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="ckfp-sa-totals">
+          <div className="ckfp-sa-row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
+          {savings > 0 && <div className="ckfp-sa-row ckfp-sa-row--green"><span>Descuento promo</span><span>−{money(savings)}</span></div>}
+          {couponDiscount > 0 && appliedCoupon && (
+            <div className="ckfp-sa-row ckfp-sa-row--green"><span>Cupón {appliedCoupon.code}</span><span>−{money(couponDiscount)}</span></div>
+          )}
+          <div className="ckfp-sa-row ckfp-sa-row--green"><span>Envío</span><span>GRATIS</span></div>
+          <div className="ckfp-sa-final"><span>Total</span><span>{money(finalTotal)}</span></div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -221,12 +287,16 @@ export default function Checkout() {
   const isLogged = Boolean(user?.email);
   const { items, totalPrice, clearCart, calcItemTotal, updateQty, removeItem } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
+  const location = useLocation();
 
   const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
   const whatsapp  = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
+  // Si viene desde la sheet del carrito (skipCart:true), arrancar en paso 1
+  const skipCart = location.state?.skipCart === true;
+
   // ── Paso ──────────────────────────────────────────────────────────────────
-  const [step, setStep] = useState(() => rSession("ck_step", 0));
+  const [step, setStep] = useState(() => skipCart ? 1 : rSession("ck_step", 0));
   useEffect(() => { wSession("ck_step", step); }, [step]);
 
   // ── Formulario ────────────────────────────────────────────────────────────
@@ -630,7 +700,22 @@ export default function Checkout() {
       {/* ── HEADER ── */}
       <header className="ckfp-header">
         <Link to="/" className="ckfp-logo">{storeName}</Link>
-        <div className="ckfp-secure-badge">🔒 Compra segura</div>
+        <div className="ckfp-header-right">
+          <div className="ckfp-secure-badge">
+            <svg className="ckfp-lock-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Pago 100% seguro</span>
+          </div>
+          <div className="ckfp-header-divider" />
+          <div className="ckfp-payment-logos">
+            <img src="/icons/mercadopago.svg" alt="MercadoPago" className="ckfp-pay-logo" />
+            <img src="/icons/visa.svg" alt="Visa" className="ckfp-pay-logo" />
+            <img src="/icons/mastercard.svg" alt="Mastercard" className="ckfp-pay-logo" />
+            <img src="/icons/amex.svg" alt="Amex" className="ckfp-pay-logo" />
+          </div>
+        </div>
       </header>
 
       {/* ── PROGRESS BAR (oculto en step 0) ── */}
@@ -713,27 +798,18 @@ export default function Checkout() {
 
         {/* ══ PASO 1 — INFORMACIÓN ══════════════════════════════════════════ */}
         {step === 1 && (
-          <div className="ckfp-step-wrap">
+          <>
+            <SummaryAccordion
+              items={items}
+              calcItemTotal={calcItemTotal}
+              totalPrice={totalPrice}
+              finalTotal={finalTotal}
+              couponDiscount={couponDiscount}
+              appliedCoupon={appliedCoupon}
+            />
+            <div className="ckfp-step-wrap">
             <button type="button" className="ckfp-back" onClick={goBack}>← Volver al carrito</button>
             <h2 className="ckfp-step-heading">Información de contacto y envío</h2>
-
-            {items.length > 0 && (
-              <div className="ckfp-product-preview">
-                {(items[0].imageUrl || items[0].image) && (
-                  <img src={items[0].imageUrl || items[0].image} alt={items[0].name} className="ckfp-product-preview-img" />
-                )}
-                <div className="ckfp-product-preview-info">
-                  <div className="ckfp-product-preview-name">{items[0].name}</div>
-                  <div className="ckfp-product-preview-prices">
-                    <span className="ckfp-product-preview-final">{money(calcItemTotal(items[0]))}</span>
-                    {items[0].compareAtPrice && Number(items[0].compareAtPrice) > calcItemTotal(items[0]) && (
-                      <span className="ckfp-product-preview-was">{money(items[0].compareAtPrice)}</span>
-                    )}
-                  </div>
-                  <span className="ckfp-product-preview-ship">🚚 Envío gratis a todo el país</span>
-                </div>
-              </div>
-            )}
 
             {error && (
               <div ref={errorRef} className="ckfp-error-box">⚠️ {error}</div>
@@ -930,11 +1006,21 @@ export default function Checkout() {
               ))}
             </div>
           </div>
+          </>
         )}
 
         {/* ══ PASO 2 — MÉTODO DE ENVÍO (solo CABA) ══════════════════════════ */}
         {step === 2 && (
-          <div className="ckfp-step-wrap">
+          <>
+            <SummaryAccordion
+              items={items}
+              calcItemTotal={calcItemTotal}
+              totalPrice={totalPrice}
+              finalTotal={finalTotal}
+              couponDiscount={couponDiscount}
+              appliedCoupon={appliedCoupon}
+            />
+            <div className="ckfp-step-wrap">
             <button type="button" className="ckfp-back" onClick={goBack}>← Volver</button>
             <h2 className="ckfp-step-heading">Método de envío</h2>
 
@@ -996,6 +1082,7 @@ export default function Checkout() {
               Continuar al pago →
             </button>
           </div>
+          </>
         )}
 
         {/* ══ PASO 3 — PAGO ════════════════════════════════════════════════ */}
@@ -1171,7 +1258,12 @@ export default function Checkout() {
           <button type="button" className="ckfp-btn-primary ckfp-cta" onClick={() => setStep(1)}>
             Continuar con mis datos →
           </button>
-          <div className="ckfp-sticky-sub">🔒 Pago seguro · Sin necesidad de cuenta</div>
+          <div className="ckfp-sticky-trust-row">
+            <span>🔒 SSL Seguro</span>
+            <span>💳 3 cuotas sin interés</span>
+            <span>🚚 Envío gratis</span>
+            <span>🛡️ Garantía 30 días</span>
+          </div>
         </div>
       )}
       {step === 1 && (
@@ -1179,6 +1271,12 @@ export default function Checkout() {
           <button type="button" className="ckfp-btn-primary ckfp-cta" onClick={handleStep1Next}>
             Continuar con el envío →
           </button>
+          <div className="ckfp-sticky-trust-row">
+            <span>🔒 SSL Seguro</span>
+            <span>💳 3 cuotas sin interés</span>
+            <span>🚚 Envío gratis</span>
+            <span>🛡️ Garantía 30 días</span>
+          </div>
         </div>
       )}
       {step === 3 && (isCod || onlinePayMethod === "mercadopago") && !isCartEmpty && (
@@ -1191,6 +1289,12 @@ export default function Checkout() {
           >
             {redirecting ? "🔄 Conectando..." : loading ? "⏳ Procesando..." : isCod ? `Confirmar · ${money(finalTotal)}` : `Pagar ${money(finalTotal)} →`}
           </button>
+          <div className="ckfp-sticky-trust-row">
+            <span>🔒 SSL Seguro</span>
+            <span>💳 3 cuotas sin interés</span>
+            <span>🚚 Envío gratis</span>
+            <span>🛡️ Garantía 30 días</span>
+          </div>
         </div>
       )}
 
@@ -1203,41 +1307,85 @@ export default function Checkout() {
 function Styles() {
   return (
     <style>{`
+      @keyframes ckfpPageIn {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
       /* ── Shell ── */
       .ckfp-shell {
         min-height: 100vh;
         background: #f9fafb;
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
         color: #111827;
+        animation: ckfpPageIn .38s cubic-bezier(.22,1,.36,1) both;
       }
 
       /* ── Header ── */
       .ckfp-header {
         background: #fff;
         border-bottom: 1px solid #e5e7eb;
+        box-shadow: 0 2px 10px rgba(0,0,0,.07);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 20px;
+        padding: 0 24px;
+        height: 62px;
         position: sticky;
         top: 0;
         z-index: 100;
+        flex-shrink: 0;
       }
       .ckfp-logo {
-        font-size: 1.4rem;
+        font-size: 18px;
         font-weight: 900;
         letter-spacing: -0.04em;
         color: #111827;
         text-decoration: none;
-        flex: 1;
-        text-align: center;
+        line-height: 1;
       }
+      .ckfp-header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      /* Badge SSL — pill verde */
       .ckfp-secure-badge {
-        font-size: .75rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        padding: 5px 11px 5px 8px;
+        font-size: 11.5px;
         font-weight: 700;
-        color: #6b7280;
-        position: absolute;
-        right: 20px;
+        color: #166534;
+        white-space: nowrap;
+      }
+      .ckfp-lock-icon { flex-shrink: 0; }
+      /* Divisor vertical */
+      .ckfp-header-divider { width: 1px; height: 22px; background: #e5e7eb; flex-shrink: 0; }
+      /* Logos de métodos de pago */
+      .ckfp-payment-logos {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ckfp-pay-logo {
+        height: 20px;
+        width: auto;
+        border-radius: 4px;
+        opacity: .88;
+        transition: opacity .15s;
+      }
+      .ckfp-pay-logo:hover { opacity: 1; }
+      @media (max-width: 560px) {
+        .ckfp-payment-logos { display: none; }
+        .ckfp-header-divider { display: none; }
+      }
+      @media (max-width: 360px) {
+        .ckfp-secure-badge span { display: none; }
+        .ckfp-secure-badge { padding: 6px; border-radius: 50%; }
       }
 
       /* ── Progress ── */
@@ -1262,36 +1410,37 @@ function Styles() {
         flex-shrink: 0;
       }
       .ckfp-step-circle {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
-        font-weight: 900;
-        background: #e5e7eb;
-        color: #9ca3af;
-        transition: background .2s, color .2s;
+        font-size: 13px;
+        font-weight: 800;
+        background: #fff;
+        border: 2px solid #d1d5db;
+        color: #6b7280;
+        transition: background .3s, color .3s, border-color .3s;
       }
-      .ckfp-step-circle.active { background: #1B4D3E; color: #fff; }
-      .ckfp-step-circle.done   { background: #16a34a; color: #fff; }
+      .ckfp-step-circle.active { background: #1B4D3E; border-color: #1B4D3E; color: #fff; }
+      .ckfp-step-circle.done   { background: #16a34a; border-color: #16a34a; color: #fff; }
       .ckfp-step-label {
         font-size: 10px;
-        font-weight: 700;
+        font-weight: 600;
         color: #9ca3af;
         white-space: nowrap;
         transition: color .2s;
       }
-      .ckfp-step-label.active { color: #1B4D3E; }
+      .ckfp-step-label.active { color: #1B4D3E; font-weight: 700; }
       .ckfp-step-label.done   { color: #16a34a; }
       .ckfp-step-label.skip   { opacity: .5; }
       .ckfp-connector {
         flex: 1;
         height: 2px;
         background: #e5e7eb;
-        margin: 0 6px;
-        margin-bottom: 14px;
+        margin: 0 4px;
+        margin-bottom: 18px;
         min-width: 24px;
         transition: background .3s;
       }
@@ -1430,15 +1579,20 @@ function Styles() {
       /* ── Trust row ── */
       .ckfp-trust-row {
         display: flex;
-        flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
-        margin-top: 18px;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
       }
       .ckfp-trust-item {
-        font-size: .78rem;
-        font-weight: 700;
+        font-size: 11.5px;
+        font-weight: 600;
         color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 3px;
       }
 
       /* ── Address preview ── */
@@ -1616,6 +1770,146 @@ function Styles() {
       .ckfp-pay-logo.mc   { background: #EB001B; color: #fff; }
       .ckfp-pay-logo.amex { background: #2E77BC; color: #fff; }
 
+      /* ── Summary Accordion (pasos 1 y 2) ── */
+      .ckfp-sa {
+        max-width: 520px;
+        margin: 0 auto 14px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .ckfp-sa-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        gap: 8px;
+        font-family: inherit;
+        transition: background .15s;
+      }
+      .ckfp-sa-header:hover { background: #f9fafb; }
+      .ckfp-sa-header-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex: 1;
+        min-width: 0;
+      }
+      .ckfp-sa-title {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #1B4D3E;
+      }
+      .ckfp-sa-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        background: #1B4D3E;
+        color: #fff;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+      }
+      .ckfp-sa-chevron { transition: transform .22s; flex-shrink: 0; }
+      .ckfp-sa-chevron.open { transform: rotate(180deg); }
+      .ckfp-sa-header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .ckfp-sa-savings {
+        font-size: 11px;
+        font-weight: 700;
+        color: #16a34a;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        padding: 2px 8px;
+        white-space: nowrap;
+      }
+      .ckfp-sa-amount {
+        font-size: 15px;
+        font-weight: 900;
+        color: #111827;
+      }
+      .ckfp-sa-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .35s cubic-bezier(.22,1,.36,1);
+      }
+      .ckfp-sa-body.open { max-height: 800px; }
+      .ckfp-sa-items {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px 16px;
+        border-top: 1px solid #f3f4f6;
+      }
+      .ckfp-sa-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .ckfp-sa-item-img-wrap {
+        position: relative;
+        flex-shrink: 0;
+        width: 52px; height: 52px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f1f5f9;
+        border: 1px solid #e5e7eb;
+        display: grid;
+        place-items: center;
+      }
+      .ckfp-sa-item-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .ckfp-sa-item-ph { font-size: 1.3rem; }
+      .ckfp-sa-item-qty {
+        position: absolute;
+        top: -5px; right: -5px;
+        background: #1B4D3E; color: #fff;
+        border-radius: 999px;
+        width: 18px; height: 18px;
+        font-size: 10px; font-weight: 900;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .ckfp-sa-item-name {
+        flex: 1; min-width: 0;
+        font-size: .82rem; font-weight: 700; color: #111827; line-height: 1.3;
+      }
+      .ckfp-sa-item-price {
+        flex-shrink: 0;
+        text-align: right;
+        font-size: .88rem; font-weight: 900; color: #111827;
+        display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+      }
+      .ckfp-sa-item-was { font-size: .7rem; color: #9ca3af; text-decoration: line-through; font-weight: 600; }
+      .ckfp-sa-item-sale { color: #16a34a; }
+      .ckfp-sa-totals {
+        border-top: 1px solid #f3f4f6;
+        padding: 12px 16px 14px;
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .ckfp-sa-row {
+        display: flex; justify-content: space-between;
+        font-size: .82rem; font-weight: 700; color: #6b7280;
+      }
+      .ckfp-sa-row--green { color: #16a34a; font-weight: 800; }
+      .ckfp-sa-final {
+        display: flex; justify-content: space-between;
+        font-size: .98rem; font-weight: 900; color: #111827;
+        border-top: 1.5px solid #e5e7eb;
+        padding-top: 10px; margin-top: 4px;
+      }
+
       /* ── Aside / Summary ── */
       .ckfp-aside {
         background: #fff;
@@ -1626,7 +1920,7 @@ function Styles() {
       @media (min-width: 768px) {
         .ckfp-aside { position: sticky; top: 80px; }
         .ckfp-summary-toggle { display: none; }
-        .ckfp-aside-inner { display: block !important; }
+        .ckfp-aside-inner { max-height: none !important; overflow: visible !important; }
       }
       .ckfp-summary-toggle {
         width: 100%;
@@ -1643,8 +1937,12 @@ function Styles() {
         cursor: pointer;
       }
       .ckfp-chevron { font-size: .75rem; transition: transform .2s; display: inline-block; }
-      .ckfp-aside-inner { display: none; }
-      .ckfp-aside-inner.open { display: block; }
+      .ckfp-aside-inner {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .35s cubic-bezier(.22,1,.36,1);
+      }
+      .ckfp-aside-inner.open { max-height: 1200px; }
 
       /* ── Order summary ── */
       .ckfp-summary { padding: 16px; }
@@ -1743,11 +2041,32 @@ function Styles() {
         position: fixed;
         bottom: 0; left: 0; right: 0;
         background: #fff;
-        border-top: 1.5px solid #e5e7eb;
-        padding: 10px 16px 14px;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+        padding: 12px 16px 16px;
         z-index: 200;
       }
       .ckfp-sticky-footer .ckfp-cta { margin-top: 0; }
+      .ckfp-btn-primary.ckfp-cta { border-radius: 14px; font-size: 16px; font-weight: 800; padding: 15px; letter-spacing: .3px; }
+      .ckfp-sticky-trust-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .ckfp-sticky-trust-row span {
+        font-size: 10.5px;
+        color: #6b7280;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .ckfp-sticky-trust-row span:not(:last-child)::after {
+        content: "·";
+        margin-left: 10px;
+        color: #d1d5db;
+      }
       @media (max-width: 767px) {
         .ckfp-sticky-footer { display: block; }
       }
@@ -1914,20 +2233,20 @@ function Styles() {
       }
       .ckfp-cart0-item {
         display: flex;
-        align-items: center;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 14px;
         background: #fff;
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 12px;
+        border-radius: 14px;
+        padding: 14px;
       }
       .ckfp-cart0-img-wrap {
         position: relative;
         flex-shrink: 0;
       }
       .ckfp-cart0-img {
-        width: 64px;
-        height: 64px;
+        width: 72px;
+        height: 72px;
         border-radius: 10px;
         object-fit: cover;
         display: block;
@@ -1946,34 +2265,40 @@ function Styles() {
         position: absolute;
         top: -6px;
         right: -6px;
-        background: #111827;
+        background: #1b4d3e;
         color: #fff;
-        border-radius: 999px;
+        border-radius: 50%;
         width: 20px;
         height: 20px;
         font-size: 11px;
-        font-weight: 900;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
+        border: 2px solid #fff;
       }
       .ckfp-cart0-info {
         flex: 1;
         min-width: 0;
       }
       .ckfp-cart0-name {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: #111827;
-        line-height: 1.35;
-        margin-bottom: 4px;
+        line-height: 1.3;
+        margin-bottom: 6px;
       }
       .ckfp-cart0-gift {
-        font-size: 11px;
-        color: #16a34a;
+        font-size: 11.5px;
+        color: #374151;
         font-weight: 600;
         margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        line-height: 1.6;
       }
+      .ckfp-cart0-gift strong { color: #1b6d4f; font-weight: 700; font-size: 11px; }
       .ckfp-cart0-price {
         text-align: right;
         flex-shrink: 0;
@@ -1990,62 +2315,63 @@ function Styles() {
         color: #111827;
       }
       .ckfp-cart0-total.sale {
-        color: #16a34a;
+        font-size: 17px;
+        font-weight: 800;
+        color: #111827;
       }
       .ckfp-cart0-ship-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: #374151;
         padding: 10px 0;
         border-top: 1px solid #f3f4f6;
+        border-bottom: 1px solid #f3f4f6;
+        margin: 8px 0;
       }
       .ckfp-cart0-ship-free {
-        color: #16a34a;
-        font-weight: 900;
+        color: #1b6d4f;
+        font-weight: 700;
       }
       .ckfp-cart0-savings {
-        background: #fef9c3;
-        border: 1px solid #fde047;
-        border-radius: 10px;
-        padding: 10px 14px;
+        background: #fff9e6;
+        border: 1px solid #fde68a;
+        border-radius: 24px;
+        padding: 7px 14px;
         font-size: 13px;
-        font-weight: 800;
-        color: #713f12;
+        font-weight: 700;
+        color: #92600a;
         text-align: center;
-        margin: 8px 0;
+        margin: 10px 0;
       }
       .ckfp-cart0-total-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 0 4px;
-        border-top: 1.5px solid #e5e7eb;
-        margin-top: 4px;
-        font-size: 17px;
-        font-weight: 900;
+        padding: 10px 0 4px;
+        border-top: 1px solid #f3f4f6;
+        margin-top: 8px;
+      }
+      .ckfp-cart0-total-row > span:first-child {
+        font-size: 16px;
+        font-weight: 700;
         color: #111827;
       }
       .ckfp-cart0-total-was {
-        font-size: 13px;
-        color: #9ca3af;
-        text-decoration: line-through;
-        font-weight: 600;
-        margin-right: 8px;
-      }
-      .ckfp-cart0-total-final {
-        font-size: 20px;
-        font-weight: 900;
-        color: #111827;
-      }
-      .ckfp-sticky-sub {
-        text-align: center;
         font-size: 11px;
         color: #9ca3af;
-        font-weight: 600;
-        margin-top: 6px;
+        text-decoration: line-through;
+        font-weight: 400;
+        display: block;
+        text-align: right;
+      }
+      .ckfp-cart0-total-final {
+        font-size: 22px;
+        font-weight: 900;
+        color: #111827;
+        display: block;
       }
     `}</style>
   );

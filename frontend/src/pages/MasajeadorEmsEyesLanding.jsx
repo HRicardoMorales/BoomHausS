@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { CheckoutSheet } from './CheckoutSheet';
 import { useCart } from '../context/CartContext';
 import { track } from '../lib/metaPixel';
 import mc from '../landings/masajeador-ems-eyes';
@@ -423,8 +423,8 @@ export default function MasajeadorEmsEyesLanding() {
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(mc.bundles[0]);
   const [openFaq,      setOpenFaq]      = useState(null);
+  const [showCheckout, setShowCheckout] = useState(false);
   const { addItem } = useCart();
-  const navigate = useNavigate();
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
@@ -488,7 +488,7 @@ export default function MasajeadorEmsEyesLanding() {
       currency: 'ARS',
       content_name: mc.checkoutName,
     });
-    navigate('/checkout');
+    setShowCheckout(true);
   };
 
   const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
@@ -507,6 +507,7 @@ export default function MasajeadorEmsEyesLanding() {
   const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Masajeador Facial EMS EYES' };
 
   return (
+    <>
     <div className="spf-wrap">
 
       {/* ── MARQUEE PERSONALIZADO ── */}
@@ -680,6 +681,12 @@ export default function MasajeadorEmsEyesLanding() {
                 >
                   {!product ? 'Cargando…' : `${mc.ctaLine1} →`}
                 </button>
+                {!selectedBundle.soldOut && product && (
+                  <p className="lp-cta-subtext">
+                    💳 3 cuotas sin interés de <strong>${Math.ceil(selectedBundle.price / 3).toLocaleString('es-AR')}</strong>
+                    &nbsp;·&nbsp; 🚚 Envío gratis &nbsp;·&nbsp; 🛡️ 30 días de garantía
+                  </p>
+                )}
                 <TrustPills />
               </div>
 
@@ -784,6 +791,10 @@ export default function MasajeadorEmsEyesLanding() {
                 <span className="grt-pill">🚚 Envío gratis</span>
               </div>
               <button className="grt-cta spf-grt-cta" onClick={handleBuy}>{mc.guarantee.cta}</button>
+              <p className="lp-cta-subtext dark-section">
+                💳 3 cuotas sin interés de <strong>${Math.ceil(selectedBundle.price / 3).toLocaleString('es-AR')}</strong>
+                &nbsp;·&nbsp; 🚚 Envío gratis &nbsp;·&nbsp; 🛡️ 30 días de garantía
+              </p>
               <p className="pd-cta-guarantee pd-cta-guarantee--light">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
             </div>
           </div>
@@ -881,13 +892,18 @@ export default function MasajeadorEmsEyesLanding() {
       <div className="pd-sticky-bar">
         <div className="pd-sticky-inner">
           <div className="pd-sticky-info">
-            <div className="pd-sticky-prices">
+            <div className="pd-sticky-prices lp-sticky-price-block">
               {!selectedBundle.soldOut && (
                 <span className="pd-sticky-old">{fmt(selectedBundle.compareAt)}</span>
               )}
               <span className="pd-sticky-now">
                 {selectedBundle.soldOut ? 'Agotado' : fmt(selectedBundle.price)}
               </span>
+              {!selectedBundle.soldOut && (
+                <span className="lp-sticky-cuotas">
+                  3 cuotas de ${Math.ceil(selectedBundle.price / 3).toLocaleString('es-AR')}
+                </span>
+              )}
             </div>
             <span className="pd-sticky-qty">
               {selectedBundle.soldOut ? 'Elegí otro kit arriba' : selectedBundle.label.split('—')[0].trim()}
@@ -1301,7 +1317,42 @@ export default function MasajeadorEmsEyesLanding() {
         .lp-footer-wa { font-size:.76rem; font-weight:700; color:rgba(255,255,255,.50); text-decoration:none; }
         .lp-footer-wa:hover { color:#fff; }
 
+        /* ── CTA subtext (cuotas + beneficios) ── */
+        .lp-cta-subtext {
+          text-align: center;
+          font-size: 12px;
+          color: #6b7280;
+          margin: 8px 0 0;
+          line-height: 1.5;
+        }
+        .lp-cta-subtext.dark-section { color: rgba(255,255,255,.70); }
+        .lp-cta-subtext strong { font-weight: 700; }
+
+        /* Sticky bar: cuotas debajo del precio */
+        .lp-sticky-price-block {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .lp-sticky-cuotas {
+          font-size: 10px;
+          color: rgba(11,18,32,.45);
+          font-weight: 500;
+          line-height: 1;
+          margin-top: 1px;
+        }
+
       `}</style>
     </div>
+
+    {showCheckout && (
+      <CheckoutSheet
+        onClose={() => setShowCheckout(false)}
+        primaryColor="#8B1A4A"
+        primaryHover="#C2185B"
+        allowCod={false}
+      />
+    )}
+    </>
   );
 }

@@ -1,5 +1,6 @@
 // src/pages/CheckoutSheet.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function useCountdown(storageKey = "pd_countdown", minutes = 18) {
   const [left, setLeft] = useState(0);
@@ -86,7 +87,8 @@ const INITIAL_FORM = {
   cp: "", ciudad: "", provincia: "Buenos Aires", notes: "",
 };
 
-export function CheckoutSheet({ onClose, allowCod = true }) {
+export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31" }) {
+  const navigate = useNavigate();
   const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal: ctxCalc } = useCart();
   const calc = ctxCalc || calcItemTotal;
 
@@ -187,8 +189,8 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
     setTimeout(() => {
       setStep(n);
       setStepTransition("entering");
-      setTimeout(() => setStepTransition("idle"), 260);
-    }, 160);
+      setTimeout(() => setStepTransition("idle"), 300);
+    }, 180);
   }
 
   // ── Captura silenciosa de carrito abandonado ──
@@ -616,10 +618,10 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         .cs-body { overflow-y: auto; flex: 1; padding: 0 0 24px; }
         .cs-body::-webkit-scrollbar { width: 4px; }
         .cs-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-        @keyframes csStepIn  { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes csStepOut { from { opacity:1; transform:translateX(0); }   to { opacity:0; transform:translateX(-16px); } }
-        .cs-body--entering { animation: csStepIn  .26s cubic-bezier(.22,1,.36,1) both; }
-        .cs-body--exiting  { animation: csStepOut .16s ease both; pointer-events:none; overflow:hidden; }
+        @keyframes csStepIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes csStepOut { from { opacity:1; transform:translateY(0); }   to { opacity:0; transform:translateY(-10px); } }
+        .cs-body--entering { animation: csStepIn  .30s cubic-bezier(.22,1,.36,1) both; }
+        .cs-body--exiting  { animation: csStepOut .18s cubic-bezier(.55,0,.1,1) both; pointer-events:none; overflow:hidden; }
 
         /* Floating label */
         .cs-field { position: relative; }
@@ -827,9 +829,74 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         .cs-cta:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
         .cs-cta:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-        /* Confirm success */
+        /* Confirm success (legacy) */
         .cs-confirm { text-align: center; padding: 40px 24px; }
         .cs-confirm-icon { font-size: 56px; margin-bottom: 12px; }
+
+        /* ── Step 4 confirmation redesign ── */
+        @keyframes csCheckCircleIn {
+          from { transform: scale(0.5); opacity: 0; }
+          to   { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes csCheckDraw {
+          from { stroke-dashoffset: 30; }
+          to   { stroke-dashoffset: 0; }
+        }
+        .cs-confirm4 {
+          text-align: center; padding: 40px 24px 32px;
+          animation: csFadeUp .4s cubic-bezier(.22,1,.36,1) both;
+        }
+        .cs-confirm4-circle {
+          width: 80px; height: 80px; border-radius: 50%;
+          background: var(--primary);
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 20px;
+          box-shadow: 0 12px 32px rgba(0,0,0,.18);
+          animation: csCheckCircleIn .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        .cs-confirm4-check {
+          stroke-dasharray: 30;
+          stroke-dashoffset: 30;
+          animation: csCheckDraw .45s cubic-bezier(.22,1,.36,1) .35s both;
+        }
+        .cs-confirm4-title {
+          font-size: 24px; font-weight: 900; color: var(--text);
+          margin: 0 0 8px; line-height: 1.2;
+        }
+        .cs-confirm4-sub {
+          font-size: 14px; font-weight: 600; color: #64748b;
+          margin: 0 auto 24px; line-height: 1.6; max-width: 300px;
+        }
+        .cs-confirm4-details {
+          background: #f8faff; border: 1.5px solid var(--border);
+          border-radius: 14px; padding: 4px 16px; text-align: left; margin-bottom: 20px;
+        }
+        .cs-confirm4-row {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 10px 0; font-size: 13px; font-weight: 700;
+          border-bottom: 1px solid var(--border);
+        }
+        .cs-confirm4-row:last-child { border-bottom: none; }
+        .cs-confirm4-label { color: #888; }
+        .cs-confirm4-val { color: var(--text); font-weight: 900; }
+        .cs-confirm4-val--green { color: #1D9E75; font-weight: 900; }
+        .cs-confirm4-val--total { font-size: 17px; color: var(--primary); }
+        .cs-confirm4-wa {
+          display: flex; align-items: center; justify-content: center; gap: 10px;
+          width: 100%; padding: 14px 0; border-radius: 12px;
+          background: #25d366; color: #fff; font-weight: 900; font-size: 15px;
+          text-decoration: none; margin-bottom: 10px;
+          box-shadow: 0 8px 20px rgba(37,211,102,.25);
+          transition: filter .15s;
+        }
+        .cs-confirm4-wa:hover { filter: brightness(1.07); }
+        .cs-confirm4-close {
+          width: 100%; padding: 12px 0; border-radius: 12px;
+          border: 1.5px solid var(--border2); background: transparent;
+          color: var(--text); font-weight: 800; font-size: 14px; cursor: pointer;
+          transition: background .12s;
+        }
+        .cs-confirm4-close:hover { background: #f5f7fa; }
 
         /* Divider */
         .cs-divider { height: 8px; background: #f5f7fa; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 20px 0; }
@@ -1020,6 +1087,19 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
           color: #0f766e; letter-spacing: .02em;
         }
         .cs-mp-trust-dot { color: #cbd5e1; font-weight: 900; }
+
+        /* Banner envío gratis — hereda color de la landing */
+        .cs-ship-banner {
+          display: flex; align-items: center; gap: 8px;
+          padding: 9px 16px;
+          background: transparent;
+          border-bottom: 1px solid rgba(0,0,0,.07);
+          flex-wrap: wrap;
+        }
+        .cs-ship-banner-text {
+          font-size: 12px; font-weight: 800;
+          color: var(--primary);
+        }
 
         /* ══════ Interstitial MP (step 3) ══════ */
         @keyframes csSpin { to { transform: rotate(360deg); } }
@@ -1216,7 +1296,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         </div>
       )}
 
-      <div className="cs-overlay" onClick={handleOverlayClick}>
+      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover }}>
         <div className="cs-sheet" ref={sheetRef}>
 
           {/* ─── NAVBAR ─── */}
@@ -1332,10 +1412,10 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
               });
               return (
               <div>
-                {/* Hero benefits bar — compacta, una línea */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: "#ecfdf5", borderBottom: "1px solid #b7f0dc", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#0a5c3a" }}>🚚 Envío gratis a todo el país</span>
-                  {hasKit && <span style={{ fontSize: 12, fontWeight: 800, color: "#0a5c3a" }}>· 🎁 +20 unidades de regalo incluidas</span>}
+                {/* Hero benefits bar — color sigue la landing via --primary */}
+                <div className="cs-ship-banner">
+                  <span className="cs-ship-banner-text">🚚 Envío gratis a todo el país</span>
+                  {hasKit && <span className="cs-ship-banner-text">· 🎁 +20 unidades de regalo incluidas</span>}
                 </div>
 
                 {/* Cart items */}
@@ -1385,24 +1465,12 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                               PACK AHORRO
                             </span>
                           )}
-                          {/* Qty controls */}
-                          {(it.gifts?.length > 0 || String(it?.productId || '').includes('lampara-magnetica') || String(it?.productId || '').includes('parches-detox')) ? (
-                            <div style={{ marginTop: 6 }}>
-                              <span style={{ fontSize: 13, fontWeight: 800, color: "rgba(11,18,32,.50)" }}>
-                                {String(it?.productId || '').includes('parches-detox') ? 'Pack seleccionado' : `Cant: ${it.quantity}`}
-                              </span>
-                            </div>
-                          ) : (
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                              <button onClick={() => it.quantity <= 1 ? removeItem(it.productId) : updateQty(it.productId, it.quantity - 1)}
-                                style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>
-                                {it.quantity <= 1 ? "×" : "−"}
-                              </button>
-                              <span style={{ fontWeight: 800, minWidth: 20, textAlign: "center" }}>{it.quantity}</span>
-                              <button onClick={() => updateQty(it.productId, it.quantity + 1)}
-                                style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid var(--border2)", background: "#f8faff", cursor: "pointer", fontWeight: 900, fontSize: 15, display: "grid", placeItems: "center" }}>+</button>
-                            </div>
-                          )}
+                          {/* Cantidad — solo lectura, sin controles de edición */}
+                          <div style={{ marginTop: 5 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(11,18,32,.45)" }}>
+                              Cant: {it.quantity}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Price */}
@@ -1945,98 +2013,53 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
               const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
               const waText = encodeURIComponent(`Hola ${storeName}! 👋 Acabo de hacer un pedido por ${money(confirmedTotal)} y quería confirmar los detalles de entrega.`);
               const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : null;
+              const totalQty = confirmedItems.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
               return (
-              <div className="cs-confirm">
-                {isCod ? (
-                  <>
-                    <div style={{ fontSize: 60, marginBottom: 8 }}>🎉</div>
-                    <h2 style={{ fontWeight: 900, fontSize: 22, margin: "0 0 10px", color: "var(--text)", lineHeight: 1.2 }}>
-                      ¡Felicitaciones!<br/>Tu pedido está confirmado
-                    </h2>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: "#64748b", margin: "0 0 20px", lineHeight: 1.6, maxWidth: 320, marginLeft: "auto", marginRight: "auto" }}>
-                      Te vamos a contactar por <strong style={{ color: "#25d366" }}>WhatsApp</strong> para coordinar la entrega y el pago al recibir.
-                    </p>
+              <div className="cs-confirm4">
+                {/* Animated checkmark circle */}
+                <div className="cs-confirm4-circle">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path className="cs-confirm4-check" d="M5 12l4.5 4.5L19 7"/>
+                  </svg>
+                </div>
 
-                    {/* COD info card */}
-                    <div style={{ background: "linear-gradient(135deg,#f0fdf4,#ecfdf5)", border: "1.5px solid #34d399", borderRadius: 14, padding: "16px", textAlign: "left", marginBottom: 20, boxShadow: "0 8px 24px rgba(52,211,153,.12)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingBottom: 12, borderBottom: "1px dashed #a7f3d0" }}>
-                        <span style={{ fontSize: 22 }}>📦</span>
-                        <div>
-                          <div style={{ fontWeight: 900, fontSize: 14, color: "#065f46" }}>Resumen del pedido</div>
-                          <div style={{ fontSize: 12, color: "#047857", fontWeight: 700 }}>
-                            {confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0)} artículo{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0) !== 1 ? "s" : ""}
-                          </div>
-                        </div>
-                      </div>
-                      {confirmedItems.map((it, i) => (
-                        <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                          <span>{it.name} × {it.quantity}</span>
-                          <span>{money(it.bundleTotal || (it.price * it.quantity))}</span>
-                        </div>
-                      ))}
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 900, color: "#065f46", paddingTop: 10, marginTop: 6, borderTop: "1px solid #a7f3d0" }}>
-                        <span>Total a pagar</span>
-                        <span>{money(confirmedTotal)}</span>
-                      </div>
-                    </div>
+                <h2 className="cs-confirm4-title">¡Pedido recibido!</h2>
+                <p className="cs-confirm4-sub">
+                  {isCod
+                    ? "Te contactamos por WhatsApp para coordinar la entrega y el pago al recibir."
+                    : "Tu pago fue procesado. Te avisamos cuando tu pedido esté en camino."}
+                </p>
 
-                    {/* Next steps */}
-                    <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: "14px 16px", textAlign: "left", marginBottom: 20 }}>
-                      <div style={{ fontWeight: 900, fontSize: 11, color: "#0b1220", marginBottom: 10, textTransform: "uppercase", letterSpacing: ".05em" }}>Próximos pasos</div>
-                      {[
-                        { icon: "💬", text: "Te contactamos por WhatsApp para confirmar tu dirección" },
-                        { icon: "🚚", text: "Coordinamos la fecha y horario de entrega" },
-                        { icon: "💵", text: "Pagás el total en efectivo cuando recibís el pedido" },
-                      ].map((s, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: i < 2 ? 10 : 0 }}>
-                          <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#334155", lineHeight: 1.4 }}>{s.text}</span>
-                        </div>
-                      ))}
+                {/* Details card */}
+                <div className="cs-confirm4-details">
+                  <div className="cs-confirm4-row">
+                    <span className="cs-confirm4-label">Artículos</span>
+                    <span className="cs-confirm4-val">{totalQty} artículo{totalQty !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="cs-confirm4-row">
+                    <span className="cs-confirm4-label">Envío</span>
+                    <span className="cs-confirm4-val--green">GRATIS</span>
+                  </div>
+                  {isCod && (
+                    <div className="cs-confirm4-row">
+                      <span className="cs-confirm4-label">Pago</span>
+                      <span className="cs-confirm4-val">Al recibir</span>
                     </div>
+                  )}
+                  <div className="cs-confirm4-row">
+                    <span className="cs-confirm4-label">Total</span>
+                    <span className="cs-confirm4-val cs-confirm4-val--total">{money(confirmedTotal)}</span>
+                  </div>
+                </div>
 
-                    {/* WhatsApp CTA */}
-                    {waLink && (
-                      <a
-                        href={waLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "14px 0", borderRadius: 12, background: "#25d366", color: "#fff", fontWeight: 900, fontSize: 15, textDecoration: "none", marginBottom: 12, boxShadow: "0 8px 20px rgba(37,211,102,.25)", transition: "filter .15s" }}
-                      >
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                        Escribinos por WhatsApp
-                      </a>
-                    )}
-                    <button className="cs-cta" style={{ background: "transparent", border: "1.5px solid var(--border2)", color: "var(--text)" }} onClick={onClose}>Seguir viendo productos</button>
-                  </>
-                ) : (
-                  <>
-                    <div className="cs-confirm-icon">✅</div>
-                    <h2 style={{ fontWeight: 900, fontSize: 24, margin: "0 0 8px", color: "var(--text)" }}>¡Pedido confirmado!</h2>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#888", margin: "0 0 24px", lineHeight: 1.6 }}>
-                      Tu pago fue procesado exitosamente. Te contactamos por WhatsApp para coordinar la entrega.
-                    </p>
-                    <div style={{ background: "#f8faff", border: "1px solid var(--border)", borderRadius: 12, padding: "16px", textAlign: "left", marginBottom: 24 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Productos</span>
-                        <span style={{ fontWeight: 800, fontSize: 13 }}>{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0)} artículo{confirmedItems.reduce((s,i) => s + (Number(i.quantity)||0), 0) !== 1 ? "s" : ""}</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Total</span>
-                        <span style={{ fontWeight: 900, fontSize: 15 }}>{money(confirmedTotal)}</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Método de pago</span>
-                        <span style={{ fontWeight: 800, fontSize: 13 }}>{confirmedPaymentMethod === "card" ? "Tarjeta" : "Mercado Pago"}</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontWeight: 700, fontSize: 13, color: "#888" }}>Entrega</span>
-                        <span style={{ fontWeight: 800, fontSize: 13 }}>Envío a domicilio</span>
-                      </div>
-                    </div>
-                    <button className="cs-cta" onClick={onClose}>Seguir comprando</button>
-                  </>
+                {/* CTAs */}
+                {waLink && (
+                  <a href={waLink} target="_blank" rel="noreferrer" className="cs-confirm4-wa">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Escribinos por WhatsApp
+                  </a>
                 )}
+                <button className="cs-confirm4-close" onClick={onClose}>Seguir viendo productos</button>
               </div>
               );
             })()}
@@ -2046,7 +2069,10 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
           {/* ─── STICKY CTA FOOTER (P1+P2 fix) ─── */}
           {step === 0 && (
             <div className="cs-footer">
-              <button className="cs-cta" disabled={items.length === 0} onClick={() => goToStep(1)}>
+              <button className="cs-cta" disabled={items.length === 0} onClick={() => {
+                onClose();
+                navigate("/checkout", { state: { skipCart: true } });
+              }}>
                 Finalizar compra · {money(finalTotal)}
               </button>
               <div style={{ textAlign:"center", fontSize:11, color:"#aaa", fontWeight:600, marginTop:6 }}>
