@@ -107,6 +107,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
   const [confirmedItems, setConfirmedItems] = useState([]);
   const [showCabaConfirm, setShowCabaConfirm] = useState(false);
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null); // 'cod' | 'mp' | 'card'
+  const [stepTransition, setStepTransition] = useState("idle"); // "idle" | "exiting" | "entering"
 
   // ── Cupón de descuento ──
   const [couponOpen, setCouponOpen]       = useState(false);
@@ -179,6 +180,15 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
   function handleClose() {
     if (step === 0 || step >= 3) { onClose(); return; }
     setShowExitIntent(true);
+  }
+
+  function goToStep(n) {
+    setStepTransition("exiting");
+    setTimeout(() => {
+      setStep(n);
+      setStepTransition("entering");
+      setTimeout(() => setStepTransition("idle"), 260);
+    }, 160);
   }
 
   // ── Captura silenciosa de carrito abandonado ──
@@ -331,7 +341,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         });
         setMpRedirectUrl(url);
         setMpCountdown(4);
-        setStep(3);
+        goToStep(3);
         setSubmitting(false);
         return;
       }
@@ -377,7 +387,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
       setConfirmedPaymentMethod("cod");
       clearCart();
       setShowCabaConfirm(false);
-      setStep(4);
+      goToStep(4);
     } catch (err) {
       console.error(err);
       setErrors({ submit: "Error al registrar el pedido. Intentá de nuevo." });
@@ -425,7 +435,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
         setConfirmedItems([...items]);
         setConfirmedPaymentMethod("card");
         clearCart();
-        setStep(4);
+        goToStep(4);
       } else if (status === "in_process") {
         setErrors({ submit: "Tu pago está siendo procesado. Te notificaremos cuando se confirme." });
       } else {
@@ -566,9 +576,50 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
           overflow: hidden;
         }
         .cs-sheet--open { transform: translateY(0) !important; opacity: 1 !important; }
+        /* ── Navbar unificado ── */
+        .cs-nav {
+          display: flex; align-items: center; height: 56px;
+          border-bottom: 1px solid var(--border);
+          flex-shrink: 0; background: #fff; padding: 0 4px;
+        }
+        .cs-nav-side {
+          display: flex; align-items: center; min-width: 88px;
+        }
+        .cs-nav-side--right { justify-content: flex-end; gap: 2px; }
+        .cs-nav-center {
+          flex: 1; text-align: center;
+          font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -.01em;
+        }
+        .cs-nav-btn {
+          display: flex; align-items: center; justify-content: center;
+          width: 44px; height: 44px; background: none; border: none;
+          cursor: pointer; border-radius: 10px; color: #444;
+          transition: background .12s; flex-shrink: 0;
+        }
+        .cs-nav-btn:hover { background: #f5f5f7; }
+        .cs-nav-back {
+          display: flex; align-items: center; gap: 4px;
+          background: none; border: none; cursor: pointer;
+          border-radius: 10px; color: #444; padding: 8px 10px 8px 6px;
+          font-size: 13px; font-weight: 700; transition: background .12s;
+          white-space: nowrap;
+        }
+        .cs-nav-back:hover { background: #f5f5f7; }
+        .cs-nav-secure {
+          display: flex; align-items: center; gap: 4px;
+          font-size: 11px; font-weight: 800; color: #1D9E75;
+          background: #f0fdf4; border: 1px solid #d1fae5;
+          border-radius: 999px; padding: 4px 10px; white-space: nowrap;
+          margin-right: 2px;
+        }
+
         .cs-body { overflow-y: auto; flex: 1; padding: 0 0 24px; }
         .cs-body::-webkit-scrollbar { width: 4px; }
         .cs-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+        @keyframes csStepIn  { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes csStepOut { from { opacity:1; transform:translateX(0); }   to { opacity:0; transform:translateX(-16px); } }
+        .cs-body--entering { animation: csStepIn  .26s cubic-bezier(.22,1,.36,1) both; }
+        .cs-body--exiting  { animation: csStepOut .16s ease both; pointer-events:none; overflow:hidden; }
 
         /* Floating label */
         .cs-field { position: relative; }
@@ -1168,30 +1219,47 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
       <div className="cs-overlay" onClick={handleOverlayClick}>
         <div className="cs-sheet" ref={sheetRef}>
 
-          {/* ─── HEADER ─── */}
-          {step === 0 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px 10px", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ fontWeight: 900, fontSize: 17, color: "var(--text)" }}>
-                Tu carrito ({totalItems})
-              </span>
-              <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1, minWidth: 44, minHeight: 44, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+          {/* ─── NAVBAR ─── */}
+          <div className="cs-nav">
+            <div className="cs-nav-side cs-nav-side--left">
+              {step <= 2 && (
+                step === 0 ? (
+                  <button className="cs-nav-back" onClick={onClose} aria-label="Volver a la tienda">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    Volver
+                  </button>
+                ) : (
+                  <button className="cs-nav-btn" onClick={() => goToStep(step - 1)} aria-label="Volver al paso anterior">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                  </button>
+                )
+              )}
             </div>
-          )}
 
+            <div className="cs-nav-center">
+              {import.meta.env.VITE_STORE_NAME || "BoomHausS"}
+            </div>
+
+            <div className="cs-nav-side cs-nav-side--right">
+              {step <= 2 && (
+                <>
+                  {(step === 1 || step === 2) && (
+                    <span className="cs-nav-secure">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      Seguro
+                    </span>
+                  )}
+                  <button className="cs-nav-btn" onClick={handleClose} aria-label="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Collapsible summary + progress (steps 1 & 2) */}
           {(step === 1 || step === 2) && (
             <div>
-              {/* Store name + close */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px 0" }}>
-                <div style={{ flex: 1 }} />
-                <span style={{ fontWeight: 900, fontSize: 16, color: "var(--text)", flex: 1, textAlign: "center" }}>
-                  {import.meta.env.VITE_STORE_NAME || "BoomHausS"}
-                </span>
-                <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                  <button onClick={handleClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888", minWidth: 44, minHeight: 44, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-                </div>
-              </div>
-
-              {/* Collapsible order summary */}
               <div className="cs-summary-toggle" onClick={() => setSummaryOpen(o => !o)}>
                 <span style={{ fontSize: 13, fontWeight: 800, color: "var(--primary)", display: "flex", alignItems: "center", gap: 6 }}>
                   Resumen del pedido
@@ -1233,7 +1301,6 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 </div>
               )}
 
-              {/* Progress */}
               <div style={{ padding: "14px 28px 0" }}>
                 <div className="cs-progress">
                   <div className={`cs-step-circle ${step >= 1 && step < 2 ? "active" : step >= 2 ? "done" : ""}`}>{step >= 2 ? "✓" : "1"}</div>
@@ -1253,14 +1320,8 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
             </div>
           )}
 
-          {(step === 3 || step === 4) && (
-            <div style={{ display: "flex", justifyContent: "center", padding: "18px 20px 14px", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ fontWeight: 900, fontSize: 16 }}>{import.meta.env.VITE_STORE_NAME || "BoomHausS"}</span>
-            </div>
-          )}
-
           {/* ─── BODY ─── */}
-          <div className="cs-body">
+          <div className={`cs-body${stepTransition === "exiting" ? " cs-body--exiting" : stepTransition === "entering" ? " cs-body--entering" : ""}`}>
 
             {/* ══════ STEP 0 — CART ══════ */}
             {step === 0 && (() => {
@@ -1631,7 +1692,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: 16, marginBottom: 8 }}>
-                  <button className="cs-back" onClick={() => setStep(0)}>← Volver al carrito</button>
+                  <button className="cs-back" onClick={() => goToStep(0)}>← Volver al carrito</button>
                 </div>
               </div>
             )}
@@ -1809,7 +1870,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: 8, marginBottom: 4 }}>
-                  <button className="cs-back" onClick={() => setStep(1)}>← Volver</button>
+                  <button className="cs-back" onClick={() => goToStep(1)}>← Volver</button>
                 </div>
               </div>
             )}
@@ -1869,7 +1930,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                   onClick={() => {
                     setMpRedirectUrl(null);
                     setMpCountdown(4);
-                    setStep(2);
+                    goToStep(2);
                   }}
                 >
                   ← Volver a los métodos de pago
@@ -1985,7 +2046,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
           {/* ─── STICKY CTA FOOTER (P1+P2 fix) ─── */}
           {step === 0 && (
             <div className="cs-footer">
-              <button className="cs-cta" disabled={items.length === 0} onClick={() => setStep(1)}>
+              <button className="cs-cta" disabled={items.length === 0} onClick={() => goToStep(1)}>
                 Finalizar compra · {money(finalTotal)}
               </button>
               <div style={{ textAlign:"center", fontSize:11, color:"#aaa", fontWeight:600, marginTop:6 }}>
@@ -1999,7 +2060,7 @@ export function CheckoutSheet({ onClose, allowCod = true }) {
                 if (!validateStep1()) return;
                 captureAbandoned();
                 track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
-                if (delivery === "caba") { setShowCabaConfirm(true); } else { setStep(2); }
+                if (delivery === "caba") { setShowCabaConfirm(true); } else { goToStep(2); }
               }}>
                 Continuar con el pago →
               </button>

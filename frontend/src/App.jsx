@@ -47,10 +47,10 @@ function PrivateRoute({ children }) {
 export default function App() {
   const location = useLocation();
 
-  // ✅ Navbar visible en todas las páginas
-  const hideChrome = false;
-  // ✅ Footer oculto solo en la landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores';
+  // ✅ Navbar/marquee ocultos en checkout y landing B2B
+  const hideChrome = location.pathname === '/checkout';
+  // ✅ Footer oculto en checkout y landing B2B mundial
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout';
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {

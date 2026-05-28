@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { track } from '../lib/metaPixel';
-import { CheckoutSheet } from './CheckoutSheet';
 import mc from '../landings/masajeador-ems-eyes';
 
 /* ============================================================
@@ -423,25 +423,13 @@ export default function MasajeadorEmsEyesLanding() {
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(mc.bundles[0]);
   const [openFaq,      setOpenFaq]      = useState(null);
-  const [showSheet,    setShowSheet]    = useState(false);
-  const [allowCod,     setAllowCod]     = useState(false);
   const { addItem } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get(`/products/slug/${mc.productSlug}`)
       .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => { setProductReady(true); });
-  }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
-    fetch('https://ipapi.co/json/', { signal: controller.signal })
-      .then(r => r.json())
-      .then(d => { if (d?.country_code === 'AR' && d?.region_code === 'C') setAllowCod(true); })
-      .catch(() => {})
-      .finally(() => clearTimeout(timer));
-    return () => { controller.abort(); clearTimeout(timer); };
   }, []);
 
   useEffect(() => {
@@ -500,7 +488,7 @@ export default function MasajeadorEmsEyesLanding() {
       currency: 'ARS',
       content_name: mc.checkoutName,
     });
-    setShowSheet(true);
+    navigate('/checkout');
   };
 
   const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
@@ -918,8 +906,6 @@ export default function MasajeadorEmsEyesLanding() {
       </div>
 
       <WaTab wa={mc.whatsapp} />
-
-      {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} allowCod={allowCod} />}
 
       <style>{`
 
