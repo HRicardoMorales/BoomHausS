@@ -62,6 +62,7 @@ export function CartProvider({ children }) {
         const compareAtPrice = options?.compareAtPrice ? Number(options.compareAtPrice) || null : null;
         const bundleTotal = options?.bundleTotal ? Number(options.bundleTotal) || null : null;
         const gifts = options?.gifts?.length ? options.gifts : null;
+        const bundleImgs = options?.bundleImgs?.length ? options.bundleImgs : null;
 
         // 🔥 NUEVO: Disparamos evento para que App.jsx muestre el Popup
         window.dispatchEvent(new CustomEvent('cart:added', {
@@ -95,6 +96,7 @@ export function CartProvider({ children }) {
                     ...(compareAtPrice != null ? { compareAtPrice } : {}),
                     ...(bundleTotal != null ? { bundleTotal } : {}),
                     ...(gifts != null ? { gifts } : {}),
+                    ...(bundleImgs != null ? { bundleImgs } : {}),
                 };
                 return copy;
             }
@@ -120,6 +122,7 @@ export function CartProvider({ children }) {
                     imageUrl: product.imageUrl || product.images?.[0] || "",
                     promo: initialPromo,
                     ...(gifts != null ? { gifts } : {}),
+                    ...(bundleImgs != null ? { bundleImgs } : {}),
                 },
             ];
         });

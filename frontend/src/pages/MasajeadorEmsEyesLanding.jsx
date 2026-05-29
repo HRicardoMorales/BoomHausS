@@ -437,11 +437,14 @@ export default function MasajeadorEmsEyesLanding() {
     const heroCTA = document.querySelector('.bnd2-cta');
     const stickyBar = document.querySelector('.pd-sticky-bar');
     if (!heroCTA || !stickyBar) return;
-    let ctaSeen = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) ctaSeen = true;
-        stickyBar.classList.toggle('sticky--visible', ctaSeen && !entry.isIntersecting);
+        // Solo mostrar cuando el CTA quedó POR ENCIMA del viewport (usuario lo scrolleó hacia abajo)
+        const pastCta = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+        stickyBar.classList.toggle('sticky--visible', pastCta);
+        const waTab = document.querySelector('.wa-tab');
+        // WaTab siempre visible, pero sube cuando el sticky aparece
+        if (waTab) waTab.classList.toggle('wa-tab--raised', pastCta);
       },
       { threshold: 0 }
     );
@@ -481,7 +484,7 @@ export default function MasajeadorEmsEyesLanding() {
     addItem(
       { ...product, name: `${mc.checkoutName} — ${selectedBundle.label}` },
       1,
-      { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.compareAt, gifts: selectedBundle.gifts || [] },
+      { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.compareAt, gifts: selectedBundle.gifts || [], bundleImgs: selectedBundle.imgs || [] },
     );
     track('InitiateCheckout', {
       value: selectedBundle.price / 100,
@@ -838,7 +841,9 @@ export default function MasajeadorEmsEyesLanding() {
                       <span className="faq-acc-indicator">{openFaq === i ? '−' : '+'}</span>
                     </div>
                     <div className="faq-acc-content">
-                      <p>{item.a}</p>
+                      {Array.isArray(item.a)
+                        ? item.a.map((para, pi) => <p key={pi}>{para}</p>)
+                        : <p>{item.a}</p>}
                     </div>
                   </div>
                 ))}
@@ -1219,7 +1224,7 @@ export default function MasajeadorEmsEyesLanding() {
         .faq-acc-item.active .faq-acc-indicator { color:#8B1A4A; }
         .faq-acc-content { max-height:0; overflow:hidden; transition:max-height .35s ease,padding .25s ease; padding:0 4px; }
         .faq-acc-content p { margin:0 0 16px; font-size:14px; color:rgba(11,18,32,.62); line-height:1.65; }
-        .faq-acc-item.active .faq-acc-content { max-height:320px; padding:0 4px 4px; }
+        .faq-acc-item.active .faq-acc-content { max-height:1400px; padding:0 4px 16px; }
 
         .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%) translateY(100%); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
         .pd-sticky-bar.sticky--visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
@@ -1249,7 +1254,8 @@ export default function MasajeadorEmsEyesLanding() {
           .pd-sticky-btn.spf-sticky-btn { font-size:.66rem; padding:9px 10px; }
         }
 
-        .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
+        .wa-tab { position:fixed; right:16px; bottom:24px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); transform:translateY(0); transition:transform .3s cubic-bezier(.22,1,.36,1); }
+        .wa-tab.wa-tab--raised { transform:translateY(-82px); }
 
         /* ── Pain headline ── */
         .ems-pain-hl { margin:8px 0 4px; text-align:center; font-size:1.55rem; font-weight:1000; line-height:1.15; color:rgba(11,18,32,.93); letter-spacing:-.02em; }

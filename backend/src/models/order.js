@@ -54,7 +54,6 @@ const orderSchema = new mongoose.Schema(
         paymentProofPublicId: { type: String, default: null }, // opcional (cloudinary)
         paymentReviewedAt: { type: Date, default: null },
         paymentReviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-        paymentRejectionReason: { type: String, default: null },
         notes: { type: String, default: '' }
     },
     { timestamps: true }

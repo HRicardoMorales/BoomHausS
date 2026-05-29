@@ -95,7 +95,7 @@ export default function CardPaymentBrick({ amount, onBeforeSubmit, onSuccess, on
       onSubmit={handleSubmit}
       onError={(err) => {
         console.error("MP Brick internal error:", err);
-        onSetError?.("Ocurrió un error en el formulario de pago.");
+        // El brick ya muestra su propio UI de error; no mostramos el banner rojo encima
       }}
     />
   );

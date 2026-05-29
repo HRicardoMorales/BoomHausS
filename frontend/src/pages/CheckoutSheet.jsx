@@ -628,14 +628,14 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-field input, .cs-field select, .cs-field textarea {
           width: 100%; box-sizing: border-box;
           padding: 22px 14px 8px; font-size: 15px; font-weight: 600;
-          border: 1.5px solid #d0d0d0; border-radius: 8px;
+          border: 1.5px solid #e0e0e0; border-radius: 10px;
           background: #fff; color: var(--text);
-          outline: none; transition: border-color .18s;
+          outline: none; transition: border-color .18s, box-shadow .18s;
           -webkit-appearance: none; appearance: none;
         }
         .cs-field input:focus, .cs-field select:focus {
           border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(27,77,62,.10);
+          box-shadow: 0 0 0 3px rgba(27,77,62,.08);
         }
         .cs-field input.cs-err, .cs-field select.cs-err { border-color: #c0392b !important; }
         .cs-field label {
@@ -666,6 +666,42 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         }
         .cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(27,77,62,.04); }
         .cs-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+
+        /* ── Payment step 2 redesign ── */
+        .cs-ship-summary {
+          display: flex; align-items: center; justify-content: space-between;
+          background: #f8fafc; border: 1.5px solid #e2e8f0;
+          border-radius: 10px; padding: 11px 14px; margin-bottom: 20px;
+        }
+        .cs-pay-section-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+        .cs-pay-section-line { flex: 1; height: 1px; background: #e5e7eb; }
+        .cs-pay-section-ttl { font-size: 13px; font-weight: 900; color: #1a1a1a; text-transform: uppercase; letter-spacing: .12em; white-space: nowrap; }
+        .cs-pay-ssl-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #9ca3af; margin-bottom: 14px; }
+        .cs-pcard { border: 1.5px solid #e2e8f0; border-radius: 10px; background: #fff; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+        .cs-pcard--open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,77,62,.07); }
+        .cs-pcard-row {
+          display: flex; align-items: center; gap: 11px;
+          padding: 15px 16px; cursor: pointer; min-height: 58px;
+        }
+        .cs-pcard-row:hover { background: #fafafa; }
+        .cs-pcard-row input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .cs-pcard-lbl { flex: 1; font-size: 14.5px; font-weight: 700; color: #1a1a1a; }
+        .cs-pcard-logos { display: flex; align-items: center; gap: 4px; }
+        .cs-pcard-chev { color: #c0c0c0; flex-shrink: 0; transition: transform .2s; }
+        .cs-pcard-chev--open { transform: rotate(180deg); }
+        .cs-pcard-body { padding: 0 16px 16px; border-top: 1.5px solid #f3f4f6; }
+        /* MP panel */
+        .cs-mp2 { padding-top: 16px; }
+        .cs-mp2-title { font-size: 15.5px; font-weight: 800; color: #1a1a1a; text-align: center; margin-bottom: 14px; line-height: 1.3; }
+        .cs-mp2-bullets { display: flex; flex-direction: column; gap: 11px; margin-bottom: 16px; }
+        .cs-mp2-bullet { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; font-weight: 600; color: #374151; line-height: 1.5; }
+        .cs-mp2-bullet strong { font-weight: 800; color: #1e293b; }
+        .cs-mp2-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+        .cs-mp2-footer { display: flex; align-items: center; gap: 11px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 11px 13px; }
+        .cs-mp2-footer-main { font-size: 13px; font-weight: 800; color: #1e293b; line-height: 1.3; }
+        .cs-mp2-footer-sub { font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-top: 2px; }
+        .cs-card-brands-row { display: flex; align-items: center; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1.5px solid #f3f4f6; }
+        .cs-card-brands-lbl { font-size: 11px; font-weight: 700; color: #9ca3af; margin-right: 2px; white-space: nowrap; }
 
         /* Progress bar */
         .cs-progress { display: flex; align-items: center; gap: 0; padding: 16px 24px 0; }
@@ -947,13 +983,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         }
         .cs-card-field {
           position: relative;
-          border: 1px solid #d0d0d0; border-radius: 8px;
+          border: 1.5px solid #e0e0e0; border-radius: 10px;
           background: #fff; min-height: 56px;
           display: flex; flex-direction: column; justify-content: center;
           padding: 0 44px 0 14px;
-          transition: border-color .15s; cursor: text;
+          transition: border-color .15s, box-shadow .15s; cursor: text;
         }
-        .cs-card-field:focus-within { border-color: #222; border-width: 1.5px; }
+        .cs-card-field:focus-within { border-color: #555; box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
         .cs-card-field--err { border-color: #c0392b !important; }
 
         /* Label flotante */
@@ -1246,6 +1282,42 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           margin-top: 14px;
           padding: 6px;
         }
+
+        /* ── Payment detail view (replace accordion with nav pattern) ── */
+        .cs-pay-detail {
+          border: 1.5px solid #e2e8f0;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #fff;
+        }
+        .cs-pay-view-hdr {
+          display: flex; align-items: center; gap: 10px;
+          padding: 13px 16px;
+          border-bottom: 1.5px solid #f1f5f9;
+          background: #fafbfc;
+        }
+        .cs-pay-view-back {
+          display: flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px;
+          border: none; background: none; cursor: pointer;
+          color: #64748b; border-radius: 7px; flex-shrink: 0;
+          transition: background .12s, color .12s;
+        }
+        .cs-pay-view-back:hover { background: #e2e8f0; color: #1e293b; }
+        .cs-pay-view-hdr-ttl {
+          font-size: 13.5px; font-weight: 800; color: #1a1a1a; flex: 1;
+        }
+        .cs-pay-change {
+          background: none; border: none; cursor: pointer;
+          font-size: 12px; font-weight: 700; color: #94a3b8;
+          text-decoration: underline; text-underline-offset: 2px;
+          padding: 4px 6px; transition: color .15s;
+        }
+        .cs-pay-change:hover { color: #475569; }
+
+        /* Dark CTA for payment step */
+        .cs-cta--dark { background: #1e293b !important; }
+        .cs-cta--dark:hover:not(:disabled) { background: #0f172a !important; transform: translateY(-1px); }
       `}</style>
 
       {/* ══════ CABA CONFIRM MODAL ══════ */}
@@ -1433,13 +1505,30 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                     const thumb = it.imageUrl || it.image || null;
                     return (
                       <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      <div style={{ display: "flex", gap: 12, alignItems: "center", background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 12px" }}>
-                        {/* Image + qty badge */}
+                      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", background: "#fff", border: "1px solid var(--border)", borderRadius: 14, padding: "12px 12px" }}>
+
+                        {/* Imágenes: bundle (múltiples) o producto único */}
                         <div style={{ position: "relative", flexShrink: 0 }}>
-                          <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#f0f4ff", display: "grid", placeItems: "center" }}>
-                            {thumb ? <img src={thumb} alt={it.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>📦</span>}
-                          </div>
-                          <span style={{ position: "absolute", top: -6, right: -6, background: "var(--text)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 11, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
+                          {it.bundleImgs?.length > 0 ? (
+                            <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                              {it.bundleImgs.map((src, bIdx) => (
+                                <div key={bIdx} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                  {bIdx > 0 && <span style={{ fontSize: 11, fontWeight: 900, color: "var(--primary)", opacity: .55, lineHeight: 1 }}>+</span>}
+                                  <div style={{ width: 52, height: 52, borderRadius: 9, overflow: "hidden", background: "#f5f0f3", border: "1px solid rgba(0,0,0,.07)", flexShrink: 0 }}>
+                                    <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
+                                  </div>
+                                </div>
+                              ))}
+                              <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
+                            </div>
+                          ) : (
+                            <>
+                              <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#f0f4f8", display: "grid", placeItems: "center", border: "1px solid rgba(0,0,0,.07)" }}>
+                                {thumb ? <img src={thumb} alt={it.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>📦</span>}
+                              </div>
+                              <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
+                            </>
+                          )}
                         </div>
 
                         {/* Info */}
@@ -1448,37 +1537,38 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                             const parts = it.name.split(' — ');
                             return parts.length > 1 ? (
                               <>
-                                <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parts[0]}</div>
-                                <div style={{ fontWeight: 700, fontSize: 11, color: '#888', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parts[1]}</div>
+                                <div style={{ fontWeight: 900, fontSize: 13, lineHeight: 1.3, color: "rgba(11,18,32,.90)" }}>{parts[0]}</div>
+                                <div style={{ fontWeight: 700, fontSize: 11.5, color: "var(--primary)", marginTop: 2, lineHeight: 1.3 }}>{parts[1]}</div>
                               </>
                             ) : (
-                              <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.name}</div>
+                              <div style={{ fontWeight: 900, fontSize: 13, lineHeight: 1.3, color: "rgba(11,18,32,.90)" }}>{it.name}</div>
                             );
                           })()}
-                          {hasDiscount && it.promo?.discountPct > 0 && (
-                            <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", borderRadius: 999, padding: "2px 8px", fontWeight: 800, display: "inline-block", marginTop: 3 }}>
-                              -{it.promo.discountPct}% PROMO
-                            </span>
-                          )}
-                          {hasDiscount && it.bundleTotal && (
-                            <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 999, padding: "2px 8px", fontWeight: 800, display: "inline-block", marginTop: 3 }}>
-                              PACK AHORRO
-                            </span>
-                          )}
-                          {/* Cantidad — solo lectura, sin controles de edición */}
+                          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 5 }}>
+                            {hasDiscount && it.promo?.discountPct > 0 && (
+                              <span style={{ fontSize: 10.5, background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                                -{it.promo.discountPct}% OFF
+                              </span>
+                            )}
+                            {hasDiscount && it.bundleTotal && (
+                              <span style={{ fontSize: 10.5, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                                PACK AHORRO
+                              </span>
+                            )}
+                          </div>
                           <div style={{ marginTop: 5 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(11,18,32,.45)" }}>
+                            <span style={{ fontSize: 11.5, fontWeight: 700, color: "rgba(11,18,32,.38)" }}>
                               Cant: {it.quantity}
                             </span>
                           </div>
                         </div>
 
                         {/* Price */}
-                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ textAlign: "right", flexShrink: 0, paddingTop: 2 }}>
                           {hasDiscount && origTotal !== itemTotal && (
-                            <div style={{ fontSize: 12, textDecoration: "line-through", color: "#aaa", fontWeight: 700 }}>{money(origTotal)}</div>
+                            <div style={{ fontSize: 11, textDecoration: "line-through", color: "#bbb", fontWeight: 700 }}>{money(origTotal)}</div>
                           )}
-                          <div style={{ fontWeight: 900, fontSize: 15, color: hasDiscount ? "#1D9E75" : "var(--text)" }}>{money(itemTotal)}</div>
+                          <div style={{ fontWeight: 900, fontSize: 16, color: hasDiscount ? "#1D9E75" : "var(--text)" }}>{money(itemTotal)}</div>
                         </div>
                       </div>
                       {it.gifts?.length > 0 && (
@@ -1770,151 +1860,183 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
               <div style={{ padding: "20px 20px 0" }}>
 
                 {/* Shipping summary */}
-                <div style={{ background: "#f5f7fa", border: "1px solid var(--border)", borderRadius: 10, padding: "12px 16px", marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div className="cs-ship-summary">
                   <div>
                     <div style={{ fontWeight: 800, fontSize: 13, color: "var(--text)" }}>Envío</div>
-                    <div style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>{delivery === "caba" ? "Pagás al recibir (CABA)" : "Envío a Domicilio (Correo Arg)"}</div>
+                    <div style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>{delivery === "caba" ? "Pagás al recibir (CABA)" : "Envío a domicilio — Correo Argentino"}</div>
                   </div>
                   <div style={{ fontWeight: 900, color: "#1D9E75", fontSize: 14 }}>GRATIS</div>
                 </div>
 
-                {/* Payment section */}
-                <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 4, color: "var(--text)" }}>Pago</div>
-                <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
-                  <span>🔒</span> Todas las transacciones son seguras y están encriptadas.
+                {/* Section header */}
+                <div className="cs-pay-section-hdr">
+                  <div className="cs-pay-section-line" />
+                  <span className="cs-pay-section-ttl">Medio de pago</span>
+                  <div className="cs-pay-section-line" />
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1.5px solid #d0d0d0", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
+                {/* ── Selección de método o vista de detalle ── */}
+                {payOpen === null ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, background: "#f5f5f5", margin: "0 -20px 20px", padding: "12px 12px" }}>
 
-                  {/* Option: Card */}
-                  <div style={{ borderBottom: payOpen === "card" ? "1px solid #e0e0e0" : "none" }}>
-                    <div
-                      className={`cs-opt ${payOpen === "card" ? "cs-opt--active" : ""}`}
-                      style={{ borderRadius: 0, border: "none", borderBottom: "1px solid #e0e0e0" }}
-                      onClick={() => togglePayOption("card")}
-                    >
-                      <input type="radio" name="pay" checked={payOpen === "card"} onChange={() => togglePayOption("card")} />
-                      <div style={{ flex: 1, fontWeight: 800, fontSize: 14 }}>Tarjeta de crédito / débito</div>
-                      <div className="cs-pay-logos">
-                        <LogoVisa /><LogoMC /><LogoAmex /><LogoDiners />
+                    {/* Mercado Pago — primero */}
+                    <div className="cs-pcard" onClick={() => togglePayOption("mp")}>
+                      <div className="cs-pcard-row">
+                        <svg viewBox="0 0 102 34" width="90" height="30" aria-label="Mercado Pago" style={{ flexShrink: 0 }}>
+                          <rect width="102" height="34" rx="17" fill="#FFE600"/>
+                          <circle cx="21" cy="17" r="11" fill="#009ee3"/>
+                          <text x="21" y="21.5" textAnchor="middle" fontFamily="Arial Black,Arial,sans-serif" fontWeight="900" fontSize="9.5" fill="#fff">mp</text>
+                          <text x="65" y="14" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="9.5" fill="#009ee3">mercado</text>
+                          <text x="65" y="25" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="9.5" fill="#009ee3">pago</text>
+                        </svg>
+                        <span className="cs-pcard-lbl" style={{ flex: 1 }}>Mercado Pago</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#c0c0c0", flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
                       </div>
                     </div>
 
-                    {payOpen === "card" && (
-                      <div className="cs-pay-panel" style={{ padding: "0 16px 16px" }}>
-                        {!mpPublicKey ? (
-                          <div className="mp-loading">
-                            <span className="mp-not-ready">MP_PUBLIC_KEY no configurada. Agregala en el .env.</span>
+                    {/* Tarjeta de crédito/débito — segundo */}
+                    <div className="cs-pcard" onClick={() => togglePayOption("card")}>
+                      <div className="cs-pcard-row">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: "#94a3b8" }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <span className="cs-pcard-lbl" style={{ flex: 1 }}>Tarjeta de crédito o débito</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#c0c0c0", flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
+                      </div>
+                    </div>
+
+                  </div>
+                ) : payOpen === "card" ? (
+                  <div className="cs-pay-detail" style={{ marginBottom: 20 }}>
+
+                    {/* Sub-header */}
+                    <div className="cs-pay-view-hdr">
+                      <button className="cs-pay-view-back" onClick={() => { setPayOpen(null); setPayment(null); }} aria-label="Volver a métodos de pago">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                      </button>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#64748b", flexShrink: 0 }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      <span className="cs-pay-view-hdr-ttl">Tarjeta de crédito o débito</span>
+                    </div>
+
+                    {/* Card form */}
+                    <div style={{ padding: "0 16px" }}>
+                      {!mpPublicKey ? (
+                        <div className="mp-not-ready" style={{ marginTop: 14 }}>MP_PUBLIC_KEY no configurada. Agregala en el .env.</div>
+                      ) : (
+                        <form id="cs-card-form" className="cs-card-form" onSubmit={e => e.preventDefault()}>
+                          {/* Número de tarjeta */}
+                          <div className="cs-card-field cs-card-field--auto">
+                            <input id="cs-inp-cardNumber" className="cs-card-inp" inputMode="numeric" autoComplete="cc-number" />
+                            <span className="cs-card-ico cs-card-ico--lock">&#128274;</span>
                           </div>
-                        ) : (
-                          <form id="cs-card-form" className="cs-card-form" onSubmit={e => e.preventDefault()}>
-
-                            {/* Numero de tarjeta */}
-                            <div className="cs-card-field cs-card-field--auto">
-                              <input id="cs-inp-cardNumber" className="cs-card-inp" inputMode="numeric" autoComplete="cc-number" />
-                              <span className="cs-card-ico cs-card-ico--lock">&#128274;</span>
-                            </div>
-
-                            {/* Fecha de vencimiento */}
+                          {/* Titular */}
+                          <div className="cs-card-field cs-card-field--auto">
+                            <input id="cs-inp-name" className="cs-card-inp" autoComplete="cc-name" />
+                          </div>
+                          {/* Vencimiento + CVV */}
+                          <div className="cs-card-row2">
                             <div className="cs-card-field cs-card-field--auto">
                               <input id="cs-inp-expiration" className="cs-card-inp" inputMode="numeric" autoComplete="cc-exp" />
                             </div>
-
-                            {/* Codigo de seguridad */}
                             <div className="cs-card-field cs-card-field--auto">
                               <input id="cs-inp-cvv" className="cs-card-inp" inputMode="numeric" autoComplete="cc-csc" />
                               <span className="cs-card-ico cs-card-ico--cvv">?</span>
                             </div>
+                          </div>
+                          {/* Cuotas */}
+                          <div className="cs-card-field cs-card-field--auto cs-card-field--sel">
+                            <select id="cs-inp-installments" className="cs-card-inp cs-card-sel" />
+                            <span className="cs-card-arrow">&#9662;</span>
+                          </div>
+                          {/* Tipo de documento */}
+                          <div className="cs-card-field cs-card-field--auto cs-card-field--sel">
+                            <select id="cs-inp-docType" className="cs-card-inp cs-card-sel" />
+                            <span className="cs-card-arrow">&#9662;</span>
+                          </div>
+                          {/* Número de documento */}
+                          <div className="cs-card-field cs-card-field--auto">
+                            <input id="cs-inp-docNumber" className="cs-card-inp" inputMode="numeric" />
+                          </div>
+                          {/* Campos ocultos requeridos por MP */}
+                          <div style={{ display: "none" }}>
+                            <select id="cs-inp-issuer" />
+                            <input id="cs-inp-email" type="email" defaultValue="comprador@boomhauss.com" />
+                          </div>
+                          {/* Dirección de facturación */}
+                          <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, fontWeight: 700, color: "rgba(11,18,32,.7)", cursor: "pointer", marginTop: 8 }}>
+                            <input type="checkbox" checked={sameAddr} onChange={e => setSameAddr(e.target.checked)} style={{ width: 16, height: 16, accentColor: "var(--primary)", flexShrink: 0, marginTop: 1 }} />
+                            Usar la dirección de envío como dirección de facturación
+                          </label>
+                        </form>
+                      )}
+                    </div>
 
-                            {/* Nombre del titular */}
-                            <div className="cs-card-field cs-card-field--auto">
-                              <input id="cs-inp-name" className="cs-card-inp" autoComplete="cc-name" />
-                            </div>
+                    {/* Tarjetas aceptadas */}
+                    <div className="cs-card-brands-row" style={{ margin: "0 16px 12px" }}>
+                      <span className="cs-card-brands-lbl">Aceptamos:</span>
+                      <LogoVisa /><LogoMC /><LogoAmex />
+                    </div>
 
-                            {/* Documento + Numero */}
-                            <div className="cs-card-row2">
-                              <div className="cs-card-field cs-card-field--auto cs-card-field--sel">
-                                <select id="cs-inp-docType" className="cs-card-inp cs-card-sel" />
-                                <span className="cs-card-arrow">&#9662;</span>
-                              </div>
-                              <div className="cs-card-field cs-card-field--auto">
-                                <input id="cs-inp-docNumber" className="cs-card-inp" inputMode="numeric" />
-                              </div>
-                            </div>
+                    {/* Cambiar método */}
+                    <div style={{ textAlign: "center", paddingBottom: 14 }}>
+                      <button className="cs-pay-change" onClick={() => { setPayOpen(null); setPayment(null); }}>
+                        ← Cambiar opción de pago
+                      </button>
+                    </div>
 
-                            {/* Cuotas (MP las llena automaticamente) */}
-                            <div className="cs-card-field cs-card-field--auto cs-card-field--sel">
-                              <select id="cs-inp-installments" className="cs-card-inp cs-card-sel" />
-                              <span className="cs-card-arrow">&#9662;</span>
-                            </div>
-
-                            {/* Campos ocultos requeridos por MP */}
-                            <div style={{ display: "none" }}>
-                              <select id="cs-inp-issuer" />
-                              <input id="cs-inp-email" type="email" defaultValue="comprador@boomhauss.com" />
-                            </div>
-
-                            {/* Direccion de facturacion */}
-                            <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, fontWeight: 700, color: "rgba(11,18,32,.7)", cursor: "pointer", marginTop: 6 }}>
-                              <input type="checkbox" checked={sameAddr} onChange={e => setSameAddr(e.target.checked)} style={{ width: 16, height: 16, accentColor: "var(--primary)", flexShrink: 0, marginTop: 1 }} />
-                              Usar la direccion de envio como direccion de facturacion
-                            </label>
-                          </form>
-                        )}
-                      </div>
-                    )}
                   </div>
+                ) : payOpen === "mp" ? (
+                  <div className="cs-pay-detail" style={{ marginBottom: 20 }}>
 
-                  {/* Option: Mercado Pago */}
-                  <div>
-                    <div
-                      className={`cs-opt ${payOpen === "mp" ? "cs-opt--active" : ""}`}
-                      style={{ borderRadius: 0, border: "none" }}
-                      onClick={() => togglePayOption("mp")}
-                    >
-                      <input type="radio" name="pay" checked={payOpen === "mp"} onChange={() => togglePayOption("mp")} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 800, fontSize: 14 }}>Mercado Pago</div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginTop: 1 }}>Incluye cuotas sin interés, Rapipago, Pago Fácil y más</div>
+                    {/* Sub-header */}
+                    <div className="cs-pay-view-hdr">
+                      <button className="cs-pay-view-back" onClick={() => { setPayOpen(null); setPayment(null); }} aria-label="Volver a métodos de pago">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                      </button>
+                      <svg viewBox="0 0 102 34" width="78" height="26" aria-label="Mercado Pago" style={{ flexShrink: 0 }}>
+                        <rect width="102" height="34" rx="17" fill="#FFE600"/>
+                        <circle cx="21" cy="17" r="11" fill="#009ee3"/>
+                        <text x="21" y="21.5" textAnchor="middle" fontFamily="Arial Black,Arial,sans-serif" fontWeight="900" fontSize="9.5" fill="#fff">mp</text>
+                        <text x="65" y="14" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="9.5" fill="#009ee3">mercado</text>
+                        <text x="65" y="25" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="9.5" fill="#009ee3">pago</text>
+                      </svg>
+                    </div>
+
+                    {/* MP panel */}
+                    <div style={{ padding: "14px 16px 4px" }}>
+                      <div className="cs-mp2-title">Pagá con tu cuenta de Mercado Pago</div>
+                      <div className="cs-mp2-bullets">
+                        <div className="cs-mp2-bullet">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}><rect width="24" height="24" rx="6" fill="#e0f2fe"/><path d="M5 12h14M5 8h8" stroke="#009ee3" strokeWidth="2" strokeLinecap="round"/></svg>
+                          <div><strong>Usá tus tarjetas guardadas,</strong> dinero disponible y mucho más.</div>
+                        </div>
+                        <div className="cs-mp2-bullet">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}><rect width="24" height="24" rx="6" fill="#e0f2fe"/><circle cx="12" cy="12" r="5" stroke="#009ee3" strokeWidth="2"/><path d="M12 9v3l1.5 1.5" stroke="#009ee3" strokeWidth="2" strokeLinecap="round"/></svg>
+                          <div><strong>Accedé a Cuotas sin Tarjeta</strong> para comprar ahora y pagar después.</div>
+                        </div>
                       </div>
-                      <div className="cs-pay-logos">
-                        <LogoMP /><LogoVisa /><LogoMC />
-                        <span style={{ fontSize: 11, color: "#888", fontWeight: 700 }}>+3</span>
+                      <div className="cs-mp2-logos">
+                        <LogoVisa /><LogoMC /><LogoAmex />
+                        <div className="cs-logo-badge">NX</div>
+                        <div className="cs-logo-badge cs-logo-rapi">Rapipago</div>
+                        <div className="cs-logo-badge cs-logo-pf">Pago Fácil</div>
+                      </div>
+                      <div className="cs-mp2-footer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <div>
+                          <div className="cs-mp2-footer-main">Te llevaremos a Mercado Pago</div>
+                          <div className="cs-mp2-footer-sub">Si no tenés una cuenta, podés usar tu e-mail.</div>
+                        </div>
                       </div>
                     </div>
 
-                    {payOpen === "mp" && (
-                      <div className="cs-pay-panel" style={{ padding: "0 16px 16px" }}>
-                        <div className="cs-mp-panel">
-                          <div className="cs-mp-panel-head">
-                            <div className="cs-mp-logo-wrap">
-                              <svg viewBox="0 0 80 22" width="82" height="22" aria-label="Mercado Pago" style={{ display:"block" }}>
-                                <rect width="80" height="22" rx="4" fill="#009ee3"/>
-                                <text x="40" y="15" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="900" fontFamily="Arial,sans-serif" letterSpacing="0.3">MERCADO PAGO</text>
-                              </svg>
-                            </div>
-                            <div className="cs-mp-head-txt">
-                              <div className="cs-mp-head-title">Pagá como quieras, 100% seguro</div>
-                              <div className="cs-mp-head-sub">Tarjeta · Débito · Transferencia · Efectivo · Cuotas</div>
-                            </div>
-                          </div>
-                          <ul className="cs-mp-benefits">
-                            <li><span className="cs-mp-check">✓</span> Pagás con el método que prefieras (hasta 12 cuotas)</li>
-                            <li><span className="cs-mp-check">✓</span> Compra protegida: si no recibís el producto, te devolvemos tu dinero</li>
-                            <li><span className="cs-mp-check">✓</span> No guardamos tus datos bancarios — los procesa Mercado Pago</li>
-                          </ul>
-                          <div className="cs-mp-trust">
-                            <span className="cs-mp-trust-item">🔒 SSL 256 bits</span>
-                            <span className="cs-mp-trust-dot">·</span>
-                            <span className="cs-mp-trust-item">PCI-DSS</span>
-                            <span className="cs-mp-trust-dot">·</span>
-                            <span className="cs-mp-trust-item">Encriptado</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {/* Cambiar método */}
+                    <div style={{ textAlign: "center", padding: "10px 0 14px" }}>
+                      <button className="cs-pay-change" onClick={() => { setPayOpen(null); setPayment(null); }}>
+                        ← Cambiar opción de pago
+                      </button>
+                    </div>
+
                   </div>
-                </div>
+                ) : null}
 
                 {/* Total box */}
                 <div className="cs-total-box" style={{ marginBottom: 16 }}>
@@ -1925,7 +2047,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   )}
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#888" }}>Total · {totalItems} artículo{totalItems !== 1 ? "s" : ""}</div>
-                    <div style={{ fontWeight: 900, fontSize: 20, color: "var(--text)" }}>{money(totalPrice)}</div>
+                    <div style={{ fontWeight: 900, fontSize: 20, color: "var(--text)" }}>{money(finalTotal)}</div>
                     {savings > 0 && <div style={{ fontSize: 12, fontWeight: 800, color: "#1D9E75" }}>Ahorrás {money(savings)}</div>}
                   </div>
                 </div>
@@ -2103,14 +2225,17 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           {step === 2 && (
             <div className="cs-footer">
               <button
-                className="cs-cta"
+                className="cs-cta cs-cta--dark"
                 disabled={!payment || submitting || processingPayment}
                 onClick={() => {
                   if (payment === "card" && cardFormInstance) { cardFormInstance.submit(); }
                   else if (payment === "mp") { handleSubmit(); }
                 }}
               >
-                {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." : "Pagar ahora"}
+                {processingPayment ? "Procesando pago..." : submitting ? "Conectando con Mercado Pago..." :
+                  payment === "mp" ? "Pagar a través de Mercado Pago" :
+                  payment === "card" ? "Pagar con tarjeta" :
+                  "Realizar pedido"}
               </button>
               {!payment && (
                 <div style={{ textAlign:"center", fontSize:12, fontWeight:700, color:"#1D9E75", marginTop:6 }}>

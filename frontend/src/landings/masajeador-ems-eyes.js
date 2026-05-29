@@ -186,36 +186,60 @@ const masajeadorEmsEyesConfig = {
   faqSubtitle: "Comprá con la tranquilidad que merecés",
   faq: [
     {
-      q: "¿Cómo se usa el EMS EYES?",
-      a: "Aplicá tu suero o crema habitual en la zona. Activá el dispositivo y deslizalo suavemente por el contorno de ojos, frente y mejillas durante 5-10 minutos. El sensor inteligente se activa solo al tocar la piel y se detiene al levantarlo — no podés usarlo mal.",
+      q: "Cómo usar la Varita SkinCare",
+      a: [
+        "Paso 1: Empezá con la piel limpia y seca, aplicando una fina capa del Sérum Activador en la zona que desees tratar.",
+        "Paso 2: Deslizá suavemente la Varita SkinCare (se activa al tacto) sobre la piel con movimientos hacia afuera*.",
+        "Paso 3: Al terminar, limpiá el cabezal con un paño húmedo para eliminar cualquier residuo y guardá la varita en un lugar seguro. Evita sumergirla en agua para prolongar su vida útil.",
+        "*Las zonas recomendadas incluyen: Frente, Contorno de Ojos, Mentón y Cuello (evitando la zona de la tiroides).",
+      ],
     },
     {
-      q: "¿Con qué frecuencia debo usarlo?",
-      a: "5-10 minutos diarios sobre piel limpia e hidratada. Para resultados visibles, usalo de forma consistente durante 4 semanas. Podés usarlo mañana y noche para acelerar los resultados.",
+      q: "Aprobación Anmat",
+      a: "Nuestro Serum Activador cuenta con la aprobación ANMAT y todos los requisitos sanitarios.",
     },
     {
-      q: "¿Funciona con mi crema o suero habitual?",
-      a: "Sí, funciona con cualquier producto que ya uses. El calor a 42°C y la vibración sónica potencian la absorción hasta el doble. Especialmente efectivo con sueros de vitamina C, ácido hialurónico o retinol.",
+      q: "Ingredientes esenciales",
+      a: [
+        "Ácido hialurónico: Atrae y retiene la humedad, dejando la piel más tersa e hidratada.",
+        "Antioxidantes: Protegen la piel del daño ambiental y contribuyen a un tono más uniforme.",
+        "Péptidos: Estimulan la producción de colágeno, ayudando a reducir arrugas y mejorar la elasticidad.",
+      ],
     },
     {
-      q: "¿Sirve para todo tipo de piel?",
-      a: "Sí. Apto para piel seca, normal, mixta y madura. No se recomienda sobre heridas abiertas, acné severo activo o quemaduras. Si tenés piel muy sensible, empezá con 2-3 minutos y aumentá gradualmente.",
+      q: "¿La Varita se usa con el Serum Activador? ¿Por qué?",
+      a: [
+        "Sí, recomendamos usar la Varita SkinCare con el Sérum Activador para maximizar los resultados del tratamiento.",
+        "La varita utiliza corriente galvánica, que facilita la penetración profunda de los ingredientes del sérum en la piel, potenciando su efectividad.",
+        "El sérum no solo mejora la hidratación, sino que también proporciona nutrientes esenciales como ácido hialurónico y antioxidantes, optimizando la regeneración y el rejuvenecimiento de la piel.",
+        "Además, su textura permite un deslizamiento suave de la varita, asegurando una aplicación uniforme y cómoda durante toda la sesión.",
+        "Diseñamos la formula de nuestro Serum Activador específicamente para que dé mejores resultados la terapia de luz roja.",
+      ],
     },
     {
-      q: "¿Se puede usar en toda la cara o solo en los ojos?",
-      a: "Está diseñado para el contorno de ojos pero podés usarlo en toda la cara: frente, mejillas, zona del labio superior y cuello. El cabezal giratorio 270° se adapta perfectamente a todas las curvas del rostro.",
+      q: "¿Puedo usar la Varita igual con otros serums?",
+      a: [
+        "Sí, podés usarla con tu sérum actual siempre que tenga textura ligera y no contenga aceites (para no interferir con la tecnología de la varita).",
+        "Para resultados más visibles y rápidos, recomendamos usarla con nuestro Sérum Activador, que fue desarrollado específicamente para potenciar los efectos de la varita.",
+        "Nuestros testimonios de ANTES y DESPUÉS fueron utilizando la Varita + nuestro Serum.",
+        "De todas maneras, si querés primero integrar solamente la varita a tus serums actuales (mientras no tengan ácidos) podés perfectamente :)",
+      ],
     },
     {
-      q: "¿En qué parte de mi rutina lo uso?",
-      a: "Después de limpiar el rostro y aplicar tu suero o crema. El calor y la vibración potencian la absorción de los activos. Ideal antes de la crema nutritiva o protector solar.",
+      q: "¿En qué parte de la rutina se usa?",
+      a: "Usá la varita después de la limpieza facial, con el rostro seco. Aplicá el sérum y luego pasá la varita durante 5 minutos. Después, podés seguir con tu hidratante, contorno o crema de noche como siempre.",
     },
     {
-      q: "¿Duele? ¿Es seguro?",
-      a: "No duele. La microcorriente EMS es de baja intensidad y el calor está calibrado a 42°C — temperatura segura y confortable. El sensor garantiza que la energía se aplique solo cuando el dispositivo está en contacto con la piel.",
+      q: "¿El Serum es Cruelty-Free?",
+      a: "Claro que sí. Nuestro Serum es vegano y cruelty-free. Contamos con todas las certificaciones.",
     },
     {
-      q: "¿Tiene garantía?",
-      a: "30 días de garantía total. Si el dispositivo no funciona correctamente o en 4 semanas no notás ningún cambio en tu piel, te devolvemos el dinero entero. Sin formularios, sin preguntas — solo WhatsApp y listo.",
+      q: "¿Es segura de usar?",
+      a: "Sí. Nuestra Varita SkinCare cumple con todas las aprobaciones internacionales de seguridad de uso, y nuestro Serum Activador cuenta con aprobación ANMAT.",
+    },
+    {
+      q: "¿Tiene alguna garantía?",
+      a: "Sí, claro. La Varita SkinCare cuenta con garantía de 12 meses.",
     },
   ],
 

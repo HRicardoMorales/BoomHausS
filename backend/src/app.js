@@ -22,6 +22,7 @@ const paymentsRoutes = require('./routes/payments.routes');
 const couponsRoutes = require('./routes/coupons.routes');
 
 const AbandonedCart = require('./models/AbandonedCart');
+const { authRequired, adminOnly } = require('./middlewares/authMiddleware');
 
 const app = express();
 
@@ -204,7 +205,7 @@ app.post('/api/abandoned-cart', async (req, res) => {
 });
 
 // GET /api/abandoned-carts  (listar — query: ?all=1, ?limit=100)
-app.get('/api/abandoned-carts', async (req, res) => {
+app.get('/api/abandoned-carts', authRequired, adminOnly, async (req, res) => {
   try {
     const showAll = req.query.all === '1' || req.query.all === 'true';
     const limit = Math.min(Number(req.query.limit) || 100, 500);
@@ -221,7 +222,7 @@ app.get('/api/abandoned-carts', async (req, res) => {
 });
 
 // POST /api/abandoned-carts/:id/recover  (marcar como recuperado/descartado)
-app.post('/api/abandoned-carts/:id/recover', async (req, res) => {
+app.post('/api/abandoned-carts/:id/recover', authRequired, adminOnly, async (req, res) => {
   try {
     await AbandonedCart.findByIdAndUpdate(req.params.id, {
       recovered: true,
@@ -234,7 +235,7 @@ app.post('/api/abandoned-carts/:id/recover', async (req, res) => {
 });
 
 // POST /api/abandoned-carts/:id/reopen  (volver a pendiente)
-app.post('/api/abandoned-carts/:id/reopen', async (req, res) => {
+app.post('/api/abandoned-carts/:id/reopen', authRequired, adminOnly, async (req, res) => {
   try {
     await AbandonedCart.findByIdAndUpdate(req.params.id, {
       recovered: false,
@@ -247,7 +248,7 @@ app.post('/api/abandoned-carts/:id/reopen', async (req, res) => {
 });
 
 // POST /api/abandoned-carts/:id/contacted  (registrar que fue contactado)
-app.post('/api/abandoned-carts/:id/contacted', async (req, res) => {
+app.post('/api/abandoned-carts/:id/contacted', authRequired, adminOnly, async (req, res) => {
   try {
     await AbandonedCart.findByIdAndUpdate(req.params.id, {
       contactedAt: new Date(),
@@ -260,7 +261,7 @@ app.post('/api/abandoned-carts/:id/contacted', async (req, res) => {
 });
 
 // DELETE /api/abandoned-carts/:id
-app.delete('/api/abandoned-carts/:id', async (req, res) => {
+app.delete('/api/abandoned-carts/:id', authRequired, adminOnly, async (req, res) => {
   try {
     await AbandonedCart.findByIdAndDelete(req.params.id);
     res.json({ ok: true });

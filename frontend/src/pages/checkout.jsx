@@ -345,7 +345,9 @@ export default function Checkout() {
   const isCod = shippingMethod === "caba_cod";
 
   // ── Pago ──────────────────────────────────────────────────────────────────
-  const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
+  const [onlinePayMethod, setOnlinePayMethod] = useState(null);
+  const [cardMounted, setCardMounted] = useState(false);
+  const [selectedCuotas, setSelectedCuotas] = useState(3);
   const [cardPaymentDone, setCardPaymentDone] = useState(false);
 
   // ── Cupón ─────────────────────────────────────────────────────────────────
@@ -787,12 +789,6 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Trust */}
-            <div className="ckfp-trust-row" style={{ marginTop: 16, marginBottom: 0 }}>
-              {["🔒 Compra segura", "🛡️ Garantía 30 días", "✅ +500 clientes"].map(t => (
-                <span key={t} className="ckfp-trust-item">{t}</span>
-              ))}
-            </div>
           </div>
         )}
 
@@ -816,11 +812,6 @@ export default function Checkout() {
             )}
 
             <form onSubmit={e => { e.preventDefault(); handleStep1Next(); }} noValidate>
-              <div className="ckfp-trust-row ckfp-trust-top">
-                {["🔒 Compra segura", "🚚 Envío gratis", "🛡️ Garantía 30 días"].map(t => (
-                  <span key={t} className="ckfp-trust-item">{t}</span>
-                ))}
-              </div>
               <div className="ckfp-section-title">Datos de contacto</div>
 
               {/* Nombre */}
@@ -994,17 +985,10 @@ export default function Checkout() {
                 </select>
               </div>
 
-              <button type="submit" className="ckfp-btn-primary ckfp-cta" disabled={loading}>
+              <button type="submit" className="ckfp-btn-primary ckfp-cta ckfp-form-cta" disabled={loading}>
                 Continuar →
               </button>
             </form>
-
-            {/* Trust */}
-            <div className="ckfp-trust-row">
-              {["🔒 Compra segura", "🚚 Envío gratis", "🛡️ Garantía 30 días"].map(t => (
-                <span key={t} className="ckfp-trust-item">{t}</span>
-              ))}
-            </div>
           </div>
           </>
         )}
@@ -1078,7 +1062,7 @@ export default function Checkout() {
               ))}
             </div>
 
-            <button type="button" className="ckfp-btn-primary ckfp-cta" onClick={handleStep2Next}>
+            <button type="button" className="ckfp-btn-primary ckfp-cta ckfp-form-cta" onClick={handleStep2Next}>
               Continuar al pago →
             </button>
           </div>
@@ -1091,73 +1075,168 @@ export default function Checkout() {
             {/* Columna izquierda: pago */}
             <div className="ckfp-pay-col">
               <button type="button" className="ckfp-back" onClick={goBack}>← Volver</button>
-              <h2 className="ckfp-step-heading">
-                {isCod ? "Confirmar pedido" : "Método de pago"}
-              </h2>
 
-              {/* Banner no-CABA */}
-              {!isCaba && (
-                <div className="ckfp-free-ship-banner">
-                  🚚 <strong>¡Envío gratis a todo el país!</strong><br />
-                  <span>Tu pedido llega en 2 a 5 días hábiles via Andreani o Correo Argentino.</span>
+              {/* Resumen de datos confirmados */}
+              <div className="ckfp-confirm-summary">
+                {/* Fila: Contacto */}
+                <div className="ckfp-confirm-row">
+                  <div className="ckfp-confirm-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                  <div className="ckfp-confirm-info">
+                    <span className="ckfp-confirm-main">{form.nombre}</span>
+                    <span className="ckfp-confirm-sub">{form.email}</span>
+                  </div>
+                  <button type="button" className="ckfp-confirm-change" onClick={() => setStep(1)}>Cambiar</button>
                 </div>
-              )}
-
-              {/* Dirección confirmada */}
-              <div className="ckfp-addr-preview" style={{ marginBottom: 20 }}>
-                <span className="ckfp-addr-preview-label">Enviar a</span>
-                <span className="ckfp-addr-preview-val">{shippingAddress}</span>
-                <button type="button" className="ckfp-addr-change" onClick={() => setStep(1)}>Cambiar</button>
+                <div className="ckfp-confirm-divider" />
+                {/* Fila: Dirección */}
+                <div className="ckfp-confirm-row">
+                  <div className="ckfp-confirm-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </div>
+                  <div className="ckfp-confirm-info">
+                    <span className="ckfp-confirm-main">{shippingAddress}</span>
+                    {form.dni && <span className="ckfp-confirm-sub">DNI {form.dni}{form.tel ? ` · ${form.tel}` : ""}</span>}
+                  </div>
+                  <button type="button" className="ckfp-confirm-change" onClick={() => setStep(1)}>Cambiar</button>
+                </div>
+                <div className="ckfp-confirm-divider" />
+                {/* Fila: Método de envío */}
+                <div className="ckfp-confirm-row">
+                  <div className="ckfp-confirm-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  </div>
+                  <div className="ckfp-confirm-info">
+                    <span className="ckfp-confirm-main">
+                      {shippingMethod === "correo_argentino" && "Envío a domicilio"}
+                      {shippingMethod === "caba_cod"         && "Pagás al recibir"}
+                      {shippingMethod === "retiro_oficina"   && "Retiro por oficina"}
+                      <span style={{ color: "#16a34a", fontWeight: 800 }}> · Gratis</span>
+                    </span>
+                    <span className="ckfp-confirm-sub">
+                      {shippingMethod === "correo_argentino" && "Correo Argentino + Andreani · 2 a 4 días hábiles"}
+                      {shippingMethod === "caba_cod"         && "Solo CABA · 24 a 48 hs · Efectivo o transferencia"}
+                      {shippingMethod === "retiro_oficina"   && "Crisólogo Larralde 2471, Saavedra, CABA"}
+                    </span>
+                  </div>
+                  {isCaba && <button type="button" className="ckfp-confirm-change" onClick={() => setStep(2)}>Cambiar</button>}
+                </div>
               </div>
 
               {error && <div ref={errorRef} className="ckfp-error-box">⚠️ {error}</div>}
 
               {/* COD confirmation */}
               {isCod ? (
-                <div className="ckfp-cod-box">
-                  ✅ Abonás en efectivo o transferencia cuando te llegue el pedido.<br />
-                  Solo disponible en CABA. Confirmamos la entrega por WhatsApp.
-                </div>
+                <>
+                  <div className="ckfp-cod-box">
+                    ✅ Abonás en efectivo o transferencia cuando te llegue el pedido.<br />
+                    Solo disponible en CABA. Confirmamos la entrega por WhatsApp.
+                  </div>
+                  <button
+                    type="button"
+                    className={`ckfp-btn-dark ckfp-cta ckfp-form-cta ckfp-pay-btn ${loading ? "loading" : ""}`}
+                    onClick={handleSubmit}
+                    disabled={loading}
+                  >
+                    {loading ? "Procesando..." : `Confirmar pedido · ${money(finalTotal)}`}
+                  </button>
+                </>
               ) : (
-                <div className="ckfp-pay-methods">
-                  {/* MercadoPago */}
-                  <label className={`ckfp-pay-opt ${onlinePayMethod === "mercadopago" ? "selected" : ""}`} onClick={() => setOnlinePayMethod("mercadopago")}>
-                    <input type="radio" name="pay" value="mercadopago" checked={onlinePayMethod === "mercadopago"} onChange={() => setOnlinePayMethod("mercadopago")} />
-                    <div className="ckfp-pay-info">
-                      <div className="ckfp-pay-title" style={{ color: "#009ee3" }}>
-                        Mercado Pago
-                        <span className="ckfp-pay-rec-badge">Recomendado</span>
-                      </div>
-                      <div className="ckfp-pay-sub">Débito, crédito, dinero en cuenta y más. Hasta 12 cuotas.</div>
-                    </div>
-                    <svg viewBox="0 0 56 22" width="56" height="22" className="ckfp-mp-logo-inline">
-                      <rect width="56" height="22" rx="4" fill="#009ee3"/>
-                      <text x="50%" y="15" textAnchor="middle" fill="white" fontSize="8" fontWeight="700" fontFamily="sans-serif">MercadoPago</text>
-                    </svg>
-                  </label>
+                <>
+                  {/* MEDIO DE PAGO — header con líneas */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                    <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+                    <span style={{ fontSize: 13, fontWeight: 900, color: "#1a1a1a", textTransform: "uppercase", letterSpacing: ".12em", whiteSpace: "nowrap" }}>Medio de pago</span>
+                    <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+                  </div>
 
-                  {/* Tarjeta */}
-                  <label className={`ckfp-pay-opt ${onlinePayMethod === "card" ? "selected" : ""}`} onClick={() => setOnlinePayMethod("card")}>
-                    <input type="radio" name="pay" value="card" checked={onlinePayMethod === "card"} onChange={() => setOnlinePayMethod("card")} />
-                    <div className="ckfp-pay-info">
-                      <div className="ckfp-pay-title">
-                        Tarjeta de crédito / débito
-                        <span className="ckfp-pay-secure-badge">🔒 Seguro</span>
+                  {onlinePayMethod === null && (
+                    /* Lista de métodos */
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, background: "#f5f5f5", margin: "0 0 20px", padding: "12px" }}>
+                      {/* Mercado Pago — primero */}
+                      <div className="ckfp-pcard" onClick={() => setOnlinePayMethod("mercadopago")}>
+                        <div className="ckfp-pcard-row">
+                          <img src="https://http2.mlstatic.com/storage/cpp/static-files/863dde6d-4e18-43f8-bcde-7905aa7a962e.svg" alt="Mercado Pago" height="28" style={{ display: "block", flexShrink: 0 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#1a1a1a" }}>Mercado Pago</div>
+                            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, marginTop: 2 }}>Tarjetas, efectivo, cuotas sin tarjeta</div>
+                          </div>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#c0c0c0", flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
+                        </div>
                       </div>
-                      <div className="ckfp-pay-sub">Ingresá los datos de tu tarjeta directamente aquí.</div>
-                      <div className="ckfp-card-brands">
-                        {["VISA", "MC", "AMEX"].map(b => <span key={b} className="ckfp-card-brand">{b}</span>)}
+                      {/* Tarjeta — segundo */}
+                      <div className="ckfp-pcard" onClick={() => { setCardMounted(true); setOnlinePayMethod("card"); }}>
+                        <div className="ckfp-pcard-row">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: "#64748b" }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#1a1a1a" }}>Tarjeta de crédito o débito</div>
+                            <div style={{ display: "flex", gap: 4, marginTop: 5, alignItems: "center" }}>
+                              <svg viewBox="0 0 60 22" width="36" height="13" aria-label="Visa" style={{ display:"block" }}><rect width="60" height="22" rx="3" fill="#1A1F71"/><text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="900" fontStyle="italic" fontFamily="Arial,sans-serif">VISA</text></svg>
+                              <svg viewBox="0 0 44 28" width="28" height="18" aria-label="Mastercard" style={{ display:"block" }}><rect width="44" height="28" rx="4" fill="#fff" stroke="#e0e0e0" strokeWidth="1"/><circle cx="16" cy="14" r="9" fill="#EB001B"/><circle cx="28" cy="14" r="9" fill="#F79E1B"/><path d="M22 7.2a9 9 0 0 1 0 13.6 9 9 0 0 1 0-13.6z" fill="#FF5F00"/></svg>
+                              <svg viewBox="0 0 60 22" width="36" height="13" aria-label="American Express" style={{ display:"block" }}><rect width="60" height="22" rx="3" fill="#2E77BC"/><text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="900" fontFamily="Arial,sans-serif" letterSpacing="0.5">AMEX</text></svg>
+                              <span style={{ background: "#f4f6f8", border: "1px solid #e0e0e0", borderRadius: 3, padding: "1px 4px", fontSize: 9, fontWeight: 900, color: "#555" }}>NX</span>
+                            </div>
+                          </div>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#c0c0c0", flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
+                        </div>
                       </div>
                     </div>
-                  </label>
+                  )}
 
-                  {/* Brick de tarjeta */}
-                  {onlinePayMethod === "card" && (
-                    <div className="ckfp-card-brick-wrap">
-                      <div className="ckfp-ssl-notice">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        Tus datos están <strong>100% encriptados</strong> con SSL. Nunca guardamos los datos de tu tarjeta.
+                  {onlinePayMethod === "mercadopago" && (
+                    /* Vista expandida — Mercado Pago */
+                    <div className="ckfp-pay-detail" style={{ marginBottom: 20 }}>
+                      <div className="ckfp-pay-view-hdr">
+                        <button type="button" className="ckfp-pay-view-back" onClick={() => setOnlinePayMethod(null)} aria-label="Volver a métodos de pago">
+                          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <img src="https://http2.mlstatic.com/storage/cpp/static-files/863dde6d-4e18-43f8-bcde-7905aa7a962e.svg" alt="Mercado Pago" height="24" style={{ display: "block" }} />
                       </div>
+                      <div style={{ padding: "14px 16px 4px" }}>
+                        <div style={{ fontSize: 15.5, fontWeight: 800, color: "#1a1a1a", marginBottom: 14, lineHeight: 1.3 }}>Pagá con tu cuenta de Mercado Pago</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 11, marginBottom: 16 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13.5, fontWeight: 600, color: "#374151", lineHeight: 1.5 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}><rect width="24" height="24" rx="6" fill="#e0f2fe"/><path d="M5 12h14M5 8h8" stroke="#009ee3" strokeWidth="2" strokeLinecap="round"/></svg>
+                            <div><strong style={{ fontWeight: 800, color: "#1e293b" }}>Usá tus tarjetas guardadas,</strong> dinero disponible y mucho más.</div>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13.5, fontWeight: 600, color: "#374151", lineHeight: 1.5 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}><rect width="24" height="24" rx="6" fill="#e0f2fe"/><circle cx="12" cy="12" r="5" stroke="#009ee3" strokeWidth="2"/><path d="M12 9v3l1.5 1.5" stroke="#009ee3" strokeWidth="2" strokeLinecap="round"/></svg>
+                            <div><strong style={{ fontWeight: 800, color: "#1e293b" }}>Accedé a Cuotas sin Tarjeta</strong> para comprar ahora y pagar después.</div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+                          <svg viewBox="0 0 60 22" width="42" height="16" aria-label="Visa" style={{ display:"block" }}><rect width="60" height="22" rx="3" fill="#1A1F71"/><text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="900" fontStyle="italic" fontFamily="Arial,sans-serif">VISA</text></svg>
+                          <svg viewBox="0 0 44 28" width="36" height="24" aria-label="Mastercard" style={{ display:"block" }}><rect width="44" height="28" rx="4" fill="#fff" stroke="#e0e0e0" strokeWidth="1"/><circle cx="16" cy="14" r="9" fill="#EB001B"/><circle cx="28" cy="14" r="9" fill="#F79E1B"/><path d="M22 7.2a9 9 0 0 1 0 13.6 9 9 0 0 1 0-13.6z" fill="#FF5F00"/></svg>
+                          <svg viewBox="0 0 60 22" width="42" height="16" aria-label="American Express" style={{ display:"block" }}><rect width="60" height="22" rx="3" fill="#2E77BC"/><text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="900" fontFamily="Arial,sans-serif" letterSpacing="0.5">AMEX</text></svg>
+                          <span style={{ background: "#f4f6f8", border: "1px solid #e0e0e0", borderRadius: 4, padding: "2px 6px", fontSize: 10, fontWeight: 900, color: "#555", display:"inline-flex", alignItems:"center" }}>NX</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 11, background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 9, padding: "11px 13px" }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: "#1e293b", lineHeight: 1.3 }}>Te llevaremos a Mercado Pago</div>
+                            <div style={{ fontSize: 11.5, fontWeight: 600, color: "#94a3b8", marginTop: 2 }}>Si no tenés una cuenta, podés usar tu e-mail.</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "center", padding: "10px 0 14px" }}>
+                        <button type="button" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#94a3b8", textDecoration: "underline", textUnderlineOffset: 2, padding: "4px 6px" }} onClick={() => setOnlinePayMethod(null)}>
+                          ← Cambiar opción de pago
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Vista expandida — Tarjeta — montada desde el primer click, retenida para aperturas instantáneas */}
+                  {cardMounted && <div className="ckfp-pay-detail" style={{ display: onlinePayMethod === "card" ? "block" : "none", marginBottom: 20 }}>
+                    <div className="ckfp-pay-view-hdr">
+                      <button type="button" className="ckfp-pay-view-back" onClick={() => setOnlinePayMethod(null)} aria-label="Volver a métodos de pago">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                      </button>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#64748b", flexShrink: 0 }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      <span style={{ fontSize: 13.5, fontWeight: 800, color: "#1a1a1a", flex: 1 }}>Tarjeta de crédito o débito</span>
+                    </div>
+                    <div style={{ padding: "0 16px" }}>
                       <CardPaymentBrick
                         amount={finalTotal}
                         onBeforeSubmit={handleCardBeforeSubmit}
@@ -1165,56 +1244,53 @@ export default function Checkout() {
                         onError={() => {}}
                         onSetError={msg => showError(msg)}
                       />
+                      {finalTotal > 0 && (
+                        <div className="ckfp-cuotas-field">
+                          <label className="ckfp-cuotas-label" htmlFor="ckfp-cuotas-select">
+                            Cuotas
+                            <span className="ckfp-cuotas-label-badge">3 sin interés disponibles</span>
+                          </label>
+                          <div className="ckfp-cuotas-select-wrap">
+                            <select
+                              id="ckfp-cuotas-select"
+                              className="ckfp-cuotas-select"
+                              value={selectedCuotas}
+                              onChange={e => setSelectedCuotas(Number(e.target.value))}
+                            >
+                              <option value={1}>1 pago de {money(finalTotal)}</option>
+                              <option value={3}>3 cuotas sin interés de {money(Math.round(finalTotal / 3))}/mes</option>
+                            </select>
+                            <svg className="ckfp-cuotas-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                          </div>
+                          {selectedCuotas === 3 && (
+                            <p className="ckfp-cuotas-hint">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                              Sin recargo — pagás 3 x {money(Math.round(finalTotal / 3))}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
+                    <div style={{ textAlign: "center", padding: "10px 0 14px" }}>
+                      <button type="button" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#94a3b8", textDecoration: "underline", textUnderlineOffset: 2, padding: "4px 6px" }} onClick={() => setOnlinePayMethod(null)}>
+                        ← Cambiar opción de pago
+                      </button>
+                    </div>
+                  </div>}
+
+                  {/* Botón MP inline */}
+                  {onlinePayMethod === "mercadopago" && (
+                    <button
+                      type="button"
+                      className={`ckfp-btn-dark ckfp-cta ckfp-form-cta ckfp-pay-btn ${loading || redirecting ? "loading" : ""}`}
+                      onClick={handleSubmit}
+                      disabled={loading || redirecting}
+                    >
+                      {redirecting ? "Conectando con Mercado Pago..." : loading ? "Procesando..." : "Pagar a través de Mercado Pago"}
+                    </button>
                   )}
-                </div>
+                </>
               )}
-
-              {/* Botón principal (MP o COD) */}
-              {(isCod || onlinePayMethod === "mercadopago") && (
-                <button
-                  type="button"
-                  className={`ckfp-btn-primary ckfp-cta ckfp-pay-btn ${loading || redirecting ? "loading" : ""}`}
-                  onClick={handleSubmit}
-                  disabled={loading || redirecting}
-                >
-                  {redirecting
-                    ? "🔄 Conectando con Mercado Pago..."
-                    : loading
-                    ? "⏳ Procesando..."
-                    : isCod
-                    ? `Confirmar pedido · ${money(finalTotal)}`
-                    : `Pagar ${money(finalTotal)} en Mercado Pago →`}
-                </button>
-              )}
-              {!isCod && onlinePayMethod === "mercadopago" && finalTotal > 0 && (
-                <p className="ckfp-installments-hint">
-                  o 3 cuotas de {money(Math.round(finalTotal / 3))} sin interés
-                </p>
-              )}
-
-              {/* Trust badges */}
-              <div className="ckfp-pay-trust">
-                {[
-                  { ico: "🔒", l: "SSL seguro" },
-                  { ico: "🚚", l: "Envío gratis" },
-                  { ico: "⭐", l: "+500 clientes" },
-                  { ico: "🛡️", l: "Garantía 30 días" },
-                ].map(({ ico, l }) => (
-                  <div key={l} className="ckfp-trust-badge">
-                    <span>{ico}</span>
-                    <span>{l}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Logos de medios de pago */}
-              <div className="ckfp-pay-logos">
-                <span className="ckfp-pay-logo mp">MercadoPago</span>
-                <span className="ckfp-pay-logo visa">VISA</span>
-                <span className="ckfp-pay-logo mc">MC</span>
-                <span className="ckfp-pay-logo amex">AMEX</span>
-              </div>
             </div>
 
             {/* Columna derecha: resumen (desktop) / collapsible (mobile) */}
@@ -1279,15 +1355,27 @@ export default function Checkout() {
           </div>
         </div>
       )}
-      {step === 3 && (isCod || onlinePayMethod === "mercadopago") && !isCartEmpty && (
+      {step === 3 && onlinePayMethod === null && !isCod && !isCartEmpty && (
+        <div className="ckfp-sticky-footer">
+          <button type="button" className="ckfp-btn-primary ckfp-cta" style={{ marginTop: 0 }}>
+            Elegí tu método de pago
+          </button>
+          <div className="ckfp-sticky-trust-row">
+            <span>🔒 Pago seguro</span>
+            <span>🛡️ Garantía 30 días</span>
+            <span>🚚 Envío gratis</span>
+          </div>
+        </div>
+      )}
+      {step === 3 && onlinePayMethod === "mercadopago" && !isCartEmpty && (
         <div className="ckfp-sticky-footer">
           <button
             type="button"
-            className={`ckfp-btn-primary ckfp-cta ${loading || redirecting ? "loading" : ""}`}
+            className={`ckfp-btn-dark ckfp-cta ${loading || redirecting ? "loading" : ""}`}
             onClick={handleSubmit}
             disabled={loading || redirecting}
           >
-            {redirecting ? "🔄 Conectando..." : loading ? "⏳ Procesando..." : isCod ? `Confirmar · ${money(finalTotal)}` : `Pagar ${money(finalTotal)} →`}
+            {redirecting ? "Conectando..." : loading ? "Procesando..." : "Pagar a través de Mercado Pago"}
           </button>
           <div className="ckfp-sticky-trust-row">
             <span>🔒 SSL Seguro</span>
@@ -1696,20 +1784,95 @@ function Styles() {
         border: 1.5px solid #d1d5db;
         border-radius: 12px;
         cursor: pointer;
-        transition: border-color .15s, background .15s;
+        transition: border-color .15s, background .15s, box-shadow .15s;
         background: #fff;
       }
-      .ckfp-pay-opt:hover { border-color: #1B4D3E; }
+      .ckfp-pay-opt:hover { border-color: #009ee3; }
       .ckfp-pay-opt.selected { border-color: #009ee3; background: #f0f9ff; border-width: 2px; }
-      .ckfp-pay-opt input[type="radio"] { width: 18px; height: 18px; accent-color: #1B4D3E; flex-shrink: 0; margin-top: 2px; }
-      .ckfp-pay-info   { flex: 1; min-width: 0; }
-      .ckfp-pay-title  { font-weight: 900; font-size: .9rem; color: #111827; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-      .ckfp-pay-rec-badge    { font-size: .7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(0,158,227,.10); color: #006fa6; border: 1px solid rgba(0,158,227,.25); }
-      .ckfp-pay-secure-badge { font-size: .7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(22,163,74,.10); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
-      .ckfp-pay-sub    { font-size: .8rem; font-weight: 600; color: #6b7280; margin-top: 2px; }
-      .ckfp-card-brands { display: flex; gap: 6px; margin-top: 8px; }
-      .ckfp-card-brand { font-size: .68rem; font-weight: 900; padding: 3px 7px; border-radius: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; }
-      .ckfp-mp-logo-inline { flex-shrink: 0; border-radius: 4px; }
+      .ckfp-pay-opt--mp.selected { box-shadow: 0 0 0 3px rgba(0,158,227,.1); }
+      .ckfp-pay-opt input[type="radio"] { width: 18px; height: 18px; accent-color: #009ee3; flex-shrink: 0; margin-top: 3px; }
+      .ckfp-pay-info { flex: 1; min-width: 0; }
+      .ckfp-pay-title { font-weight: 900; font-size: .9rem; color: #111827; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .ckfp-mp-brand { display: flex; align-items: center; gap: 8px; }
+      .ckfp-mp-wordmark { font-size: 1rem; font-weight: 900; color: #009ee3; letter-spacing: -.01em; }
+      .ckfp-pay-rec-badge { font-size: .68rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(0,158,227,.12); color: #006fa6; border: 1px solid rgba(0,158,227,.3); }
+      .ckfp-pay-secure-badge { font-size: .68rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(22,163,74,.10); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
+      .ckfp-pay-sub { font-size: .8rem; font-weight: 600; color: #6b7280; margin-top: 3px; }
+
+      /* ── Cuotas select field ── */
+      .ckfp-cuotas-field {
+        padding: 12px 16px 12px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        margin-top: -4px;
+      }
+      .ckfp-cuotas-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: .78rem;
+        font-weight: 800;
+        color: #374151;
+        margin-bottom: 7px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .ckfp-cuotas-label-badge {
+        font-size: .65rem;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .ckfp-cuotas-select-wrap {
+        position: relative;
+      }
+      .ckfp-cuotas-select {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        background: #fff;
+        border: 1.5px solid #d1d5db;
+        border-radius: 9px;
+        padding: 10px 38px 10px 13px;
+        font-size: .88rem;
+        font-weight: 700;
+        color: #111827;
+        cursor: pointer;
+        outline: none;
+        transition: border-color .15s;
+        font-family: inherit;
+      }
+      .ckfp-cuotas-select:focus { border-color: #009ee3; box-shadow: 0 0 0 3px rgba(0,158,227,.1); }
+      .ckfp-cuotas-chevron {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #6b7280;
+      }
+      .ckfp-cuotas-hint {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .75rem;
+        font-weight: 700;
+        color: #15803d;
+        margin: 6px 0 0;
+      }
+
+      /* ── Card brands ── */
+      .ckfp-card-brands { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+      .ckfp-brand-amex { font-size: .62rem; font-weight: 900; padding: 3px 7px; border-radius: 4px; background: #2E77BC; color: #fff; letter-spacing: .04em; }
+
+      /* ── Pay button inner ── */
+      .ckfp-pay-btn-inner { display: flex; align-items: center; gap: 8px; justify-content: center; }
 
       /* ── SSL notice ── */
       .ckfp-ssl-notice {
@@ -1733,42 +1896,32 @@ function Styles() {
       .ckfp-pay-trust {
         display: flex;
         justify-content: center;
-        gap: 16px;
+        gap: 14px;
         flex-wrap: wrap;
-        margin-top: 16px;
-        padding-top: 14px;
+        margin-top: 14px;
+        padding-top: 12px;
         border-top: 1px solid #f3f4f6;
       }
-      .ckfp-trust-badge {
+      .ckfp-pay-trust-item {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 2px;
-        font-size: .7rem;
+        gap: 5px;
+        font-size: .72rem;
         font-weight: 700;
         color: #6b7280;
       }
-      .ckfp-trust-badge span:first-child { font-size: 1.1rem; }
+      .ckfp-pay-trust-item svg { color: #9ca3af; flex-shrink: 0; }
 
       /* ── Pay logos ── */
       .ckfp-pay-logos {
         display: flex;
-        gap: 6px;
+        gap: 10px;
         justify-content: center;
+        align-items: center;
         flex-wrap: wrap;
         margin-top: 12px;
       }
-      .ckfp-pay-logo {
-        font-size: .68rem;
-        font-weight: 900;
-        padding: 4px 10px;
-        border-radius: 5px;
-        letter-spacing: .03em;
-      }
-      .ckfp-pay-logo.mp   { background: #009ee3; color: #fff; }
-      .ckfp-pay-logo.visa { background: #1A1F71; color: #fff; }
-      .ckfp-pay-logo.mc   { background: #EB001B; color: #fff; }
-      .ckfp-pay-logo.amex { background: #2E77BC; color: #fff; }
+      .ckfp-logo-amex { font-size: .62rem; font-weight: 900; padding: 4px 8px; border-radius: 4px; background: #2E77BC; color: #fff; letter-spacing: .04em; }
 
       /* ── Summary Accordion (pasos 1 y 2) ── */
       .ckfp-sa {
@@ -1917,6 +2070,9 @@ function Styles() {
         border-radius: 16px;
         overflow: hidden;
       }
+      @media (max-width: 767px) {
+        .ckfp-aside { order: -1; }
+      }
       @media (min-width: 768px) {
         .ckfp-aside { position: sticky; top: 80px; }
         .ckfp-summary-toggle { display: none; }
@@ -2035,6 +2191,30 @@ function Styles() {
       .ckfp-link { font-size: .88rem; font-weight: 800; color: #1B4D3E; text-decoration: underline; }
       .ckfp-link.muted { color: #9ca3af; }
 
+      /* ── Confirm summary (paso 3) ── */
+      .ckfp-confirm-summary { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+      .ckfp-confirm-row { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; }
+      .ckfp-confirm-divider { height: 1px; background: #f3f4f6; }
+      .ckfp-confirm-icon { width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #64748b; margin-top: 1px; }
+      .ckfp-confirm-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .ckfp-confirm-main { font-size: 12.5px; font-weight: 700; color: #111827; line-height: 1.4; }
+      .ckfp-confirm-sub { font-size: 11px; font-weight: 500; color: #6b7280; line-height: 1.4; }
+      .ckfp-confirm-change { background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 800; color: #1B4D3E; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; flex-shrink: 0; padding: 0; font-family: inherit; margin-top: 2px; }
+      .ckfp-confirm-change:hover { color: #153D31; }
+
+      /* ── Payment cards & detail views ── */
+      .ckfp-pcard { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
+      .ckfp-pcard:hover { border-color: #d1d5db; }
+      .ckfp-pcard-row { display: flex; align-items: center; gap: 11px; padding: 16px; min-height: 58px; }
+      .ckfp-pay-detail { border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: #fff; }
+      .ckfp-pay-view-hdr { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-bottom: 1.5px solid #f1f5f9; background: #fafbfc; }
+      .ckfp-pay-view-back { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: none; background: none; cursor: pointer; color: #64748b; border-radius: 7px; flex-shrink: 0; transition: background .12s, color .12s; }
+      .ckfp-pay-view-back:hover { background: #e2e8f0; color: #1e293b; }
+      .ckfp-btn-dark { display: block; width: 100%; padding: 14px 20px; border: none; border-radius: 12px; background: #1e293b; color: #fff; font-size: 1rem; font-weight: 900; cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; box-sizing: border-box; transition: transform .12s, box-shadow .12s, opacity .15s; box-shadow: 0 8px 24px rgba(0,0,0,.22); }
+      .ckfp-btn-dark:hover:not(:disabled) { background: #0f172a; transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,0,0,.32); }
+      .ckfp-btn-dark:active:not(:disabled) { transform: scale(.98); }
+      .ckfp-btn-dark:disabled, .ckfp-btn-dark.loading { opacity: .6; cursor: not-allowed; transform: none; }
+
       /* ── Sticky footer ── */
       .ckfp-sticky-footer {
         display: none;
@@ -2069,6 +2249,7 @@ function Styles() {
       }
       @media (max-width: 767px) {
         .ckfp-sticky-footer { display: block; }
+        .ckfp-form-cta { display: none !important; }
       }
 
       /* ── MP overlay ── */
@@ -2188,14 +2369,6 @@ function Styles() {
         flex: 1;
       }
 
-      /* ── Cambio 5: Cuotas hint ── */
-      .ckfp-installments-hint {
-        font-size: 12px;
-        color: #6b7280;
-        text-align: center;
-        margin-top: 6px;
-        margin-bottom: 0;
-      }
 
       /* ── Cambio 7: Toast envío ── */
       @keyframes ckfpToastIn {
