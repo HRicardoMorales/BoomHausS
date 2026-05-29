@@ -341,8 +341,8 @@ export default function Checkout() {
 
   // ── Envío ─────────────────────────────────────────────────────────────────
   const isCaba = form.provincia === "CABA";
-  const [shippingMethod, setShippingMethod] = useState("correo_argentino");
-  const isCod = shippingMethod === "caba_cod";
+  const [shippingMethod, setShippingMethod] = useState("andreani");
+  const isCod = false;
 
   // ── Pago ──────────────────────────────────────────────────────────────────
   const [onlinePayMethod, setOnlinePayMethod] = useState(null);
@@ -442,14 +442,7 @@ export default function Checkout() {
   function handleStep1Next() {
     if (!validateStep1()) return;
     captureAbandoned();
-    if (isCaba) {
-      setStep(2);
-    } else {
-      setShippingMethod("correo_argentino");
-      setShowShipToast(true);
-      setTimeout(() => setShowShipToast(false), 3200);
-      setStep(3);
-    }
+    setStep(2);
   }
 
   function handleStep2Next() {
@@ -457,8 +450,8 @@ export default function Checkout() {
   }
 
   function goBack() {
-    if (step === 3 && isCaba) setStep(2);
-    else if (step === 3 || step === 2) setStep(1);
+    if (step === 3) setStep(2);
+    else if (step === 2) setStep(1);
     else if (step === 1) setStep(0);
   }
 
@@ -993,7 +986,7 @@ export default function Checkout() {
           </>
         )}
 
-        {/* ══ PASO 2 — MÉTODO DE ENVÍO (solo CABA) ══════════════════════════ */}
+        {/* ══ PASO 2 — MÉTODO DE ENVÍO ══════════════════════════════════════ */}
         {step === 2 && (
           <>
             <SummaryAccordion
@@ -1005,67 +998,44 @@ export default function Checkout() {
               appliedCoupon={appliedCoupon}
             />
             <div className="ckfp-step-wrap">
-            <button type="button" className="ckfp-back" onClick={goBack}>← Volver</button>
-            <h2 className="ckfp-step-heading">Método de envío</h2>
+              <button type="button" className="ckfp-back" onClick={goBack}>← Volver</button>
+              <h2 className="ckfp-step-heading">Método de envío</h2>
 
-            <div className="ckfp-addr-preview">
-              <span className="ckfp-addr-preview-label">Entregar en</span>
-              <span className="ckfp-addr-preview-val">
-                {form.direccion}{form.extra ? `, ${form.extra}` : ""} — {form.ciudad}, CABA {form.cp}
-              </span>
-              <button type="button" className="ckfp-addr-change" onClick={goBack}>Cambiar</button>
-            </div>
+              <div className="ckfp-addr-preview" style={{ marginBottom: 20 }}>
+                <span className="ckfp-addr-preview-label">Entregar en</span>
+                <span className="ckfp-addr-preview-val">{shippingAddress}</span>
+                <button type="button" className="ckfp-addr-change" onClick={goBack}>Cambiar</button>
+              </div>
 
-            <div className="ckfp-ship-options">
-              {[
-                {
-                  value: "correo_argentino",
-                  icon: "🚚",
-                  title: "Envío a domicilio",
-                  sub: "Correo Argentino + Andreani · 2 a 4 días hábiles",
-                  price: "GRATIS",
-                },
-                {
-                  value: "caba_cod",
-                  icon: "💵",
-                  title: "Pagás al recibir",
-                  sub: "Solo CABA · 24 a 48 hs hábiles · Efectivo o transferencia",
-                  badge: "+ Confianza",
-                  price: "GRATIS",
-                },
-                {
-                  value: "retiro_oficina",
-                  icon: "🏢",
-                  title: "Retiro por oficina",
-                  sub: "Crisólogo Larralde 2471, Saavedra, CABA",
-                  price: "GRATIS",
-                },
-              ].map(opt => (
-                <label key={opt.value} className={`ckfp-ship-opt ${shippingMethod === opt.value ? "selected" : ""}`}>
-                  <input
-                    type="radio"
-                    name="shipping"
-                    value={opt.value}
-                    checked={shippingMethod === opt.value}
-                    onChange={e => setShippingMethod(e.target.value)}
-                  />
-                  <span className="ckfp-ship-ico">{opt.icon}</span>
-                  <div className="ckfp-ship-info">
-                    <div className="ckfp-ship-title">
-                      {opt.title}
-                      {opt.badge && <span className="ckfp-ship-badge">{opt.badge}</span>}
+              {/* Envío a domicilio */}
+              <p className="ckfp-section-title" style={{ marginBottom: 8 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign:"middle", marginRight:5 }}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                Envío a domicilio
+              </p>
+              <div className="ckfp-ship-options">
+                {[
+                  { value:"andreani",       title:'Andreani Estándar "Envío a domicilio"', eta:"Llega en 2 a 3 días hábiles",  was:"$13.041,00" },
+                  { value:"correo_clasico",  title:"Correo Argentino Clásico - Envío a domicilio", eta:"Llega en 3 a 5 días hábiles", was:"$15.591,55" },
+                  { value:"correo_expreso",  title:"Correo Argentino Expreso - Envío a domicilio", eta:"Llega en 1 a 2 días hábiles",  was:"$17.151,81" },
+                ].map(opt => (
+                  <label key={opt.value} className={`ckfp-ship-opt ${shippingMethod === opt.value ? "selected" : ""}`}>
+                    <input type="radio" name="shipping" value={opt.value} checked={shippingMethod === opt.value} onChange={e => setShippingMethod(e.target.value)} />
+                    <div className="ckfp-ship-info">
+                      <div className="ckfp-ship-title">{opt.title}</div>
+                      <div className="ckfp-ship-sub">{opt.eta}</div>
                     </div>
-                    <div className="ckfp-ship-sub">{opt.sub}</div>
-                  </div>
-                  <span className="ckfp-ship-price">{opt.price}</span>
-                </label>
-              ))}
-            </div>
+                    <div className="ckfp-ship-price-col">
+                      <span className="ckfp-ship-price-free">Gratis</span>
+                      <span className="ckfp-ship-price-was">{opt.was}</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
 
-            <button type="button" className="ckfp-btn-primary ckfp-cta ckfp-form-cta" onClick={handleStep2Next}>
-              Continuar al pago →
-            </button>
-          </div>
+              <button type="button" className="ckfp-btn-primary ckfp-cta ckfp-form-cta" onClick={handleStep2Next}>
+                Continuar al pago →
+              </button>
+            </div>
           </>
         )}
 
@@ -1109,18 +1079,18 @@ export default function Checkout() {
                   </div>
                   <div className="ckfp-confirm-info">
                     <span className="ckfp-confirm-main">
-                      {shippingMethod === "correo_argentino" && "Envío a domicilio"}
-                      {shippingMethod === "caba_cod"         && "Pagás al recibir"}
-                      {shippingMethod === "retiro_oficina"   && "Retiro por oficina"}
+                      {shippingMethod === "andreani"        && 'Andreani Estándar "Envío a domicilio"'}
+                      {shippingMethod === "correo_clasico"  && "Correo Argentino Clásico · Envío a domicilio"}
+                      {shippingMethod === "correo_expreso"  && "Correo Argentino Expreso · Envío a domicilio"}
                       <span style={{ color: "#16a34a", fontWeight: 800 }}> · Gratis</span>
                     </span>
                     <span className="ckfp-confirm-sub">
-                      {shippingMethod === "correo_argentino" && "Correo Argentino + Andreani · 2 a 4 días hábiles"}
-                      {shippingMethod === "caba_cod"         && "Solo CABA · 24 a 48 hs · Efectivo o transferencia"}
-                      {shippingMethod === "retiro_oficina"   && "Crisólogo Larralde 2471, Saavedra, CABA"}
+                      {shippingMethod === "andreani"        && "Llega en 2 a 3 días hábiles"}
+                      {shippingMethod === "correo_clasico"  && "Llega en 3 a 5 días hábiles"}
+                      {shippingMethod === "correo_expreso"  && "Llega en 1 a 2 días hábiles"}
                     </span>
                   </div>
-                  {isCaba && <button type="button" className="ckfp-confirm-change" onClick={() => setStep(2)}>Cambiar</button>}
+                  <button type="button" className="ckfp-confirm-change" onClick={() => setStep(2)}>Cambiar</button>
                 </div>
               </div>
 
@@ -1352,6 +1322,18 @@ export default function Checkout() {
             <span>💳 3 cuotas sin interés</span>
             <span>🚚 Envío gratis</span>
             <span>🛡️ Garantía 30 días</span>
+          </div>
+        </div>
+      )}
+      {step === 2 && !isCartEmpty && (
+        <div className="ckfp-sticky-footer">
+          <button type="button" className="ckfp-btn-primary ckfp-cta" style={{ marginTop: 0 }} onClick={handleStep2Next}>
+            Continuar al pago →
+          </button>
+          <div className="ckfp-sticky-trust-row">
+            <span>🔒 Pago seguro</span>
+            <span>🛡️ Garantía 30 días</span>
+            <span>🚚 Envío gratis</span>
           </div>
         </div>
       )}
@@ -1705,27 +1687,27 @@ function Styles() {
       }
 
       /* ── Shipping options ── */
-      .ckfp-ship-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+      .ckfp-ship-options { display: flex; flex-direction: column; border: 1.5px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 20px; background: #fff; }
       .ckfp-ship-opt {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        border: 1.5px solid #d1d5db;
-        border-radius: 12px;
+        gap: 14px;
+        padding: 15px 16px;
         cursor: pointer;
-        transition: border-color .15s, background .15s;
+        transition: background .12s;
         background: #fff;
+        border-bottom: 1px solid #f0f0f0;
       }
-      .ckfp-ship-opt:hover { border-color: #1B4D3E; background: #f0fdf4; }
-      .ckfp-ship-opt.selected { border-color: #1B4D3E; background: rgba(27,77,62,.04); border-width: 2px; }
-      .ckfp-ship-opt input[type="radio"] { width: 18px; height: 18px; accent-color: #1B4D3E; flex-shrink: 0; }
-      .ckfp-ship-ico   { font-size: 1.3rem; flex-shrink: 0; }
+      .ckfp-ship-opt:last-child { border-bottom: none; }
+      .ckfp-ship-opt:hover { background: #f8fafc; }
+      .ckfp-ship-opt.selected { background: #f8fafc; }
+      .ckfp-ship-opt input[type="radio"] { width: 18px; height: 18px; accent-color: #111827; flex-shrink: 0; cursor: pointer; }
       .ckfp-ship-info  { flex: 1; min-width: 0; }
-      .ckfp-ship-title { font-weight: 900; font-size: .9rem; color: #111827; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-      .ckfp-ship-badge { font-size: .7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(16,185,129,.10); color: #065f46; border: 1px solid rgba(16,185,129,.25); }
-      .ckfp-ship-sub   { font-size: .8rem; font-weight: 600; color: #6b7280; margin-top: 2px; }
-      .ckfp-ship-price { font-size: .88rem; font-weight: 900; color: #16a34a; flex-shrink: 0; }
+      .ckfp-ship-title { font-weight: 700; font-size: .88rem; color: #111827; line-height: 1.4; }
+      .ckfp-ship-sub   { font-size: .78rem; font-weight: 600; color: #009ee3; margin-top: 3px; }
+      .ckfp-ship-price-col { text-align: right; flex-shrink: 0; }
+      .ckfp-ship-price-free { display: block; font-size: .9rem; font-weight: 900; color: #111827; }
+      .ckfp-ship-price-was  { display: block; font-size: .72rem; font-weight: 600; color: #9ca3af; text-decoration: line-through; margin-top: 1px; }
 
       /* ── Paso 3: layout ── */
       .ckfp-pay-layout {
