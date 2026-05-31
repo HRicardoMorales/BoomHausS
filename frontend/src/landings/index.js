@@ -10,6 +10,7 @@ import parchesDetox          from './parches-detox';
 import sillonPuffInflable    from './sillon-puff-inflable';
 import kitBelleza6en1        from './kit-belleza-6en1';
 import masajeadorEmsEyes     from './masajeador-ems-eyes';
+import masajeadorFacialIones from './masajeador-facial-iones-lambo';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -28,6 +29,8 @@ export const LANDING_CONFIGS = {
   'kit-belleza-6en1':         kitBelleza6en1,
   // Renderizado por MasajeadorEmsEyesLanding.jsx (componente dedicado, ruta /lp/masajeador-ems-eyes)
   'masajeador-ems-eyes':      masajeadorEmsEyes,
+  // Renderizado por MasajeadorFacialIonesLanding.jsx (componente dedicado, ruta /lp/masajeador-facial-iones-lambo)
+  'masajeador-facial-iones-lambo': masajeadorFacialIones,
 };
 
 export const LANDING_META = [
@@ -114,6 +117,13 @@ export const LANDING_META = [
     desc: '4 tecnologías: EMS + Luz Roja 620-630nm + Vibración Sónica + Calor 42°C. Cabezal 270°, sensor inteligente, USB-C. Slug admin: "masajeador-ems-eyes". Renderiza MasajeadorEmsEyesLanding.jsx.',
     status: 'active',
     emoji: '💡',
+  },
+  {
+    slug: 'masajeador-facial-iones-lambo',
+    name: 'Masajeador Facial 5 en 1',
+    desc: '5 tecnologías: Iones + LED + EMS + Calor 42°C + Ultrasónico. Recarga USB-C, apto todo tipo de piel. Slug admin: "masajeador-facial-iones-lambo". Renderiza MasajeadorFacialIonesLanding.jsx.',
+    status: 'active',
+    emoji: '✨',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

@@ -23,7 +23,8 @@
       "PowerShell(Get-Process node -ErrorAction SilentlyContinue | ForEach-Object { $p = $_; try { $cmd = \\(Get-WmiObject Win32_Process -Filter \"ProcessId = $\\($p.Id\\)\"\\).CommandLine; [PSCustomObject]@{Id=$p.Id; Cmd=$cmd} } catch { [PSCustomObject]@{Id=$p.Id; Cmd=\"N/A\"} } } | Format-List)",
       "PowerShell(Stop-Process -Id 28524 -Force -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Id 24092 -Force -ErrorAction SilentlyContinue)",
-      "PowerShell(Set-Location \"C:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\"; Start-Process \"cmd\" -ArgumentList \"/c npm run dev\" -WindowStyle Normal; Start-Sleep -Seconds 4; Get-Process node -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne 11868 } | Select-Object Id, @{N='CPU';E={$_.CPU}} | Format-Table -AutoSize)"
+      "PowerShell(Set-Location \"C:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\"; Start-Process \"cmd\" -ArgumentList \"/c npm run dev\" -WindowStyle Normal; Start-Sleep -Seconds 4; Get-Process node -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne 11868 } | Select-Object Id, @{N='CPU';E={$_.CPU}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Usuario\\\\AppData\\\\Local\\\\Packages\" | Select-Object Name | Where-Object { $_.Name -match \"CLAUDE\" })"
     ]
   }
 }

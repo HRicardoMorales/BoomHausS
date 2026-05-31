@@ -31,6 +31,7 @@ import ParchesDetoxLanding from './pages/ParchesDetoxLanding.jsx';
 import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
 import KitBelleza6en1Landing from './pages/KitBelleza6en1Landing.jsx';
 import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
+import MasajeadorFacialIonesLanding from './pages/MasajeadorFacialIonesLanding.jsx';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -50,7 +51,7 @@ export default function App() {
   // ✅ Navbar/marquee ocultos en checkout y landing B2B
   const hideChrome = location.pathname === '/checkout';
   // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout';
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo';
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -125,6 +126,8 @@ export default function App() {
           <Route path="/lp/kit-belleza-6en1" element={<KitBelleza6en1Landing />} />
           {/* ✅ Masajeador Facial EMS EYES — componente dedicado */}
           <Route path="/lp/masajeador-ems-eyes" element={<MasajeadorEmsEyesLanding />} />
+          {/* ✅ Masajeador Facial 5 en 1 Lambo Lady — componente dedicado */}
+          <Route path="/lp/masajeador-facial-iones-lambo" element={<MasajeadorFacialIonesLanding />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
