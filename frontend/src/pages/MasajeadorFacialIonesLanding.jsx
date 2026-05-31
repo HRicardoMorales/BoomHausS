@@ -411,6 +411,102 @@ function TrustPills() {
 }
 
 /* ============================================================
+   CIRCULACIÓN FACIAL
+============================================================ */
+function CirculacionSection({ mc }) {
+  const d = mc.circulacion;
+  if (!d) return null;
+  return (
+    <div className="circ-section">
+      {/* 1. Título principal */}
+      <h2 className="circ-title">{d.title}</h2>
+      {/* 2. Primera imagen */}
+      {d.img && <img className="circ-img" src={d.img} alt={d.imgAlt || ''} loading="lazy" />}
+      {/* 3. Quote + párrafo */}
+      {d.quote && <p className="circ-quote">{d.quote}</p>}
+      {d.textHtml && <p className="circ-text" dangerouslySetInnerHTML={{ __html: d.textHtml }} />}
+      {/* 4. Título "La buena noticia" */}
+      {d.buenaNoticia && <h2 className="circ-title-buena">{d.buenaNoticia}</h2>}
+      {/* 5. Segunda imagen */}
+      {d.img2 && <img className="circ-img" src={d.img2} alt={d.img2Alt || ''} loading="lazy" />}
+      {/* 6. "Recupera tu Rostro" + badge + bullets + footnote */}
+      {d.title2 && <h2 className="circ-title2">{d.title2}</h2>}
+      {d.ctaBadge && <div className="circ-badge-pill"><span className="circ-badge-dot" />{d.ctaBadge}</div>}
+      {d.bullets?.length > 0 && (
+        <ul className="circ-bullets">
+          {d.bullets.map((b, i) => <li key={i}>{b}</li>)}
+        </ul>
+      )}
+      {d.footnote && <p className="circ-footnote">{d.footnote}</p>}
+    </div>
+  );
+}
+
+/* ============================================================
+   4 SEMANAS TIMELINE
+============================================================ */
+function CuatroSemanasSection({ mc }) {
+  const d = mc.cuatroSemanas;
+  if (!d) return null;
+  return (
+    <div className="semanas-section">
+      <h2 className="semanas-title">
+        {d.title}<br /><span className="semanas-accent">{d.titleAccent}</span>
+      </h2>
+      {d.subtitle && <p className="semanas-sub">{d.subtitle}</p>}
+      <div className="semanas-list">
+        {d.weeks.map((w, i) => (
+          <div key={i} className="semana-row">
+            <div className="semana-left">
+              <span className="semana-badge">{w.label}</span>
+              {i < d.weeks.length - 1 && <div className="semana-line" />}
+            </div>
+            <div className="semana-content">
+              <h3 className="semana-content-title">{w.title}</h3>
+              <p className="semana-content-desc">{w.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {d.img && <img className="semanas-img" src={d.img} alt={d.imgAlt || ''} loading="lazy" />}
+    </div>
+  );
+}
+
+/* ============================================================
+   3 PASOS
+============================================================ */
+function TresPasosSection({ mc, onBuy }) {
+  const d = mc.tresPasos;
+  if (!d) return null;
+  return (
+    <div className="pasos-section">
+      {d.kicker && <div className="pasos-kicker">{d.kicker}</div>}
+      <h2 className="pasos-title">{d.title}</h2>
+      {d.subtitle && <p className="pasos-sub">{d.subtitle}</p>}
+      <div className="pasos-list">
+        {d.steps.map((s, i) => (
+          <div key={i} className="paso-item">
+            <div className="paso-circle-wrap">
+              {s.img
+                ? <img className="paso-circle-img" src={s.img} alt={s.imgAlt || s.title} loading="lazy" />
+                : <div className="paso-circle-ph" />
+              }
+              <span className="paso-num-badge">{s.num}</span>
+            </div>
+            <h3 className="paso-title">{s.title}</h3>
+            <p className="paso-desc">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+      {d.ctaText && (
+        <button className="pasos-cta" onClick={onBuy}>{d.ctaText}</button>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
    MAIN COMPONENT
 ============================================================ */
 export default function MasajeadorFacialIonesLanding() {
@@ -695,54 +791,9 @@ export default function MasajeadorFacialIonesLanding() {
             <VideoStripSection mc={mc} />
           </div>
           <div className="dtx-container">
-            <section className="pd-flow">
-              {mc.storyBlocks.map((b, i) => (
-                <div key={i} className="flow-row">
-                  <div className={`flow-text${b.textHtml ? ' flow-text--rich' : ''}`}>
-                    {b.badge && <div className="flow-badge">{b.badge}</div>}
-                    <h3 className="flow-title">{b.title}</h3>
-                    {b.textHtml
-                      ? <p className="flow-p flow-p--rich" dangerouslySetInnerHTML={{ __html: b.textHtml }} />
-                      : <p className="flow-p">{b.text}</p>
-                    }
-                  </div>
-                  <div className="flow-media">
-                    {(() => {
-                      const mediaUrl = b.img || b.videoUrl || '';
-                      const resolved = resolveMedia(mediaUrl);
-                      if (resolved?.type === 'iframe') return (
-                        <div className="flow-imgBox flow-imgBox--video">
-                          <iframe
-                            src={resolved.src}
-                            title={b.imgAlt}
-                            allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen frameBorder="0" scrolling="no"
-                            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
-                          />
-                        </div>
-                      );
-                      if (resolved?.type === 'video') return (
-                        <div className="flow-imgBox hover-float">
-                          <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} aria-label={b.imgAlt}>
-                            <source src={resolved.src} type="video/mp4" />
-                          </video>
-                        </div>
-                      );
-                      if (resolved?.type === 'gif' || resolved?.type === 'image') return (
-                        <div className="flow-imgBox hover-float">
-                          <img src={resolved.src} alt={b.imgAlt} loading="lazy" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-                        </div>
-                      );
-                      return (
-                        <div className="flow-imgBox hover-float">
-                          <div className="spf-flow-ph"><span className="spf-flow-ph-icon">✨</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              ))}
-            </section>
+            <CirculacionSection mc={mc} />
+            <CuatroSemanasSection mc={mc} />
+            <TresPasosSection mc={mc} onBuy={handleBuy} />
           </div>
         </section>
 
@@ -890,9 +941,6 @@ export default function MasajeadorFacialIonesLanding() {
                 </span>
               )}
             </div>
-            <span className="pd-sticky-qty">
-              {selectedBundle.soldOut ? 'Elegí otro kit arriba' : selectedBundle.label.split('—')[0].trim()}
-            </span>
           </div>
           <button
             className="pd-sticky-btn spf-sticky-btn"
@@ -1270,6 +1318,56 @@ export default function MasajeadorFacialIonesLanding() {
 
         .lp-sticky-price-block { display:flex; flex-direction:column; align-items:flex-start; }
         .lp-sticky-cuotas { font-size:10px; color:rgba(11,18,32,.45); font-weight:500; line-height:1; margin-top:1px; }
+
+        /* ── Circulación Facial ─────────────────────────── */
+        .circ-section { padding:32px 0 24px; display:flex; flex-direction:column; gap:20px; }
+        .circ-title { font-size:1.75rem; font-weight:800; color:rgba(11,18,32,.92); line-height:1.2; margin:0; text-align:center; }
+        .circ-title-buena { font-size:2.2rem; font-weight:900; color:#8B1A4A; line-height:1.15; margin:12px 0 0; text-align:center; }
+        .circ-title2 { font-size:1.55rem; font-weight:800; color:rgba(11,18,32,.92); line-height:1.2; margin:0; text-align:center; }
+        @media (max-width:520px) { .circ-title { font-size:1.5rem; } .circ-title-buena { font-size:1.75rem; } .circ-title2 { font-size:1.3rem; } }
+        .circ-img { width:100%; border-radius:14px; display:block; object-fit:cover; max-height:360px; }
+        .circ-quote { font-style:italic; font-size:1.0rem; font-weight:600; color:rgba(11,18,32,.75); line-height:1.55; margin:0; }
+        .circ-text { font-size:1.0rem; color:rgba(11,18,32,.82); line-height:1.7; margin:0; }
+        .circ-text strong { color:#8B1A4A; font-weight:800; }
+        .circ-badge-pill { display:inline-flex; align-items:center; gap:7px; background:#8B1A4A; color:#fff; font-size:.70rem; font-weight:800; letter-spacing:.05em; padding:6px 14px; border-radius:999px; margin:0; }
+        .circ-badge-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.70); flex-shrink:0; }
+        .circ-bullets { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+        .circ-bullets li { display:flex; align-items:flex-start; gap:9px; font-size:1.0rem; color:rgba(11,18,32,.88); font-weight:600; line-height:1.45; }
+        .circ-bullets li::before { content:"✓"; color:#8B1A4A; font-weight:900; flex-shrink:0; line-height:1.3; }
+        .circ-footnote { font-size:.82rem; color:rgba(11,18,32,.42); font-style:italic; margin:0; }
+
+        /* ── 4 Semanas Timeline ─────────────────────────── */
+        .semanas-section { padding:40px 0 32px; }
+        .semanas-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 10px; text-align:center; }
+        .semanas-accent { color:#8B1A4A; }
+        @media (max-width:520px) { .semanas-title { font-size:1.75rem; } }
+        .semanas-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 20px; text-align:center; }
+        .semanas-img { width:100%; border-radius:14px; display:block; object-fit:cover; max-height:320px; margin:0 0 32px; }
+        .semanas-list { display:flex; flex-direction:column; }
+        .semana-row { display:grid; grid-template-columns:84px 1fr; gap:16px; align-items:flex-start; }
+        .semana-left { display:flex; flex-direction:column; align-items:center; }
+        .semana-badge { background:#8B1A4A; color:#fff; border-radius:999px; padding:6px 0; font-size:.68rem; font-weight:800; text-align:center; width:100%; box-sizing:border-box; white-space:nowrap; }
+        .semana-line { width:2px; border-left:2px dashed rgba(139,26,74,.30); min-height:44px; margin-top:5px; flex:1; }
+        .semana-content { padding:0 0 28px; }
+        .semana-content-title { font-weight:900; font-size:1.05rem; color:rgba(11,18,32,.92); margin:2px 0 6px; line-height:1.25; }
+        .semana-content-desc { font-size:.95rem; color:rgba(11,18,32,.78); line-height:1.6; margin:0; }
+
+        /* ── 3 Pasos ────────────────────────────────────── */
+        .pasos-section { padding:40px 0 32px; text-align:center; }
+        .pasos-kicker { font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#8B1A4A; margin-bottom:10px; }
+        .pasos-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 12px; }
+        @media (max-width:520px) { .pasos-title { font-size:1.75rem; } }
+        .pasos-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 32px; }
+        .pasos-list { display:flex; flex-direction:column; gap:36px; }
+        .paso-item { display:flex; flex-direction:column; align-items:center; gap:10px; }
+        .paso-circle-wrap { position:relative; display:inline-block; }
+        .paso-circle-img { width:120px; height:120px; border-radius:50%; object-fit:cover; display:block; }
+        .paso-circle-ph { width:120px; height:120px; border-radius:50%; background:rgba(139,26,74,.10); }
+        .paso-num-badge { position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); background:#8B1A4A; color:#fff; font-size:.72rem; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #FFF5F8; }
+        .paso-title { font-size:1.05rem; font-weight:900; color:rgba(11,18,32,.90); margin:4px 0 0; line-height:1.2; }
+        .paso-desc { font-size:.97rem; color:rgba(11,18,32,.78); line-height:1.6; margin:0; max-width:300px; }
+        .pasos-cta { margin-top:36px; background:#111827; color:#fff; border:none; border-radius:10px; padding:16px 32px; font-size:.95rem; font-weight:900; cursor:pointer; width:100%; letter-spacing:.04em; transition:background .15s; }
+        .pasos-cta:hover { background:#374151; }
 
         .lp-footer { font-family:inherit; background:#8B1A4A; }
         .lp-footer-body { padding:28px 20px; padding-bottom:max(100px, calc(env(safe-area-inset-bottom) + 100px)); }

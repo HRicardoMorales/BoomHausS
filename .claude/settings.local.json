@@ -24,7 +24,8 @@
       "PowerShell(Stop-Process -Id 28524 -Force -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Id 24092 -Force -ErrorAction SilentlyContinue)",
       "PowerShell(Set-Location \"C:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\"; Start-Process \"cmd\" -ArgumentList \"/c npm run dev\" -WindowStyle Normal; Start-Sleep -Seconds 4; Get-Process node -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne 11868 } | Select-Object Id, @{N='CPU';E={$_.CPU}} | Format-Table -AutoSize)",
-      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Usuario\\\\AppData\\\\Local\\\\Packages\" | Select-Object Name | Where-Object { $_.Name -match \"CLAUDE\" })"
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Usuario\\\\AppData\\\\Local\\\\Packages\" | Select-Object Name | Where-Object { $_.Name -match \"CLAUDE\" })",
+      "WebFetch(domain:renuevamasajeador.com)"
     ]
   }
 }

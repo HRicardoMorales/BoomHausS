@@ -41,7 +41,7 @@ const masajeadorFacialIonesConfig = {
       benefit: "✅ Masajeador Facial 5 en 1 · 🚚 Envío gratis",
       gifts: ["Masajeador Facial LT-25M33", "Cable USB-C", "Manual de uso"],
       imgs: [
-        "https://http2.mlstatic.com/D_NQ_NP_2X_769395-MLA85935791087_062025-F.webp", // imagen del Masajeador Lambo Lady LT-25M33
+        "https://nextcell.com.ar/wp-content/uploads/2025/10/d1ad28a6d1b1da25435e17c5356a4bbbb07724fd_original.jpeg", // imagen del Masajeador Lambo Lady LT-25M33
       ],
     },
     {
@@ -56,8 +56,8 @@ const masajeadorFacialIonesConfig = {
       benefit: "🎁 Combo Cuidado Facial Completo · Dispositivo + producto complementario",
       gifts: [],
       imgs: [
-        "https://http2.mlstatic.com/D_NQ_NP_2X_769395-MLA85935791087_062025-F.webp", // imagen del Masajeador Lambo Lady LT-25M33
-        "https://nextcell.com.ar/wp-content/uploads/2026/04/D_NQ_NP_806227-MLA109096081536_042026-O.webp", // imagen del producto complementario
+        "https://nextcell.com.ar/wp-content/uploads/2025/10/d1ad28a6d1b1da25435e17c5356a4bbbb07724fd_original.jpeg", // imagen del Masajeador Lambo Lady LT-25M33
+        "https://http2.mlstatic.com/D_NQ_NP_2X_878353-MLA93733231370_102025-F.webp", // imagen del producto complementario
       ],
     },
   ],
@@ -70,31 +70,55 @@ const masajeadorFacialIonesConfig = {
     { src: "", alt: "Masajeador Facial LT-25M33 con cable USB-C — contenido completo de la caja" },
   ],
 
-  // ── Story blocks ─────────────────────────────────────────────
-  storyBlocks: [
-    {
-      title: "Querés piel joven. Pero los tratamientos profesionales no son gratis.",
-      img: "https://renuevamasajeador.com/cdn/shop/files/ChatGPT_Image_29_de_mai._de_2026_20_08_46.png?v=1780096256&width=1200",
-      imgAlt: "Cremas y serums acumulados en mesada — costosos pero que no resuelven el problema de fondo",
-      textHtml: `Una sesión de fototerapia o radiofrecuencia cuesta entre <strong>$15.000 y $50.000</strong>. Y necesitás al menos <strong>6 sesiones</strong> para ver resultados.<br>Las cremas solas tampoco alcanzan: sin estimulación, los <strong>activos no penetran lo suficiente</strong>.<br><strong>Ahora podés hacer el mismo tratamiento en casa, en 10 minutos.</strong>`,
-    },
-    {
-      title: "5 tecnologías de estética profesional. En tu mano. En 10 minutos.",
-      img: "https://renuevamasajeador.com/cdn/shop/files/297718e0-ddc0-4215-96a5-2757297216b6.png?v=1780098347&width=535",
-      imgAlt: "Masajeador Facial LT-25M33 en uso — los 5 modos activos iluminados sobre piel",
-      textHtml: `<strong>💡 Luz roja LED</strong> → estimula colágeno · reduce arrugas · mejora firmeza<br>
-<strong>💙 Luz azul LED</strong> → elimina bacterias · combate el acné · regula el sebo<br>
-<strong>✨ Iones</strong> → introduce activos en profundidad · limpia poros<br>
-<strong>⚡ EMS microcorriente</strong> → tonifica músculos · mejora el óvalo facial<br>
-<strong>🌡️ Calor 42°C</strong> → potencia la absorción de tus serums hasta 6 veces más`,
-    },
-    {
-      title: "Resultados visibles en 2-3 semanas. O te devolvemos el dinero.",
-      img: "https://cdn.shopify.com/s/files/1/0663/0919/3773/files/WhatsApp-Video-2025-10-10-at-00.03.38.gif?v=1760065554",
-      imgAlt: "Mujer usando el Masajeador Facial LT-25M33 — expresión relajada, piel luminosa",
-      textHtml: `<em>"Lo uso todas las noches y mi piel se siente diferente desde la primera semana."</em> — compradora verificada ⭐⭐⭐⭐⭐<br>Piel más luminosa y suave: <strong>semana 2-3</strong>. Reducción visible de arrugas: <strong>4 a 8 semanas</strong>.<br><strong>Si en 30 días no notás cambios, te devolvemos el dinero. Sin preguntas.</strong>`,
-    },
-  ],
+  // ── Sección: Circulación Facial ───────────────────────────────
+  circulacion: {
+    title: "NO SOS VOS, ES TU CIRCULACION FACIAL",
+    img: "https://renuevamasajeador.com/cdn/shop/files/ChatGPT_Image_29_de_mai._de_2026_20_08_46.png?v=1780096256&width=1200",
+    imgAlt: "Mujer mirándose al espejo — rostro cansado y con contorno perdido",
+    quote: "\"¿Por qué mi rostro se ve cansado y caído?\"",
+    textHtml: `La piel de tu rostro <strong>no está recibiendo el estímulo</strong> que necesita para firmarse. Podés <strong>usar cremas caras</strong> y aun así ver esa hinchazón y el contorno perdido en el espejo. Hasta ahora.`,
+    buenaNoticia: "La buena noticia: Podés solucionarlo. De forma natural.",
+    img2: "https://renuevamasajeador.com/cdn/shop/files/297718e0-ddc0-4215-96a5-2757297216b6.png?v=1780098347&width=535",   // segunda imagen (ej: mujer usando el dispositivo, resultado visible)
+    img2Alt: "Masajeador facial en uso — resultado visible en rostro",
+    title2: "Recupera tu Rostro",
+    ctaBadge: "SIN AGUJAS | RESULTADOS EN 7 DÍAS",
+    bullets: [
+      "Tu piel recibe el estímulo que necesita",
+      "La hinchazón desaparece sin esfuerzo",
+      "El contorno se redefine naturalmente",
+      "Tu rostro se ve firme, descansado y radiante",
+    ],
+    footnote: "",
+  },
+
+  // ── Sección: 4 Semanas Timeline ───────────────────────────────
+  cuatroSemanas: {
+    title: "Tu Piel se Transforma en",
+    titleAccent: "4 Semanas",
+    subtitle: "Resultados verificados en más de 2.000 mujeres con uso diario.",
+    img: "https://renuevamasajeador.com/cdn/shop/files/6728a5f1-f4c8-4086-8318-4e52ca88398c.png?v=1780092705&width=900",   // URL de imagen ilustrativa (ej: antes/después, collage de resultados)
+    imgAlt: "Transformación de piel en 4 semanas con uso diario",
+    weeks: [
+      { label: "Semana 1", title: "La Piel Empieza a Brillar",       desc: "El 92% nota la piel más luminosa y descansada en los primeros 7 días. Sin agujas, sin clínica." },
+      { label: "Semana 2", title: "Las Líneas Finas se Suavizan",    desc: "Las arrugas alrededor de los ojos y la boca empiezan a verse menos marcadas. El masaje activa el colágeno natural." },
+      { label: "Semana 3", title: "El Contorno se Define",           desc: "Notarás un óvalo facial más firme. La papada y la flacidez ceden a la microvibración diaria." },
+      { label: "Semana 4", title: "Resultados Reales y Visibles",    desc: "Piel firme, líneas reducidas, glow espejo. Sin esfuerzo, sin químicos — solo 5-10 minutos al día." },
+    ],
+  },
+
+  // ── Sección: 3 Pasos ──────────────────────────────────────────
+  // img de cada paso: foto circular (ideal 120x120px). Podés cambiarlas.
+  tresPasos: {
+    kicker: "MODO DE USO",
+    title: "Solo 3 pasos para una piel radiante",
+    subtitle: "5-10 minutos al día. Resultados visibles desde la primera semana. Sin complicaciones, sin químicos.",
+    ctaText: "EMPEZAR MI RUTINA →",
+    steps: [
+      { num: "01", img: "https://renuevamasajeador.com/cdn/shop/files/Diseno_sin_titulo_15.gif?v=1779757149&width=600", imgAlt: "Paso 1 — limpiar e hidratar el rostro", title: "Limpiate e hidratate", desc: "Eliminá la suciedad e hidratá la zona facial. Aplicá tu sérum o crema habitual para optimizar los resultados." },
+      { num: "02", img: "https://renuevamasajeador.com/cdn/shop/files/giphy-downsized-large_1.gif?v=1779757091&width=600", imgAlt: "Paso 2 — encender el dispositivo y elegir el modo", title: "Encendé y elegí el modo", desc: "Seleccioná la tecnología que necesitás: LED roja, LED azul, iones, EMS o calor. Cambiá de modo en cualquier momento." },
+      { num: "03", img: "https://renuevamasajeador.com/cdn/shop/files/664ff3a4-a9a3-4013-a830-dc490369b920.png?v=1779761400&width=600", imgAlt: "Paso 3 — disfrutar los resultados", title: "Disfrutá los resultados", desc: "Deslizá el dispositivo en movimientos ascendentes durante 5-10 minutos. Notarás piel firme y radiante." },
+    ],
+  },
 
   // ── Videos / proof strip ─────────────────────────────────────
   proofVideosKicker: "✦ CINCO TECNOLOGÍAS, UN SOLO DISPOSITIVO",
