@@ -39,7 +39,7 @@ const masajeadorFacialIonesConfig = {
       popular: true,
       soldOut: false,
       benefit: "✅ Masajeador Facial 5 en 1 · 🚚 Envío gratis",
-      gifts: ["Masajeador Facial LT-25M33", "Cable USB-C", "Manual de uso"],
+      gifts: [],
       imgs: [
         "https://nextcell.com.ar/wp-content/uploads/2025/10/d1ad28a6d1b1da25435e17c5356a4bbbb07724fd_original.jpeg", // imagen del Masajeador Lambo Lady LT-25M33
       ],

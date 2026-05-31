@@ -14,8 +14,10 @@ function useCountdown(storageKey = "pd_countdown", minutes = 18) {
     return () => clearInterval(t);
   }, [storageKey, minutes]);
   const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const hh = Math.floor(totalSec / 3600);
+  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
   const ss = String(totalSec % 60).padStart(2, "0");
+  if (hh > 0) return `${hh}:${mm}:${ss}`;
   return `${mm}:${ss}`;
 }
 import { useCart } from "../context/CartContext.jsx";
@@ -100,7 +102,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const [touched, setTouched] = useState({});
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
-  const cartTime = useCountdown("pd_countdown", 18);
+  const cartTime = useCountdown("pd_cd_v2", 335);
   const socialProofCount = useMemo(() => 18 + Math.floor(Math.random() * 12), []);
   const [sameAddr, setSameAddr] = useState(true);
   const [payOpen, setPayOpen] = useState(null); // null | 'card' | 'mp'
@@ -857,13 +859,15 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
         /* CTA button */
         .cs-cta {
-          width: 100%; padding: 15px; border: none; border-radius: 10px;
+          width: 100%; padding: 16px; border: none; border-radius: 12px;
           font-size: 16px; font-weight: 900; cursor: pointer;
           background: var(--primary); color: #fff;
-          transition: background .15s, transform .1s;
+          transition: background .15s, transform .1s, box-shadow .1s;
+          box-shadow: 0 6px 20px rgba(0,0,0,.18);
+          letter-spacing: .01em;
         }
-        .cs-cta:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
-        .cs-cta:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .cs-cta:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,.22); }
+        .cs-cta:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
         /* Confirm success (legacy) */
         .cs-confirm { text-align: center; padding: 40px 24px; }
@@ -1126,15 +1130,15 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
         /* Banner envío gratis — hereda color de la landing */
         .cs-ship-banner {
-          display: flex; align-items: center; gap: 8px;
-          padding: 9px 16px;
-          background: transparent;
-          border-bottom: 1px solid rgba(0,0,0,.07);
+          display: flex; align-items: center; justify-content: center; gap: 8px;
+          padding: 10px 16px;
+          background: #ecfdf5;
+          border-bottom: 1px solid #a7f3d0;
           flex-wrap: wrap;
         }
         .cs-ship-banner-text {
-          font-size: 12px; font-weight: 800;
-          color: var(--primary);
+          font-size: 12.5px; font-weight: 800;
+          color: #047857;
         }
 
         /* ══════ Interstitial MP (step 3) ══════ */
@@ -1505,7 +1509,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                     const thumb = it.imageUrl || it.image || null;
                     return (
                       <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", background: "#fff", border: "1px solid var(--border)", borderRadius: 14, padding: "12px 12px" }}>
+                      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", background: "#fff", border: "1px solid var(--border)", borderRadius: 14, padding: "12px 12px", boxShadow: "0 2px 10px rgba(0,0,0,.05)" }}>
 
                         {/* Imágenes: bundle (múltiples) o producto único */}
                         <div style={{ position: "relative", flexShrink: 0 }}>
@@ -1523,7 +1527,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                             </div>
                           ) : (
                             <>
-                              <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#f0f4f8", display: "grid", placeItems: "center", border: "1px solid rgba(0,0,0,.07)" }}>
+                              <div style={{ width: 76, height: 76, borderRadius: 10, overflow: "hidden", background: "#f0f4f8", display: "grid", placeItems: "center", border: "1px solid rgba(0,0,0,.07)" }}>
                                 {thumb ? <img src={thumb} alt={it.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>📦</span>}
                               </div>
                               <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
@@ -1572,11 +1576,12 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                         </div>
                       </div>
                       {it.gifts?.length > 0 && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <div style={{ background: "#fffbeb", border: "1.5px solid #fde68a", borderRadius: 10, padding: "8px 12px", display: "flex", flexDirection: "column", gap: 5 }}>
+                          <div style={{ fontSize: 11, fontWeight: 900, color: "#b45309", letterSpacing: ".04em", marginBottom: 2 }}>🎁 INCLUIDO EN TU PEDIDO</div>
                           {it.gifts.map((gift, gi) => (
-                            <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 8, padding: "5px 10px" }}>
-                              <span style={{ fontSize: 12, fontWeight: 800, color: "#166534" }}>🎁 {gift}</span>
-                              <span style={{ fontSize: 12, fontWeight: 900, color: "#16a34a" }}>GRATIS</span>
+                            <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: "#78350f" }}>· {gift}</span>
+                              <span style={{ fontSize: 11.5, fontWeight: 900, color: "#d97706", background: "#fef3c7", borderRadius: 999, padding: "2px 8px" }}>GRATIS</span>
                             </div>
                           ))}
                         </div>
@@ -1654,8 +1659,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   )}
 
                   {/* Social proof */}
-                  <div style={{ textAlign: "center", fontSize: 12, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 8, padding: "6px 10px", marginTop: 10 }}>
-                    🔥 {socialProofCount} personas compraron esto en las últimas 24 horas
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
+                    <span style={{ fontSize: 15, lineHeight: 1 }}>🔥</span>
+                    <span>{socialProofCount} personas compraron esto en las últimas 24 horas</span>
                   </div>
 
                 </div>

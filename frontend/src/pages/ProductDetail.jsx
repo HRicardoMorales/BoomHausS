@@ -119,9 +119,11 @@ function CountdownTimer({ storageKey = "pd_countdown", minutes = 18 }) {
   }, [storageKey, minutes]);
 
   const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const hh = Math.floor(totalSec / 3600);
+  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
   const ss = String(totalSec % 60).padStart(2, "0");
 
+  if (hh > 0) return <span className="cd">{hh}:{mm}:{ss}</span>;
   return <span className="cd">{mm}:{ss}</span>;
 }
 
@@ -2236,7 +2238,7 @@ export default function ProductDetail() {
           </div>
           <div className="sticky-count">
             <span className="sticky-countLabel">TERMINA EN</span>
-            <CountdownTimer storageKey={`pd_countdown_${id}`} minutes={18} />
+            <CountdownTimer storageKey={`pd_cd_v2_${id}`} minutes={335} />
           </div>
         </div>
         <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">

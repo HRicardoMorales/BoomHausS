@@ -41,8 +41,10 @@ function CountdownTimer({ storageKey = 'ems_countdown', minutes = 18 }) {
     return () => clearInterval(t);
   }, [storageKey, minutes]);
   const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const hh = Math.floor(totalSec / 3600);
+  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
   const ss = String(totalSec % 60).padStart(2, '0');
+  if (hh > 0) return <span className="spf-cd">{hh}:{mm}:{ss}</span>;
   return <span className="spf-cd">{mm}:{ss}</span>;
 }
 
@@ -603,7 +605,7 @@ export default function MasajeadorEmsEyesLanding() {
               <div className="spf-countdown">
                 <span>⏱</span>
                 <span className="spf-countdown-label">Oferta termina en</span>
-                <CountdownTimer storageKey="ems_countdown" minutes={18} />
+                <CountdownTimer storageKey="ems_cd_v2" minutes={335} />
               </div>
 
               
