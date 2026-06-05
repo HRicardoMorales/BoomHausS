@@ -425,9 +425,15 @@ export default function LuxCoveLED() {
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = [
-    { src: null, alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
-    { src: null, alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
-    { src: null, alt: 'Resultados visibles (img-galeria-3.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKAh1LrWgAAB_aO?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
   ];
 
   if (!productReady) {

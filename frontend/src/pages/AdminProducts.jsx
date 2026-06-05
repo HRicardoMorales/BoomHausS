@@ -264,8 +264,8 @@ export default function AdminProducts() {
       category:       lp.category || 'general',
       images:         lp.images || [],
       isActive:       true,
-      bundles:        (lp.bundles || []).map(b => ({
-        qty: b.qty, price: b.price, compareAt: b.compareAt ?? 0,
+      bundles:        (lp.bundles || []).map((b, idx) => ({
+        qty: b.qty ?? (idx + 1), price: b.price ?? 0, compareAt: b.compareAt ?? 0,
         label: b.label || '', badge: b.badge || '', benefit: b.benefit || '', popular: b.popular || false,
       })),
     };
