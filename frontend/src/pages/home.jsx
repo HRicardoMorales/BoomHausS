@@ -331,139 +331,132 @@ export default function Home() {
   ];
 
   return (
-    <main className="section">
+    <main className="section hc-page">
       {/* ────────────────────────────── CSS */}
       <style>{`
         /* =====================================================
-           HOME CATALOG — hc- prefix
+           HOME CATALOG — hc- prefix  (Luxcove-inspired)
         ===================================================== */
 
-        /* === HERO — full bleed, sin bordes ni márgenes === */
+        /* === PAGE BG === */
+        .hc-page { background: #FAFAF7; }
+
+        /* === HERO === */
         .hc-hero {
           width: 100%;
-          padding: 72px 24px 64px;
-          background: linear-gradient(140deg, #091A14 0%, #1B4D3E 42%, #143D30 72%, #091A14 100%);
+          padding: 84px 24px 76px;
+          background: #FDFBF7;
           text-align: center;
           position: relative;
           overflow: hidden;
+          border-bottom: 1px solid #EDE8DF;
         }
-        /* Dot grid */
         .hc-hero::before {
           content: "";
           position: absolute; inset: 0;
-          background-image: radial-gradient(circle, rgba(94,234,212,.13) 1px, transparent 1px);
-          background-size: 26px 26px;
-          pointer-events: none;
-        }
-        /* Top ambient glow */
-        .hc-hero::after {
-          content: "";
-          position: absolute;
-          top: -120px; left: 50%;
-          transform: translateX(-50%);
-          width: min(900px, 100vw);
-          height: 380px;
-          background: radial-gradient(ellipse at center, rgba(94,234,212,.22) 0%, transparent 65%);
+          background-image: radial-gradient(circle, rgba(0,0,0,.045) 1px, transparent 1px);
+          background-size: 28px 28px;
           pointer-events: none;
         }
         .hc-hero-inner {
           position: relative; z-index: 1;
-          max-width: 720px; margin: 0 auto;
+          max-width: 680px; margin: 0 auto;
           display: flex; flex-direction: column; align-items: center;
         }
         .hc-hero-eyebrow {
           display: inline-flex; align-items: center; gap: 7px;
-          font-size: .70rem; font-weight: 1000;
-          letter-spacing: .14em; text-transform: uppercase;
-          color: #5EEAD4; margin-bottom: 18px;
+          font-size: .70rem; font-weight: 800;
+          letter-spacing: .16em; text-transform: uppercase;
+          color: #9B8B7A; margin-bottom: 20px;
         }
         .hc-hero-eyebrow-dot {
           width: 7px; height: 7px; border-radius: 999px;
-          background: #5EEAD4;
-          box-shadow: 0 0 0 0 rgba(94,234,212,.6);
+          background: #C4932A;
+          box-shadow: 0 0 0 0 rgba(196,147,42,.5);
           animation: hcDotPulse 2.2s ease-out infinite;
         }
         @keyframes hcDotPulse {
-          0%  { box-shadow: 0 0 0 0 rgba(94,234,212,.65); }
-          70% { box-shadow: 0 0 0 9px rgba(94,234,212,0); }
-          100%{ box-shadow: 0 0 0 0 rgba(94,234,212,0); }
+          0%  { box-shadow: 0 0 0 0 rgba(196,147,42,.55); }
+          70% { box-shadow: 0 0 0 9px rgba(196,147,42,0); }
+          100%{ box-shadow: 0 0 0 0 rgba(196,147,42,0); }
         }
         .hc-hero-title {
-          margin: 0 0 18px;
-          font-size: clamp(2.4rem, 6vw, 4rem);
-          font-weight: 1100;
-          color: #fff;
-          letter-spacing: -0.05em;
-          line-height: 1.03;
+          margin: 0 0 20px;
+          font-size: clamp(2.6rem, 6vw, 4.2rem);
+          font-weight: 900;
+          color: #0A0A0A;
+          letter-spacing: -0.04em;
+          line-height: 1.05;
         }
         .hc-hero-title span {
-          background: linear-gradient(130deg, #5EEAD4 0%, #A5F3E3 100%);
+          background: linear-gradient(130deg, #B8832A 0%, #E8B84A 100%);
           -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .hc-hero-sub {
-          font-size: 1.05rem; font-weight: 700;
-          color: rgba(255,255,255,.55);
-          margin: 0 0 30px; line-height: 1.55;
-          max-width: 480px;
+          font-size: 1.05rem; font-weight: 500;
+          color: #7A7067;
+          margin: 0 0 32px; line-height: 1.6;
+          max-width: 440px;
         }
         .hc-hero-actions {
           display: flex; align-items: center; justify-content: center;
-          gap: 10px; flex-wrap: wrap;
+          gap: 12px; flex-wrap: wrap;
         }
         .hc-hero-cta {
           display: inline-flex; align-items: center; gap: 8px;
-          padding: 15px 30px; border-radius: 999px;
-          background: linear-gradient(135deg, #5EEAD4, #2DD4BF);
-          color: #0A1F19; font-weight: 1100; font-size: .97rem;
-          letter-spacing: .01em; border: none; cursor: pointer;
+          padding: 16px 34px; border-radius: 999px;
+          background: #0A0A0A;
+          color: #fff; font-weight: 700; font-size: .97rem;
+          letter-spacing: .02em; border: none; cursor: pointer;
           font-family: inherit;
-          box-shadow: 0 10px 32px rgba(94,234,212,.32);
-          transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+          box-shadow: 0 8px 24px rgba(0,0,0,.22);
+          transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
         }
         .hc-hero-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 18px 42px rgba(94,234,212,.48);
+          background: #222;
+          box-shadow: 0 16px 36px rgba(0,0,0,.30);
         }
         .hc-hero-badge {
           display: inline-flex; align-items: center; gap: 7px;
-          padding: 12px 20px; border-radius: 999px;
-          border: 1px solid rgba(255,255,255,.14);
-          color: rgba(255,255,255,.80); font-weight: 900; font-size: .88rem;
-          background: rgba(255,255,255,.06); backdrop-filter: blur(6px);
+          padding: 13px 22px; border-radius: 999px;
+          border: 1px solid #DDD5C8;
+          color: #5A4E42; font-weight: 700; font-size: .88rem;
+          background: #fff;
         }
         @media (max-width: 600px) {
-          .hc-hero { padding: 52px 20px 46px; }
-          .hc-hero-title { font-size: clamp(2rem, 8vw, 2.6rem); }
-          .hc-hero-sub { font-size: .92rem; margin-bottom: 24px; }
+          .hc-hero { padding: 56px 20px 48px; }
+          .hc-hero-title { font-size: clamp(2.1rem, 8vw, 2.8rem); }
+          .hc-hero-sub { font-size: .93rem; margin-bottom: 26px; }
         }
 
-        /* === COUNTDOWN BANNER (mismo estilo que .marquee) === */
+        /* === ANNOUNCEMENT / COUNTDOWN BAR === */
         .hc-cd-bar {
           width: 100%;
-          background: #0F2D24;
-          border-bottom: 1px solid rgba(94,234,212,.14);
+          background: #F5F0E8;
+          border-bottom: 1px solid #EDE8DF;
           padding: 11px 16px;
           display: flex; align-items: center; justify-content: center;
           gap: 14px; flex-wrap: wrap;
         }
         .hc-cd-text {
-          font-size: .80rem; font-weight: 900;
-          color: rgba(255,255,255,.80);
+          font-size: .80rem; font-weight: 800;
+          color: #3A3028;
           letter-spacing: .03em; white-space: nowrap;
         }
         .hc-cd-sep {
           width: 1px; height: 14px;
-          background: rgba(255,255,255,.18); flex-shrink: 0;
+          background: #D5CCB9; flex-shrink: 0;
         }
         .hc-cd-time {
           font-variant-numeric: tabular-nums;
           font-weight: 900; font-size: 1.05rem;
-          color: #5EEAD4; letter-spacing: 2px;
+          color: #C4932A; letter-spacing: 2px;
           white-space: nowrap;
         }
         .hc-cd-cta {
-          font-size: .75rem; font-weight: 1000;
-          color: rgba(255,255,255,.55);
+          font-size: .75rem; font-weight: 800;
+          color: #9B8B7A;
           letter-spacing: .04em; text-transform: uppercase;
           white-space: nowrap;
         }
@@ -474,7 +467,7 @@ export default function Home() {
           .hc-cd-cta { display: none; }
         }
 
-        /* === TRUST STRIP — tarjetas con icono grande === */
+        /* === TRUST STRIP === */
         .hc-trust {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -487,36 +480,32 @@ export default function Home() {
           align-items: center; gap: 5px;
           text-align: center;
           padding: 18px 10px 16px;
-          border-radius: var(--r);
-          border: 1px solid var(--border);
-          background: rgba(255,255,255,.94);
-          box-shadow: var(--shadow-sm);
-          transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+          border-radius: 16px;
+          border: 1px solid #EDE8DF;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,.04);
+          transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
         }
         .hc-trust-item:hover {
           transform: translateY(-3px);
-          box-shadow: 0 14px 34px rgba(20,40,34,.10);
-          border-color: rgba(27,77,62,.22);
+          box-shadow: 0 12px 28px rgba(0,0,0,.09);
+          border-color: #C8BFB3;
         }
-        /* scroll-reveal para trust items */
         .hc-trust-item.reveal:not(.is-visible) {
-          opacity: 0;
-          transform: translateY(14px);
+          opacity: 0; transform: translateY(14px);
           transition: opacity .5s ease, transform .5s ease;
         }
-        .hc-trust-item.reveal.is-visible {
-          opacity: 1; transform: translateY(0);
-        }
+        .hc-trust-item.reveal.is-visible { opacity: 1; transform: translateY(0); }
         .hc-trust-item.reveal.is-visible:hover { transform: translateY(-3px); }
         .hc-trust-ico { font-size: 1.65rem; line-height: 1; }
         .hc-trust-lbl {
-          font-size: .60rem; font-weight: 900;
+          font-size: .60rem; font-weight: 800;
           letter-spacing: .08em; text-transform: uppercase;
-          color: var(--muted); margin-top: 1px;
+          color: #9B8B7A; margin-top: 1px;
         }
         .hc-trust-val {
-          font-size: .80rem; font-weight: 1000;
-          color: var(--text); line-height: 1.2;
+          font-size: .80rem; font-weight: 800;
+          color: #0A0A0A; line-height: 1.2;
         }
         @media (max-width: 600px) {
           .hc-trust { grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -536,37 +525,31 @@ export default function Home() {
           display: flex; align-items: baseline;
           justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
-          margin-top: 44px;
+          margin-top: 48px;
         }
         .hc-sec-title {
           margin: 0;
-          font-size: clamp(1.2rem, 2.4vw, 1.55rem);
-          font-weight: 1100; letter-spacing: -0.03em; color: var(--text);
+          font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+          font-weight: 900; letter-spacing: -0.03em; color: #0A0A0A;
         }
         .hc-sec-pill {
-          font-size: .72rem; font-weight: 1000;
-          color: var(--primary);
-          background: rgba(27,77,62,.07);
-          border: 1px solid rgba(27,77,62,.16);
-          padding: 4px 11px; border-radius: 999px;
+          font-size: .72rem; font-weight: 800;
+          color: #9B8B7A;
+          background: #F5F0E8;
+          border: 1px solid #EDE8DF;
+          padding: 4px 12px; border-radius: 999px;
           letter-spacing: .04em; text-transform: uppercase;
         }
         .hc-sec-count {
-          font-size: .82rem; font-weight: 800; color: var(--muted);
+          font-size: .82rem; font-weight: 700; color: #9B8B7A;
         }
 
-        /* Section headers — slide-in animation */
-        .hc-anim {
-          opacity: 1; transform: none;
-        }
+        .hc-anim { opacity: 1; transform: none; }
         .hc-hidden {
-          opacity: 0;
-          transform: translateY(20px);
+          opacity: 0; transform: translateY(20px);
           transition: opacity .7s ease, transform .7s ease;
         }
-        .hc-hidden.in-view {
-          opacity: 1; transform: translateY(0);
-        }
+        .hc-hidden.in-view { opacity: 1; transform: translateY(0); }
 
         /* === FEATURED CAROUSEL === */
         .hc-carousel-wrap { position: relative; margin-top: 14px; }
@@ -574,20 +557,18 @@ export default function Home() {
           display: flex; gap: 14px;
           overflow-x: auto; scroll-snap-type: x mandatory;
           scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
-          padding-bottom: 4px;
-          scrollbar-width: none;
+          padding-bottom: 4px; scrollbar-width: none;
         }
         .hc-carousel::-webkit-scrollbar { display: none; }
         .hc-carousel .hc-card {
           flex: 0 0 220px; width: 220px;
           scroll-snap-align: start;
-          /* No stagger in carousel */
           transition-delay: 0ms !important;
         }
         .hc-carousel-wrap::after {
           content: ""; position: absolute;
           top: 0; right: 0; bottom: 4px; width: 52px;
-          background: linear-gradient(to left, var(--bg), transparent);
+          background: linear-gradient(to left, #FAFAF7, transparent);
           pointer-events: none;
         }
         @media (max-width: 480px) {
@@ -595,21 +576,19 @@ export default function Home() {
         }
 
         /* === CATEGORY TABS === */
-        .hc-tabs {
-          display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap;
-        }
+        .hc-tabs { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
         .hc-tab {
-          padding: 7px 16px; border-radius: 999px;
-          border: 1.5px solid rgba(27,77,62,.18);
-          background: transparent; color: var(--muted);
-          font-size: .79rem; font-weight: 900; cursor: pointer;
+          padding: 7px 18px; border-radius: 999px;
+          border: 1.5px solid #E8E2D9;
+          background: transparent; color: #6B6B6B;
+          font-size: .79rem; font-weight: 700; cursor: pointer;
           transition: all .14s ease; font-family: inherit;
           letter-spacing: .02em;
         }
-        .hc-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .hc-tab:hover { border-color: #0A0A0A; color: #0A0A0A; }
         .hc-tab.is-on {
-          background: var(--primary); border-color: var(--primary);
-          color: #fff; box-shadow: 0 8px 20px rgba(27,77,62,.22);
+          background: #0A0A0A; border-color: #0A0A0A;
+          color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.18);
         }
 
         /* === PRODUCT GRID === */
@@ -618,83 +597,63 @@ export default function Home() {
           grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
           gap: 18px; margin-top: 18px;
         }
-        @media (min-width: 1024px) {
-          .hc-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-        @media (max-width: 500px) {
-          .hc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        }
+        @media (min-width: 1024px) { .hc-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 500px) { .hc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 
         /* === PRODUCT CARD === */
         .hc-card {
-          border: 1px solid var(--border);
+          border: 1px solid #EDE8DF;
           background: #fff;
-          border-radius: var(--r);
-          box-shadow: var(--shadow-sm);
+          border-radius: 16px;
+          box-shadow: 0 2px 8px rgba(0,0,0,.05);
           overflow: hidden; cursor: pointer;
           display: flex; flex-direction: column;
-          transition:
-            transform .22s var(--ease),
-            box-shadow .22s var(--ease),
-            border-color .22s var(--ease),
-            opacity .55s ease;
+          transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, opacity .55s ease;
         }
         .hc-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 28px 64px rgba(20,40,34,.15);
-          border-color: rgba(27,77,62,.26);
+          transform: translateY(-5px);
+          box-shadow: 0 24px 52px rgba(0,0,0,.12);
+          border-color: #C4B9AC;
         }
-        .hc-card:hover .hc-card-img img { transform: scale(1.07); }
+        .hc-card:hover .hc-card-img img { transform: scale(1.06); }
+        .hc-card.reveal:not(.is-visible) { opacity: 0; transform: translateY(20px); }
+        .hc-card.reveal.is-visible { opacity: 1; transform: translateY(0); }
+        .hc-card.reveal.is-visible:hover { transform: translateY(-5px); }
 
-        /* scroll-reveal */
-        .hc-card.reveal:not(.is-visible) {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        .hc-card.reveal.is-visible {
-          opacity: 1; transform: translateY(0);
-        }
-        .hc-card.reveal.is-visible:hover { transform: translateY(-6px); }
-
-        /* Image — 1:1 square, mejor para thumbnails de producto */
         .hc-card-img {
-          position: relative;
-          aspect-ratio: 1 / 1;
-          background: linear-gradient(180deg, #FDFFFE 0%, #EEF5F1 100%);
-          overflow: hidden;
+          position: relative; aspect-ratio: 1 / 1;
+          background: #F9F5EE; overflow: hidden;
         }
         .hc-card-img img {
           width: 100%; height: 100%;
           object-fit: contain; display: block;
-          padding: 12px;
-          box-sizing: border-box;
-          transition: transform .4s var(--ease);
+          padding: 12px; box-sizing: border-box;
+          transition: transform .4s ease;
         }
         .hc-card-no-img {
           width: 100%; height: 100%;
           display: grid; place-items: center;
-          font-size: 2.5rem; color: var(--muted); opacity: .4;
+          font-size: 2.5rem; color: #9B8B7A; opacity: .4;
         }
 
-        /* Discount badge — más llamativo */
+        /* Discount badge — RED como Luxcove */
         .hc-badge-off {
           position: absolute; top: 10px; left: 10px; z-index: 2;
-          padding: 6px 11px; border-radius: 8px;
-          background: linear-gradient(135deg, #10B981 0%, #047857 100%);
-          color: #fff; font-size: .72rem; font-weight: 1100;
-          letter-spacing: .07em; text-transform: uppercase;
-          box-shadow: 0 4px 14px rgba(4,120,87,.40);
+          padding: 5px 10px; border-radius: 6px;
+          background: #DC2626;
+          color: #fff; font-size: .72rem; font-weight: 800;
+          letter-spacing: .05em; text-transform: uppercase;
+          box-shadow: 0 3px 10px rgba(220,38,38,.30);
         }
 
-        /* Card body */
         .hc-card-body {
           padding: 14px 14px 16px;
           display: flex; flex-direction: column;
           gap: 6px; flex: 1;
         }
         .hc-card-name {
-          font-size: .92rem; font-weight: 900;
-          color: var(--text); line-height: 1.3;
+          font-size: .92rem; font-weight: 700;
+          color: #0A0A0A; line-height: 1.3;
           display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
           min-height: calc(1.3em * 2);
@@ -704,17 +663,17 @@ export default function Home() {
           gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 4px;
         }
         .hc-price-was {
-          font-size: .78rem; font-weight: 700;
-          color: var(--muted); text-decoration: line-through; opacity: .60;
+          font-size: .78rem; font-weight: 600;
+          color: #9B8B7A; text-decoration: line-through;
         }
         .hc-price-now {
-          font-size: 1.38rem; font-weight: 1100;
-          color: var(--text); letter-spacing: -0.03em; line-height: 1;
+          font-size: 1.38rem; font-weight: 900;
+          color: #0A0A0A; letter-spacing: -0.03em; line-height: 1;
         }
         .hc-price-pct {
-          font-size: .68rem; font-weight: 1000; color: #047857;
-          background: rgba(16,185,129,.10);
-          border: 1px solid rgba(16,185,129,.22);
+          font-size: .68rem; font-weight: 800; color: #DC2626;
+          background: rgba(220,38,38,.08);
+          border: 1px solid rgba(220,38,38,.18);
           padding: 3px 7px; border-radius: 999px;
           white-space: nowrap;
         }
@@ -722,22 +681,23 @@ export default function Home() {
           width: 100%; justify-content: center;
           font-size: .83rem; padding: 11px 14px; margin-top: 8px;
           letter-spacing: .01em;
-          transition:
-            transform var(--t) var(--ease),
-            box-shadow var(--t) var(--ease),
-            letter-spacing var(--t) var(--ease);
+          background: #0A0A0A !important;
+          color: #fff !important;
+          border-color: #0A0A0A !important;
+          border-radius: 999px !important;
+          transition: transform .18s ease, box-shadow .18s ease, letter-spacing .18s ease;
         }
         .hc-card-cta:hover {
           transform: translateY(-2px) !important;
-          box-shadow: 0 12px 30px rgba(27,77,62,.28) !important;
+          background: #222 !important;
+          box-shadow: 0 10px 24px rgba(0,0,0,.22) !important;
           letter-spacing: .04em;
         }
 
         /* === SKELETON === */
         .hc-card-skeleton { pointer-events: none; }
         .hc-skel {
-          background: linear-gradient(90deg,
-            rgba(27,77,62,.06) 25%, rgba(27,77,62,.11) 50%, rgba(27,77,62,.06) 75%);
+          background: linear-gradient(90deg, #F0EBE2 25%, #E8E0D4 50%, #F0EBE2 75%);
           background-size: 200% 100%;
           animation: hcSkel 1.4s ease-in-out infinite;
         }
@@ -750,11 +710,11 @@ export default function Home() {
         /* === EMPTY STATE === */
         .hc-empty {
           grid-column: 1 / -1; padding: 44px 20px;
-          text-align: center; color: var(--muted);
+          text-align: center; color: #9B8B7A;
         }
         .hc-empty-ico { font-size: 2.8rem; margin-bottom: 12px; }
-        .hc-empty-title { font-size: 1.1rem; font-weight: 900; color: var(--text); margin: 0 0 6px; }
-        .hc-empty-sub { font-size: .9rem; font-weight: 700; }
+        .hc-empty-title { font-size: 1.1rem; font-weight: 800; color: #0A0A0A; margin: 0 0 6px; }
+        .hc-empty-sub { font-size: .9rem; font-weight: 600; }
 
         /* === FLOATING WA BUTTON === */
         .hc-wa-fab {
@@ -762,10 +722,10 @@ export default function Home() {
           display: flex; align-items: center; gap: 8px;
           padding: 13px 20px; border-radius: 999px;
           background: #25D366; color: #fff;
-          font-weight: 1000; font-size: .87rem;
+          font-weight: 800; font-size: .87rem;
           text-decoration: none; letter-spacing: .01em;
           box-shadow: 0 8px 26px rgba(37,211,102,.38);
-          transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+          transition: transform .18s ease, box-shadow .18s ease;
         }
         .hc-wa-fab:hover {
           color: #fff; transform: translateY(-3px);

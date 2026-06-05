@@ -11,6 +11,7 @@ import sillonPuffInflable    from './sillon-puff-inflable';
 import kitBelleza6en1        from './kit-belleza-6en1';
 import masajeadorEmsEyes     from './masajeador-ems-eyes';
 import masajeadorFacialIones from './masajeador-facial-iones-lambo';
+import escultorLed           from './escultor-led';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -31,6 +32,8 @@ export const LANDING_CONFIGS = {
   'masajeador-ems-eyes':      masajeadorEmsEyes,
   // Renderizado por MasajeadorFacialIonesLanding.jsx (componente dedicado, ruta /lp/masajeador-facial-iones-lambo)
   'masajeador-facial-iones-lambo': masajeadorFacialIones,
+  // Renderizado por LuxCoveLED.jsx (componente dedicado, ruta /lp/escultor-led)
+  'escultor-led':                  escultorLed,
 };
 
 export const LANDING_META = [
@@ -124,6 +127,13 @@ export const LANDING_META = [
     desc: '5 tecnologías: Iones + LED + EMS + Calor 42°C + Ultrasónico. Recarga USB-C, apto todo tipo de piel. Slug admin: "masajeador-facial-iones-lambo". Renderiza MasajeadorFacialIonesLanding.jsx.',
     status: 'active',
     emoji: '✨',
+  },
+  {
+    slug: 'escultor-led',
+    name: 'Escultor Facial LED 7 en 1',
+    desc: 'Landing Luxcove-inspired: 16 secciones, diseño rosa/blanco alterno, Montserrat. Slug admin: "escultor-led". Renderiza LuxCoveLED.jsx.',
+    status: 'active',
+    emoji: '💡',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

@@ -1,4 +1,4 @@
-// src/pages/CheckoutSheet.jsx
+﻿// src/pages/CheckoutSheet.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -425,7 +425,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       // 2. Procesar pago con tarjeta
       const res = await api.post("/orders/card-payment", {
         token, paymentMethodId, issuerId, installments, amount,
-        email: email || "comprador@boomhauss.com",
+        email: email || "comprador@Amelor.com",
         identificationType, identificationNumber,
         customerName: `${form.nombre} ${form.apellido}`.trim(),
         orderId,
@@ -1393,7 +1393,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
             </div>
 
             <div className="cs-nav-center">
-              {import.meta.env.VITE_STORE_NAME || "BoomHausS"}
+              {import.meta.env.VITE_STORE_NAME || "Amelor"}
             </div>
 
             <div className="cs-nav-side cs-nav-side--right">
@@ -1964,7 +1964,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                           {/* Campos ocultos requeridos por MP */}
                           <div style={{ display: "none" }}>
                             <select id="cs-inp-issuer" />
-                            <input id="cs-inp-email" type="email" defaultValue="comprador@boomhauss.com" />
+                            <input id="cs-inp-email" type="email" defaultValue="comprador@Amelor.com" />
                           </div>
                           {/* Dirección de facturación */}
                           <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, fontWeight: 700, color: "rgba(11,18,32,.7)", cursor: "pointer", marginTop: 8 }}>
@@ -2138,7 +2138,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
             {step === 4 && (() => {
               const isCod = confirmedPaymentMethod === "cod";
               const waNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
-              const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
+              const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
               const waText = encodeURIComponent(`Hola ${storeName}! 👋 Acabo de hacer un pedido por ${money(confirmedTotal)} y quería confirmar los detalles de entrega.`);
               const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : null;
               const totalQty = confirmedItems.reduce((s, i) => s + (Number(i.quantity) || 0), 0);

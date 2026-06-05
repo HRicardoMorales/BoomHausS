@@ -1,4 +1,4 @@
-// src/landings/masajeador-facial-iones-lambo.js
+﻿// src/landings/masajeador-facial-iones-lambo.js
 // URL resultante: /lp/masajeador-facial-iones-lambo
 // Producto en admin → slug: masajeador-facial-iones-lambo
 // Renderizado por: src/pages/MasajeadorFacialIonesLanding.jsx
@@ -6,10 +6,10 @@
 const masajeadorFacialIonesConfig = {
   productSlug: "masajeador-facial-iones-lambo",
 
-  pageTitle: "Masajeador Facial 5 en 1 | Fototerapia LED + EMS + Iones | BoomHausS",
+  pageTitle: "Masajeador Facial 5 en 1 | Fototerapia LED + EMS + Iones | Amelor",
   checkoutName: "Masajeador Facial Skincare 5 en 1 Lambo Lady",
 
-  heroHeadline: "Masajeador Facial 5 en 1. AntiAcne y Antiarrugas.",
+  heroHeadline: "¿Ojeras, arrugas, acné o piel sin firmeza? Este dispositivo las resuelve en casa.",
   heroSubtitle: "",
 
   trustBullets: [
@@ -46,7 +46,7 @@ const masajeadorFacialIonesConfig = {
     },
     {
       id: 2,
-      label: "Masajeador 5 en 1 + Espatula para limpieza facial profunda",
+      label: "Masajeador 5 en 1 + Reductor de Papada",
       qty: 1,
       price: 74900,
       compareAt: 120000,
@@ -57,7 +57,7 @@ const masajeadorFacialIonesConfig = {
       gifts: [],
       imgs: [
         "https://nextcell.com.ar/wp-content/uploads/2025/10/d1ad28a6d1b1da25435e17c5356a4bbbb07724fd_original.jpeg", // imagen del Masajeador Lambo Lady LT-25M33
-        "https://http2.mlstatic.com/D_NQ_NP_2X_878353-MLA93733231370_102025-F.webp", // imagen del producto complementario
+        "https://http2.mlstatic.com/D_NQ_NP_2X_615208-MLA106201477023_012026-F.webp", // imagen del producto complementario
       ],
     },
   ],

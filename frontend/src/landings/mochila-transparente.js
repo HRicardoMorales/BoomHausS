@@ -1,4 +1,4 @@
-// src/landings/mochila-transparente.js
+﻿// src/landings/mochila-transparente.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para la Mochila Transparente PT-4133
 // URL: /lp/mochila-transparente
@@ -12,7 +12,7 @@ const mochilaTransparenteConfig = {
   productSlug: "mochila-transparente-pt4133",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Mochila Transparente para Mascotas PT-4133 | BoomHausS",
+  pageTitle: "Mochila Transparente para Mascotas PT-4133 | Amelor",
   checkoutName: "Mochila Transparente para Mascotas PT-4133",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -128,7 +128,7 @@ const mochilaTransparenteConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

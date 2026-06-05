@@ -1,4 +1,4 @@
-// frontend/src/pages/MundialLanding.jsx
+﻿// frontend/src/pages/MundialLanding.jsx
 // ─────────────────────────────────────────────────────────────
 // Landing B2B para revendedores de productos del Mundial Argentina.
 // URL: /lp/mundial-revendedores
@@ -979,7 +979,7 @@ function AboutB2B() {
       )}
 
       <div className="ml-about-signoff">
-        <div className="ml-about-signoff-logo">BoomHausS</div>
+        <div className="ml-about-signoff-logo">Amelor</div>
         <div className="ml-about-signoff-tag">
           Distribución mayorista · Argentina
         </div>
@@ -3254,7 +3254,7 @@ export default function MundialLanding() {
         }
         .rv-verified svg { display: block; }
 
-        .rv-body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+        .rv-body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 8px; min-height: 160px; }
         .rv-title {
           font-weight: 1100;
           text-transform: uppercase;
@@ -3267,6 +3267,10 @@ export default function MundialLanding() {
           color: rgba(11,18,32,.70);
           line-height: 1.6;
           font-weight: 650;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 5;
+          -webkit-box-orient: vertical;
         }
         @media (max-width: 560px) {
           .rv-head { padding: 14px 14px 12px; gap: 11px; }

@@ -1,4 +1,4 @@
-// src/landings/lampara-magnetica.js
+﻿// src/landings/lampara-magnetica.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para la Lámpara Magnética 3 en 1
 // URL: /lp/lampara-magnetica
@@ -11,7 +11,7 @@ const lamparaMagneticaConfig = {
   productSlug: "lampara-magnetica-negro-kit",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Lámpara Magnética 3 en 1 | Luz inalámbrica para tu escritorio | BoomHausS",
+  pageTitle: "Lámpara Magnética 3 en 1 | Luz inalámbrica para tu escritorio | Amelor",
   checkoutName: "Lámpara Magnética 3 en 1",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -386,7 +386,7 @@ const lamparaMagneticaConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",
@@ -402,7 +402,7 @@ const lamparaMagneticaConfig = {
 
   // ── Estadísticas circulares ───────────────────────────────
   statsTitle: "Resultados que se notan desde el primer día",
-  statsFooterNote: "*Basado en compras verificadas de BoomHausS",
+  statsFooterNote: "*Basado en compras verificadas de Amelor",
   statsCircles: [
     { target: 94, text: `Dicen que <strong>mejoraron el orden de su escritorio</strong> al cambiar la lámpara con cable.` },
     { target: 91, text: `Reportan <strong>menos fatiga visual al usar el modo cálido</strong> por la noche.` },

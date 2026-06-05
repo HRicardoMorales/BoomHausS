@@ -1,4 +1,4 @@
-// src/landings/soporte-nasal-sn300.js
+﻿// src/landings/soporte-nasal-sn300.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para el Soporte Nasal SN-300
 // URL: /lp/soporte-nasal-sn300
@@ -10,7 +10,7 @@ const soporteNasalSN300Config = {
   productSlug: "soporte-nasal-sn300",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Soporte Nasal SN-300 | Dormí mejor desde la primera noche | BoomHausS",
+  pageTitle: "Soporte Nasal SN-300 | Dormí mejor desde la primera noche | Amelor",
   checkoutName: "Soporte Nasal SN-300 Starter Kit",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -173,7 +173,7 @@ const soporteNasalSN300Config = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",
@@ -189,7 +189,7 @@ const soporteNasalSN300Config = {
 
   // ── Estadísticas circulares ───────────────────────────────
   statsTitle: "Resultados que se sienten de inmediato",
-  statsFooterNote: "*Basado en compras verificadas de BoomHausS",
+  statsFooterNote: "*Basado en compras verificadas de Amelor",
   statsCircles: [
     { target: 95, text: `Notaron <strong>mejoría en la respiración nasal</strong> desde la primera noche.` },
     { target: 92, text: `Reportaron <strong>reducción de ronquidos</strong> en la primera semana de uso.` },

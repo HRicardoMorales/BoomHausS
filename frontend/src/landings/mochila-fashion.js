@@ -1,4 +1,4 @@
-// src/landings/mochila-fashion.js
+﻿// src/landings/mochila-fashion.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para la Mochila Fashion para Mascotas
 // URL: /lp/mochila-fashion
@@ -10,7 +10,7 @@ const mochilaFashionConfig = {
   productSlug: "mochila-fashion",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Mochila Fashion para Mascotas | BoomHausS",
+  pageTitle: "Mochila Fashion para Mascotas | Amelor",
   checkoutName: "Mochila Fashion para Mascotas",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -126,7 +126,7 @@ const mochilaFashionConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

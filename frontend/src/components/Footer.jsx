@@ -1,4 +1,4 @@
-// frontend/src/components/Footer.jsx
+﻿// frontend/src/components/Footer.jsx
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
@@ -15,7 +15,7 @@ const WA_ICON = (
 );
 
 export default function Footer() {
-  const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
+  const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "";
   const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || "";
 
@@ -34,8 +34,7 @@ export default function Footer() {
         {/* ── Brand + tagline ── */}
         <div className="ft__head">
           <div className="ft__brand">
-            <span className="ft__brand-dot" aria-hidden="true" />
-            <span className="ft__brand-name">{storeName}</span>
+            <img src="/logo.png" alt={storeName} style={{ height: 36, width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
           </div>
           <p className="ft__tagline">
             Pagá con <strong>Mercado Pago</strong> — débito, crédito o dinero en cuenta
@@ -131,15 +130,16 @@ export default function Footer() {
           width: 9px;
           height: 9px;
           border-radius: 50%;
-          background: #2F855A;
-          box-shadow: 0 0 0 4px rgba(47,133,90,.20);
+          background: #C8928B;
+          box-shadow: 0 0 0 4px rgba(200,146,139,.25);
           flex-shrink: 0;
         }
         .ft__brand-name{
-          font-weight: 800;
-          font-size: 1.1rem;
+          font-family: "Cormorant Garamond", Georgia, serif;
+          font-weight: 600;
+          font-size: 1.25rem;
           color: rgba(255,255,255,.92);
-          letter-spacing: -.025em;
+          letter-spacing: .04em;
         }
         .ft__tagline{
           margin: 0;

@@ -1,4 +1,4 @@
-// src/landings/mundial-revendedores.js
+﻿// src/landings/mundial-revendedores.js
 // ─────────────────────────────────────────────────────────────
 // Landing B2B para REVENDEDORES de productos del Mundial Argentina
 // URL: /lp/mundial-revendedores
@@ -9,7 +9,7 @@ const MUNDIAL_BLUE = "https://placehold.co/600x600/1B4D7E/FFFFFF/png?text=";
 
 const mundialRevendedoresConfig = {
   // ── SEO ──────────────────────────────────────────────────────
-  pageTitle: "Mundial Argentina x10 — Pack Revendedor | BoomHausS",
+  pageTitle: "Mundial Argentina x10 — Pack Revendedor | Amelor",
   metaDescription:
     "Comprá productos del mundial Argentina por mayor en packs de 10. Margen del 100%, envío a todo el país, atención por WhatsApp.",
 

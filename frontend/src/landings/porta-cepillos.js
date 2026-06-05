@@ -1,4 +1,4 @@
-// src/landings/porta-cepillos.js
+﻿// src/landings/porta-cepillos.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para la landing del Porta Cepillos.
 // Para crear una nueva landing, copiá este archivo, cambiá los
@@ -10,7 +10,7 @@ const portaCepillosConfig = {
   productSlug: "porta-cepillos",
 
   // ── Datos para el head/SEO ────────────────────────────────
-  pageTitle: "Porta Cepillo Esterilizador | BoomHausS",
+  pageTitle: "Porta Cepillo Esterilizador | Amelor",
   checkoutName: "Porta Cepillo Esterilizador UV",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -129,7 +129,7 @@ const portaCepillosConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

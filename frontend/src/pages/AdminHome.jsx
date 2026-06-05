@@ -1,4 +1,4 @@
-// frontend/src/pages/AdminHome.jsx
+﻿// frontend/src/pages/AdminHome.jsx
 import { Link } from 'react-router-dom';
 import { getStoredAuth } from '../utils/auth';
 
@@ -46,7 +46,7 @@ export default function AdminHome() {
         {/* Header */}
         <div className="adminHomeHeader" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'baseline' }}>
           <div>
-            <h1 className="adminHomeTitle" style={{ margin: 0, letterSpacing: '-0.05em' }}>Panel BoomHausS</h1>
+            <h1 className="adminHomeTitle" style={{ margin: 0, letterSpacing: '-0.05em' }}>Panel Amelor</h1>
             <div className="muted" style={{ marginTop: 6, fontWeight: 900, wordBreak: 'break-word' }}>
               Logueado como: <span style={{ color: 'rgba(11,18,32,.9)' }}>{user?.email}</span>
             </div>

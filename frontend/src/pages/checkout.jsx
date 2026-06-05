@@ -1,4 +1,4 @@
-// src/pages/checkout.jsx
+﻿// src/pages/checkout.jsx
 // Checkout fullpage — 3 pasos, mobile-first, estilo TiendaNube
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -289,7 +289,7 @@ export default function Checkout() {
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
   const location = useLocation();
 
-  const storeName = import.meta.env.VITE_STORE_NAME || "BoomHausS";
+  const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
   const whatsapp  = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
   // Si viene desde la sheet del carrito (skipCart:true), arrancar en paso 1

@@ -1,4 +1,4 @@
-// src/landings/TEMPLATE.js
+﻿// src/landings/TEMPLATE.js
 // ─────────────────────────────────────────────────────────────────────────────
 // TEMPLATE PARA NUEVA LANDING PAGE
 //
@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const miProductoConfig = {
-  pageTitle: "Nombre del Producto | BoomHausS",
+  pageTitle: "Nombre del Producto | Amelor",
 
   heroSubtitle: "El subtítulo que aparece debajo del título del producto",
 
@@ -105,7 +105,7 @@ const miProductoConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

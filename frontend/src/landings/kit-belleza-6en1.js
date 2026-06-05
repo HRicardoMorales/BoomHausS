@@ -1,4 +1,4 @@
-// src/landings/kit-belleza-6en1.js
+﻿// src/landings/kit-belleza-6en1.js
 // URL resultante: /lp/kit-belleza-6en1
 // Producto en admin → slug: kit-belleza-6en1
 // Renderizado por: src/pages/KitBelleza6en1Landing.jsx
@@ -6,7 +6,7 @@
 const kitBelleza6en1Config = {
   productSlug: "kit-belleza-6en1",
 
-  pageTitle: "Kit de Belleza 6 en 1 | Depiladora, Afeitadora y Más | BoomHausS",
+  pageTitle: "Kit de Belleza 6 en 1 | Depiladora, Afeitadora y Más | Amelor",
   checkoutName: "Kit de Belleza 6 en 1 Boxili",
 
   heroSubtitle: "6 funciones en un solo aparato. Recargable, silencioso y listo en segundos.",

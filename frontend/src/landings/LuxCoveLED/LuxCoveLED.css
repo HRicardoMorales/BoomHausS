@@ -1,0 +1,1613 @@
+/* ============================================================
+   LUX COVE LED — Escultor Facial 7 en 1
+   CSS Prefix: .led-
+   Font: Montserrat, sans-serif
+   Mobile-first · Breakpoint: 768px
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Variables ─────────────────────────────────────────────── */
+.led-wrap {
+  --led-pink:       #FFC6C6;
+  --led-white:      #FFFFFF;
+  --led-black:      #000000;
+  --led-text:       rgba(46, 42, 57, 0.75);
+  --led-gray-dark:  #535353;
+  --led-gray-light: rgba(224, 224, 224, 0.5);
+  --led-gold:       #FFB800;
+  --led-green:      #22C55E;
+  --led-red:        #EF4444;
+
+  font-family: 'Montserrat', sans-serif;
+  color: var(--led-text);
+  background: var(--led-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+.led-loading-wrap {
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.led-loading-bar {
+  width: 200px;
+  height: 4px;
+  background: linear-gradient(90deg, #FFC6C6 0%, #ff9b9b 50%, #FFC6C6 100%);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  animation: led-bar-anim 1.2s linear infinite;
+}
+
+@keyframes led-bar-anim {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── C1: Announcement Bar ────────────────────────────────── */
+.led-ann-bar {
+  background: var(--led-pink);
+  padding: 10px 16px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.led-ann-msg {
+  font-size: 13px;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  transition: opacity 0.4s ease;
+}
+.led-ann-msg.hidden  { opacity: 0; }
+.led-ann-msg.visible { opacity: 1; }
+
+/* ── Section shell ─────────────────────────────────────────── */
+.led-section {
+  padding: 48px 20px;
+}
+.led-section--pink  { background: var(--led-pink); }
+.led-section--white { background: var(--led-white); }
+
+.led-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.led-section-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #000;
+  text-align: center;
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+.led-section-title em {
+  font-style: italic;
+  font-weight: 900;
+}
+
+.led-section-sub {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--led-text);
+  text-align: center;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* ── S2: Hero ─────────────────────────────────────────────── */
+.led-hero {
+  background: var(--led-white);
+  padding: 24px 20px 40px;
+}
+.led-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Gallery */
+.led-gallery { width: 100%; }
+
+.led-gallery-main {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+  margin-bottom: 12px;
+}
+.led-gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.led-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 500;
+  text-align: center;
+  padding: 16px;
+  box-sizing: border-box;
+  min-height: 80px;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.led-thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.led-thumbs::-webkit-scrollbar { display: none; }
+
+.led-thumb {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #f5f5f5;
+  transition: border-color 0.15s ease;
+}
+.led-thumb.led-thumb-active { border-color: #000; }
+.led-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Info column */
+.led-info { width: 100%; }
+
+.led-stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--led-gold);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.led-stars-count   { color: #000; font-weight: 700; }
+.led-reviews-count { color: var(--led-text); font-weight: 500; font-size: 12px; }
+
+.led-product-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+
+/* Pricing */
+.led-pricing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.led-price-original { font-size: 16px; font-weight: 500; color: #999; text-decoration: line-through; }
+.led-price-sale     { font-size: 26px; font-weight: 700; color: #000; }
+.led-badge-discount {
+  background: var(--led-pink);
+  color: #000;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Benefits */
+.led-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.led-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--led-text);
+}
+.led-benefit-check { color: var(--led-green); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+/* Urgency */
+.led-urgency {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--led-red);
+  margin-bottom: 20px;
+  animation: led-pulse 2s ease-in-out infinite;
+}
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* CTA Button */
+.led-btn-cta {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 24px;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 0.18s ease, transform 0.18s ease;
+  display: block;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.led-btn-cta:hover    { background: #222; transform: translateY(-1px); }
+.led-btn-cta:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+.led-btn-cta-center {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 40px;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 0.18s ease, transform 0.18s ease;
+  min-width: 260px;
+  max-width: 100%;
+}
+.led-btn-cta-center:hover    { background: #222; transform: translateY(-1px); }
+.led-btn-cta-center:disabled { background: #aaa; cursor: not-allowed; }
+
+.led-cta-row {
+  text-align: center;
+  margin-top: 32px;
+}
+
+/* ── C2: Trust badges ─────────────────────────────────────── */
+.led-trust-badges {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 16px 8px;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  margin: 16px 0;
+}
+.led-trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  gap: 8px;
+}
+.led-trust-svg {
+  width: 44px;
+  height: 44px;
+  color: #111;
+}
+.led-trust-item .color {
+  color: #111;
+}
+.led-trust-item span {
+  font-size: 11px;
+  color: rgba(46, 42, 57, 0.75);
+  line-height: 1.4;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+/* ── C3: Métodos de pago ──────────────────────────────────── */
+.led-payment-block {
+  margin: 12px 0 20px;
+}
+.led-payment-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(46, 42, 57, 0.5);
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.led-payment-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.led-pay-logo {
+  height: 28px;
+  width: auto;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* ── C5: Hero inline review ──────────────────────────────── */
+.led-hero-review {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 4px 0 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  position: relative;
+}
+.led-hr-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--led-pink);
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-hr-content { flex: 1; padding-right: 24px; }
+.led-hr-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.led-hr-name  { font-weight: 700; font-size: 13px; color: #111; }
+.led-hr-stars { color: var(--led-pink); font-size: 14px; letter-spacing: 1px; }
+.led-hr-text {
+  font-size: 12px;
+  color: rgba(46, 42, 57, 0.75);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+.led-hr-next {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.led-hr-next:hover { color: #333; }
+
+/* ── C4: Accordion con íconos ─────────────────────────────── */
+.led-accordion { border-top: 1px solid #eee; }
+.led-acc-item  { border-bottom: 1px solid #eee; }
+
+.led-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 2px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-acc-trigger:hover { opacity: 0.8; }
+
+.led-acc-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.led-acc-icon svg { width: 20px; height: 20px; }
+
+.led-acc-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.led-acc-arrow {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  display: inline-block;
+  color: #999;
+}
+.led-acc-arrow.open { transform: rotate(90deg); }
+
+.led-acc-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+.led-acc-body.open { max-height: 600px; }
+
+.led-acc-body-inner {
+  padding: 0 2px 16px 34px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--led-text);
+}
+.led-acc-body-inner p { margin: 0 0 8px; }
+.led-acc-body-inner p:last-child { margin: 0; }
+
+/* ── C7: Mini reviews (led-mrb-*) ─────────────────────────── */
+.led-mrb {
+  margin-top: 14px;
+  background: transparent;
+  padding-bottom: 20px;
+}
+.led-mrb-label {
+  font-size: .70rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: rgba(11, 18, 32, .38);
+  margin-bottom: 8px;
+}
+.led-mrb-viewport { overflow: hidden; }
+.led-mrb-track {
+  display: flex;
+  width: 100%;
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+.led-mrb-slide { flex: 0 0 100%; width: 100%; }
+.led-mrb-card {
+  background: #fff;
+  border: 1px solid rgba(2, 8, 23, .09);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 12px rgba(10, 20, 40, .07);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.led-mrb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.led-mrb-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #FFC6C6;
+  color: #111;
+  font-weight: 900;
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.led-mrb-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.led-mrb-title { font-size: .82rem; font-weight: 800; color: rgba(11, 18, 32, .82); }
+.led-mrb-name  { font-size: .75rem; font-weight: 600; color: rgba(11, 18, 32, .60); }
+.led-mrb-stars { color: #FFC6C6; font-size: 11px; }
+.led-mrb-text {
+  margin: 0;
+  font-size: .84rem;
+  font-style: italic;
+  color: rgba(11, 18, 32, .65);
+  font-weight: 500;
+  line-height: 1.5;
+}
+.led-mrb-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.led-mrb-prev,
+.led-mrb-next {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.led-mrb-dots { display: flex; gap: 5px; }
+.led-mrb-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(2, 8, 23, .18);
+  cursor: pointer;
+  padding: 0;
+  transition: width .22s ease, background .18s ease;
+}
+.led-mrb-dot.on { background: #FFC6C6; width: 16px; }
+
+/* ── S3: Testimonials Carousel ────────────────────────────── */
+.led-test-viewport { overflow: hidden; }
+.led-test-track {
+  display: flex;
+  transition: transform 0.4s ease;
+  will-change: transform;
+}
+.led-test-slide {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+.led-test-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+.led-test-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--led-text);
+  margin: 0 0 14px;
+  font-style: italic;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+.led-test-name { font-size: 13px; font-weight: 700; color: #111; }
+
+.led-test-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+.led-test-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+.led-test-btn:hover { border-color: #000; background: #000; color: #fff; }
+.led-test-dots { display: flex; gap: 6px; }
+.led-test-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+.led-test-dot.led-active { background: #000; width: 20px; border-radius: 4px; }
+
+/* C13 — estrellas rosas + avatar circular */
+.led-review-stars {
+  color: #FFC6C6;
+  font-size: 18px;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 10px;
+}
+.led-review-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #FFC6C6;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+/* ── S4: Videos (C14 — gradiente mejorado) ────────────────── */
+.led-videos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+.led-video-placeholder {
+  aspect-ratio: 9 / 16;
+  background: linear-gradient(160deg, #e8e8e8 0%, #d0d0d0 100%);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #999;
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.led-video-play {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #fff;
+}
+
+/* ── S5: Stats image ──────────────────────────────────────── */
+.led-stats-image {
+  margin: 0 0 28px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── C6: Stats circulares animados (led-sc-*) ─────────────── */
+.led-sc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 28px 0 16px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.led-sc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.led-sc-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(11, 18, 32, .06);
+}
+.led-sc-row:last-child { border-bottom: none; }
+.led-sc-circle {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(
+    from 0deg,
+    #E8A0A0 0%,
+    #c87878 var(--led-sc-pct, 0%),
+    rgba(11, 18, 32, .10) 0%
+  );
+}
+.led-sc-circle::after {
+  content: "";
+  position: absolute;
+  top: 12%; left: 12%;
+  width: 76%; height: 76%;
+  background: #fff;
+  border-radius: 50%;
+}
+.led-sc-pct {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 900;
+  color: #c87878;
+  z-index: 1;
+}
+.led-sc-text {
+  font-size: .88rem;
+  font-weight: 500;
+  color: rgba(11, 18, 32, .70);
+  line-height: 1.5;
+  margin: 0;
+}
+.led-sc-text strong {
+  color: rgba(11, 18, 32, .88);
+  font-weight: 800;
+}
+.led-sc-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(11, 18, 32, .08);
+  text-align: center;
+}
+.led-sc-footer-note {
+  font-size: .72rem;
+  color: rgba(11, 18, 32, .40);
+  margin: 0 0 14px;
+  font-style: italic;
+}
+.led-sc-footer-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+.led-sc-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0 8px;
+  border-right: 1px solid rgba(11, 18, 32, .08);
+}
+.led-sc-stat:last-child { border-right: none; }
+.led-sc-stat-val {
+  font-size: 1.10rem;
+  font-weight: 900;
+  color: #c87878;
+  letter-spacing: -.01em;
+}
+.led-sc-stat-lbl {
+  font-size: .62rem;
+  font-weight: 800;
+  color: rgba(11, 18, 32, .45);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* ── S6: 4 Features ──────────────────────────────────────── */
+.led-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 32px;
+}
+.led-feature-item  { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.led-feature-icon  { width: 56px; height: 56px; color: #111; display: block; }
+.led-feature-title { font-size: 15px; font-weight: 700; color: #111; line-height: 1.3; text-align: center; }
+.led-feature-desc  { font-size: 13px; color: var(--led-text); line-height: 1.6; text-align: center; }
+
+/* ── S7-S9: Feature sections ─────────────────────────────── */
+.led-feat-section { padding: 48px 20px; }
+.led-feat-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.led-feat-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+.led-feat-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.led-feat-img .led-img-placeholder { aspect-ratio: unset; height: 100%; min-height: 200px; border-radius: 0; }
+.led-feat-text  { display: flex; flex-direction: column; gap: 14px; }
+.led-feat-title { font-size: 22px; font-weight: 700; color: #111; line-height: 1.3; margin: 0; }
+.led-feat-desc  { font-size: 15px; color: var(--led-text); line-height: 1.7; margin: 0; }
+
+/* ── C8: Lights carousel — peek multi-card (led-lights-*) ── */
+.led-lights-section {
+  padding: 32px 0;
+  background: #fff;
+}
+.led-lights-title {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  color: #111;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  font-family: 'Montserrat', sans-serif;
+  padding: 0 16px;
+}
+.led-lights-track-wrap {
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-left: 16px;
+}
+.led-lights-track-wrap::-webkit-scrollbar { display: none; }
+.led-lights-track {
+  display: flex;
+  gap: 12px;
+  /* sin transition — el scroll nativo maneja la animación */
+}
+.led-lights-card {
+  flex: 0 0 155px;
+  scroll-snap-align: start;
+  background: #fff;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+.led-lights-img-wrap {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid;
+  flex-shrink: 0;
+}
+.led-lights-name {
+  font-weight: 800;
+  font-size: 12px;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+.led-lights-nm {
+  font-size: 11px;
+  color: rgba(46, 42, 57, 0.5);
+  font-weight: 500;
+  margin-top: -4px;
+}
+.led-lights-desc {
+  font-size: 11.5px;
+  color: rgba(46, 42, 57, 0.72);
+  line-height: 1.5;
+  margin: 0;
+}
+.led-lights-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+.led-lights-dot-btn {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, width 0.2s;
+}
+.led-lights-dot-btn.active { background: #111; width: 20px; border-radius: 4px; }
+
+/* ── S11: Testimonios largos ─────────────────────────────── */
+.led-long-tests {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+}
+.led-long-test-card {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+.led-long-test-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.led-long-test-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.led-long-test-name  { font-size: 15px; font-weight: 700; color: #111; }
+.led-long-test-stars { color: var(--led-pink); font-size: 14px; margin-top: 2px; }
+.led-long-test-text  { font-size: 14px; color: var(--led-text); line-height: 1.75; font-style: italic; margin: 0; }
+
+/* ── C9: Tabla comparativa (led-comp-*) — columna negra persistente ── */
+.led-comp-section {
+  padding: 40px 16px;
+  background: #f9f3f3;
+}
+.led-comp-title {
+  font-size: 22px;
+  font-weight: 900;
+  text-align: center;
+  color: #111;
+  margin-bottom: 8px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+.led-comp-sub {
+  font-size: 13px;
+  color: rgba(46, 42, 57, 0.7);
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.led-comp-table {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+  background: #fff;
+}
+.led-comp-header,
+.led-comp-row {
+  display: grid;
+  grid-template-columns: 52% 24% 24%;
+  align-items: stretch;
+}
+/* ─ Header ─ */
+.led-comp-header {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.led-comp-header .led-comp-col-feature {
+  background: #fff;
+  padding: 14px 12px;
+}
+.led-comp-header .led-comp-col-us {
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  text-align: center;
+}
+.led-comp-header .led-comp-col-them {
+  background: #fff;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  text-align: center;
+  border-left: 1px solid #f0f0f0;
+}
+/* ─ Data rows ─ */
+.led-comp-row .led-comp-col-feature {
+  padding: 13px 10px 13px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #E8640A;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.led-comp-row .led-comp-col-us {
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #1e1e1e;
+  font-size: 20px;
+}
+.led-comp-row .led-comp-col-them {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #f0f0f0;
+  border-left: 1px solid #f0f0f0;
+  font-size: 20px;
+}
+.led-comp-check { color: #22C55E; font-weight: 900; font-size: 20px; }
+.led-comp-cross { color: #FF6B6B; font-weight: 900; font-size: 18px; }
+
+/* ── S14: Garantía (C12 — shield SVG) ───────────────────── */
+.led-guarantee {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.led-guarantee-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.led-guarantee-icon svg { width: 80px; height: 90px; }
+.led-guarantee-title { font-size: 26px; font-weight: 800; color: #000; margin: 0 0 16px; }
+.led-guarantee-text  { font-size: 15px; color: var(--led-text); line-height: 1.75; margin-bottom: 28px; }
+
+/* ── C11: Steps con conector punteado (led-step-item) ──────── */
+.led-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 32px;
+}
+.led-step-item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+.led-step-item:last-child { padding-bottom: 0; }
+.led-step-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 44px;
+  width: 2px;
+  height: calc(100% - 12px);
+  background: repeating-linear-gradient(
+    to bottom,
+    #FFC6C6 0, #FFC6C6 5px,
+    transparent 5px, transparent 12px
+  );
+}
+.led-step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #FFC6C6;
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-step-content { flex: 1; }
+.led-step-title   { font-size: 16px; font-weight: 700; color: #111; margin: 0 0 8px; }
+.led-step-desc    { font-size: 14px; color: var(--led-text); line-height: 1.65; margin: 0 0 12px; }
+.led-step-img-ph {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #f0f0f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #aaa;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ── C10: FAQ sección completa (led-faq-*) ──────────────────── */
+.led-faq-section {
+  background: #FFC6C6;
+  padding: 40px 16px;
+}
+.led-faq-title {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  color: #111;
+  margin-bottom: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-faq-sub {
+  font-size: 13px;
+  text-align: center;
+  color: rgba(46, 42, 57, 0.7);
+  margin-bottom: 24px;
+}
+.led-faq-list {
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.led-faq-item { border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+.led-faq-item:first-child { border-top: 1px solid rgba(0, 0, 0, 0.08); }
+.led-faq-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 4px;
+  text-align: left;
+  gap: 12px;
+}
+.led-faq-q {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.4;
+}
+.led-faq-arrow {
+  font-size: 18px;
+  color: #666;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+  display: inline-block;
+}
+.led-faq-arrow.open { transform: rotate(90deg); }
+.led-faq-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+.led-faq-body.open { max-height: 400px; }
+.led-faq-body-inner {
+  padding: 12px;
+  font-size: 13px;
+  color: rgba(46, 42, 57, 0.8);
+  line-height: 1.7;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+/* ── Sticky bar (mobile) ────────────────────────────────── */
+.led-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 10px 16px 12px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+.led-sticky-bar.led-visible { transform: translateY(0); }
+.led-sticky-bar .led-btn-cta { margin-bottom: 0; }
+
+/* ── Desktop overrides (768px+) ─────────────────────────── */
+@media (min-width: 768px) {
+  .led-section       { padding: 72px 40px; }
+  .led-section-title { font-size: 32px; }
+  .led-section-sub   { font-size: 15px; }
+
+  /* Hero: 2 columns */
+  .led-hero-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 56px;
+  }
+  .led-gallery { width: 50%; flex-shrink: 0; }
+  .led-info    { flex: 1; }
+  .led-product-title { font-size: 30px; }
+
+  /* Testimonials: 3 per view */
+  .led-test-slide { width: 33.333%; padding: 0 8px; }
+
+  /* Videos: 3 columns */
+  .led-videos-grid { grid-template-columns: repeat(3, 1fr); }
+
+  /* Feature sections: horizontal layout */
+  .led-feat-section { padding: 64px 40px; }
+  .led-feat-inner   { flex-direction: row; align-items: center; gap: 60px; }
+  .led-feat-img     { width: 48%; flex-shrink: 0; aspect-ratio: 1 / 1; }
+  .led-feat-text    { flex: 1; }
+  .led-feat-title   { font-size: 28px; }
+  .led-feat-desc    { font-size: 16px; }
+  .led-feat-inner.led-feat-reverse { flex-direction: row-reverse; }
+
+  /* Long testimonials: 2 columns */
+  .led-long-tests { flex-direction: row; gap: 24px; }
+  .led-long-test-card { flex: 1; }
+
+  /* Steps: horizontal on desktop, connector hidden */
+  .led-steps       { flex-direction: row; align-items: flex-start; gap: 32px; }
+  .led-step-item   { flex: 1; flex-direction: column; gap: 14px; padding-bottom: 0; }
+  .led-step-num    { width: 48px; height: 48px; font-size: 18px; }
+  .led-step-item:not(:last-child)::before { display: none; }
+
+  /* Sticky bar hidden on desktop */
+  .led-sticky-bar { display: none !important; }
+}
+
+/* ── Video strip (led-vstrip-*) ─────────────────────────────── */
+.led-vstrip-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.led-vstrip-kicker {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #c87878;
+  background: rgba(200, 120, 120, .08);
+  border: 1px solid rgba(200, 120, 120, .20);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.led-vstrip-title {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: rgba(11, 18, 32, .88);
+  margin: 0 0 5px;
+  line-height: 1.25;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-vstrip-sub {
+  font-size: .88rem;
+  font-weight: 600;
+  color: rgba(11, 18, 32, .50);
+  margin: 0;
+}
+.led-vstrip-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+.led-vstrip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.led-vstrip-media {
+  aspect-ratio: 9 / 16;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(11, 18, 32, .05);
+  position: relative;
+}
+.led-vstrip-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(232,160,160,.12), rgba(200,120,120,.06));
+  border: 1.5px dashed rgba(200, 120, 120, .22);
+}
+.led-vstrip-ph-ico {
+  font-size: 2rem;
+  opacity: .35;
+  color: #c87878;
+}
+.led-vstrip-label {
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 800;
+  color: rgba(11, 18, 32, .55);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.led-vstrip-benefit {
+  text-align: center;
+  font-size: .66rem;
+  font-weight: 700;
+  color: rgba(200, 120, 120, .85);
+  letter-spacing: .01em;
+  line-height: 1.35;
+  padding: 0 4px;
+}
+
+/* ── Payment logos ──────────────────────────────────────────── */
+.led-pay-chip {
+  height: 22px;
+  width: auto;
+  max-width: 72px;
+  object-fit: contain;
+  display: block;
+}
+.led-pay-chip[src=""] { display: none; }
+
+/* ── Before/After carousel (led-ba-*) ────────────────────────── */
+.led-ba-carousel {
+  margin-top: 20px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.led-ba-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, .12);
+}
+.led-ba-img {
+  position: relative;
+  width: 100%;
+}
+.led-ba-day-labels {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  background: linear-gradient(to top, rgba(0,0,0,.52), transparent);
+  padding: 12px 16px 10px;
+}
+.led-ba-day {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+  letter-spacing: .02em;
+}
+.led-ba-body {
+  padding: 16px 18px 18px;
+}
+.led-ba-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.led-ba-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-ba-stars {
+  color: #FFC6C6;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+.led-ba-text {
+  font-size: 13px;
+  color: rgba(46, 42, 57, .75);
+  line-height: 1.65;
+  font-style: italic;
+  margin: 0;
+}
+.led-ba-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* ── Footer (led-footer-*) ──────────────────────────────────── */
+.led-footer {
+  background: #111;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-footer-body {
+  padding: 28px 20px;
+  padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 32px));
+}
+.led-footer-brand {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.led-footer-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.led-footer-tagline {
+  font-size: .75rem;
+  color: rgba(255, 255, 255, .45);
+  margin: 5px 0 0;
+}
+.led-footer-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin-bottom: 20px;
+}
+.led-footer-ti {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .70);
+}
+.led-footer-ti > span { font-size: .90rem; line-height: 1; }
+.led-footer-pay {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.led-footer-pay-label {
+  font-size: .60rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .30);
+  display: block;
+  margin-bottom: 8px;
+}
+.led-footer-pay-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.led-footer-pay-chip {
+  height: 20px;
+  width: auto;
+  max-width: 68px;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0) invert(1) opacity(0.7);
+}
+.led-footer-pay-chip[src=""] { display: none; }
+.led-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.led-footer-bottom > span {
+  font-size: .66rem;
+  color: rgba(255, 255, 255, .32);
+}
+
+/* ── Photo Reviews Carousel (post cómo usar) ────────────────── */
+.led-photo-reviews-section { background: #fff; padding: 40px 0 32px; }
+.led-pr-inner {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.led-pr-viewport {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.10);
+}
+.led-pr-track {
+  display: flex;
+  width: 400%;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+.led-pr-card {
+  flex: 0 0 25%;
+  width: 25%;
+  background: #fff;
+  text-align: center;
+}
+.led-pr-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+.led-pr-body {
+  padding: 20px 20px 24px;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.led-pr-stars {
+  color: #FFB800;
+  font-size: 22px;
+  letter-spacing: 3px;
+  display: block;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.led-pr-text {
+  font-size: 14px;
+  color: rgba(46,42,57,.82);
+  line-height: 1.7;
+  margin: 0 0 18px;
+  font-style: italic;
+  text-align: center;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+.led-pr-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #111;
+  display: block;
+  flex-shrink: 0;
+}
+.led-pr-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+}
+.led-pr-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: rgba(0,0,0,.18);
+  padding: 0;
+  transition: background .2s, transform .2s;
+}
+.led-pr-dot--active { background: #111; transform: scale(1.25); }
+@media (min-width: 768px) { .led-pr-inner { max-width: 480px; } }

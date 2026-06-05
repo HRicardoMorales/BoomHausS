@@ -32,6 +32,7 @@ import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
 import KitBelleza6en1Landing from './pages/KitBelleza6en1Landing.jsx';
 import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
 import MasajeadorFacialIonesLanding from './pages/MasajeadorFacialIonesLanding.jsx';
+import LuxCoveLED from './landings/LuxCoveLED/LuxCoveLED';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -50,8 +51,10 @@ export default function App() {
 
   // ✅ Navbar/marquee ocultos en checkout y landing B2B
   const hideChrome = location.pathname === '/checkout';
+  // ✅ Marquee oculto además en landings con header propio
+  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led';
   // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo';
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led';
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {
@@ -101,7 +104,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <ScrollToTop />
-      {!hideChrome && <Marquee countdownKey="pd_countdown" />}
+      {!hideMarquee && <Marquee countdownKey="pd_countdown" />}
       {!hideChrome && <Navbar />}
       
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
@@ -128,6 +131,8 @@ export default function App() {
           <Route path="/lp/masajeador-ems-eyes" element={<MasajeadorEmsEyesLanding />} />
           {/* ✅ Masajeador Facial 5 en 1 Lambo Lady — componente dedicado */}
           <Route path="/lp/masajeador-facial-iones-lambo" element={<MasajeadorFacialIonesLanding />} />
+          {/* ✅ Escultor Facial LED 7 en 1 — componente dedicado LuxCoveLED */}
+          <Route path="/lp/escultor-led" element={<LuxCoveLED />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />

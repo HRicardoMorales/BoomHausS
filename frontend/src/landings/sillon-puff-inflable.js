@@ -1,4 +1,4 @@
-// src/landings/sillon-puff-inflable.js
+﻿// src/landings/sillon-puff-inflable.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para el Sillón Puff Inflable Sunfield
 // URL: /lp/sillon-puff-inflable
@@ -9,7 +9,7 @@
 const sillonPuffInflableConfig = {
   productSlug: "sillon-puff-inflable",
 
-  pageTitle: "Sillón Puff Inflable Sunfield | Relax instantáneo para tu living y dormitorio | BoomHausS",
+  pageTitle: "Sillón Puff Inflable Sunfield | Relax instantáneo para tu living y dormitorio | Amelor",
   checkoutName: "Sillón Puff Inflable Sunfield",
 
   heroSubtitle: "Inflalo en minutos. Moderniza tu hogar.",
@@ -248,7 +248,7 @@ const sillonPuffInflableConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS buscamos productos que realmente hagan una diferencia en el día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que comprés con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor buscamos productos que realmente hagan una diferencia en el día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que comprés con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

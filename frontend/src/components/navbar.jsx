@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { clearAuth, getStoredAuth, isAdmin } from '../utils/auth';
@@ -48,7 +48,7 @@ export default function Navbar() {
         navigate('/login');
     }
 
-    const storeName = import.meta.env.VITE_STORE_NAME || 'BoomHausS';
+    const storeName = import.meta.env.VITE_STORE_NAME || 'Amelor';
     const linkBase = ({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`;
 
     return (
@@ -58,16 +58,10 @@ export default function Navbar() {
                ========================= */}
             <div className="container nav-desktop-container" style={{ padding: '0.85rem 0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'space-between' }}>
-                    
+
                     {/* Brand Desktop */}
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: '#0f172a' }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 12, border: '1px solid rgba(11,92,255,.25)', background: 'linear-gradient(180deg, rgba(11,92,255,.22), rgba(34,195,255,.14))', display: 'grid', placeItems: 'center', fontWeight: 950, color: '#0B5CFF' }}>
-                            {storeName.slice(0, 1).toUpperCase()}
-                        </div>
-                        <div style={{ lineHeight: 1.1 }}>
-                            <div style={{ fontWeight: 950, letterSpacing: '-0.03em' }}>{storeName}</div>
-                            <div className="muted" style={{ fontSize: '0.85rem', color: '#64748b' }}>Tienda oficial</div>
-                        </div>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                        <img src="/logo-navbar.png" alt={storeName} style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
                     </Link>
 
                     {/* Menú Desktop */}
@@ -117,7 +111,9 @@ export default function Navbar() {
                     </div>
                     
                     <div className="mn-center">
-                        <Link to="/" className="mn-brand">{storeName}</Link>
+                        <Link to="/" className="mn-brand">
+                            <img src="/logo-navbar.png" alt={storeName} style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
+                        </Link>
                     </div>
                     
                     <div className="mn-right">
@@ -191,24 +187,24 @@ export default function Navbar() {
                 }
                 
                 /* Estilo del botón carrito resaltado */
-                .cart-highlight { 
-                    background: #eff6ff !important; 
-                    color: #0B5CFF !important; 
-                    border: 1px solid #bfdbfe !important; 
+                .cart-highlight {
+                    background: #fdf3f2 !important;
+                    color: #C8928B !important;
+                    border: 1px solid #DDB7B1 !important;
                 }
-                
-                .nav-pill { 
-                    display: inline-grid; 
-                    place-items: center; 
-                    min-width: 22px; 
-                    height: 22px; 
-                    padding: 0 8px; 
-                    border-radius: 999px; 
-                    background: #0B5CFF; 
+
+                .nav-pill {
+                    display: inline-grid;
+                    place-items: center;
+                    min-width: 22px;
+                    height: 22px;
+                    padding: 0 8px;
+                    border-radius: 999px;
+                    background: #C8928B;
                     color: white;
-                    font-size: 0.82rem; 
-                    font-weight: 950; 
-                    line-height: 1; 
+                    font-size: 0.82rem;
+                    font-weight: 700;
+                    line-height: 1;
                 }
 
                 /* === RESPONSIVE LOGIC === */
@@ -227,15 +223,20 @@ export default function Navbar() {
 
                 /* === DISEÑO MOBILE === */
                 .mobile-nav {
-                    display: flex; align-items: center; justify-content: space-between;
-                    padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+                    display: flex; align-items: center;
+                    position: relative;
+                    padding: 8px 16px; min-height: 62px;
+                    background: #fff; border-bottom: 1px solid #eee;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
                 }
-                .mn-left, .mn-right { flex: 1; display: flex; align-items: center; }
-                .mn-center { flex: 2; text-align: center; }
-                .mn-right { justify-content: flex-end; gap: 12px; }
+                .mn-left { flex: 1; display: flex; align-items: center; }
+                .mn-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+                .mn-center {
+                    position: absolute; left: 50%; transform: translateX(-50%);
+                    display: flex; align-items: center; justify-content: center;
+                }
 
-                .mn-brand { font-size: 1.3rem; font-weight: 800; color: #000; letter-spacing: -0.5px; text-decoration: none; }
+                .mn-brand { text-decoration: none; display: flex; align-items: center; justify-content: center; }
                 
                 .mn-btn {
                     background: none; border: none; padding: 4px; color: #333;
@@ -245,7 +246,7 @@ export default function Navbar() {
                 
                 .mn-badge {
                     position: absolute; top: 0; right: 0;
-                    background: #E11D48; color: white;
+                    background: #C8928B; color: white;
                     font-size: 0.65rem; width: 16px; height: 16px;
                     border-radius: 50%; display: flex; align-items: center; justify-content: center;
                     font-weight: bold; transform: translate(25%, -25%);

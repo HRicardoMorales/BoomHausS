@@ -1,4 +1,4 @@
-// src/landings/nebulizador-mesh.js
+﻿// src/landings/nebulizador-mesh.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para el Nebulizador Recargable Portatil Mesh
 // URL: /lp/nebulizador-mesh
@@ -10,7 +10,7 @@ const nebulizadorMeshConfig = {
   productSlug: "nebulizador-mesh",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Nebulizador Recargable Mesh | BoomHausS",
+  pageTitle: "Nebulizador Recargable Mesh | Amelor",
   checkoutName: "Nebulizador Recargable Portatil Mesh",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -139,7 +139,7 @@ const nebulizadorMeshConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

@@ -1,4 +1,4 @@
-// frontend/src/pages/ProductDetail.jsx
+﻿// frontend/src/pages/ProductDetail.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
@@ -721,7 +721,7 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
       <div className="about2-top">
         <div className="about2-brand">
           <span className="about2-live-dot" aria-hidden="true" />
-          <span className="about2-brand-name">BoomHausS</span>
+          <span className="about2-brand-name">Amelor</span>
         </div>
         <p className="about2-tagline">Productos que realmente funcionan</p>
       </div>
@@ -730,7 +730,7 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
         <img
           className="about2-img"
           src={about.img}
-          alt="BoomHausS equipo"
+          alt="Amelor equipo"
           loading="lazy"
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
@@ -3839,9 +3839,9 @@ export default function ProductDetail() {
         font-weight: 1100;
         box-shadow: 0 16px 40px rgba(229,62,62,.35);
       }
-      .rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; }
+      .rv-body{ padding: 16px 16px 18px; display:flex; flex-direction: column; gap: 8px; text-align: center; min-height: 160px; }
       .rv-title{ font-weight: 1100; text-transform: uppercase; letter-spacing: .05em; color: rgba(11,18,32,.92); }
-      .rv-text{ margin: 0; color: rgba(11,18,32,.70); line-height: 1.6; font-weight: 650; }
+      .rv-text{ margin: 0; color: rgba(11,18,32,.70); line-height: 1.6; font-weight: 650; overflow:hidden; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; }
       .rv-name{ margin-top: 4px; font-weight: 900; color: rgba(11,18,32,.62); }
 
       .rv-nav{

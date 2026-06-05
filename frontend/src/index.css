@@ -246,26 +246,26 @@ html, body {
    ROOT THEME
 ========================= */
 :root {
-  --primary: #1B4D3E;
-  --primary-hover: #153D31;
-  --primary-ink: #0F2D24;
-  --secondary: #5EEAD4;
-  --secondary-soft: #D5F5F0;
+  --primary: #C8928B;
+  --primary-hover: #B67D76;
+  --primary-ink: #8A6A63;
+  --secondary: #DDB7B1;
+  --secondary-soft: #F6F0EE;
 
-  --bg: #F4F9F7;
-  --bg2: #E8F3EF;
+  --bg: #FAF7F5;
+  --bg2: #F6F0EE;
   --card: #FFFFFF;
   --glass: rgba(255, 255, 255, .78);
 
-  --text: #1A2E28;
-  --muted: #5A7268;
+  --text: #4A3A37;
+  --muted: #8A6A63;
 
-  --border: #C8DDD5;
-  --border2: #B3D1C7;
-  --ring: rgba(27, 77, 62, .24);
+  --border: #DDB7B1;
+  --border2: #C8928B;
+  --ring: rgba(200, 146, 139, .24);
 
-  --shadow-sm: 0 10px 26px rgba(20, 40, 34, .08);
-  --shadow: 0 18px 54px rgba(20, 40, 34, .12);
+  --shadow-sm: 0 10px 26px rgba(74, 58, 55, .08);
+  --shadow: 0 18px 54px rgba(74, 58, 55, .12);
 
   --r: 18px;
   --container: 1180px;
@@ -281,13 +281,17 @@ html, body { height: 100%; }
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   color: var(--text);
   line-height: 1.55;
   background:
-    radial-gradient(980px 520px at 15% 0%, rgba(94, 234, 212, .18), transparent 55%),
-    radial-gradient(980px 520px at 90% 10%, rgba(27, 77, 62, .08), transparent 60%),
-    linear-gradient(180deg, var(--bg) 0%, #F9FCFA 52%, var(--bg2) 100%);
+    radial-gradient(980px 520px at 15% 0%, rgba(221, 183, 177, .18), transparent 55%),
+    radial-gradient(980px 520px at 90% 10%, rgba(200, 146, 139, .08), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, #FDFAF9 52%, var(--bg2) 100%);
+}
+
+h1, h2, h3, h4, h5, h6, .logo {
+  font-family: "Cormorant Garamond", Georgia, serif;
 }
 
 #root { min-height: 100%; }

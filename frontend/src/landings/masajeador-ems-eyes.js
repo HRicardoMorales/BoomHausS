@@ -1,4 +1,4 @@
-// src/landings/masajeador-ems-eyes.js
+﻿// src/landings/masajeador-ems-eyes.js
 // URL resultante: /lp/masajeador-ems-eyes
 // Producto en admin → slug: masajeador-ems-eyes
 // Renderizado por: src/pages/MasajeadorEmsEyesLanding.jsx
@@ -6,7 +6,7 @@
 const masajeadorEmsEyesConfig = {
   productSlug: "masajeador-ems-eyes",
 
-  pageTitle: "Masajeador Facial EMS EYES | Luz Roja + EMS + Calor 42°C | BoomHausS",
+  pageTitle: "Masajeador Facial EMS EYES | Luz Roja + EMS + Calor 42°C | Amelor",
   checkoutName: "Masajeador Facial EMS EYES",
 
   heroHeadline: "Cara descansada en 10 minutos — sin bótox, sin turnos, sin salir de casa",

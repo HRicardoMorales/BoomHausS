@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../services/api';
 import { CheckoutSheet } from './CheckoutSheet';
 import { useCart } from '../context/CartContext';
@@ -787,13 +787,15 @@ export default function MasajeadorFacialIonesLanding() {
 
         <section className="pd-band pd-band--light">
           <div className="dtx-container">
+            <CirculacionSection mc={mc} />
+          </div>
+          <div className="dtx-container">
             <MiniReviewsBar reviews={mc.miniReviews?.length ? mc.miniReviews : mc.reviews} />
           </div>
           <div className="dtx-container" style={{ paddingTop: 28 }}>
             <VideoStripSection mc={mc} />
           </div>
           <div className="dtx-container">
-            <CirculacionSection mc={mc} />
             <CuatroSemanasSection mc={mc} />
             <TresPasosSection mc={mc} onBuy={handleBuy} />
           </div>
@@ -895,7 +897,7 @@ export default function MasajeadorFacialIonesLanding() {
         <footer className="lp-footer">
           <div className="lp-footer-body">
             <div className="lp-footer-brand">
-              <div className="lp-footer-logo">BoomHausS</div>
+              <div className="lp-footer-logo">Amelor</div>
               <p className="lp-footer-tagline">Tecnología que mejora tu vida diaria</p>
             </div>
             <div className="lp-footer-trust">
@@ -914,7 +916,7 @@ export default function MasajeadorFacialIonesLanding() {
               </div>
             </div>
             <div className="lp-footer-bottom">
-              <span>© 2026 BoomHausS · Todos los derechos reservados</span>
+              <span>© 2026 Amelor · Todos los derechos reservados</span>
               {mc.whatsapp?.number && (
                 <a href={`https://wa.me/${mc.whatsapp.number}`} className="lp-footer-wa" target="_blank" rel="noopener noreferrer">
                   💬 Consultas por WhatsApp
@@ -1110,7 +1112,7 @@ export default function MasajeadorFacialIonesLanding() {
         .vstrip-title { font-size:1.18rem; font-weight:1000; letter-spacing:-.01em; color:rgba(11,18,32,.88); margin:0 0 5px; line-height:1.25; }
         @media (min-width:900px) { .vstrip-title { font-size:1.38rem; } }
         .vstrip-sub { font-size:.88rem; font-weight:600; color:rgba(11,18,32,.50); margin:0; }
-        .vstrip-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+        .vstrip-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
         .vstrip-item { display:flex; flex-direction:column; gap:7px; min-width:0; }
         .vstrip-media { aspect-ratio:9/16; border-radius:20px; overflow:hidden; background:rgba(11,18,32,.05); position:relative; }
         .vstrip-video { width:100%; height:100%; object-fit:cover; display:block; border:none; }
@@ -1192,9 +1194,9 @@ export default function MasajeadorFacialIonesLanding() {
         .rv-card { background:#fff; border:1px solid rgba(2,8,23,.10); border-radius:22px; box-shadow:0 22px 70px rgba(10,20,40,.16); overflow:hidden; }
         .rv-imgBox { position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; }
         .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#AD1457; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(173,20,87,.35); font-size:1.5rem; }
-        .rv-body { padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; text-align:center; }
+        .rv-body { padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; text-align:center; min-height:160px; }
         .rv-title { font-weight:1100; text-transform:uppercase; letter-spacing:.05em; color:rgba(11,18,32,.92); font-size:.88rem; }
-        .rv-text { margin:0; color:rgba(11,18,32,.70); line-height:1.6; font-weight:650; font-size:.88rem; }
+        .rv-text { margin:0; color:rgba(11,18,32,.70); line-height:1.6; font-weight:650; font-size:.88rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; }
         .rv-name { margin-top:4px; font-weight:900; color:rgba(11,18,32,.62); font-size:.85rem; }
         .rv-nav { position:absolute; top:45%; transform:translateY(-50%); width:44px; height:44px; border-radius:999px; border:1px solid rgba(2,8,23,.10); background:rgba(255,255,255,.95); box-shadow:0 18px 55px rgba(10,20,40,.18); cursor:pointer; display:grid; place-items:center; font-size:24px; z-index:10; }
         .rv-prev { left:-8px; } .rv-next { right:-8px; }

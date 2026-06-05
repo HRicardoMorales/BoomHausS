@@ -1,4 +1,4 @@
-// frontend/src/pages/AdminOrders.jsx
+﻿// frontend/src/pages/AdminOrders.jsx
 
 import { useEffect, useMemo, useState } from 'react';
 import api from '../services/api';
@@ -181,7 +181,7 @@ export default function AdminOrders() {
     if (!order.customerPhone) return null;
     let ph = order.customerPhone.replace(/\D/g, '');
     if (!ph.startsWith('54')) ph = '549' + ph.replace(/^549/, '');
-    const msg = `Hola ${order.customerName || ''}! Te escribo de BoomHausS sobre tu pedido del ${formatDate(order.createdAt)}. ${(order.items || []).map(it => `${it.quantity}x ${it.name}`).join(', ')}. Total: ${money(order.totalAmount)}`;
+    const msg = `Hola ${order.customerName || ''}! Te escribo de Amelor sobre tu pedido del ${formatDate(order.createdAt)}. ${(order.items || []).map(it => `${it.quantity}x ${it.name}`).join(', ')}. Total: ${money(order.totalAmount)}`;
     return `https://wa.me/${ph}?text=${encodeURIComponent(msg)}`;
   }
 
@@ -193,7 +193,7 @@ export default function AdminOrders() {
     const productList = (cart.items || []).map(i => `${i.quantity}x ${i.name}`).join(', ') || 'tu pedido';
     const total = cart.totalAmount ? ` por ${money(cart.totalAmount)}` : '';
     const msg =
-      `Hola${firstName ? ' ' + firstName : ''}! 👋 Te escribo de BoomHausS.\n\n` +
+      `Hola${firstName ? ' ' + firstName : ''}! 👋 Te escribo de Amelor.\n\n` +
       `Vi que estabas cerrando tu compra de ${productList}${total} y quedó pendiente. ` +
       `¿Tuviste algún inconveniente con el pago o el envío?\n\n` +
       `Si querés, te ayudo a finalizarlo por acá mismo. 🙌`;

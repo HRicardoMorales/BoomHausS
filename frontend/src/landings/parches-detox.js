@@ -1,4 +1,4 @@
-// src/landings/parches-detox.js
+﻿// src/landings/parches-detox.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para Parches Plantares Detox (Kinoki)
 // URL: /lp/parches-detox
@@ -9,7 +9,7 @@
 const parchesDetoxConfig = {
   productSlug: "parches-detox",
 
-  pageTitle: "Parches Plantares Detox Kinoki | Ritual nocturno para despertar más liviano | BoomHausS",
+  pageTitle: "Parches Plantares Detox Kinoki | Ritual nocturno para despertar más liviano | Amelor",
   checkoutName: "Parches Plantares Detox Kinoki 2x1 + Ebook",
 
   heroSubtitle: "",
@@ -83,7 +83,7 @@ const parchesDetoxConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS buscamos productos que realmente hagan una diferencia en el día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que comprés con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor buscamos productos que realmente hagan una diferencia en el día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que comprés con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",

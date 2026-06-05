@@ -1,4 +1,4 @@
-// src/landings/consola-retro.js
+﻿// src/landings/consola-retro.js
 // ─────────────────────────────────────────────────────────────
 // Config de marketing para la landing de la Consola Retro M15 Pro
 // URL: /lp/consola-retro
@@ -10,7 +10,7 @@ const consolaRetroConfig = {
   productSlug: "consola-retro",
 
   // ── SEO ───────────────────────────────────────────────────
-  pageTitle: "Consola Retro M15 Pro | BoomHausS",
+  pageTitle: "Consola Retro M15 Pro | Amelor",
   checkoutName: "Consola Retro M15 Pro — 10.000 Juegos",
 
   // ── Hero ─────────────────────────────────────────────────
@@ -190,7 +190,7 @@ const consolaRetroConfig = {
   about: {
     title: "QUIÉNES SOMOS",
     img: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    text: "En BoomHausS nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
+    text: "En Amelor nos enfocamos en traer productos que realmente solucionen problemas del día a día, con envío rápido, atención humana y una experiencia de compra simple. Nuestro objetivo es que compres con confianza y recibas exactamente lo que ves.",
     bullets: [
       "✅ Atención por WhatsApp",
       "📦 Envíos a todo el país",
