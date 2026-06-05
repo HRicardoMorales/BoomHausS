@@ -15,6 +15,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const miProductoConfig = {
+  // ⚠️ OBLIGATORIO: debe coincidir con el slug usado en index.js y en el admin
+  productSlug: 'mi-producto',
+
+  // ⚠️ OBLIGATORIO: al menos un bundle con el precio real
+  bundles: [
+    { qty: 1, price: 0, compareAt: 0, label: '1 unidad', badge: '', benefit: '', popular: true },
+  ],
+
   pageTitle: "Nombre del Producto | Amelor",
 
   heroSubtitle: "El subtítulo que aparece debajo del título del producto",

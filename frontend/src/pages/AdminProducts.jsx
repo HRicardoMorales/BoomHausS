@@ -73,10 +73,12 @@ function allLandingProducts() {
           bundles: v.bundles || [],
         });
       }
-    } else if (config.productSlug) {
+    } else {
+      // usa productSlug del config, o el propio landingSlug como fallback
+      const slug = config.productSlug || landingSlug;
       out.push({
-        productSlug: config.productSlug,
-        name: meta?.name || landingSlug,
+        productSlug: slug,
+        name: meta?.name || config.checkoutName || landingSlug,
         landingSlug,
         price: config.bundles?.[0]?.price || 0,
         category: guessCategory(landingSlug),
@@ -253,14 +255,16 @@ export default function AdminProducts() {
   }
 
   function buildSeedPayload(lp) {
+    const firstBundle = lp.bundles?.[0];
     return {
-      name:     lp.name,
-      slug:     lp.productSlug,
-      price:    lp.price || 1,
-      category: lp.category || 'general',
-      images:   lp.images || [],
-      isActive: true,
-      bundles:  (lp.bundles || []).map(b => ({
+      name:           lp.name,
+      slug:           lp.productSlug,
+      price:          lp.price || firstBundle?.price || 1,
+      compareAtPrice: firstBundle?.compareAt || 0,
+      category:       lp.category || 'general',
+      images:         lp.images || [],
+      isActive:       true,
+      bundles:        (lp.bundles || []).map(b => ({
         qty: b.qty, price: b.price, compareAt: b.compareAt ?? 0,
         label: b.label || '', badge: b.badge || '', benefit: b.benefit || '', popular: b.popular || false,
       })),
@@ -279,18 +283,28 @@ export default function AdminProducts() {
   }
 
   async function seedAll() {
-    setSeedingAll(true); setError('');
+    setSeedingAll(true); setError(''); setOk('');
     const missing = allLandingProducts().filter(lp => !products.some(p => p.slug === lp.productSlug));
+    if (missing.length === 0) {
+      flash('Todos los productos ya están sincronizados ✓');
+      setSeedingAll(false);
+      return;
+    }
     let created = 0;
+    const errors = [];
     for (const lp of missing) {
       try {
         await api.post('/products', buildSeedPayload(lp));
         created++;
-      } catch (_) { /* skip duplicates or errors */ }
+      } catch (e) {
+        const msg = e?.response?.data?.message || e?.message || 'Error desconocido';
+        errors.push(`"${lp.name}": ${msg}`);
+      }
     }
-    flash(`${created} producto${created !== 1 ? 's' : ''} creado${created !== 1 ? 's' : ''} ✓`);
     await fetchAll();
     setSeedingAll(false);
+    if (errors.length > 0) setError(`${errors.length} error(es): ${errors[0]}${errors.length > 1 ? ` (+${errors.length - 1} más)` : ''}`);
+    if (created > 0) flash(`${created} producto${created !== 1 ? 's' : ''} creado${created !== 1 ? 's' : ''} ✓`);
   }
 
   const hasChanges = useMemo(() => {
