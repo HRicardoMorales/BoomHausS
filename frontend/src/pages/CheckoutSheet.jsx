@@ -1,4 +1,4 @@
-﻿// src/pages/CheckoutSheet.jsx
+// src/pages/CheckoutSheet.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -89,7 +89,7 @@ const INITIAL_FORM = {
   cp: "", ciudad: "", provincia: "Buenos Aires", notes: "",
 };
 
-export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31" }) {
+export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31", accentColor = "#1D9E75", fontFamily = null }) {
   const navigate = useNavigate();
   const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal: ctxCalc } = useCart();
   const calc = ctxCalc || calcItemTotal;
@@ -546,9 +546,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   }
 
   const firstImg = items[0]?.imageUrl || items[0]?.image || null;
+  const G = accentColor; // accent color for inline styles
 
   return (
     <>
+      <style>{`
+        ${fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');` : ''}
+      `}</style>
       <style>{`
         @keyframes csSlideUp {
           from { transform: translateY(100%); opacity: 0; }
@@ -559,8 +563,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           to   { max-height: 800px; opacity: 1; }
         }
         @keyframes csPulse {
-          0%,100% { box-shadow: 0 0 0 0 rgba(29,158,117,.5); }
-          50%      { box-shadow: 0 0 0 6px rgba(29,158,117,0); }
+          0%,100% { box-shadow: 0 0 0 0 rgba(0,0,0,.15); }
+          50%      { box-shadow: 0 0 0 6px rgba(0,0,0,0); }
         }
         .cs-overlay {
           position: fixed; inset: 0; z-index: 9999;
@@ -568,6 +572,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           backdrop-filter: blur(4px);
           display: flex; align-items: flex-end; justify-content: center;
         }
+        .cs-sheet { ${fontFamily ? `font-family: ${fontFamily};` : ''} }
         @media (min-width: 768px) {
           .cs-overlay { align-items: center; }
           .cs-sheet { max-width: 480px !important; border-radius: 16px !important; max-height: 92vh !important; }
@@ -611,8 +616,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-nav-back:hover { background: #f5f5f7; }
         .cs-nav-secure {
           display: flex; align-items: center; gap: 4px;
-          font-size: 11px; font-weight: 800; color: #1D9E75;
-          background: #f0fdf4; border: 1px solid #d1fae5;
+          font-size: 11px; font-weight: 800; color: var(--cs-done);
+          background: #fff0f5; border: 1px solid #FFC6C6;
           border-radius: 999px; padding: 4px 10px; white-space: nowrap;
           margin-right: 2px;
         }
@@ -630,14 +635,14 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-field input, .cs-field select, .cs-field textarea {
           width: 100%; box-sizing: border-box;
           padding: 22px 14px 8px; font-size: 15px; font-weight: 600;
-          border: 1.5px solid #e0e0e0; border-radius: 10px;
+          border: 1.5px solid #e0e0e0; border-radius: 12px;
           background: #fff; color: var(--text);
           outline: none; transition: border-color .18s, box-shadow .18s;
           -webkit-appearance: none; appearance: none;
         }
         .cs-field input:focus, .cs-field select:focus {
           border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(27,77,62,.08);
+          box-shadow: 0 0 0 3px rgba(0,0,0,.06);
         }
         .cs-field input.cs-err, .cs-field select.cs-err { border-color: #c0392b !important; }
         .cs-field label {
@@ -663,24 +668,24 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         /* Radio shipping/pay cards */
         .cs-opt {
           display: flex; align-items: flex-start; gap: 12px;
-          padding: 14px 16px; border: 1.5px solid #d0d0d0; border-radius: 10px;
+          padding: 14px 16px; border: 1.5px solid #e0e0e0; border-radius: 12px;
           cursor: pointer; transition: border-color .15s, background .15s;
         }
-        .cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(27,77,62,.04); }
+        .cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(0,0,0,.03); }
         .cs-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
 
         /* ── Payment step 2 redesign ── */
         .cs-ship-summary {
           display: flex; align-items: center; justify-content: space-between;
           background: #f8fafc; border: 1.5px solid #e2e8f0;
-          border-radius: 10px; padding: 11px 14px; margin-bottom: 20px;
+          border-radius: 12px; padding: 11px 14px; margin-bottom: 20px;
         }
         .cs-pay-section-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .cs-pay-section-line { flex: 1; height: 1px; background: #e5e7eb; }
-        .cs-pay-section-ttl { font-size: 13px; font-weight: 900; color: #1a1a1a; text-transform: uppercase; letter-spacing: .12em; white-space: nowrap; }
+        .cs-pay-section-ttl { font-size: 13px; font-weight: 900; color: #1a1a1a; text-transform: uppercase; letter-spacing: .14em; white-space: nowrap; }
         .cs-pay-ssl-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #9ca3af; margin-bottom: 14px; }
-        .cs-pcard { border: 1.5px solid #e2e8f0; border-radius: 10px; background: #fff; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
-        .cs-pcard--open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,77,62,.07); }
+        .cs-pcard { border: 1.5px solid #e2e8f0; border-radius: 12px; background: #fff; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+        .cs-pcard--open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
         .cs-pcard-row {
           display: flex; align-items: center; gap: 11px;
           padding: 15px 16px; cursor: pointer; min-height: 58px;
@@ -714,12 +719,12 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           background: #fff; color: #aaa; transition: all .2s;
         }
         .cs-step-circle.active { background: var(--primary); border-color: var(--primary); color: #fff; }
-        .cs-step-circle.done { background: #1D9E75; border-color: #1D9E75; color: #fff; }
+        .cs-step-circle.done { background: var(--cs-done); border-color: var(--cs-done); color: #fff; }
         .cs-step-line { flex: 1; height: 2px; background: #e0e0e0; }
-        .cs-step-line.done { background: #1D9E75; }
+        .cs-step-line.done { background: var(--cs-done); }
         .cs-step-label { font-size: 11px; font-weight: 700; color: #aaa; margin-top: 4px; text-align: center; }
         .cs-step-label.active { color: var(--primary); }
-        .cs-step-label.done { color: #1D9E75; }
+        .cs-step-label.done { color: var(--cs-done); }
 
         /* Summary collapsible */
         .cs-summary-toggle {
@@ -733,9 +738,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-pay-panel { overflow: hidden; animation: csSlideDown .22s ease forwards; }
 
         /* Benefit bar (legacy) */
-        .cs-benefits { background: #f0fdf8; border-bottom: 1px solid #b7f0dc; padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
-        .cs-benefits-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: #0a5c3a; }
-        .cs-benefits-line { width: 28px; height: 2px; background: #34d399; border-radius: 2px; }
+        .cs-benefits { background: #fff5f5; border-bottom: 1px solid #FFC6C6; padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
+        .cs-benefits-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: #1a1a1a; }
+        .cs-benefits-line { width: 28px; height: 2px; background: var(--cs-done); border-radius: 2px; }
 
         /* ✨ Hero benefits — envío gratis protagonista + regalos si aplica */
         .cs-hero-benefits {
@@ -743,8 +748,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           flex-direction: column;
           gap: 8px;
           padding: 14px 16px 12px;
-          background: linear-gradient(180deg, #ecfdf5 0%, #f0fdf8 100%);
-          border-bottom: 1px solid #b7f0dc;
+          background: linear-gradient(180deg, #fff5f5 0%, #fff0f5 100%);
+          border-bottom: 1px solid #FFC6C6;
         }
         .cs-hero-free,
         .cs-hero-gifts {
@@ -754,7 +759,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           padding: 11px 14px;
           border-radius: 12px;
           background: #fff;
-          border: 1.5px solid #34d399;
+          border: 1.5px solid #FFC6C6;
           box-shadow: 0 4px 12px rgba(15,157,110,.08);
         }
         .cs-hero-gifts {
@@ -777,7 +782,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           height: 38px;
           border-radius: 10px;
           font-size: 20px;
-          background: #d1fae5;
+          background: #ffe8e8;
         }
         .cs-hero-gifts-ico { background: #fde68a; }
         .cs-hero-free-txt,
@@ -785,14 +790,14 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-hero-free-title {
           font-size: 14px;
           font-weight: 1000;
-          color: #065f46;
+          color: #1a1a1a;
           letter-spacing: .02em;
           line-height: 1.15;
         }
         .cs-hero-free-sub {
           font-size: 11.5px;
           font-weight: 700;
-          color: #047857;
+          color: var(--cs-done);
           margin-top: 2px;
         }
         .cs-hero-gifts-title {
@@ -842,7 +847,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           transition: border-color .15s;
         }
         .cs-coupon-row input:focus { border-color: #aaa; background: #fff; }
-        .cs-coupon-row input.cs-coupon-applied { border-color: #1D9E75; background: #f0fdf4; color: #1D9E75; }
+        .cs-coupon-row input.cs-coupon-applied { border-color: var(--cs-done); background: #fff5f5; color: var(--cs-done); }
         .cs-coupon-row input:disabled { opacity: .8; cursor: default; }
         .cs-coupon-btn {
           height: 38px; padding: 0 13px; border: 1px solid #ccc; border-radius: 7px;
@@ -855,11 +860,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-coupon-btn.remove { background: #f4f4f4; color: #888; border-color: #ddd; }
         .cs-coupon-btn.remove:hover { background: #eee; }
         .cs-coupon-err { font-size: 11.5px; font-weight: 700; color: #c0392b; margin-top: 5px; }
-        .cs-coupon-ok  { font-size: 11.5px; font-weight: 700; color: #1D9E75; margin-top: 5px; }
+        .cs-coupon-ok  { font-size: 11.5px; font-weight: 700; color: var(--cs-done); margin-top: 5px; }
 
         /* CTA button */
         .cs-cta {
-          width: 100%; padding: 16px; border: none; border-radius: 12px;
+          width: 100%; padding: 16px; border: none; border-radius: 14px;
           font-size: 16px; font-weight: 900; cursor: pointer;
           background: var(--primary); color: #fff;
           transition: background .15s, transform .1s, box-shadow .1s;
@@ -919,11 +924,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-confirm4-row:last-child { border-bottom: none; }
         .cs-confirm4-label { color: #888; }
         .cs-confirm4-val { color: var(--text); font-weight: 900; }
-        .cs-confirm4-val--green { color: #1D9E75; font-weight: 900; }
+        .cs-confirm4-val--green { color: var(--cs-done); font-weight: 900; }
         .cs-confirm4-val--total { font-size: 17px; color: var(--primary); }
         .cs-confirm4-wa {
           display: flex; align-items: center; justify-content: center; gap: 10px;
-          width: 100%; padding: 14px 0; border-radius: 12px;
+          width: 100%; padding: 14px 0; border-radius: 14px;
           background: #25d366; color: #fff; font-weight: 900; font-size: 15px;
           text-decoration: none; margin-bottom: 10px;
           box-shadow: 0 8px 20px rgba(37,211,102,.25);
@@ -931,7 +936,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         }
         .cs-confirm4-wa:hover { filter: brightness(1.07); }
         .cs-confirm4-close {
-          width: 100%; padding: 12px 0; border-radius: 12px;
+          width: 100%; padding: 12px 0; border-radius: 14px;
           border: 1.5px solid var(--border2); background: transparent;
           color: var(--text); font-weight: 800; font-size: 14px; cursor: pointer;
           transition: background .12s;
@@ -960,7 +965,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-policies a { color: #999; text-decoration: underline; font-weight: 600; }
 
         /* ✓ Field valid indicator */
-        .cs-field-ok { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #1D9E75; font-size: 16px; font-weight: 900; pointer-events: none; }
+        .cs-field-ok { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--cs-done); font-size: 16px; font-weight: 900; pointer-events: none; }
 
         /* Countdown pill in cart */
         .cs-cd-pill { display: inline-flex; align-items: center; gap: 6px; background: #0b172a; color: #fff; border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 900; letter-spacing: .03em; }
@@ -976,8 +981,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-exit-emoji { font-size: 44px; margin-bottom: 10px; }
         .cs-exit-title { font-size: 20px; font-weight: 900; color: #0b1220; margin: 0 0 8px; line-height: 1.2; }
         .cs-exit-sub { font-size: 13px; font-weight: 600; color: #64748b; margin: 0 0 20px; line-height: 1.5; }
-        .cs-exit-stay { width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: 900; cursor: pointer; background: var(--primary); color: #fff; margin-bottom: 10px; }
-        .cs-exit-leave { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; background: none; color: #aaa; }
+        .cs-exit-stay { width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 15px; font-weight: 900; cursor: pointer; background: var(--primary); color: #fff; margin-bottom: 10px; }
+        .cs-exit-leave { width: 100%; padding: 10px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; background: none; color: #aaa; }
         .cs-exit-leave:hover { color: #666; }
 
         /* ── Card form (inputs manuales, cada campo es una card) ── */
@@ -987,7 +992,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         }
         .cs-card-field {
           position: relative;
-          border: 1.5px solid #e0e0e0; border-radius: 10px;
+          border: 1.5px solid #e0e0e0; border-radius: 12px;
           background: #fff; min-height: 56px;
           display: flex; flex-direction: column; justify-content: center;
           padding: 0 44px 0 14px;
@@ -1124,7 +1129,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         }
         .cs-mp-trust-item {
           font-size: 10.5px; font-weight: 900;
-          color: #0f766e; letter-spacing: .02em;
+          color: #475569; letter-spacing: .02em;
         }
         .cs-mp-trust-dot { color: #cbd5e1; font-weight: 900; }
 
@@ -1132,13 +1137,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-ship-banner {
           display: flex; align-items: center; justify-content: center; gap: 8px;
           padding: 10px 16px;
-          background: #ecfdf5;
-          border-bottom: 1px solid #a7f3d0;
+          background: #fff5f5;
+          border-bottom: 1px solid #FFC6C6;
           flex-wrap: wrap;
         }
         .cs-ship-banner-text {
           font-size: 12.5px; font-weight: 800;
-          color: #047857;
+          color: var(--cs-done);
         }
 
         /* ══════ Interstitial MP (step 3) ══════ */
@@ -1251,7 +1256,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           margin: 0 auto;
           padding: 15px 18px;
           border: none;
-          border-radius: 12px;
+          border-radius: 14px;
           background: #009ee3;
           color: #fff;
           font-size: 15.5px; font-weight: 900;
@@ -1329,7 +1334,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.6)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div style={{ background: "#fff", borderRadius: 20, maxWidth: 400, width: "100%", padding: "32px 28px 28px", boxShadow: "0 24px 60px rgba(0,0,0,.25)", textAlign: "center" }}>
             {/* Icon */}
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#ecfdf5,#d1fae5)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 32, boxShadow: "0 8px 20px rgba(52,211,153,.20)" }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#f5f5f7,#ebebeb)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 32, boxShadow: "0 8px 20px rgba(0,0,0,.08)" }}>
               🛵
             </div>
             <h3 style={{ fontWeight: 900, fontSize: 20, color: "#0b1220", margin: "0 0 8px", lineHeight: 1.2 }}>
@@ -1354,7 +1359,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
             <button
               disabled={submitting}
               onClick={handleCodSubmit}
-              style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#1b4d3e,#2d7a5e)", color: "#fff", fontWeight: 900, fontSize: 15, cursor: "pointer", marginBottom: 10, boxShadow: "0 8px 20px rgba(27,77,62,.25)", transition: "transform .12s, box-shadow .18s" }}
+              style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: primaryColor, color: "#fff", fontWeight: 900, fontSize: 15, cursor: "pointer", marginBottom: 10, boxShadow: "0 8px 20px rgba(0,0,0,.18)", transition: "transform .12s, box-shadow .18s" }}
             >
               {submitting ? "Confirmando pedido..." : "Sí, estoy en CABA — Confirmar pedido"}
             </button>
@@ -1372,7 +1377,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         </div>
       )}
 
-      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover }}>
+      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor }}>
         <div className="cs-sheet" ref={sheetRef}>
 
           {/* ─── NAVBAR ─── */}
@@ -1437,17 +1442,17 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                       </div>
                       {it.gifts?.map((gift, gi) => (
                         <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0 3px 10px", fontSize: 12, fontWeight: 700 }}>
-                          <span style={{ color: "#1D9E75" }}>🎁 {gift}</span>
-                          <span style={{ color: "#1D9E75", fontWeight: 900 }}>GRATIS</span>
+                          <span style={{ color: accentColor }}>🎁 {gift}</span>
+                          <span style={{ color: accentColor, fontWeight: 900 }}>GRATIS</span>
                         </div>
                       ))}
                     </div>
                   ))}
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1D9E75", paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: accentColor, paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
                     <span>Envío</span><span>GRATIS</span>
                   </div>
                   {discountAmount > 0 && (
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: "#1D9E75", paddingTop: 6 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: accentColor, paddingTop: 6 }}>
                       <span>Cupón {appliedCoupon?.code}</span><span>-{money(discountAmount)}</span>
                     </div>
                   )}
@@ -1550,12 +1555,12 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                           })()}
                           <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 5 }}>
                             {hasDiscount && it.promo?.discountPct > 0 && (
-                              <span style={{ fontSize: 10.5, background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                              <span style={{ fontSize: 10.5, background: "#ffe8e8", color: "#c06b6b", border: "1px solid #FFC6C6", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
                                 -{it.promo.discountPct}% OFF
                               </span>
                             )}
                             {hasDiscount && it.bundleTotal && (
-                              <span style={{ fontSize: 10.5, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                              <span style={{ fontSize: 10.5, background: "#ffe8e8", color: "#c06b6b", border: "1px solid #FFC6C6", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
                                 PACK AHORRO
                               </span>
                             )}
@@ -1572,7 +1577,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                           {hasDiscount && origTotal !== itemTotal && (
                             <div style={{ fontSize: 11, textDecoration: "line-through", color: "#bbb", fontWeight: 700 }}>{money(origTotal)}</div>
                           )}
-                          <div style={{ fontWeight: 900, fontSize: 16, color: hasDiscount ? "#1D9E75" : "var(--text)" }}>{money(itemTotal)}</div>
+                          <div style={{ fontWeight: 900, fontSize: 16, color: hasDiscount ? accentColor : "var(--text)" }}>{money(itemTotal)}</div>
                         </div>
                       </div>
                       {it.gifts?.length > 0 && (
@@ -1594,10 +1599,10 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 {/* Totals */}
                 <div style={{ padding: "0 16px 10px" }}>
                   <div className="cs-totals">
-                    <div className="cs-total-row"><span>Envío</span><span style={{ color: "#1D9E75" }}>GRATIS</span></div>
-                    {savings > 0 && <div className="cs-total-row" style={{ color: "#1D9E75" }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
+                    <div className="cs-total-row"><span>Envío</span><span style={{ color: accentColor }}>GRATIS</span></div>
+                    {savings > 0 && <div className="cs-total-row" style={{ color: accentColor }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
                     {discountAmount > 0 && (
-                      <div className="cs-total-row" style={{ color: "#1D9E75" }}>
+                      <div className="cs-total-row" style={{ color: accentColor }}>
                         <span>Cupón <strong>{appliedCoupon.code}</strong></span>
                         <span>-{money(discountAmount)}</span>
                       </div>
@@ -1659,7 +1664,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   )}
 
                   {/* Social proof */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: "#a0003e", background: "#fff0f5", border: "1px solid #FFC6C6", borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
                     <span style={{ fontSize: 15, lineHeight: 1 }}>🔥</span>
                     <span>{socialProofCount} personas compraron esto en las últimas 24 horas</span>
                   </div>
@@ -1832,11 +1837,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                           <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
                               {opt.title}
-                              {opt.badge && <span style={{ fontSize: 11, background: "rgba(27,77,62,.10)", border: "1px solid rgba(27,77,62,.20)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
+                              {opt.badge && <span style={{ fontSize: 11, background: "rgba(0,0,0,.06)", border: "1px solid rgba(0,0,0,.12)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
                             </div>
                             <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginTop: 2 }}>{opt.sub}</div>
                           </div>
-                          <div style={{ fontSize: 13, fontWeight: 900, color: "#1D9E75", flexShrink: 0 }}>GRATIS</div>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: accentColor, flexShrink: 0 }}>GRATIS</div>
                         </div>
                       ))}
                     </div>
@@ -1871,7 +1876,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                     <div style={{ fontWeight: 800, fontSize: 13, color: "var(--text)" }}>Envío</div>
                     <div style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>{delivery === "caba" ? "Pagás al recibir (CABA)" : "Envío a domicilio — Correo Argentino"}</div>
                   </div>
-                  <div style={{ fontWeight: 900, color: "#1D9E75", fontSize: 14 }}>GRATIS</div>
+                  <div style={{ fontWeight: 900, color: accentColor, fontSize: 14 }}>GRATIS</div>
                 </div>
 
                 {/* Section header */}
@@ -2054,7 +2059,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#888" }}>Total · {totalItems} artículo{totalItems !== 1 ? "s" : ""}</div>
                     <div style={{ fontWeight: 900, fontSize: 20, color: "var(--text)" }}>{money(finalTotal)}</div>
-                    {savings > 0 && <div style={{ fontSize: 12, fontWeight: 800, color: "#1D9E75" }}>Ahorrás {money(savings)}</div>}
+                    {savings > 0 && <div style={{ fontSize: 12, fontWeight: 800, color: accentColor }}>Ahorrás {money(savings)}</div>}
                   </div>
                 </div>
 
@@ -2244,7 +2249,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   "Realizar pedido"}
               </button>
               {!payment && (
-                <div style={{ textAlign:"center", fontSize:12, fontWeight:700, color:"#1D9E75", marginTop:6 }}>
+                <div style={{ textAlign:"center", fontSize:12, fontWeight:700, color:accentColor, marginTop:6 }}>
                   👆 Elegí tu método de pago preferido para continuar
                 </div>
               )}

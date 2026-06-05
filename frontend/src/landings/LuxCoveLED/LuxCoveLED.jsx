@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
 import { track } from '../../lib/metaPixel';
@@ -15,7 +15,7 @@ const DEFAULT_COMPARE = 115000;
 const annMsgs = [
   '🔴 ¡OFERTA RELÁMPAGO ACTIVA!',
   '🚚 ENVÍO GRATIS EN TODOS LOS PEDIDOS',
-  '⭐ +100.000 CLIENTES SATISFECHOS',
+  '⭐ +10.000 CLIENTES SATISFECHOS',
   '💰 GARANTÍA DE DEVOLUCIÓN 90 DÍAS',
 ];
 
@@ -494,7 +494,7 @@ export default function LuxCoveLED() {
                 <span className="led-reviews-count">| Más de 100.000 clientes satisfechos</span>
               </div>
 
-              <h1 className="led-product-title">Escultor Facial LED 7 en 1 de Lux Cove</h1>
+              <h1 className="led-product-title">Escultor Facial LED 7 en 1 de Amelor</h1>
 
               <div className="led-pricing">
                 <span className="led-price-original">{fmt(compareAt)}</span>
@@ -987,7 +987,15 @@ export default function LuxCoveLED() {
         </div>
       </footer>
 
-      {showCheckout && <CheckoutSheet onClose={() => setShowCheckout(false)} />}
+      {showCheckout && (
+        <CheckoutSheet
+          onClose={() => setShowCheckout(false)}
+          primaryColor="#000000"
+          primaryHover="#222222"
+          accentColor="#c06b6b"
+          fontFamily="'Montserrat', sans-serif"
+        />
+      )}
     </>
   );
 }
