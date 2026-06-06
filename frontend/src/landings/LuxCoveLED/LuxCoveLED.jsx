@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
 import { track } from '../../lib/metaPixel';
@@ -10,6 +10,16 @@ const PRODUCT_SLUG = 'escultor-led';
 const CHECKOUT_NAME = 'Escultor Facial LED 7 en 1';
 const DEFAULT_PRICE = 39900;
 const DEFAULT_COMPARE = 115000;
+
+// 🖼 Imágenes del bundle — reemplazá con tus URLs
+const BUNDLE_PRODUCT_IMG  = "https://pbs.twimg.com/media/HKF3r-fWwAAD87X?format=jpg&name=small";
+const EBOOK_IMG           = "https://pbs.twimg.com/media/HKF3ODKWEAAqpdo?format=jpg&name=small";
+const REGALO_IMG          = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/2078brz-44e9b33028db35a1c617597835671959-1024-1024.webp";
+
+// ✏️ Textos debajo de cada imagen del bundle
+const BUNDLE_PRODUCT_NAME = "Escultor LED";
+const BUNDLE_REGALO_NAME  = "Exfoliante Facial";
+const BUNDLE_EBOOK_NAME   = "eBook de rutinas";
 
 /* C1 — Announcement bar messages */
 const annMsgs = [
@@ -300,7 +310,7 @@ function LedStatsCircles({ items }) {
         <p className="led-sc-footer-note">*Basado en compras verificadas</p>
         <div className="led-sc-footer-stats">
           <div className="led-sc-stat">
-            <span className="led-sc-stat-val">+100.000</span>
+            <span className="led-sc-stat-val">+10.000</span>
             <span className="led-sc-stat-lbl">CLIENTES</span>
           </div>
           <div className="led-sc-stat">
@@ -335,6 +345,7 @@ export default function LuxCoveLED() {
   const [lightIdx, setLightIdx] = useState(0);   // lights carousel
   const [baIdx, setBaIdx] = useState(0);   // before/after carousel
   const [prIdx, setPrIdx] = useState(0);   // photo reviews carousel
+  const [selectedBundle, setSelectedBundle] = useState(0);
 
   const ctaRef = useRef(null);
   const lightsTrackRef = useRef(null);
@@ -408,15 +419,37 @@ export default function LuxCoveLED() {
   const fmt = (n) =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
+  const BUNDLES = useMemo(() => [
+    {
+      id: 0,
+      label: "Pack Completo",
+      badge: "MÁS POPULAR",
+      perks: "Envío gratis · 3 cuotas sin interés",
+      bundlePrice: price,
+      comparePrice: compareAt,
+      productThumbName: BUNDLE_PRODUCT_NAME,
+      extras: [
+        { id: "regalo", label: BUNDLE_REGALO_NAME, img: REGALO_IMG },
+        { id: "ebook",  label: BUNDLE_EBOOK_NAME,  img: EBOOK_IMG  },
+      ],
+    },
+  ], [price, compareAt]);
+
   const handleBuy = () => {
     if (soldOut) return;
+    const bundle = BUNDLES[selectedBundle];
     const productData = product || { _id: PRODUCT_SLUG, name: CHECKOUT_NAME, slug: PRODUCT_SLUG };
     addItem(
       { ...productData, name: CHECKOUT_NAME },
       1,
-      { bundleTotal: price, compareAtPrice: compareAt, gifts: [], bundleImgs: [] },
+      {
+        bundleTotal:    bundle.bundlePrice,
+        compareAtPrice: bundle.comparePrice,
+        gifts:          bundle.extras.map(e => e.label),
+        bundleImgs:     bundle.extras.map(e => e.img).filter(Boolean),
+      },
     );
-    track('InitiateCheckout', { value: price / 100, currency: 'ARS', content_name: CHECKOUT_NAME });
+    track('InitiateCheckout', { value: bundle.bundlePrice / 100, currency: 'ARS', content_name: CHECKOUT_NAME });
     setShowCheckout(true);
   };
 
@@ -425,7 +458,7 @@ export default function LuxCoveLED() {
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = [
-    { src: "https://pbs.twimg.com/media/HKAh1LrWgAAB_aO?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKF8GwHWIAINvCn?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
@@ -491,7 +524,7 @@ export default function LuxCoveLED() {
               <div className="led-stars">
                 <span style={{ color: '#FFC6C6' }}>★★★★★</span>
                 <span className="led-stars-count">4.8 / 5</span>
-                <span className="led-reviews-count">| Más de 100.000 clientes satisfechos</span>
+                <span className="led-reviews-count">| Más de 10.000 clientes satisfechos</span>
               </div>
 
               <h1 className="led-product-title">Escultor Facial LED 7 en 1 de Amelor</h1>
@@ -500,6 +533,7 @@ export default function LuxCoveLED() {
                 <span className="led-price-original">{fmt(compareAt)}</span>
                 <span className="led-price-sale">{fmt(price)}</span>
                 <span className="led-badge-discount">{discountPct}% OFF</span>
+                <span className="led-cuotas">3 cuotas sin interés de <strong>{fmt(Math.ceil(price / 3))}</strong></span>
               </div>
 
               <ul className="led-benefits">
@@ -510,6 +544,60 @@ export default function LuxCoveLED() {
                   </li>
                 ))}
               </ul>
+
+              {/* Bundle selector */}
+              <div className="led-bundles">
+                {BUNDLES.map((b, i) => (
+                  <label key={b.id} className={`led-bundle-opt${selectedBundle === i ? ' selected' : ''}`} onClick={() => setSelectedBundle(i)}>
+                    <input type="radio" name="led-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
+                    <div className="led-bundle-body">
+                      <div className="led-bundle-top">
+                        <div className="led-bundle-left">
+                          <div className="led-bundle-label-row">
+                            <span className="led-bundle-label">{b.label}</span>
+                            {b.badge && <span className="led-bundle-badge">{b.badge}</span>}
+                          </div>
+                          <span className="led-bundle-perks">{b.perks}</span>
+                        </div>
+                        <div className="led-bundle-price-col">
+                          <span className="led-bundle-price">{fmt(b.bundlePrice)}</span>
+                          <span className="led-bundle-compare">{fmt(b.comparePrice)}</span>
+                        </div>
+                      </div>
+
+                      {b.extras.length > 0 && (
+                        <div className="led-bundle-thumbs">
+                          <div className="led-bundle-item">
+                            <div className="led-bundle-thumb">
+                              {(BUNDLE_PRODUCT_IMG || productImages[0]?.src)
+                                ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt="Escultor Facial LED" />
+                                : <span>💡</span>}
+                            </div>
+                            <span className="led-bundle-item-name">{b.productThumbName}</span>
+                          </div>
+                          <span className="led-bundle-plus">+</span>
+                          <div className="led-bundle-item">
+                            <div className="led-bundle-thumb">
+                              {REGALO_IMG ? <img src={REGALO_IMG} alt={b.extras[0].label} /> : <span>🎁</span>}
+                              <span className="led-bundle-sticker">GRATIS</span>
+                            </div>
+                            <span className="led-bundle-item-name">{b.extras[0].label}</span>
+                          </div>
+                          <span className="led-bundle-plus">+</span>
+                          <div className="led-bundle-item">
+                            <div className="led-bundle-thumb led-bundle-thumb--ebook">
+                              {EBOOK_IMG ? <img src={EBOOK_IMG} alt={b.extras[1].label} /> : <span>📖</span>}
+                              <span className="led-bundle-sticker">GRATIS</span>
+                            </div>
+                            <span className="led-bundle-item-name">{b.extras[1].label}</span>
+                          </div>
+                          <div className="led-bundle-shipping">🚚 Envío gratis a todo el país</div>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
 
               <div className="led-urgency">
                 <span>🔴</span>
@@ -542,7 +630,6 @@ export default function LuxCoveLED() {
 
               {/* C3 — Medios de pago */}
               <div className="led-payment-block">
-                <span className="led-payment-label">PAGÁS CON:</span>
                 <div className="led-payment-grid">
                   <img className="led-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/3840px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} />
                   <svg className="led-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-visa-h" viewBox="0 0 38 24" width="38" height="24"><title id="pi-visa-h">Visa</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"/></svg>

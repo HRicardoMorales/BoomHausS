@@ -221,6 +221,17 @@
   padding: 4px 12px;
   border-radius: 20px;
 }
+.led-cuotas {
+  width: 100%;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a0003e;
+  letter-spacing: 0.01em;
+  margin-top: -8px;
+}
+.led-cuotas strong {
+  font-weight: 800;
+}
 
 /* Benefits */
 .led-benefits {
@@ -310,8 +321,6 @@
   justify-content: space-around;
   align-items: flex-start;
   padding: 16px 8px;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
   margin: 16px 0;
 }
 .led-trust-item {
@@ -341,6 +350,7 @@
 /* ── C3: Métodos de pago ──────────────────────────────────── */
 .led-payment-block {
   margin: 12px 0 20px;
+  text-align: center;
 }
 .led-payment-label {
   font-size: 10px;
@@ -348,14 +358,15 @@
   letter-spacing: 0.08em;
   color: rgba(46, 42, 57, 0.5);
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-transform: uppercase;
 }
 .led-payment-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
+  justify-content: center;
 }
 .led-pay-logo {
   height: 28px;
@@ -616,6 +627,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 .led-test-name { font-size: 13px; font-weight: 700; color: #111; }
@@ -1363,9 +1375,9 @@
 
 /* ── Payment logos ──────────────────────────────────────────── */
 .led-pay-chip {
-  height: 22px;
+  height: 24px;
   width: auto;
-  max-width: 72px;
+  max-width: 52px;
   object-fit: contain;
   display: block;
 }
@@ -1583,6 +1595,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 .led-pr-name {
@@ -1611,3 +1624,172 @@
 }
 .led-pr-dot--active { background: #111; transform: scale(1.25); }
 @media (min-width: 768px) { .led-pr-inner { max-width: 480px; } }
+
+/* ── Bundle selector ────────────────────────────────────────── */
+.led-bundles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 16px;
+}
+.led-bundle-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 2px solid #e5e5e5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color .2s, background .2s;
+}
+.led-bundle-opt input[type="radio"] {
+  margin-top: 2px;
+  accent-color: #000;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.led-bundle-opt.selected {
+  border-color: #111;
+  background: #fafafa;
+}
+.led-bundle-body { flex: 1; min-width: 0; }
+.led-bundle-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.led-bundle-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.led-bundle-label-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.led-bundle-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-bundle-badge {
+  background: #111;
+  color: #FFC6C6;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+.led-bundle-perks {
+  font-size: 11px;
+  color: rgba(46,42,57,.6);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+}
+.led-bundle-price-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+.led-bundle-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+  white-space: nowrap;
+}
+.led-bundle-compare {
+  font-size: 11.5px;
+  color: #bbb;
+  text-decoration: line-through;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Thumbs row inside bundle */
+.led-bundle-thumbs {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.led-bundle-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.led-bundle-thumb {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: visible;
+  border: 1.5px solid #e8e8e8;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+  position: relative;
+}
+.led-bundle-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.led-bundle-thumb--ebook {
+  background: linear-gradient(135deg, #fff0f5, #ffe0e0);
+}
+.led-bundle-sticker {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #d4f5e2;
+  color: #166534;
+  font-size: 7.5px;
+  font-weight: 800;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: .05em;
+  padding: 3px 6px;
+  border-radius: 6px;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 1.5px solid #a7f3c0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+.led-bundle-item-name {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(46,42,57,.55);
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+}
+.led-bundle-plus {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ccc;
+  flex-shrink: 0;
+  padding-bottom: 18px;
+}
+.led-bundle-shipping {
+  width: 100%;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(46,42,57,.55);
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 10px;
+}

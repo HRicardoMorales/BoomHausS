@@ -711,7 +711,7 @@ export default function Checkout() {
           </div>
 
           {/* ── SECCIÓN: Dirección de facturación ── */}
-          <div className="ckfp-section">
+          <div className="ckfp-section" style={{ marginTop: 48 }}>
             <h2 className="ckfp-section-title">Dirección de facturación</h2>
             <div className="ckfp-ship-group">
               <label className={`ckfp-ship-opt${sameAddr ? " selected" : ""}`}>
@@ -738,7 +738,7 @@ export default function Checkout() {
           </div>
 
           {/* Spacer para sticky footer */}
-          <div style={{ height: 24 }} />
+          <div style={{ height: 48 }} />
         </div>
 
         {/* ── Columna derecha: sidebar (desktop) ── */}
