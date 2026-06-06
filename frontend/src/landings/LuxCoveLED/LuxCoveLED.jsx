@@ -566,30 +566,32 @@ export default function LuxCoveLED() {
                       </div>
 
                       {b.extras.length > 0 && (
-                        <div className="led-bundle-thumbs">
-                          <div className="led-bundle-item">
-                            <div className="led-bundle-thumb">
-                              {(BUNDLE_PRODUCT_IMG || productImages[0]?.src)
-                                ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt="Escultor Facial LED" />
-                                : <span>💡</span>}
+                        <div className="led-bundle-extras-wrap">
+                          <div className="led-bundle-thumbs">
+                            <div className="led-bundle-item">
+                              <div className="led-bundle-thumb">
+                                {(BUNDLE_PRODUCT_IMG || productImages[0]?.src)
+                                  ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt="Escultor Facial LED" />
+                                  : <span>💡</span>}
+                              </div>
+                              <span className="led-bundle-item-name">{b.productThumbName}</span>
                             </div>
-                            <span className="led-bundle-item-name">{b.productThumbName}</span>
-                          </div>
-                          <span className="led-bundle-plus">+</span>
-                          <div className="led-bundle-item">
-                            <div className="led-bundle-thumb">
-                              {REGALO_IMG ? <img src={REGALO_IMG} alt={b.extras[0].label} /> : <span>🎁</span>}
-                              <span className="led-bundle-sticker">GRATIS</span>
+                            <span className="led-bundle-plus">+</span>
+                            <div className="led-bundle-item">
+                              <div className="led-bundle-thumb">
+                                {REGALO_IMG ? <img src={REGALO_IMG} alt={b.extras[0].label} /> : <span>🎁</span>}
+                                <span className="led-bundle-sticker">GRATIS</span>
+                              </div>
+                              <span className="led-bundle-item-name">{b.extras[0].label}</span>
                             </div>
-                            <span className="led-bundle-item-name">{b.extras[0].label}</span>
-                          </div>
-                          <span className="led-bundle-plus">+</span>
-                          <div className="led-bundle-item">
-                            <div className="led-bundle-thumb led-bundle-thumb--ebook">
-                              {EBOOK_IMG ? <img src={EBOOK_IMG} alt={b.extras[1].label} /> : <span>📖</span>}
-                              <span className="led-bundle-sticker">GRATIS</span>
+                            <span className="led-bundle-plus">+</span>
+                            <div className="led-bundle-item">
+                              <div className="led-bundle-thumb led-bundle-thumb--ebook">
+                                {EBOOK_IMG ? <img src={EBOOK_IMG} alt={b.extras[1].label} /> : <span>📖</span>}
+                                <span className="led-bundle-sticker">GRATIS</span>
+                              </div>
+                              <span className="led-bundle-item-name">{b.extras[1].label}</span>
                             </div>
-                            <span className="led-bundle-item-name">{b.extras[1].label}</span>
                           </div>
                           <div className="led-bundle-shipping">🚚 Envío gratis a todo el país</div>
                         </div>
