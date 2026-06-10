@@ -4,6 +4,7 @@ const { Router } = require('express');
 const {
     getSingleProduct,
     getProducts,
+    getProductSlugs,
     getProductById,
     getProductBySlug,
     getAllProducts,
@@ -20,6 +21,9 @@ router.get('/single', getSingleProduct);
 
 // GET /api/products (público)
 router.get('/', getProducts);
+
+// GET /api/products/slugs (público — todos los slugs para deduplicación en home)
+router.get('/slugs', getProductSlugs);
 
 // GET /api/products/all (admin)
 router.get('/all', authRequired, adminRequired, getAllProducts);

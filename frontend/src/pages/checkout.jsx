@@ -382,7 +382,7 @@ export default function Checkout() {
       const url = isProd ? res.data.init_point : (res.data.sandbox_init_point || res.data.init_point);
       if (url) {
         clearClientOrderId();
-        track("Purchase", { value: Number(finalTotal), currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" });
+        track("Purchase", { value: parseFloat(finalTotal) || 0, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" });
         setRedirecting(true);
         setTimeout(() => { window.location.href = url; }, 1200);
         return;

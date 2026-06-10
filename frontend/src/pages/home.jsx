@@ -185,24 +185,32 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/products");
-        const raw = res.data?.data ?? res.data ?? [];
+        const [productsRes, slugsRes] = await Promise.all([
+          api.get("/products"),
+          api.get("/products/slugs").catch(() => ({ data: { data: [] } })),
+        ]);
+        const raw = productsRes.data?.data ?? productsRes.data ?? [];
         const arr = Array.isArray(raw) ? raw : [];
         const apiProducts = arr.filter((p) => p.isActive !== false);
+
+        // Todos los slugs en DB (activos + inactivos) — impide que virtuales reaparezcan al desactivar
+        const rawSlugs = slugsRes.data?.data ?? [];
+        const allDbSlugs = new Set(Array.isArray(rawSlugs) ? rawSlugs : []);
+        // Complementar con slugs activos por si /slugs falla
+        apiProducts.forEach(p => p.slug && allDbSlugs.add(p.slug));
+
         // Slugs de landing configs canónicos — para deduplicación por prefijo
         const landingProductSlugs = new Set(
           Object.values(LANDING_CONFIGS).map(cfg => cfg.productSlug).filter(Boolean)
         );
-        // Slugs exactos ya en DB — excluyen el virtual correspondiente
-        const apiSlugs = new Set(apiProducts.map((p) => p.slug).filter(Boolean));
-        const extras = landingVirtualProducts.filter((p) => !apiSlugs.has(p.slug));
+        // Excluir virtual si su slug existe en DB (active o inactive)
+        const extras = landingVirtualProducts.filter((p) => !allDbSlugs.has(p.slug));
         // Excluir productos de DB cuyo slug extiende un productSlug de landing
-        // (ej: "sillon-puff-inflable-sunfield" → cubierto por virtual "sillon-puff-inflable")
         const filteredApiProducts = apiProducts.filter(p => {
           if (!p.slug) return true;
-          if (landingProductSlugs.has(p.slug)) return true; // match exacto → virtual ya excluido
+          if (landingProductSlugs.has(p.slug)) return true;
           for (const base of landingProductSlugs) {
-            if (p.slug.startsWith(base + '-')) return false; // cubierto por virtual
+            if (p.slug.startsWith(base + '-')) return false;
           }
           return true;
         });

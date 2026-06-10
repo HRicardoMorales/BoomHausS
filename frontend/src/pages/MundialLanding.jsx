@@ -1343,7 +1343,7 @@ export default function MundialLanding() {
     track("AddToCart", {
       content_ids: [slug],
       content_type: "product",
-      value: (productData?.price || cfg.price) * packs,
+      value: parseFloat((productData?.price ?? cfg.price ?? 0) * packs) || 0,
       currency: "ARS",
       num_items: packs,
     });
@@ -1364,7 +1364,7 @@ export default function MundialLanding() {
 
   const handleBuyProduct = (slug, packs, productData, cfg) => {
     handleAddProduct(slug, packs, productData, cfg);
-    const addedValue = (productData?.price || cfg.price) * packs;
+    const addedValue = parseFloat((productData?.price ?? cfg.price ?? 0) * packs) || 0;
     const projected = (cartTotal || 0) + addedValue;
     track("AddToCart", {
       content_ids: [slug],

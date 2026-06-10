@@ -338,7 +338,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         // sale del sitio hacia MP ya no se puede trackear el evento.
         track("Purchase", {
           currency: "ARS",
-          value: finalTotal,
+          value: parseFloat(finalTotal) || 0,
           content_ids: items.map(i => i.productId),
           content_type: "product",
           num_items: totalItems,
@@ -385,7 +385,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         total:           finalTotal,
         items:           cartItems,
       });
-      track("Purchase", { currency: "ARS", value: finalTotal, content_ids: items.map(i => i.productId), num_items: totalItems });
+      track("Purchase", { currency: "ARS", value: parseFloat(finalTotal) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
       setConfirmedTotal(finalTotal);
       setConfirmedItems([...items]);
       setConfirmedPaymentMethod("cod");
@@ -434,7 +434,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       const { status, statusDetail } = res.data;
 
       if (status === "approved") {
-        track("Purchase", { currency: "ARS", value: Number(amount), content_ids: items.map(i => i.productId), num_items: totalItems });
+        track("Purchase", { currency: "ARS", value: parseFloat(amount) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
         setConfirmedTotal(Number(amount));
         setConfirmedItems([...items]);
         setConfirmedPaymentMethod("card");

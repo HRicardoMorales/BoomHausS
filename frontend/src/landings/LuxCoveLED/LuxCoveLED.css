@@ -24,6 +24,15 @@
   background: var(--led-white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Evita que iOS Safari reescale el texto al volver a la pestaña */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+/* Evita doble-tap zoom en botones e inputs en iOS */
+.led-wrap button,
+.led-wrap input,
+.led-wrap label {
+  touch-action: manipulation;
 }
 
 /* ── Loading ─────────────────────────────────────────────── */

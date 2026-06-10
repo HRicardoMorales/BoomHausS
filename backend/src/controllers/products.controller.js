@@ -24,6 +24,17 @@ async function getSingleProduct(req, res) {
     }
 }
 
+// GET /api/products/slugs (público — solo slugs, active + inactive, para deduplicación en home)
+async function getProductSlugs(req, res, next) {
+    try {
+        const products = await Product.find({}, { slug: 1, _id: 0 });
+        const slugs = products.map(p => p.slug).filter(Boolean);
+        res.json({ ok: true, data: slugs });
+    } catch (error) {
+        next(error);
+    }
+}
+
 // GET /api/products
 async function getProducts(req, res, next) {
     try {
@@ -177,6 +188,7 @@ async function updateProduct(req, res, next) {
 module.exports = {
     getSingleProduct,
     getProducts,
+    getProductSlugs,
     getProductById,
     getProductBySlug,
     getAllProducts,

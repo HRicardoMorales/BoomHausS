@@ -380,6 +380,14 @@ export default function LuxCoveLED() {
       .catch(() => setProductReady(true));
   }, []);
 
+  /* Precarga imágenes del before/after para que estén listas al instante */
+  useEffect(() => {
+    beforeAfterData.forEach(item => {
+      const img = new window.Image();
+      img.src = item.src.startsWith('//') ? `https:${item.src}` : item.src;
+    });
+  }, []);
+
   /* Slides per view */
   useEffect(() => {
     const update = () => setSlidesPerView(window.innerWidth >= 768 ? 3 : 1);
@@ -889,6 +897,8 @@ export default function LuxCoveLED() {
                   <img
                     src={beforeAfterData[baIdx].src}
                     alt={beforeAfterData[baIdx].name}
+                    loading="eager"
+                    decoding="async"
                     style={{ width: '100%', aspectRatio: '4/3', minHeight: 220, objectFit: 'cover', borderRadius: 0 }}
                   />
                   <div className="led-ba-day-labels">
