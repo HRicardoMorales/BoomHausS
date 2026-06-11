@@ -3,7 +3,11 @@
     "allow": [
       "PowerShell($content = Get-Content \"c:\\\\Users\\\\Ricardo\\\\Desktop\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\\\\src\\\\landings\\\\LuxCoveLED\\\\LuxCoveLED.jsx\" -Raw; $cssStart = $content.IndexOf\\('<style>'\\); $cssEnd = $content.IndexOf\\('</style>', $cssStart\\); if \\($cssStart -gt 0 -and $cssEnd -gt 0\\) { $css = $content.Substring\\($cssStart, $cssEnd - $cssStart + 8\\); $css -split \"`n\" | Select-String -Pattern \"led-test|led-review\" | Select-Object -First 40 } else { \"CSS section not found\" })",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Ricardo\\\\Desktop\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" -Force)",
-      "Bash(Select-Object -Property Name, FullName)"
+      "Bash(Select-Object -Property Name, FullName)",
+      "WebFetch(domain:importadoraelectro.com)",
+      "WebFetch(domain:myshinnyskin.com)",
+      "WebFetch(domain:roseskinco.com)",
+      "WebFetch(domain:lummia.com.co)"
     ]
   }
 }

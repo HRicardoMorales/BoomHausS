@@ -12,6 +12,7 @@ import kitBelleza6en1        from './kit-belleza-6en1';
 import masajeadorEmsEyes     from './masajeador-ems-eyes';
 import masajeadorFacialIones from './masajeador-facial-iones-lambo';
 import escultorLed           from './escultor-led';
+import depiladoraIpl         from './depiladora-ipl';
 
 export const LANDING_CONFIGS = {
   'porta-cepillos':           portaCepillos,
@@ -34,6 +35,8 @@ export const LANDING_CONFIGS = {
   'masajeador-facial-iones-lambo': masajeadorFacialIones,
   // Renderizado por LuxCoveLED.jsx (componente dedicado, ruta /lp/escultor-led)
   'escultor-led':                  escultorLed,
+  // Renderizado por DepiladoraIPL.jsx (componente dedicado, ruta /lp/depiladora-ipl)
+  'depiladora-ipl':                depiladoraIpl,
 };
 
 export const LANDING_META = [
@@ -134,6 +137,13 @@ export const LANDING_META = [
     desc: 'Landing Luxcove-inspired: 16 secciones, diseño rosa/blanco alterno, Montserrat. Slug admin: "escultor-led". Renderiza LuxCoveLED.jsx.',
     status: 'active',
     emoji: '💡',
+  },
+  {
+    slug: 'depiladora-ipl',
+    name: 'Depiladora IPL Profesional',
+    desc: 'Landing IPL: 13 secciones, diseño rose/dark, comparativa vs cera/laser. Slug admin: "depiladora-ipl". Renderiza DepiladoraIPL.jsx.',
+    status: 'active',
+    emoji: '✨',
   },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)

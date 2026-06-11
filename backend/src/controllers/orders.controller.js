@@ -146,8 +146,8 @@ async function createOrder(req, res, next) {
                     },
                     back_urls: {
                         success: `${frontendUrl}/success-payment`,
-                        failure: `${frontendUrl}/checkout`,
-                        pending: `${frontendUrl}/checkout`,
+                        failure: `${frontendUrl}/success-payment`,
+                        pending: `${frontendUrl}/success-payment`,
                     },
                     auto_return: "approved",
                     external_reference: String(externalReference),

@@ -1,134 +1,334 @@
-// frontend/src/pages/SuccessPayment.jsx
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 
+const S = {
+  page: {
+    minHeight: '100vh',
+    background: 'linear-gradient(160deg, #fff5f8 0%, #fdf2f8 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px 16px',
+    fontFamily: "'Montserrat', 'Inter', sans-serif",
+  },
+  card: {
+    background: '#fff',
+    borderRadius: 24,
+    padding: '48px 40px',
+    maxWidth: 520,
+    width: '100%',
+    boxShadow: '0 8px 48px rgba(159,18,57,0.10)',
+    textAlign: 'center',
+  },
+  iconWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 44,
+    margin: '0 auto 24px',
+  },
+  badge: {
+    display: 'inline-block',
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    padding: '4px 12px',
+    borderRadius: 999,
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 900,
+    margin: '0 0 12px',
+    letterSpacing: '-0.02em',
+  },
+  sub: {
+    fontSize: 15,
+    lineHeight: 1.6,
+    color: '#64748b',
+    margin: '0 0 28px',
+  },
+  infoBox: {
+    background: '#f8fafc',
+    border: '1px solid #e2e8f0',
+    borderRadius: 16,
+    padding: '20px 24px',
+    marginBottom: 28,
+    textAlign: 'left',
+  },
+  infoRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '8px 0',
+    borderBottom: '1px solid #f1f5f9',
+    fontSize: 14,
+  },
+  infoLabel: { color: '#94a3b8', fontWeight: 500 },
+  infoVal: { fontWeight: 700, color: '#1e293b' },
+  btnPrimary: {
+    display: 'block',
+    width: '100%',
+    padding: '16px',
+    borderRadius: 12,
+    border: 'none',
+    background: 'linear-gradient(135deg, #9F1239, #be185d)',
+    color: '#fff',
+    fontFamily: 'inherit',
+    fontSize: 15,
+    fontWeight: 700,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    letterSpacing: '0.02em',
+    marginBottom: 12,
+  },
+  btnGhost: {
+    display: 'block',
+    width: '100%',
+    padding: '14px',
+    borderRadius: 12,
+    border: '2px solid #e2e8f0',
+    background: 'transparent',
+    color: '#64748b',
+    fontFamily: 'inherit',
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: 'pointer',
+    textDecoration: 'none',
+  },
+  steps: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+    marginBottom: 28,
+    textAlign: 'left',
+  },
+  stepItem: {
+    display: 'flex',
+    gap: 12,
+    alignItems: 'flex-start',
+    fontSize: 14,
+    color: '#475569',
+    lineHeight: 1.5,
+  },
+  stepNum: {
+    flexShrink: 0,
+    width: 24,
+    height: 24,
+    borderRadius: '50%',
+    background: '#9F1239',
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 700,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  divider: {
+    borderTop: '1px solid #f1f5f9',
+    margin: '20px 0',
+  },
+  checking: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 24,
+  },
+  spinner: {
+    width: 18,
+    height: 18,
+    border: '2px solid #e2e8f0',
+    borderTopColor: '#9F1239',
+    borderRadius: '50%',
+    animation: 'ipl-spin 0.7s linear infinite',
+  },
+};
+
 export default function SuccessPayment() {
-    const [searchParams] = useSearchParams();
-    const { clearCart } = useCart();
+  const [searchParams] = useSearchParams();
+  const { clearCart } = useCart();
 
-    // MP params (pueden variar)
-    const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id');
-    const statusParam =
-        searchParams.get('collection_status') ||
-        searchParams.get('status') ||
-        searchParams.get('payment_status');
+  const paymentId    = searchParams.get('payment_id') || searchParams.get('collection_id');
+  const statusParam  = searchParams.get('collection_status') || searchParams.get('status') || searchParams.get('payment_status');
+  const externalRef  = searchParams.get('external_reference');
+  const paymentType  = searchParams.get('payment_type');
 
-    const paymentType = searchParams.get('payment_type');
+  const [finalStatus, setFinalStatus] = useState(statusParam || 'pending');
+  const [checking, setChecking]       = useState(true);
 
-    const [finalStatus, setFinalStatus] = useState(statusParam || 'pending');
-    const [checking, setChecking] = useState(true);
+  const isApproved = finalStatus === 'approved';
+  const isRejected = finalStatus === 'rejected' || finalStatus === 'cancelled';
+  const isPending  = !isApproved && !isRejected;
 
-    const isApproved = finalStatus === 'approved';
-    const isRejected = finalStatus === 'rejected';
-    const isPending = !isApproved && !isRejected; // pending / in_process / null
+  const cfg = useMemo(() => {
+    if (isApproved) return {
+      iconBg: '#f0fdf4',
+      icon: '✅',
+      badgeBg: '#dcfce7',
+      badgeColor: '#16a34a',
+      badgeText: 'PAGO APROBADO',
+      titleColor: '#15803d',
+      title: '¡Tu compra fue exitosa!',
+      sub: 'Recibimos tu pago y ya estamos preparando tu pedido. Te enviamos la confirmación por email.',
+    };
+    if (isRejected) return {
+      iconBg: '#fef2f2',
+      icon: '❌',
+      badgeBg: '#fee2e2',
+      badgeColor: '#dc2626',
+      badgeText: 'PAGO RECHAZADO',
+      titleColor: '#dc2626',
+      title: 'El pago no se pudo procesar',
+      sub: 'No se realizó ningún cobro. Podés intentar nuevamente con otro medio de pago.',
+    };
+    return {
+      iconBg: '#fffbeb',
+      icon: '⏳',
+      badgeBg: '#fef9c3',
+      badgeColor: '#ca8a04',
+      badgeText: 'PAGO PENDIENTE',
+      titleColor: '#b45309',
+      title: 'Tu pago está siendo verificado',
+      sub: 'Una vez que se confirme, tu pedido se activa automáticamente. Te avisamos por email.',
+    };
+  }, [isApproved, isRejected]);
 
-    // Si querés, podés mapear más statuses acá
-    const label = useMemo(() => {
-        if (isApproved) return { emoji: '🎉', title: '¡Pago exitoso!', color: '#10b981' };
-        if (isRejected) return { emoji: '❌', title: 'Pago rechazado', color: '#ef4444' };
-        return { emoji: '⏳', title: 'Pago pendiente', color: '#f59e0b' };
-    }, [isApproved, isRejected]);
+  useEffect(() => {
+    let alive = true;
+    async function verify() {
+      try {
+        if (!paymentId) { if (alive) setChecking(false); return; }
+        const res = await api.get(`/payments/mercadopago/${paymentId}`);
+        const backendStatus = res?.data?.status;
+        if (alive && backendStatus) setFinalStatus(backendStatus);
+      } catch (_) {
+        // endpoint opcional, no bloquea
+      } finally {
+        if (alive) setChecking(false);
+      }
+    }
+    verify();
+    return () => { alive = false; };
+  }, [paymentId]);
 
-    // 1) Confirmación opcional por backend (más confiable que solo URL)
-    useEffect(() => {
-        let alive = true;
+  useEffect(() => {
+    if (!isApproved) return;
+    clearCart();
+  }, [isApproved, clearCart]);
 
-        async function verify() {
-            try {
-                if (!paymentId) {
-                    // No hay payment id, nos quedamos con lo que venga en URL
-                    if (alive) setChecking(false);
-                    return;
-                }
+  const paymentTypeLabel = paymentType === 'credit_card' ? 'Tarjeta de crédito'
+    : paymentType === 'debit_card' ? 'Tarjeta de débito'
+    : paymentType === 'ticket'      ? 'Efectivo'
+    : paymentType || null;
 
-                // Endpoint opcional: si no existe, cae en catch y no rompe
-                // (si querés, después te lo creo en backend)
-                const res = await api.get(`/payments/mercadopago/${paymentId}`);
-                const backendStatus = res?.data?.status;
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        @keyframes sp-spin { to { transform: rotate(360deg) } }
+        .sp-spinner { animation: sp-spin 0.7s linear infinite; }
+      `}</style>
 
-                if (alive && backendStatus) {
-                    setFinalStatus(backendStatus);
-                }
-            } catch (_) {
-                // Si no existe endpoint o falla, no pasa nada
-            } finally {
-                if (alive) setChecking(false);
-            }
-        }
+      <div style={S.page}>
+        <div style={S.card}>
 
-        verify();
-        return () => { alive = false; };
-    }, [paymentId]);
+          {/* Ícono */}
+          <div style={{ ...S.iconWrap, background: cfg.iconBg }}>
+            {cfg.icon}
+          </div>
 
-    // 2) Si queda aprobado, limpiamos carrito.
-    // Purchase ya fue disparado antes de redirigir a MP (en CheckoutSheet.jsx / checkout.jsx)
-    // para garantizar que se trackee antes de salir del sitio.
-    useEffect(() => {
-        if (!isApproved) return;
-        clearCart();
-    }, [isApproved, clearCart]);
+          {/* Badge */}
+          <span style={{ ...S.badge, background: cfg.badgeBg, color: cfg.badgeColor }}>
+            {cfg.badgeText}
+          </span>
 
-    return (
-        <main
-            className="section"
-            style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-            <div className="container" style={{ textAlign: 'center' }}>
-                <div className="card reveal" style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>{label.emoji}</div>
-                    <h1 style={{ color: label.color, fontWeight: 900 }}>
-                        {checking ? 'Confirmando pago...' : label.title}
-                    </h1>
-
-                    <p className="muted" style={{ fontSize: '1.1rem', margin: '1rem 0' }}>
-                        {checking
-                            ? 'Estamos verificando el estado con Mercado Pago. Si cerraste la pestaña antes, igual lo confirmamos.'
-                            : isApproved
-                                ? 'Tu compra se procesó correctamente. Ya estamos preparando tu pedido.'
-                                : isRejected
-                                    ? 'El pago fue rechazado. Podés intentar nuevamente con otro medio de pago.'
-                                    : 'El pago está en proceso. Si se aprueba, tu pedido se confirmará automáticamente.'}
-                    </p>
-
-                    <div
-                        style={{
-                            background: '#f8fafc',
-                            padding: '1.5rem',
-                            borderRadius: '12px',
-                            margin: '2rem 0',
-                            border: '1px solid #e2e8f0',
-                            textAlign: 'left'
-                        }}
-                    >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                            <span className="muted">Estado:</span>
-                            <span style={{ fontWeight: 800, color: label.color, textTransform: 'uppercase' }}>
-                                {finalStatus || 'pending'}
-                            </span>
-                        </div>
-
-                        {paymentId && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span className="muted">Operación MP:</span>
-                                <span style={{ fontWeight: 800 }}>#{paymentId}</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {isApproved ? (
-                        <Link to="/my-orders" className="btn btn-primary" style={{ width: '100%', padding: '15px' }}>
-                            Ver mis pedidos
-                        </Link>
-                    ) : (
-                        <div style={{ marginTop: '1.25rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <Link to="/checkout" className="btn btn-primary">Intentar de nuevo</Link>
-                            <Link to="/" className="btn btn-ghost">Volver al inicio</Link>
-                        </div>
-                    )}
-                </div>
+          {/* Checking spinner */}
+          {checking && (
+            <div style={S.checking}>
+              <div className="sp-spinner" style={S.spinner} />
+              Confirmando pago con Mercado Pago…
             </div>
-        </main>
-    );
+          )}
+
+          {/* Título */}
+          <h1 style={{ ...S.title, color: cfg.titleColor }}>
+            {checking ? 'Verificando tu pago…' : cfg.title}
+          </h1>
+
+          <p style={S.sub}>{cfg.sub}</p>
+
+          {/* Info box */}
+          {(paymentId || externalRef || paymentTypeLabel) && (
+            <div style={S.infoBox}>
+              {externalRef && (
+                <div style={S.infoRow}>
+                  <span style={S.infoLabel}>Número de pedido</span>
+                  <span style={S.infoVal}>#{externalRef.slice(-6).toUpperCase()}</span>
+                </div>
+              )}
+              {paymentId && (
+                <div style={{ ...S.infoRow, borderBottom: 'none' }}>
+                  <span style={S.infoLabel}>Operación MP</span>
+                  <span style={S.infoVal}>#{paymentId}</span>
+                </div>
+              )}
+              {paymentTypeLabel && (
+                <div style={{ ...S.infoRow, borderBottom: 'none', paddingTop: 0 }}>
+                  <span style={S.infoLabel}>Medio de pago</span>
+                  <span style={S.infoVal}>{paymentTypeLabel}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pasos / próximos pasos */}
+          {isApproved && !checking && (
+            <div style={S.steps}>
+              <div style={S.stepItem}>
+                <div style={S.stepNum}>1</div>
+                <span>Recibirás un <strong>email de confirmación</strong> con el detalle de tu pedido.</span>
+              </div>
+              <div style={S.stepItem}>
+                <div style={S.stepNum}>2</div>
+                <span>Preparamos tu pedido y te enviamos el <strong>número de seguimiento</strong> cuando despachemos.</span>
+              </div>
+              <div style={S.stepItem}>
+                <div style={S.stepNum}>3</div>
+                <span>Entrega estimada: <strong>3 a 7 días hábiles</strong> a todo el país.</span>
+              </div>
+            </div>
+          )}
+
+          <div style={S.divider} />
+
+          {/* CTAs */}
+          {isApproved ? (
+            <>
+              <Link to="/my-orders" style={S.btnPrimary}>Ver mis pedidos</Link>
+              <Link to="/" style={S.btnGhost}>Volver al inicio</Link>
+            </>
+          ) : isRejected ? (
+            <>
+              <Link to="/checkout" style={S.btnPrimary}>Reintentar pago</Link>
+              <Link to="/" style={S.btnGhost}>Volver al inicio</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/my-orders" style={S.btnPrimary}>Ver estado de mi pedido</Link>
+              <Link to="/" style={S.btnGhost}>Volver al inicio</Link>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
