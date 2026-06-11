@@ -224,9 +224,9 @@ const EXTRA_BENEFITS = [
 
 /* Pasos */
 const STEPS = [
-  { num: '1', title: 'Afeitá la zona', desc: 'Antes de cada sesión, afeitá la zona a tratar con la afeitadora eléctrica incluida. El IPL actúa sobre la raíz del vello, no sobre el vello visible.' },
-  { num: '2', title: 'Elegí tu nivel', desc: 'Ponete las gafas protectoras incluidas. Empezá en el nivel 1 y aumentá gradualmente. La mayoría de las usuarias trabaja en nivel 3 o 4.' },
-  { num: '3', title: 'Aplicá los pulsos', desc: 'Apoyá el dispositivo sobre la piel y presioná el botón. Avanzá zona por zona. Repetí cada 2 semanas las primeras 6 sesiones, luego mantenimiento mensual.' },
+  { num: '1', title: 'Rasura', desc: 'Esto permite que la luz llegue directo a la raíz del vello, asegurando resultados.', img: 'https://myshinnyskin.com/cdn/shop/files/Rasura.png?v=1762974154' },
+  { num: '2', title: 'Depila', desc: 'La luz láser IPL debilita el folículo para que cada vez crezca menos vello hasta eliminarlo.', img: 'https://myshinnyskin.com/cdn/shop/files/Depila_clasica.png?v=1762974320' },
+  { num: '3', title: 'Repite', desc: 'Sé constante y ve cómo mejora el aspecto de tu piel y se elimina el vello para siempre.', img: 'https://myshinnyskin.com/cdn/shop/files/Repite.png?v=1762974402' },
 ];
 
 /* Videos strip — reemplazá cada src con tu video real de resultados IPL */
@@ -905,15 +905,21 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
         </div>
 
         {/* ══ S11 — CÓMO USARLA ══ */}
-        <div className="ipl-section ipl-section--white">
+        <div className="ipl-section ipl-section--white ipl-how-section">
           <div className="ipl-container">
-            <h2 className="ipl-section-title">Cómo usarla</h2>
-            <p className="ipl-section-sub">3 pasos simples para una sesión completa.</p>
+            <div className="ipl-how-kicker">FÁCIL Y SIN SALIR DE CASA</div>
+            <h2 className="ipl-section-title">¿Cómo se usa?</h2>
             <div className="ipl-steps">
               {STEPS.map((step, i) => (
                 <div key={i} className="ipl-step-item">
-                  <div className="ipl-step-num">{step.num}</div>
+                  <div className="ipl-step-img-wrap">
+                    {step.img
+                      ? <img src={step.img} alt={step.title} />
+                      : <span className="ipl-step-img-ph">{step.num}</span>
+                    }
+                  </div>
                   <div className="ipl-step-content">
+                    <div className="ipl-step-label">Paso {step.num}</div>
                     <h3 className="ipl-step-title">{step.title}</h3>
                     <p className="ipl-step-desc">{step.desc}</p>
                   </div>

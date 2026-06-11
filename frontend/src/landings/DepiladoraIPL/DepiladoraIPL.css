@@ -79,7 +79,7 @@
 .ipl-ann-msg.visible { opacity: 1; }
 
 /* ── Section shell ─────────────────────────────────────────── */
-.ipl-section { padding: 48px 20px; }
+.ipl-section { padding: 28px 20px; }
 .ipl-section--rose  { background: var(--ipl-section-rose); }
 .ipl-section--white { background: var(--ipl-white); }
 .ipl-container { max-width: 1100px; margin: 0 auto; }
@@ -99,7 +99,7 @@
   font-size: 14px;
   color: var(--ipl-text);
   text-align: center;
-  margin: 0 auto 32px;
+  margin: 0 auto 20px;
   line-height: 1.6;
   max-width: 600px;
 }
@@ -453,7 +453,7 @@
 .ipl-test-dot.ipl-active { background: var(--ipl-accent); }
 
 /* ── Feature highlight sections ───────────────────────── */
-.ipl-feat-section { overflow: hidden; padding: 32px 0; }
+.ipl-feat-section { overflow: hidden; padding: 18px 0; }
 .ipl-feat-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -540,7 +540,7 @@
 /* ── Comparativa con tabs ───────────────────────────────── */
 .ipl-ctabs-section {
   background: #fff;
-  padding: 40px 20px;
+  padding: 24px 20px;
 }
 .ipl-ctabs-title {
   text-align: center;
@@ -693,17 +693,28 @@
 .ipl-rev-dot.active { background: var(--ipl-accent); transform: scale(1.25); }
 
 /* ── Steps ─────────────────────────────────────────────── */
-.ipl-steps { display: flex; flex-direction: column; gap: 24px; max-width: 680px; margin: 0 auto; }
-.ipl-step-item { display: flex; gap: 18px; align-items: flex-start; }
-.ipl-step-num {
-  width: 44px; height: 44px; flex-shrink: 0;
-  background: var(--ipl-accent); color: #fff;
+.ipl-how-section { padding: 36px 20px !important; }
+.ipl-how-kicker {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ipl-accent);
+  text-align: center; margin-bottom: 8px;
+}
+.ipl-steps { display: flex; flex-direction: column; gap: 28px; max-width: 540px; margin: 0 auto; }
+.ipl-step-item { display: flex; gap: 20px; align-items: center; }
+.ipl-step-img-wrap {
+  width: 90px; height: 90px; flex-shrink: 0;
   border-radius: 50%;
+  background: transparent;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 800;
+}
+.ipl-step-img-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ipl-step-img-ph {
+  font-size: 32px; font-weight: 800;
+  color: var(--ipl-accent); font-family: 'Inter', sans-serif;
 }
 .ipl-step-content { flex: 1; }
-.ipl-step-title { font-size: 16px; font-weight: 800; color: #111; margin: 0 0 6px; }
+.ipl-step-label { font-size: 11px; font-weight: 600; color: var(--ipl-accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+.ipl-step-title { font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; color: #111; margin: 0 0 4px; letter-spacing: -0.01em; }
 .ipl-step-desc { font-size: 13px; line-height: 1.6; margin: 0; color: var(--ipl-text); }
 
 /* ── Guarantee ─────────────────────────────────────────── */
@@ -713,7 +724,7 @@
 .ipl-guarantee-text { font-size: 14px; line-height: 1.7; color: var(--ipl-text); margin: 0; }
 
 /* ── FAQ ───────────────────────────────────────────────── */
-.ipl-faq-section { padding: 48px 20px; background: var(--ipl-section-rose); }
+.ipl-faq-section { padding: 28px 20px; background: var(--ipl-section-rose); }
 .ipl-faq-title { font-size: 22px; font-weight: 800; font-family: 'Inter', sans-serif; text-align: center; color: #111; margin: 0 0 8px; letter-spacing: -0.02em; }
 .ipl-faq-sub { font-size: 14px; text-align: center; color: var(--ipl-text); margin: 0 auto 28px; max-width: 540px; }
 .ipl-faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background: #fff; }
@@ -768,7 +779,7 @@
 /* ── Antes/Después por zona (S3.5) ──────────────────────── */
 .ipl-wkprog-section {
   background: var(--ipl-section-rose);
-  padding: 40px 20px;
+  padding: 24px 20px;
 }
 .ipl-wkprog-kicker {
   text-align: center;
@@ -858,7 +869,7 @@
 /* ── Video strip (ipl-vstrip-*) ─────────────────────────────── */
 .ipl-vstrip-section {
   background: #fff;
-  padding: 36px 20px;
+  padding: 22px 20px;
 }
 .ipl-vstrip-header {
   text-align: center;
