@@ -1,5 +1,6 @@
 const Order = require("../models/order.js");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
+const { sendOrderConfirmationEmail } = require("../services/emailService");
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
@@ -30,7 +31,19 @@ async function mercadopagoWebhook(req, res) {
     if (status === "approved") newStatus = "approved";
     else if (status === "rejected") newStatus = "rejected";
 
-    await Order.findByIdAndUpdate(externalRef, { paymentStatus: newStatus });
+    const updatedOrder = await Order.findByIdAndUpdate(
+      externalRef,
+      { paymentStatus: newStatus },
+      { new: true }
+    );
+
+    if (newStatus === "approved" && updatedOrder) {
+      try {
+        await sendOrderConfirmationEmail(updatedOrder, { mode: "mercadopago" });
+      } catch (emailErr) {
+        console.warn("⚠️ No se pudo enviar email de confirmación MP:", emailErr?.message || emailErr);
+      }
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {

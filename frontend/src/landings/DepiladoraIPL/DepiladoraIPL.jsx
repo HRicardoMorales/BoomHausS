@@ -842,13 +842,13 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
                 <div className="ipl-ctab-points">
                   {tab.points.map((pt, i) => (
                     <div key={i} className={`ipl-ctab-row${i === tab.points.length - 1 ? ' last' : ''}`}>
-                      <div className="ipl-ctab-point ipl-ctab-point--bad">
-                        <span className="ipl-ctab-icon">❌</span>
-                        <span>{pt.bad}</span>
-                      </div>
                       <div className="ipl-ctab-point ipl-ctab-point--good">
                         <span className="ipl-ctab-icon">✅</span>
                         <span>{pt.good}</span>
+                      </div>
+                      <div className="ipl-ctab-point ipl-ctab-point--bad">
+                        <span className="ipl-ctab-icon">❌</span>
+                        <span>{pt.bad}</span>
                       </div>
                     </div>
                   ))}
@@ -1013,7 +1013,7 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
           primaryColor="#9F1239"
           primaryHover="#7f0f2e"
           accentColor="#F9A8D4"
-          fontFamily="'Montserrat', sans-serif"
+          fontFamily="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
         />
       )}
     </>

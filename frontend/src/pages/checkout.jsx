@@ -49,7 +49,7 @@ function wSession(key, val) {
 }
 
 // ── Acordeón del resumen (mobile top / desktop sidebar) ─────────────────────
-function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, savings, couponDiscount, appliedCoupon }) {
+function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, savings, couponDiscount, appliedCoupon, shippingCost = 0 }) {
   const [open, setOpen] = useState(false);
   const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
@@ -95,7 +95,10 @@ function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, saving
             );
           })}
           <div className="ckfp-sa-totals">
-            <div className="ckfp-sa-row"><span>Envío</span><span className="ckfp-sa-free">GRATIS</span></div>
+            <div className="ckfp-sa-row">
+              <span>Envío</span>
+              {shippingCost > 0 ? <span>{money(shippingCost)}</span> : <span className="ckfp-sa-free">GRATIS</span>}
+            </div>
             {savings > 0 && <div className="ckfp-sa-row ckfp-sa-row--accent"><span>Descuento</span><span>−{money(savings)}</span></div>}
             {couponDiscount > 0 && appliedCoupon && (
               <div className="ckfp-sa-row ckfp-sa-row--accent"><span>Cupón {appliedCoupon.code}</span><span>−{money(couponDiscount)}</span></div>
@@ -109,7 +112,7 @@ function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, saving
 }
 
 // ── Sidebar summary (desktop) ────────────────────────────────────────────────
-function SidebarSummary({ items, calcItemTotal, totalPrice, finalTotal, savings, couponDiscount, appliedCoupon, couponInput, setCouponInput, onApplyCoupon, onRemoveCoupon, couponError, applyingCoupon }) {
+function SidebarSummary({ items, calcItemTotal, totalPrice, finalTotal, savings, couponDiscount, appliedCoupon, shippingCost = 0, couponInput, setCouponInput, onApplyCoupon, onRemoveCoupon, couponError, applyingCoupon }) {
   const [couponOpen, setCouponOpen] = useState(false);
   return (
     <aside className="ckfp-sidebar">
@@ -172,7 +175,10 @@ function SidebarSummary({ items, calcItemTotal, totalPrice, finalTotal, savings,
 
       <div className="ckfp-sb-totals">
         <div className="ckfp-sb-row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
-        <div className="ckfp-sb-row"><span>Envío</span><span className="ckfp-sa-free">GRATIS</span></div>
+        <div className="ckfp-sb-row">
+          <span>Envío</span>
+          {shippingCost > 0 ? <span>{money(shippingCost)}</span> : <span className="ckfp-sa-free">GRATIS</span>}
+        </div>
         {savings > 0 && <div className="ckfp-sb-row ckfp-sb-row--accent"><span>Descuento</span><span>−{money(savings)}</span></div>}
         {couponDiscount > 0 && <div className="ckfp-sb-row ckfp-sb-row--accent"><span>Cupón {appliedCoupon?.code}</span><span>−{money(couponDiscount)}</span></div>}
         <div className="ckfp-sb-final"><span>Total</span><span>{money(finalTotal)}</span></div>
@@ -226,7 +232,7 @@ export default function Checkout() {
   function fieldOk(key) { return touched[key] && fieldError(key) === "" && String(form[key] || "").trim().length > 0; }
 
   // ── Envío ─────────────────────────────────────────────────────────────────
-  const [shippingMethod, setShippingMethod] = useState("andreani");
+  const [shippingMethod, setShippingMethod] = useState("sucursal");
 
   // ── Pago ──────────────────────────────────────────────────────────────────
   const [payExpanded, setPayExpanded] = useState(true); // MP abierto por defecto
@@ -241,9 +247,11 @@ export default function Checkout() {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   // ── Estados pedido ─────────────────────────────────────────────────────────
-  const [loading,     setLoading]     = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
-  const [error,       setError]       = useState("");
+  const [loading,       setLoading]       = useState(false);
+  const [redirecting,   setRedirecting]   = useState(false);
+  const [error,         setError]         = useState("");
+  const [subscribeEmail, setSubscribeEmail] = useState(false);
+  const [stickyOpen,    setStickyOpen]    = useState(false);
   const [orderData,   setOrderData]   = useState(null);
   const errorRef = useRef(null);
 
@@ -265,7 +273,15 @@ export default function Checkout() {
     const pct = Number(appliedCoupon.pct ?? appliedCoupon.value ?? 0);
     return Math.round(totalPrice * pct / 100);
   }, [appliedCoupon, totalPrice]);
-  const finalTotal = Math.max(0, totalPrice - couponDiscount);
+  const shippingCost = useMemo(() => {
+    const opt = [
+      { value: "sucursal",    price: 0    },
+      { value: "domicilio",   price: 2980 },
+      { value: "prioritario", price: 4890 },
+    ].find(o => o.value === shippingMethod);
+    return opt ? opt.price : 0;
+  }, [shippingMethod]);
+  const finalTotal = Math.max(0, totalPrice - couponDiscount + shippingCost);
 
   const shippingAddress = useMemo(() => [
     form.direccion, form.extra,
@@ -471,9 +487,9 @@ export default function Checkout() {
 
   // ── Shipping options ──────────────────────────────────────────────────────
   const SHIP_OPTS = [
-    { value: "andreani",       title: "Estándar",          sub: "3 a 5 días hábiles", was: null },
-    { value: "correo_clasico", title: "Express + Seguimiento", sub: "1 a 2 días hábiles", was: "$3.000,00" },
-    { value: "correo_expreso", title: "Envío Express + Garantía de Roturas + Seguimiento", sub: "3 a 5 días hábiles", was: "$7.000,00" },
+    { value: "sucursal",        title: "Envío a sucursal",                           sub: "2 a 4 días hábiles",  price: 0,    was: null   },
+    { value: "domicilio",       title: "Envío a domicilio + código de seguimiento",  sub: "1 a 3 días hábiles",  price: 2980, was: 9814   },
+    { value: "prioritario",     title: "Envío a domicilio prioritario + código de seguimiento",  sub: "1 a 2 días hábiles",  price: 4890, was: 12326  },
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -506,6 +522,7 @@ export default function Checkout() {
               items={items} calcItemTotal={calcItemTotal}
               totalPrice={totalPrice} finalTotal={finalTotal}
               savings={savings} couponDiscount={couponDiscount} appliedCoupon={appliedCoupon}
+              shippingCost={shippingCost}
             />
           </div>
 
@@ -514,7 +531,10 @@ export default function Checkout() {
 
           {/* ── SECCIÓN: Contacto ── */}
           <div className="ckfp-section">
-            <h2 className="ckfp-section-title">Contacto</h2>
+            <div className="ckfp-section-hdr">
+              <h2 className="ckfp-section-title">Contacto</h2>
+              {!isLogged && <a href="/login" className="ckfp-login-link">Iniciar sesión</a>}
+            </div>
             <div className="ckfp-field">
               <input
                 type="email" autoComplete="email" placeholder="Correo electrónico"
@@ -526,6 +546,15 @@ export default function Checkout() {
               />
               {fieldError("email") && <span className="ckfp-field-err">{fieldError("email")}</span>}
             </div>
+            <label className="ckfp-subscribe-label">
+              <input
+                type="checkbox"
+                checked={subscribeEmail}
+                onChange={e => setSubscribeEmail(e.target.checked)}
+                className="ckfp-subscribe-check"
+              />
+              Enviarme novedades y ofertas por correo electrónico
+            </label>
           </div>
 
           {/* ── SECCIÓN: Entrega ── */}
@@ -655,31 +684,45 @@ export default function Checkout() {
           </div>
 
           {/* ── SECCIÓN: Métodos de envío ── */}
-          <div className="ckfp-section">
-            <h2 className="ckfp-section-title">Métodos de envío</h2>
-            <div className="ckfp-ship-group">
-              {SHIP_OPTS.map(opt => (
-                <label
-                  key={opt.value}
-                  className={`ckfp-ship-opt${shippingMethod === opt.value ? " selected" : ""}`}
-                >
-                  <input
-                    type="radio" name="shipping" value={opt.value}
-                    checked={shippingMethod === opt.value}
-                    onChange={() => setShippingMethod(opt.value)}
-                  />
-                  <div className="ckfp-ship-info">
-                    <span className="ckfp-ship-title">{opt.title}</span>
-                    <span className="ckfp-ship-sub">{opt.sub}</span>
+          {(() => {
+            const deliveryUnlocked = form.direccion.trim().length >= 4 || form.ciudad.trim().length >= 2 || form.cp.trim().length >= 4;
+            return (
+              <div className="ckfp-section">
+                <h2 className="ckfp-section-title">Métodos de envío</h2>
+                {!deliveryUnlocked ? (
+                  <div className="ckfp-ship-locked">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Completá la dirección para ver los métodos de envío
                   </div>
-                  <div className="ckfp-ship-price">
-                    {opt.was && <span className="ckfp-ship-was">{opt.was}</span>}
-                    <span className="ckfp-ship-free">GRATIS</span>
+                ) : (
+                  <div className="ckfp-ship-group">
+                    {SHIP_OPTS.map(opt => (
+                      <label
+                        key={opt.value}
+                        className={`ckfp-ship-opt${shippingMethod === opt.value ? " selected" : ""}`}
+                      >
+                        <input
+                          type="radio" name="shipping" value={opt.value}
+                          checked={shippingMethod === opt.value}
+                          onChange={() => setShippingMethod(opt.value)}
+                        />
+                        <div className="ckfp-ship-info">
+                          <span className="ckfp-ship-title">{opt.title}</span>
+                          <span className="ckfp-ship-sub">{opt.sub}</span>
+                        </div>
+                        <div className="ckfp-ship-price">
+                          {opt.was && <span className="ckfp-ship-was">{money(opt.was)}</span>}
+                          {opt.price === 0
+                            ? <span className="ckfp-ship-free">GRATIS</span>
+                            : <span className="ckfp-ship-cost">{money(opt.price)}</span>}
+                        </div>
+                      </label>
+                    ))}
                   </div>
-                </label>
-              ))}
-            </div>
-          </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* ── SECCIÓN: Pago ── */}
           <div className="ckfp-section">
@@ -747,6 +790,7 @@ export default function Checkout() {
             items={items} calcItemTotal={calcItemTotal}
             totalPrice={totalPrice} finalTotal={finalTotal}
             savings={savings} couponDiscount={couponDiscount} appliedCoupon={appliedCoupon}
+            shippingCost={shippingCost}
             couponInput={couponInput} setCouponInput={setCouponInput}
             onApplyCoupon={handleApplyCoupon} onRemoveCoupon={handleRemoveCoupon}
             couponError={couponError} applyingCoupon={applyingCoupon}
@@ -758,8 +802,39 @@ export default function Checkout() {
       <div className="ckfp-sticky">
         <div className="ckfp-sticky-inner">
 
-          {/* Fila 1: thumbnail + "Total" + precio */}
-          <div className="ckfp-sticky-row1">
+          {/* Resumen desplegable */}
+          {stickyOpen && (
+            <div className="ckfp-sticky-summary">
+              {items.map((it, i) => {
+                const itemTotal = calcItemTotal(it);
+                const thumb = it.imageUrl || it.image || null;
+                return (
+                  <div key={i} className="ckfp-sticky-sum-item">
+                    <div className="ckfp-sticky-sum-img-wrap">
+                      {thumb
+                        ? <img src={thumb} alt={it.name} className="ckfp-sticky-sum-img" />
+                        : <span style={{ fontSize: 18 }}>📦</span>}
+                      <span className="ckfp-sticky-sum-qty">{it.quantity}</span>
+                    </div>
+                    <span className="ckfp-sticky-sum-name">{it.name}</span>
+                    <span className="ckfp-sticky-sum-price">{money(itemTotal)}</span>
+                  </div>
+                );
+              })}
+              <div className="ckfp-sticky-sum-rows">
+                <div className="ckfp-sticky-sum-row"><span>Subtotal</span><span>{money(totalPrice)}</span></div>
+                <div className="ckfp-sticky-sum-row">
+                  <span>Envío</span>
+                  {shippingCost > 0 ? <span>{money(shippingCost)}</span> : <span style={{ color: "#16a34a", fontWeight: 600 }}>GRATIS</span>}
+                </div>
+                {savings > 0 && <div className="ckfp-sticky-sum-row" style={{ color: "#16a34a" }}><span>Descuento</span><span>−{money(savings)}</span></div>}
+                {couponDiscount > 0 && <div className="ckfp-sticky-sum-row" style={{ color: "#16a34a" }}><span>Cupón</span><span>−{money(couponDiscount)}</span></div>}
+              </div>
+            </div>
+          )}
+
+          {/* Fila clickeable: thumbnail + Total + precio */}
+          <div className="ckfp-sticky-row1 ckfp-sticky-row1--btn" onClick={() => setStickyOpen(o => !o)}>
             {firstThumb && (
               <div className="ckfp-sticky-thumb-wrap">
                 <img src={firstThumb} alt="" className="ckfp-sticky-thumb" />
@@ -772,21 +847,13 @@ export default function Checkout() {
             <div className="ckfp-sticky-right">
               <span className="ckfp-sticky-currency">ARS</span>
               <span className="ckfp-sticky-amount">{money(finalTotal)}</span>
-              {savings > 0 && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
-              )}
+              <svg
+                width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round"
+                style={{ transition: "transform .2s", transform: stickyOpen ? "rotate(180deg)" : "rotate(0deg)", flexShrink: 0 }}
+              ><path d="M6 9l6 6 6-6"/></svg>
             </div>
           </div>
-
-          {/* Fila 2: ahorro (solo si hay) */}
-          {savings > 0 && (
-            <div className="ckfp-sticky-savings-row">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              <span>Ahorro total <strong>{money(savings)}</strong></span>
-            </div>
-          )}
 
           {/* Botón Pagar */}
           <button
@@ -810,6 +877,10 @@ export default function Checkout() {
 // ─── Estilos ─────────────────────────────────────────────────────────────────
 function Styles() {
   return (
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>{`
       @keyframes ckfpIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
       @keyframes ckfpMpBar { from { width:0; } to { width:100%; } }
@@ -819,10 +890,11 @@ function Styles() {
 
       .ckfp-shell {
         min-height: 100vh; background: #f5f5f5;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         color: #111827;
         animation: ckfpIn .35s cubic-bezier(.22,1,.36,1) both;
       }
+      .ckfp-shell input, .ckfp-shell select, .ckfp-shell textarea, .ckfp-shell button { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
       /* ── Header ── */
       .ckfp-header {
@@ -830,7 +902,7 @@ function Styles() {
         height: 60px; display: flex; align-items: center; justify-content: space-between;
         padding: 0 24px; position: sticky; top: 0; z-index: 200;
       }
-      .ckfp-logo { font-size: 18px; font-weight: 900; color: #111827; text-decoration: none; letter-spacing: -.03em; }
+      .ckfp-logo { font-size: 17px; font-weight: 700; color: #111827; text-decoration: none; letter-spacing: -.02em; font-family: 'Inter', sans-serif; }
       .ckfp-header-bag { position: relative; color: #374151; }
       .ckfp-bag-count {
         position: absolute; top: -7px; right: -8px;
@@ -938,7 +1010,14 @@ function Styles() {
 
       /* ── Section ── */
       .ckfp-section { margin-top: 28px; }
-      .ckfp-section-title { font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 14px; letter-spacing: -.02em; }
+      .ckfp-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+      .ckfp-section-hdr .ckfp-section-title { margin-bottom: 0; }
+      .ckfp-section-title { font-size: 16px; font-weight: 600; color: #111827; margin: 0 0 14px; font-family: 'Inter', sans-serif; letter-spacing: -.01em; }
+      .ckfp-login-link { font-size: 13px; font-weight: 500; color: #6b7280; text-decoration: none; }
+      .ckfp-login-link:hover { color: #111827; text-decoration: underline; }
+      .ckfp-subscribe-label { display: flex; align-items: center; gap: 9px; margin-top: 10px; font-size: 13px; font-weight: 400; color: #374151; cursor: pointer; user-select: none; }
+      .ckfp-subscribe-check { width: 15px; height: 15px; flex-shrink: 0; accent-color: #111827; cursor: pointer; margin: 0; }
+      .ckfp-ship-locked { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #d1d5db; border-radius: 10px; padding: 14px 16px; font-size: 13px; font-weight: 500; color: #9ca3af; }
 
       /* ── Error ── */
       .ckfp-error-box { background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 12px 14px; font-size: 13px; font-weight: 800; margin: 20px 0 0; animation: ckShake .4s ease; }
@@ -998,7 +1077,8 @@ function Styles() {
       .ckfp-ship-sub   { display: block; font-size: 12px; color: #6b7280; font-weight: 500; margin-top: 2px; }
       .ckfp-ship-price { text-align: right; flex-shrink: 0; }
       .ckfp-ship-was   { display: block; font-size: 11px; text-decoration: line-through; color: #9ca3af; }
-      .ckfp-ship-free  { display: block; font-size: 13px; font-weight: 800; color: #111827; }
+      .ckfp-ship-free  { display: block; font-size: 13px; font-weight: 700; color: #16a34a; }
+      .ckfp-ship-cost  { display: block; font-size: 13px; font-weight: 700; color: #111827; }
 
       /* ── Payment section ── */
       .ckfp-pay-safe { font-size: 12.5px; color: #6b7280; font-weight: 500; margin: 0 0 12px; }
@@ -1024,8 +1104,29 @@ function Styles() {
       @media (min-width: 900px) { .ckfp-sticky { max-width: 880px; left: 50%; transform: translateX(-50%); border-radius: 16px 16px 0 0; } }
       .ckfp-sticky-inner { display: flex; flex-direction: column; gap: 8px; max-width: 500px; margin: 0 auto; }
 
+      /* Resumen desplegable sticky */
+      .ckfp-sticky-summary {
+        border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 10px;
+        display: flex; flex-direction: column; gap: 8px;
+        animation: ckfpIn .18s ease both;
+      }
+      .ckfp-sticky-sum-item { display: flex; align-items: center; gap: 10px; }
+      .ckfp-sticky-sum-img-wrap { position: relative; flex-shrink: 0; }
+      .ckfp-sticky-sum-img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,.08); display: block; }
+      .ckfp-sticky-sum-qty {
+        position: absolute; top: -5px; right: -5px;
+        background: #6b7280; color: #fff; border-radius: 999px;
+        width: 16px; height: 16px; font-size: 9px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .ckfp-sticky-sum-name { flex: 1; font-size: 12px; font-weight: 500; color: #374151; line-height: 1.3; }
+      .ckfp-sticky-sum-price { font-size: 12px; font-weight: 600; color: #111827; white-space: nowrap; }
+      .ckfp-sticky-sum-rows { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; border-top: 1px solid #f3f4f6; }
+      .ckfp-sticky-sum-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; color: #6b7280; }
+
       /* Fila 1: thumb + Total + precio */
       .ckfp-sticky-row1 { display: flex; align-items: center; gap: 12px; }
+      .ckfp-sticky-row1--btn { cursor: pointer; }
       .ckfp-sticky-thumb-wrap { flex-shrink: 0; }
       .ckfp-sticky-thumb { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; border: 1px solid rgba(0,0,0,.08); display: block; }
       .ckfp-sticky-mid { display: flex; flex-direction: column; flex: 1; min-width: 0; }
@@ -1084,5 +1185,6 @@ function Styles() {
       .ckfp-mp-bar { height: 100%; background: #009ee3; border-radius: 99px; animation: ckfpMpBar 2.5s ease forwards; }
       .ckfp-mp-note { font-size: 12px; font-weight: 600; color: #94a3b8; margin: 0; }
     `}</style>
+    </>
   );
 }

@@ -106,6 +106,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const socialProofCount = useMemo(() => 18 + Math.floor(Math.random() * 12), []);
   const [sameAddr, setSameAddr] = useState(true);
   const [payOpen, setPayOpen] = useState(null); // null | 'card' | 'mp'
+  const [subscribeEmail, setSubscribeEmail] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedTotal, setConfirmedTotal] = useState(0);
   const [confirmedItems, setConfirmedItems] = useState([]);
@@ -551,7 +552,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   return (
     <>
       <style>{`
-        ${fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');` : ''}
+        ${fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');` : ''}
       `}</style>
       <style>{`
         @keyframes csSlideUp {
@@ -634,9 +635,10 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-field { position: relative; }
         .cs-field input, .cs-field select, .cs-field textarea {
           width: 100%; box-sizing: border-box;
-          padding: 22px 14px 8px; font-size: 15px; font-weight: 600;
-          border: 1.5px solid #e0e0e0; border-radius: 12px;
-          background: #fff; color: var(--text);
+          padding: 22px 14px 8px; font-size: 15px; font-weight: 400;
+          font-family: inherit;
+          border: 1px solid #d1d5db; border-radius: 8px;
+          background: #fff; color: #111;
           outline: none; transition: border-color .18s, box-shadow .18s;
           -webkit-appearance: none; appearance: none;
         }
@@ -647,7 +649,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-field input.cs-err, .cs-field select.cs-err { border-color: #c0392b !important; }
         .cs-field label {
           position: absolute; left: 14px; right: 14px; top: 50%; transform: translateY(-50%);
-          font-size: 14px; font-weight: 600; color: #888;
+          font-size: 14px; font-weight: 400; color: #6b7280;
           transition: all .16s ease; pointer-events: none;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -656,7 +658,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-field select ~ label,
         .cs-field textarea:focus ~ label,
         .cs-field textarea.hv ~ label {
-          top: 10px; transform: none; font-size: 11px; color: #999; font-weight: 700;
+          top: 10px; transform: none; font-size: 11px; color: #6b7280; font-weight: 500;
         }
         .cs-field textarea { padding-top: 26px; padding-bottom: 10px; }
         .cs-field textarea ~ label { top: 18px; transform: none; }
@@ -842,7 +844,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-coupon-row { display: flex; gap: 7px; }
         .cs-coupon-row input {
           flex: 1; height: 38px; border: 1px solid #ddd; border-radius: 7px;
-          padding: 0 10px; font-size: 13px; font-weight: 700; background: #fafafa;
+          padding: 0 10px; font-size: 13px; font-weight: 700; font-family: inherit; background: #fafafa;
           color: var(--text); outline: none; text-transform: uppercase; letter-spacing: .5px;
           transition: border-color .15s;
         }
@@ -865,7 +867,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         /* CTA button */
         .cs-cta {
           width: 100%; padding: 16px; border: none; border-radius: 14px;
-          font-size: 16px; font-weight: 900; cursor: pointer;
+          font-size: 16px; font-weight: 900; font-family: inherit; cursor: pointer;
           background: var(--primary); color: #fff;
           transition: background .15s, transform .1s, box-shadow .1s;
           box-shadow: 0 6px 20px rgba(0,0,0,.18);
@@ -947,7 +949,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-divider { height: 8px; background: #f5f7fa; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 20px 0; }
 
         /* Back link */
-        .cs-back { background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text); text-decoration: underline; padding: 0; }
+        .cs-back { background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; color: var(--text); text-decoration: underline; padding: 0; }
 
         /* Sticky CTA footer — always visible at bottom of modal */
         .cs-footer {
@@ -1377,7 +1379,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         </div>
       )}
 
-      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor }}>
+      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor, '--text': '#0b1220', '--border': '#ebebeb', '--border2': '#d0d0d0', '--bg': '#f8f8f8' }}>
         <div className="cs-sheet" ref={sheetRef}>
 
           {/* ─── NAVBAR ─── */}
@@ -1679,7 +1681,10 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
               <div style={{ padding: "20px 20px 0" }}>
 
                 {/* Contacto */}
-                <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: "var(--text)" }}>Contacto</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div style={{ fontWeight: 600, fontSize: 18, color: "#111" }}>Contacto</div>
+                  <a href="#" style={{ fontSize: 13, color: "var(--primary)", textDecoration: "none", fontWeight: 500 }}>Iniciar sesión</a>
+                </div>
 
                 {/* Nombre + Apellido — dos columnas */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
@@ -1761,10 +1766,21 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 </div>
                 {errors.email && <div className="cs-field-err" style={{ marginBottom: 8 }}>{errors.email}</div>}
 
+                {/* Checkbox novedades */}
+                <label style={{ display: "flex", alignItems: "center", gap: 10, margin: "10px 0 4px", cursor: "pointer", fontSize: 13, color: "#374151", fontWeight: 400, userSelect: "none" }}>
+                  <input
+                    type="checkbox"
+                    checked={subscribeEmail}
+                    onChange={e => setSubscribeEmail(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: "var(--primary)", flexShrink: 0 }}
+                  />
+                  Enviarme novedades y ofertas por correo electrónico
+                </label>
+
                 <div className="cs-divider" />
 
                 {/* Entrega */}
-                <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: "var(--text)" }}>Entrega</div>
+                <div style={{ fontWeight: 600, fontSize: 18, color: "#111", marginBottom: 14 }}>Entrega</div>
 
                 {/* Provincia */}
                 <div className="cs-field" style={{ marginBottom: 12 }}>
@@ -1823,30 +1839,40 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   </div>
                 </div>
 
-                {/* Shipping methods — solo se muestra si hay más de una opción (CABA) */}
-                {allowCod && (
-                  <>
-                    <div style={{ fontWeight: 900, fontSize: 15, marginBottom: 10, color: "var(--text)" }}>Método de envío</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                      {[
-                        { val: "correo", title: "Envío a Domicilio (Correo Arg)", sub: "Llega a todo el país · Seguimiento incluido" },
-                        { val: "caba", title: "Pagás al recibir", badge: "Solo CABA", sub: "Entrega coordinada · Pagás cuando te llega" },
-                      ].map(opt => (
-                        <div key={opt.val} className={`cs-opt ${delivery === opt.val ? "cs-opt--active" : ""}`} onClick={() => setDelivery(opt.val)}>
-                          <input type="radio" name="delivery" checked={delivery === opt.val} onChange={() => setDelivery(opt.val)} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                              {opt.title}
-                              {opt.badge && <span style={{ fontSize: 11, background: "rgba(0,0,0,.06)", border: "1px solid rgba(0,0,0,.12)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>{opt.badge}</span>}
-                            </div>
-                            <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginTop: 2 }}>{opt.sub}</div>
-                          </div>
-                          <div style={{ fontSize: 13, fontWeight: 900, color: accentColor, flexShrink: 0 }}>GRATIS</div>
+                {/* Shipping methods — solo se habilitan al llenar la dirección */}
+                {allowCod && (() => {
+                  const deliveryUnlocked = form.direccion.trim().length > 1 || form.ciudad.trim().length > 1 || form.cp.trim().length > 0;
+                  return (
+                    <>
+                      <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 10, color: "#111" }}>Método de envío</div>
+                      {!deliveryUnlocked ? (
+                        <div style={{ border: "1.5px dashed #d1d5db", borderRadius: 12, padding: "14px 16px", marginBottom: 20, display: "flex", alignItems: "center", gap: 10, color: "#9ca3af", fontSize: 13, fontWeight: 500 }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          Completá la dirección para ver las opciones de envío
                         </div>
-                      ))}
-                    </div>
-                  </>
-                )}
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                          {[
+                            { val: "correo", title: "Envío a Domicilio (Correo Arg)", sub: "Llega a todo el país · Seguimiento incluido" },
+                            { val: "caba", title: "Pagás al recibir", badge: "Solo CABA", sub: "Entrega coordinada · Pagás cuando te llega" },
+                          ].map(opt => (
+                            <div key={opt.val} className={`cs-opt ${delivery === opt.val ? "cs-opt--active" : ""}`} onClick={() => setDelivery(opt.val)}>
+                              <input type="radio" name="delivery" checked={delivery === opt.val} onChange={() => setDelivery(opt.val)} />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                                  {opt.title}
+                                  {opt.badge && <span style={{ fontSize: 11, background: "rgba(0,0,0,.06)", border: "1px solid rgba(0,0,0,.12)", color: "var(--primary)", borderRadius: 999, padding: "2px 7px", fontWeight: 700 }}>{opt.badge}</span>}
+                                </div>
+                                <div style={{ fontSize: 13, color: "#888", fontWeight: 500, marginTop: 2 }}>{opt.sub}</div>
+                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: accentColor, flexShrink: 0 }}>GRATIS</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 {/* Notas adicionales */}
                 <div className="cs-field" style={{ marginBottom: 20 }}>
