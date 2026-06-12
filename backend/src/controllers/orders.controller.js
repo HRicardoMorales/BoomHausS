@@ -6,6 +6,7 @@ const Order = require("../models/order.js");
 const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
+const { calculateOrderPricing } = require("../services/orderPricing.js");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -50,6 +51,7 @@ async function createOrder(req, res, next) {
             notes,
             paymentMethod,
             total: frontendTotal,
+            coupon: frontendCouponCode, // código de cupón opcional del frontend
         } = req.body || {};
 
         const badReq = (msg) => {
@@ -113,12 +115,38 @@ async function createOrder(req, res, next) {
         });
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
-        // totalAmount: usamos el total enviado por el frontend (ya incluye promos)
-        // como fallback calculamos precio bruto
-        const computedTotal = normalizedItems.reduce((acc, it) => acc + it.price * it.quantity, 0);
-        const totalAmount = (Number.isFinite(Number(frontendTotal)) && Number(frontendTotal) > 0)
-            ? Math.round(Number(frontendTotal))
-            : computedTotal;
+
+        // ── VALIDACIÓN SERVER-SIDE DEL TOTAL ────────────────────────────
+        // El total que manda el frontend NO se confía: lo recalculamos contra
+        // precios reales (Product en BD o config/productPrices.js de fallback)
+        // y validamos cualquier código de cupón contra la colección Coupon.
+        // shippingCost también viene de una tabla server-side (SHIPPING_COSTS).
+        const pricing = await calculateOrderPricing({
+            items: normalizedItems,
+            shippingMethod: shipMethod,
+            couponCode: frontendCouponCode,
+            frontendTotal,
+        });
+
+        if (!pricing.ok) {
+            throw badReq(pricing.error);
+        }
+
+        if (pricing.warnings && pricing.warnings.length) {
+            console.warn(
+                "⚠️ Discrepancia de total entre frontend y servidor:",
+                pricing.warnings.join(" | "),
+            );
+        }
+
+        // Persistimos los precios VALIDADOS, no los que mandó el cliente.
+        for (let i = 0; i < normalizedItems.length; i++) {
+            const validated = pricing.items[i];
+            normalizedItems[i].price = validated.unitPrice;
+            normalizedItems[i].bundleTotal = validated.lineTotal;
+        }
+
+        const totalAmount = pricing.total;
 
         if (!Number.isFinite(totalAmount) || totalAmount <= 0)
             throw badReq("Total inválido.");
