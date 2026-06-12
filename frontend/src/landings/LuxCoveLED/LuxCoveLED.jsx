@@ -14,11 +14,11 @@ const DEFAULT_COMPARE = 115000;
 // 🖼 Imágenes del bundle — reemplazá con tus URLs
 const BUNDLE_PRODUCT_IMG  = "https://pbs.twimg.com/media/HKF3r-fWwAAD87X?format=jpg&name=small";
 const EBOOK_IMG           = "https://pbs.twimg.com/media/HKF3ODKWEAAqpdo?format=jpg&name=small";
-const REGALO_IMG          = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/2078brz-44e9b33028db35a1c617597835671959-1024-1024.webp";
+const REGALO_IMG          = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/whatsapp-image-2026-02-12-at-15-27-30-48665eed9d1957f81017709208734547-1024-1024.webp";
 
 // ✏️ Textos debajo de cada imagen del bundle
 const BUNDLE_PRODUCT_NAME = "Escultor LED";
-const BUNDLE_REGALO_NAME  = "Exfoliante Facial";
+const BUNDLE_REGALO_NAME  = "Masajeador MicroCorrientes";
 const BUNDLE_EBOOK_NAME   = "eBook de rutinas";
 
 /* C1 — Announcement bar messages */
@@ -466,7 +466,7 @@ export default function LuxCoveLED() {
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = [
-    { src: "https://pbs.twimg.com/media/HKF8GwHWIAINvCn?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },

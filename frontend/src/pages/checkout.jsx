@@ -398,7 +398,8 @@ export default function Checkout() {
       const url = isProd ? res.data.init_point : (res.data.sandbox_init_point || res.data.init_point);
       if (url) {
         clearClientOrderId();
-        track("Purchase", { value: parseFloat(finalTotal) || 0, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" });
+        // NO disparar Purchase aquí — el usuario todavía no pagó.
+        // Purchase se dispara en SuccessPayment cuando MP confirma el pago aprobado.
         setRedirecting(true);
         setTimeout(() => { window.location.href = url; }, 1200);
         return;
@@ -657,7 +658,7 @@ export default function Checkout() {
             <div className="ckfp-field">
               <div className="ckfp-input-icon-wrap">
                 <input
-                  type="tel" autoComplete="tel" placeholder="Teléfono (opcional)" inputMode="tel"
+                  type="tel" autoComplete="tel" placeholder="Teléfono" inputMode="tel"
                   value={form.tel}
                   onChange={e => setF("tel", e.target.value)}
                   onBlur={() => { touch("tel"); captureAbandoned(); }}
@@ -670,16 +671,15 @@ export default function Checkout() {
               {fieldError("tel") && <span className="ckfp-field-err">{fieldError("tel")}</span>}
             </div>
 
-            {/* DNI — discreto */}
+            {/* DNI — opcional */}
             <div className="ckfp-field">
               <input
-                type="text" autoComplete="off" placeholder="DNI (para factura electrónica)" inputMode="numeric"
+                type="text" autoComplete="off" placeholder="DNI (opcional)" inputMode="numeric"
                 value={form.dni}
                 onChange={e => setF("dni", onlyDigits(e.target.value))}
                 className="ckfp-input"
                 maxLength={8}
               />
-              <span className="ckfp-field-hint">🔒 Solo para emitir tu comprobante</span>
             </div>
           </div>
 

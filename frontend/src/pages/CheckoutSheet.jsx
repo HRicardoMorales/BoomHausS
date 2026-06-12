@@ -335,15 +335,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         : res.data.sandbox_init_point || res.data.init_point;
 
       if (url) {
-        // Purchase se dispara ANTES de la redirección porque una vez que el cliente
-        // sale del sitio hacia MP ya no se puede trackear el evento.
-        track("Purchase", {
-          currency: "ARS",
-          value: parseFloat(finalTotal) || 0,
-          content_ids: items.map(i => i.productId),
-          content_type: "product",
-          num_items: totalItems,
-        });
+        // NO disparar Purchase aquí — el usuario todavía no pagó.
+        // Purchase se dispara en SuccessPayment cuando MP confirma el pago aprobado.
         setMpRedirectUrl(url);
         setMpCountdown(4);
         goToStep(3);

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
+import { track } from '../lib/metaPixel';
 
 const S = {
   page: {
@@ -224,6 +225,25 @@ export default function SuccessPayment() {
     if (!isApproved) return;
     clearCart();
   }, [isApproved, clearCart]);
+
+  // Disparar Purchase UNA SOLA VEZ cuando el pago está aprobado.
+  // La clave de sessionStorage usa paymentId para que sea única por transacción
+  // y evitar un segundo disparo si el usuario recarga la página de éxito.
+  const purchaseFiredRef = useRef(false);
+  useEffect(() => {
+    if (!isApproved) return;
+    if (purchaseFiredRef.current) return;
+    const guardKey = `purchase_fired_${paymentId || externalRef || 'unknown'}`;
+    if (sessionStorage.getItem(guardKey)) return;
+    purchaseFiredRef.current = true;
+    sessionStorage.setItem(guardKey, '1');
+    track('Purchase', {
+      currency: 'ARS',
+      content_type: 'product',
+      ...(paymentId  ? { transaction_id: paymentId }  : {}),
+      ...(externalRef ? { order_id: externalRef }      : {}),
+    });
+  }, [isApproved, paymentId, externalRef]);
 
   const paymentTypeLabel = paymentType === 'credit_card' ? 'Tarjeta de crédito'
     : paymentType === 'debit_card' ? 'Tarjeta de débito'

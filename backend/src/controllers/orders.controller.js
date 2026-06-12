@@ -133,10 +133,11 @@ async function createOrder(req, res, next) {
                     // Reemplazamos el .map() por un único ítem general
                     items: [
                         {
-                            title: "Compra en BoomHausS",
+                            title: "Compra en Amelor",
                             quantity: 1,
-                            unit_price: Number(totalAmount), // Usamos el totalAmount que ya calculaste más arriba
+                            unit_price: Number(totalAmount),
                             currency_id: "ARS",
+                            picture_url: process.env.MP_STORE_IMAGE_URL || undefined,
                         }
                     ],
                     payer: {
@@ -151,7 +152,7 @@ async function createOrder(req, res, next) {
                     },
                     auto_return: "approved",
                     external_reference: String(externalReference),
-                    statement_descriptor: "BOOMHAUSS",
+                    statement_descriptor: "AMELOR",
                 },
             });
 
