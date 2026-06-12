@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
 import { track } from '../../lib/metaPixel';
@@ -14,12 +15,28 @@ const DEFAULT_COMPARE = 115000;
 // 🖼 Imágenes del bundle — reemplazá con tus URLs
 const BUNDLE_PRODUCT_IMG  = "https://pbs.twimg.com/media/HKF3r-fWwAAD87X?format=jpg&name=small";
 const EBOOK_IMG           = "https://pbs.twimg.com/media/HKF3ODKWEAAqpdo?format=jpg&name=small";
-const REGALO_IMG          = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/whatsapp-image-2026-02-12-at-15-27-30-48665eed9d1957f81017709208734547-1024-1024.webp";
 
 // ✏️ Textos debajo de cada imagen del bundle
 const BUNDLE_PRODUCT_NAME = "Escultor LED";
-const BUNDLE_REGALO_NAME  = "Masajeador MicroCorrientes";
 const BUNDLE_EBOOK_NAME   = "eBook de rutinas";
+
+// 🎁 Configuraciones de regalo — agregá nuevas entradas para cada campaña de publicidad
+// Uso: /lp/escultor-led?regalo=masajeador  /lp/escultor-led?regalo=rodillo  etc.
+const GIFT_CONFIGS = {
+  masajeador: {
+    img:  "https://acdn-us.mitiendanube.com/stores/006/731/084/products/whatsapp-image-2026-02-12-at-15-27-30-48665eed9d1957f81017709208734547-1024-1024.webp",
+    name: "Masajeador MicroCorrientes",
+  },
+  EspatulaFacial: {
+  img:  "https://nextcell.com.ar/wp-content/uploads/2026/04/D_NQ_NP_671862-MLA93554403855_092025-O.webp",
+  name: "Espatula Limpieza facial",
+},
+  // Agregá más regalos acá:
+  // rodillo: {
+  //   img:  "https://TU_URL_DE_IMAGEN.jpg",
+  //   name: "Rodillo de Cuarzo",
+  // },
+};
 
 /* C1 — Announcement bar messages */
 const annMsgs = [
@@ -330,6 +347,13 @@ function LedStatsCircles({ items }) {
 
 /* ── Componente principal ─────────────────────────────────── */
 export default function LuxCoveLED() {
+  const [searchParams] = useSearchParams();
+  // Lee ?regalo=<key> de la URL — si no hay param, usa el primero de GIFT_CONFIGS
+  const giftKey = searchParams.get('regalo') || Object.keys(GIFT_CONFIGS)[0];
+  const giftConfig = GIFT_CONFIGS[giftKey] || Object.values(GIFT_CONFIGS)[0];
+  const REGALO_IMG         = giftConfig.img;
+  const BUNDLE_REGALO_NAME = giftConfig.name;
+
   const [product, setProduct] = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
