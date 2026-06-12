@@ -20,21 +20,27 @@ const EBOOK_IMG           = "https://pbs.twimg.com/media/HKF3ODKWEAAqpdo?format=
 const BUNDLE_PRODUCT_NAME = "Escultor LED";
 const BUNDLE_EBOOK_NAME   = "eBook de rutinas";
 
-// 🎁 Configuraciones de regalo — agregá nuevas entradas para cada campaña de publicidad
-// Uso: /lp/escultor-led?regalo=masajeador  /lp/escultor-led?regalo=rodillo  etc.
+// 🎁 Configuraciones de campaña — una entrada por campaña de publicidad
+// Uso: /lp/escultor-led?regalo=masajeador  /lp/escultor-led?regalo=espatula  etc.
+// - img:     imagen del producto de regalo en el bundle
+// - name:    nombre del producto de regalo
+// - heroImg: (opcional) reemplaza la imagen principal del hero para esa campaña. null = imagen por defecto
 const GIFT_CONFIGS = {
   masajeador: {
-    img:  "https://acdn-us.mitiendanube.com/stores/006/731/084/products/whatsapp-image-2026-02-12-at-15-27-30-48665eed9d1957f81017709208734547-1024-1024.webp",
-    name: "Masajeador MicroCorrientes",
+    img:     "https://acdn-us.mitiendanube.com/stores/006/731/084/products/whatsapp-image-2026-02-12-at-15-27-30-48665eed9d1957f81017709208734547-1024-1024.webp",
+    name:    "Masajeador MicroCorrientes",
+    heroImg: null,
   },
-  EspatulaFacial: {
-  img:  "https://nextcell.com.ar/wp-content/uploads/2026/04/D_NQ_NP_671862-MLA93554403855_092025-O.webp",
-  name: "Espatula Limpieza facial",
-},
-  // Agregá más regalos acá:
+  espatula: {
+    img:     "https://nextcell.com.ar/wp-content/uploads/2026/04/D_NQ_NP_671862-MLA93554403855_092025-O.webp",
+    name:    "Espatula Limpieza facial",
+    heroImg: "https://pbs.twimg.com/media/HKF8GwHWIAINvCn?format=jpg&name=small",
+  },
+  // Agregá más campañas acá:
   // rodillo: {
-  //   img:  "https://TU_URL_DE_IMAGEN.jpg",
-  //   name: "Rodillo de Cuarzo",
+  //   img:     "https://TU_URL_REGALO.jpg",
+  //   name:    "Rodillo de Cuarzo",
+  //   heroImg: "https://TU_URL_HERO.jpg",
   // },
 };
 
@@ -490,7 +496,7 @@ export default function LuxCoveLED() {
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = [
-    { src: "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
