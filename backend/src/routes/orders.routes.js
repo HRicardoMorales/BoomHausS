@@ -33,6 +33,10 @@ router.get("/mp-public-key", (req, res) => {
 /**
  * Público:
  * - Pago directo con tarjeta via Mercado Pago (token generado por MP.js)
+ *
+ * El monto a cobrar SIEMPRE se toma de la orden ya creada en BD
+ * (Order.totalAmount, que fue validado server-side al crearse la orden).
+ * Nunca se acepta `amount` desde el body — ese campo es ignorado.
  */
 router.post("/card-payment", async (req, res) => {
   try {
@@ -41,16 +45,44 @@ router.post("/card-payment", async (req, res) => {
       paymentMethodId,
       issuerId,
       installments,
-      amount,
       email,
       identificationNumber,
       identificationType,
-      customerName,
       orderId,
     } = req.body;
 
-    if (!token || !amount) {
-      return res.status(400).json({ ok: false, message: "Faltan datos del pago (token o amount)." });
+    if (!token || !orderId) {
+      return res.status(400).json({
+        ok: false,
+        message: "Faltan datos del pago (token u orderId).",
+      });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ ok: false, message: "Orden no encontrada." });
+    }
+
+    // Evitar doble cobro: si ya está aprobada/confirmada/cancelada, no procesamos
+    if (order.paymentStatus === "approved" || order.paymentStatus === "confirmed") {
+      return res.status(400).json({
+        ok: false,
+        message: "Esta orden ya tiene un pago aprobado.",
+      });
+    }
+    if (order.paymentStatus === "cancelled") {
+      return res.status(400).json({
+        ok: false,
+        message: "Esta orden fue cancelada.",
+      });
+    }
+
+    const amount = Number(order.totalAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).json({
+        ok: false,
+        message: "La orden no tiene un monto válido.",
+      });
     }
 
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
@@ -58,25 +90,26 @@ router.post("/card-payment", async (req, res) => {
 
     const result = await payment.create({
       body: {
-        transaction_amount: Number(amount),
+        transaction_amount: amount,
         token,
-        description: "Compra en BoomHausS",
+        description: "Compra en Amelor",
         installments: Number(installments) || 1,
         payment_method_id: paymentMethodId,
         issuer_id: issuerId ? Number(issuerId) : undefined,
+        external_reference: String(order._id),
         payer: {
-          email: email || "comprador@boomhauss.com",
+          email: email || order.customerEmail || "comprador@boomhauss.com",
           identification: {
             type: identificationType || "DNI",
-            number: String(identificationNumber || ""),
+            number: String(identificationNumber || order.customerDni || ""),
           },
         },
       },
     });
 
-    if (result.status === "approved" && orderId) {
+    if (result.status === "approved") {
       try {
-        await Order.findByIdAndUpdate(orderId, { paymentStatus: "approved" });
+        await Order.findByIdAndUpdate(order._id, { paymentStatus: "approved" });
       } catch (dbErr) {
         console.warn("No se pudo actualizar el estado del pedido:", dbErr.message);
       }
@@ -87,6 +120,7 @@ router.post("/card-payment", async (req, res) => {
       status: result.status,
       statusDetail: result.status_detail,
       paymentId: result.id,
+      amount, // devolvemos el monto real que se cobró (no el que mandó el FE)
     });
   } catch (err) {
     console.error("MP card payment error:", err);

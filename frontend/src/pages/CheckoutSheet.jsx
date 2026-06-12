@@ -406,30 +406,32 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   }, [step, mpRedirectUrl, mpCountdown]);
 
   // ── Flujo tarjeta: se llama desde el callback onSubmit del CardForm ──
-  async function processCardPayment({ token, paymentMethodId, issuerId, installments, amount, email, identificationType, identificationNumber }) {
+  async function processCardPayment({ token, paymentMethodId, issuerId, installments, email, identificationType, identificationNumber }) {
     setProcessingPayment(true);
     try {
-      // 1. Crear el pedido en DB primero
+      // 1. Crear el pedido en DB primero (el total se valida server-side)
       let orderId = savedOrderId;
       if (!orderId) {
         orderId = await createOrderInDB();
         setSavedOrderId(orderId);
       }
 
-      // 2. Procesar pago con tarjeta
+      // 2. Procesar pago con tarjeta.
+      //    NO mandamos `amount`: el backend toma el monto de la orden en BD
+      //    (validado server-side) para evitar manipulación desde el cliente.
       const res = await api.post("/orders/card-payment", {
-        token, paymentMethodId, issuerId, installments, amount,
+        token, paymentMethodId, issuerId, installments,
         email: email || "comprador@Amelor.com",
         identificationType, identificationNumber,
-        customerName: `${form.nombre} ${form.apellido}`.trim(),
         orderId,
       });
 
-      const { status, statusDetail } = res.data;
+      const { status, statusDetail, amount: serverAmount } = res.data;
+      const confirmedAmount = Number(serverAmount) || 0;
 
       if (status === "approved") {
-        track("Purchase", { currency: "ARS", value: parseFloat(amount) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
-        setConfirmedTotal(Number(amount));
+        track("Purchase", { currency: "ARS", value: confirmedAmount, content_ids: items.map(i => i.productId), num_items: totalItems });
+        setConfirmedTotal(confirmedAmount);
         setConfirmedItems([...items]);
         setConfirmedPaymentMethod("card");
         clearCart();
