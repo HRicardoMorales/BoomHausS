@@ -7,7 +7,17 @@
       "WebFetch(domain:importadoraelectro.com)",
       "WebFetch(domain:myshinnyskin.com)",
       "WebFetch(domain:roseskinco.com)",
-      "WebFetch(domain:lummia.com.co)"
+      "WebFetch(domain:lummia.com.co)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Ricardo\\\\Desktop\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" -Directory)",
+      "Bash(xargs grep -l \"APP_USR\\\\|zcpcybixhetjcloo\\\\|15050158Rm@\\\\|ryukbiancakiara\\\\|Lkq5t4Ya0nadYhqx1CcEGep_1yo\")",
+      "Bash(git -C \"c:\\\\Users\\\\Ricardo\\\\Desktop\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\" log --all --oneline --grep=\"env\\\\|secret\" -- \"backend/.env*\" \"backend/.gitignore\" .gitignore)",
+      "Bash(xargs grep -l \"crypto\\\\|HMAC\\\\|hmac\\\\|signature\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node -c backend/src/routes/orders.routes.js)",
+      "Bash(git commit *)",
+      "Bash(node -c backend/src/services/mpSignature.js)",
+      "Bash(node -c backend/src/controllers/mercadopagoWebhook.controller.js)"
     ]
   }
 }

@@ -8,7 +8,7 @@ import './LuxCoveLED.css';
 
 /* ── Constantes ───────────────────────────────────────────── */
 const PRODUCT_SLUG = 'escultor-led';
-const CHECKOUT_NAME = 'Escultor Facial LED 7 en 1';
+const CHECKOUT_NAME = 'Escultor Facial LED 3 en 1';
 const DEFAULT_PRICE = 39900;
 const DEFAULT_COMPARE = 115000;
 
@@ -67,8 +67,8 @@ const PRODUCT_TABS = [
     key: 'detalles',
     title: 'Detalles del producto',
     content: [
-      'El Escultor Facial LED 7 en 1 es la solución definitiva para el cuidado de tu piel en casa. Nuestro dispositivo ofrece masajes focalizados que afilan el cuello y el rostro, dándote un efecto lifting visible y promoviendo la simetría facial.',
-      'Elegí entre 7 luces LED distintas, con eficacia clínica comprobada para mejorar la textura de la piel, reducir arrugas, combatir el acné y mucho más.',
+      'El Escultor Facial LED 3 en 1 es la solución definitiva para el cuidado de tu piel en casa. Nuestro dispositivo ofrece masajes focalizados que afilan el cuello y el rostro, dándote un efecto lifting visible y promoviendo la simetría facial.',
+      'Elegí entre 3 luces LED distintas, con eficacia clínica comprobada para mejorar la textura de la piel, reducir arrugas, combatir el acné y mucho más.',
       '3 modos incluidos: Modo Limpieza (desbloquea poros), Modo EMS (tonifica y tensa con corrientes de baja intensidad), Modo Calor (estimula colágeno y mejora elasticidad).',
     ],
   },
@@ -143,10 +143,6 @@ const lights = [
   { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_1.png?v=1723311444', color: '#FF4444', name: 'LUZ ROJA', nm: '630 nm', desc: 'Estimula la producción de colágeno y previene líneas de expresión, arrugas y flacidez.', border: false },
   { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_2.png?v=1723311580', color: '#4444FF', name: 'LUZ AZUL', nm: '415 nm', desc: 'Elimina las bacterias que causan el acné e imperfecciones.', border: false },
   { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_3.png?v=1723311771', color: '#44AA44', name: 'LUZ VERDE', nm: '525 nm', desc: 'Unifica el tono de la piel y mejora su textura general.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_5.png?v=1723311865', color: '#00CCCC', name: 'LUZ CYAN', nm: '490 nm', desc: 'Calma la piel sensible y reduce el enrojecimiento y la irritación.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_5.png?v=1723311865', color: '#cccccc', name: 'LUZ BLANCA', nm: 'MIX', desc: 'Promueve la rejuvenación de la piel y combate líneas finas y arrugas.', border: true },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_7.png?v=1723311932', color: '#8844CC', name: 'LUZ PÚRPURA', nm: '380 nm', desc: 'Combina los beneficios de la luz roja y la azul.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_8.png?v=1723311967', color: '#FFCC00', name: 'LUZ AMARILLA', nm: '590 nm', desc: 'Estimula el drenaje linfático y aumenta la circulación sanguínea.', border: false },
   { src: '//www.luxcove.co/cdn/shop/files/9_ec8cb23b-11a8-4c0e-aef4-c93ac7971a89.png?v=1733574060', color: '#FF6600', name: 'MODO EMS', nm: null, desc: 'Fortalece y tonifica los músculos faciales, mejora la definición facial y reduce líneas y arrugas.', border: false },
   { src: '//www.luxcove.co/cdn/shop/files/10_933f78a5-a30e-43c1-b96d-57b02685bdae.png?v=1733574060', color: '#FF3366', name: 'MODO CALOR', nm: null, desc: 'Abre los poros para mejorar la absorción de productos y aumentar la producción de colágeno.', border: false },
   { src: '//www.luxcove.co/cdn/shop/files/11_d559de47-ad6d-484e-9f09-45e1147e439e.png?v=1733574060', color: '#64B5F6', name: 'MODO LIMPIO', nm: null, desc: 'Previene el acné e imperfecciones al limpiar células muertas, aceite y suciedad de los poros mediante vibración.', border: false },
@@ -156,7 +152,7 @@ const lights = [
 const compRows = [
   'Desarrollado por expertos en cuidado de piel.',
   'Resultados de nivel profesional.',
-  '7 tipos de luces LED diferentes.',
+  '3 tipos de luces LED diferentes.',
   'Garantía devolución 90 días.',
   'Tecnología EMS para tonificar músculos.',
   'Modo Calor para producción de colágeno.',
@@ -171,7 +167,7 @@ const STEPS = [
   {
     num: '2',
     title: 'Seleccioná un LED y un modo',
-    desc: 'Elegí entre las distintas luces LED y modos presionando el botón de encendido. Podés alternar entre 7 luces LED y elegir entre los modos EMS, Limpieza y Calor.',
+    desc: 'Elegí entre las distintas luces LED y modos presionando el botón de encendido. Podés alternar entre 3 luces LED y elegir entre los modos EMS, Limpieza y Calor.',
   },
   {
     num: '3',
@@ -191,8 +187,8 @@ const faqs = [
   { q: '¿Cómo limpio el dispositivo?', a: 'Limpialo con un paño suave ligeramente húmedo después de cada uso. No sumergir en agua.' },
   { q: '¿Puedo usarlo si tengo implantes dentales?', a: 'Sí, el modo EMS es seguro para personas con implantes dentales. Si tenés dudas, consultá con tu médico.' },
   { q: '¿Duele usarlo?', a: 'No. La tecnología es no invasiva. El modo EMS puede sentirse como un leve hormigueo, completamente normal y seguro.' },
-  { q: '¿El dispositivo viene con los 7 colores?', a: 'Sí, el dispositivo incluye las 7 luces LED (roja, azul, verde, cyan, blanca, púrpura y amarilla) más los modos EMS y Calor.' },
-  { q: '¿Es apto para todo tipo de piel?', a: 'Sí, el dispositivo es apto para todo tipo de piel. Las 7 luces permiten personalizar el tratamiento según tus necesidades.' },
+  { q: '¿El dispositivo viene con los 3 colores?', a: 'Sí, el dispositivo incluye las 3 luces LED (roja, azul y verde) más los modos EMS y Calor.' },
+  { q: '¿Es apto para todo tipo de piel?', a: 'Sí, el dispositivo es apto para todo tipo de piel. Las 3 luces permiten personalizar el tratamiento según tus necesidades.' },
   { q: '¿Puedo usarlo tanto en cara como en cuello?', a: 'Sí, está diseñado específicamente para usarse en cara, cuello, mandíbula y zona del escote.' },
   { q: '¿Cuánto tarda en llegar mi pedido?', a: 'Hacemos envíos a todo el territorio argentino. El tiempo estimado es de 3 a 7 días hábiles con seguimiento incluido.' },
   { q: '¿Puedo devolver mi pedido si no estoy satisfecha/o?', a: 'Sí, ofrecemos devolución sin preguntas dentro de los 90 días. Si no quedás satisfecha/o, te reembolsamos el 100%.' },
@@ -418,6 +414,9 @@ export default function LuxCoveLED() {
     });
   }, []);
 
+  /* Resetea la imagen activa cuando cambia la campaña */
+  useEffect(() => { setActiveImg(0); }, [giftKey]);
+
   /* Slides per view */
   useEffect(() => {
     const update = () => setSlidesPerView(window.innerWidth >= 768 ? 3 : 1);
@@ -495,17 +494,17 @@ export default function LuxCoveLED() {
   const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
-  const productImages = [
-    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+  const productImages = useMemo(() => [
+    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: 'Escultor Facial LED 7 en 1 — Vista principal (img-hero.jpg)' },
+    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-  ];
+  ], [giftConfig.heroImg]);
 
   if (!productReady) {
     return (
@@ -565,7 +564,7 @@ export default function LuxCoveLED() {
                 <span className="led-reviews-count">| Más de 10.000 clientes satisfechos</span>
               </div>
 
-              <h1 className="led-product-title">Escultor Facial LED 7 en 1 de Amelor</h1>
+              <h1 className="led-product-title">Escultor Facial LED 3 en 1 de Amelor</h1>
 
               <div className="led-pricing">
                 <span className="led-price-original">{fmt(compareAt)}</span>
@@ -1056,7 +1055,7 @@ export default function LuxCoveLED() {
         <div className="led-faq-section">
           <div className="led-container">
             <h2 className="led-faq-title">Preguntas frecuentes</h2>
-            <p className="led-faq-sub">Todo lo que necesitás saber sobre el Escultor Facial LED 7 en 1.</p>
+            <p className="led-faq-sub">Todo lo que necesitás saber sobre el Escultor Facial LED 3 en 1.</p>
             <div className="led-faq-list">
               {faqs.map((faq, i) => (
                 <div key={i} className="led-faq-item">
