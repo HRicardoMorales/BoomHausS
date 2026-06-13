@@ -1,11 +1,19 @@
 /* ============================================================
-   LUX COVE LED — Escultor Facial 7 en 1
+   LUX COVE LED — Escultor Facial 3 en 1
    CSS Prefix: .led-
    Font: Montserrat, sans-serif
    Mobile-first · Breakpoint: 768px
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+/* Sobrescribe la regla global de index.css que aplica "Cormorant Garamond"
+   (serif elegante) a todos los h1-h6 del proyecto. Dentro de esta landing
+   queremos sans-serif (Montserrat) para que los títulos no se vean
+   estilizados. */
+.led-wrap :is(h1, h2, h3, h4, h5, h6) {
+  font-family: 'Montserrat', sans-serif;
+}
 
 /* ── Variables ─────────────────────────────────────────────── */
 .led-wrap {
