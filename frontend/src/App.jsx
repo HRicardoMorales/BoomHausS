@@ -27,7 +27,7 @@ import AdminHome from './pages/AdminHome.jsx';
 import AdminCoupons from './pages/AdminCoupons.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import MundialLanding from './pages/MundialLanding.jsx';
-import ParchesDetoxLanding from './pages/ParchesDetoxLanding.jsx';
+import ParchesDetoxLanding from './landings/ParchesDetox/ParchesDetox.jsx';
 import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
 import KitBelleza6en1Landing from './pages/KitBelleza6en1Landing.jsx';
 import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
@@ -53,9 +53,9 @@ export default function App() {
   // ✅ Navbar/marquee ocultos en checkout y landing B2B
   const hideChrome = location.pathname === '/checkout';
   // ✅ Marquee oculto además en landings con header propio
-  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl';
+  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
   // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl';
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
 
   // ✅ PageView por ruta (SPA)
   useEffect(() => {

@@ -3,7 +3,7 @@
 // Config de marketing para Parches Plantares Detox (Kinoki)
 // URL: /lp/parches-detox
 // Producto en admin -> slug: parches-detox
-// Renderizado por: src/pages/ParchesDetoxLanding.jsx (componente dedicado)
+// Renderizado por: src/landings/ParchesDetox/ParchesDetox.jsx (componente dedicado)
 // ─────────────────────────────────────────────────────────────
 
 const parchesDetoxConfig = {
@@ -126,35 +126,37 @@ const parchesDetoxConfig = {
   ],
 
   // ── Bundles / Paquetes ───────────────────────────────────────
+  // Formato "X + X de REGALO" simétrico: pagás la cantidad qty, recibís el doble.
   // Editá precio y tachado desde el panel admin → Productos → Parches Detox → Paquetes.
   // Estos valores son el FALLBACK si el admin no tiene el producto cargado.
+  // qty: cantidad pagada (el regalo se muestra como bonus visual, no se cobra).
   bundles: [
     {
-      label:     "3 Cajas + 2 de Regalo · Edición Básica",
-      qty:       2,
+      label:     "Kit Inicio · 3 + 3 cajas de REGALO",
+      qty:       3,
       price:     48900,
       compareAt: 86000,
       badge:     "OFERTA ESPECIAL",
       popular:   false,
-      benefit:   "🌿 20 parches + Ebook · Envío gratis a todo el país",
+      benefit:   "🌿 30 parches en total · Envío gratis a todo el país",
     },
     {
-      label:     "6 Cajas + 4 de Regalo · Kit Familiar",
-      qty:       3,
+      label:     "Kit Familiar · 6 + 6 cajas de REGALO",
+      qty:       6,
       price:     58000,
       compareAt: 119200,
       badge:     "MÁS ELEGIDO",
       popular:   true,
-      benefit:   "📦 60 parches + Ebook · Envío gratis · Ideal para compartir",
+      benefit:   "📦 60 parches en total · Envío gratis · Ideal para compartir",
     },
     {
-      label:     "9 Cajas + 6 de Regalo · Kit Premium",
-      qty:       5,
+      label:     "Kit Premium · 10 + 10 cajas de REGALO",
+      qty:       10,
       price:     78800,
       compareAt: 194900,
       badge:     "MEJOR VALOR",
       popular:   false,
-      benefit:   "💎 100 parches + Ebook + Pack sorpresa · Envío gratis",
+      benefit:   "💎 100 parches en total · El mejor valor · Envío gratis",
     },
   ],
 };
