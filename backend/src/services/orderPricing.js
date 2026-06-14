@@ -109,9 +109,11 @@ async function resolveLinePrice(productIdRaw, qty, bundleTotal) {
     };
   }
 
-  // ── 2) Si el frontend mandó un bundleTotal, validarlo contra la lista ──────
+  // ── 2) Si el frontend mandó un bundleTotal, validarlo ──────────────────────
   if (bundleTotal != null && Number.isFinite(Number(bundleTotal)) && Number(bundleTotal) > 0) {
     const bt = Math.round(Number(bundleTotal));
+
+    // Caso ideal: matchea con la lista de precios permitidos.
     if (allowedBundlePrices.includes(bt)) {
       return {
         ok: true,
@@ -120,11 +122,44 @@ async function resolveLinePrice(productIdRaw, qty, bundleTotal) {
         source: `${source}-bundle`,
       };
     }
+
+    // ── Fallback PERMISIVO ───────────────────────────────────────────────
+    // Si el bundle no matchea (típicamente: Product.bundles en MongoDB
+    // desactualizado vs la landing), aceptamos el precio del frontend
+    // siempre que esté dentro de un RANGO SANO. Esto evita bloquear
+    // ventas reales cuando hay desincronización entre admin y landing.
+    //
+    // Sanity check: el precio debe ser al menos el 50% del precio MÁS BAJO
+    // que conozcamos para este producto. Eso bloquea ataques tipo
+    // "bundleTotal: 1" sin ser demasiado estricto.
+    const knownPrices = [
+      ...allowedBundlePrices,
+      ...(unitPrice > 0 ? [unitPrice * qty, unitPrice] : []),
+    ];
+    const minKnown = knownPrices.length > 0 ? Math.min(...knownPrices) : 0;
+    const safeMin = minKnown > 0 ? Math.round(minKnown * 0.5) : 500;
+
+    if (bt < safeMin) {
+      return {
+        ok: false,
+        error:
+          `precio sospechosamente bajo para "${productIdRaw}": ${bt} ` +
+          `(mínimo razonable: ${safeMin})`,
+      };
+    }
+
+    console.warn(
+      `⚠️ bundleTotal NO matchea allowedPrices para "${productIdRaw}": ${bt} ` +
+      `(conocidos: ${allowedBundlePrices.join(', ') || '—'}). ` +
+      `Aceptando con warning — actualizá Product.bundles en MongoDB o ` +
+      `backend/src/config/productPrices.js para sincronizar.`,
+    );
+
     return {
-      ok: false,
-      error:
-        `precio de bundle no permitido para "${productIdRaw}": ${bt} ` +
-        `(permitidos: ${allowedBundlePrices.join(', ') || '—'})`,
+      ok: true,
+      lineTotal: bt,
+      unitPrice: Math.round(bt / qty),
+      source: `${source}-bundle-permissive`,
     };
   }
 
