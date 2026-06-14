@@ -95,7 +95,17 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const calc = ctxCalc || calcItemTotal;
 
   const [step, setStep] = useState(0);
-  const [delivery, setDelivery] = useState("correo");
+  const [delivery, setDelivery] = useState("sucursal");
+
+  // Opciones de envío — los `val` matchean SHIPPING_COSTS del backend
+  // (backend/src/services/orderPricing.js). NO cambiar las keys sin actualizar
+  // el backend también.
+  const SHIP_OPTS = [
+    { val: "sucursal",    title: "Envío a sucursal",                       sub: "2 a 4 días hábiles", price: 0,    badge: null      },
+    { val: "domicilio",   title: "Envío a domicilio + seguimiento",        sub: "1 a 3 días hábiles", price: 2980, badge: null      },
+    { val: "prioritario", title: "Envío prioritario + seguimiento",        sub: "1 a 2 días hábiles", price: 4890, badge: null      },
+    { val: "caba_cod",    title: "Pagás al recibir",                       sub: "Pagás cuando te llega", price: 0,  badge: "Solo CABA" },
+  ];
   const [payment, setPayment] = useState(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
@@ -109,6 +119,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const [subscribeEmail, setSubscribeEmail] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmedTotal, setConfirmedTotal] = useState(0);
+  const [confirmedShippingCost, setConfirmedShippingCost] = useState(0);
   const [confirmedItems, setConfirmedItems] = useState([]);
   const [showCabaConfirm, setShowCabaConfirm] = useState(false);
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null); // 'cod' | 'mp' | 'card'
@@ -145,6 +156,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   }, 0);
   const savings = Math.max(0, fullPrice - totalPrice);
 
+  // Costo de envío según la opción seleccionada
+  const shippingCost = useMemo(() => {
+    const opt = SHIP_OPTS.find(o => o.val === delivery);
+    return opt ? opt.price : 0;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delivery]);
+
   // Descuento del cupón — siempre en sincronía con totalPrice actual
   const discountAmount = useMemo(() => {
     if (!appliedCoupon) return 0;
@@ -152,7 +170,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
     return Math.min(appliedCoupon.value, totalPrice);
   }, [appliedCoupon, totalPrice]);
 
-  const finalTotal = Math.max(0, totalPrice - discountAmount);
+  const finalTotal = Math.max(0, totalPrice - discountAmount + shippingCost);
 
   // Lock body scroll
   useEffect(() => {
@@ -293,7 +311,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       customerDni:     form.dni.trim(),
       customerPhone:   form.tel,
       shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
-      shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
+      shippingMethod:  delivery,
       paymentMethod:   payment === "mp" ? "mercadopago" : "card",
       notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
       total:           finalTotal,
@@ -322,7 +340,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         customerDni:     form.dni.trim(),
         customerPhone:   form.tel,
         shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
-        shippingMethod:  delivery === "caba" ? "caba_cod" : "correo_argentino",
+        shippingMethod:  delivery,
         paymentMethod:   "mercadopago",
         notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
         total:           finalTotal,
@@ -373,7 +391,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         customerDni:     form.dni.trim(),
         customerPhone:   form.tel,
         shippingAddress: [form.direccion, form.extra, form.ciudad, form.cp, form.provincia].filter(Boolean).join(", ") || form.provincia || "Sin especificar",
-        shippingMethod:  "caba_cod",
+        shippingMethod:  delivery, // si llega acá, delivery debería ser "caba_cod"
         paymentMethod:   "cod",
         notes:           ["Pago al recibir", form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(". "),
         total:           finalTotal,
@@ -381,6 +399,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       });
       track("Purchase", { currency: "ARS", value: parseFloat(finalTotal) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
       setConfirmedTotal(finalTotal);
+      setConfirmedShippingCost(shippingCost);
       setConfirmedItems([...items]);
       setConfirmedPaymentMethod("cod");
       clearCart();
@@ -432,6 +451,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       if (status === "approved") {
         track("Purchase", { currency: "ARS", value: confirmedAmount, content_ids: items.map(i => i.productId), num_items: totalItems });
         setConfirmedTotal(confirmedAmount);
+        setConfirmedShippingCost(shippingCost);
         setConfirmedItems([...items]);
         setConfirmedPaymentMethod("card");
         clearCart();
@@ -1445,8 +1465,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                       ))}
                     </div>
                   ))}
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: accentColor, paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
-                    <span>Envío</span><span>GRATIS</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: shippingCost > 0 ? "var(--text)" : accentColor, paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
+                    <span>Envío</span><span>{shippingCost > 0 ? money(shippingCost) : "GRATIS"}</span>
                   </div>
                   {discountAmount > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: accentColor, paddingTop: 6 }}>
@@ -1596,7 +1616,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 {/* Totals */}
                 <div style={{ padding: "0 16px 10px" }}>
                   <div className="cs-totals">
-                    <div className="cs-total-row"><span>Envío</span><span style={{ color: accentColor }}>GRATIS</span></div>
+                    <div className="cs-total-row"><span>Envío</span><span style={{ color: shippingCost > 0 ? "var(--text)" : accentColor, fontWeight: 800 }}>{shippingCost > 0 ? money(shippingCost) : "GRATIS"}</span></div>
                     {savings > 0 && <div className="cs-total-row" style={{ color: accentColor }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
                     {discountAmount > 0 && (
                       <div className="cs-total-row" style={{ color: accentColor }}>
@@ -1847,10 +1867,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                         </div>
                       ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                          {[
-                            { val: "correo", title: "Envío a Domicilio (Correo Arg)", sub: "Llega a todo el país · Seguimiento incluido" },
-                            { val: "caba", title: "Pagás al recibir", badge: "Solo CABA", sub: "Entrega coordinada · Pagás cuando te llega" },
-                          ].map(opt => (
+                          {SHIP_OPTS.map(opt => (
                             <div key={opt.val} className={`cs-opt ${delivery === opt.val ? "cs-opt--active" : ""}`} onClick={() => setDelivery(opt.val)}>
                               <input type="radio" name="delivery" checked={delivery === opt.val} onChange={() => setDelivery(opt.val)} />
                               <div style={{ flex: 1 }}>
@@ -1860,7 +1877,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                                 </div>
                                 <div style={{ fontSize: 13, color: "#888", fontWeight: 500, marginTop: 2 }}>{opt.sub}</div>
                               </div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: accentColor, flexShrink: 0 }}>GRATIS</div>
+                              <div style={{ fontSize: 13, fontWeight: 800, color: opt.price > 0 ? "var(--text)" : accentColor, flexShrink: 0 }}>
+                                {opt.price > 0 ? money(opt.price) : "GRATIS"}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1892,13 +1911,20 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
               <div style={{ padding: "20px 20px 0" }}>
 
                 {/* Shipping summary */}
-                <div className="cs-ship-summary">
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: "var(--text)" }}>Envío</div>
-                    <div style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>{delivery === "caba" ? "Pagás al recibir (CABA)" : "Envío a domicilio — Correo Argentino"}</div>
-                  </div>
-                  <div style={{ fontWeight: 900, color: accentColor, fontSize: 14 }}>GRATIS</div>
-                </div>
+                {(() => {
+                  const sel = SHIP_OPTS.find(o => o.val === delivery) || SHIP_OPTS[0];
+                  return (
+                    <div className="cs-ship-summary">
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: 13, color: "var(--text)" }}>Envío</div>
+                        <div style={{ fontSize: 12, color: "#888", fontWeight: 600 }}>{sel.title}</div>
+                      </div>
+                      <div style={{ fontWeight: 900, color: sel.price > 0 ? "var(--text)" : accentColor, fontSize: 14 }}>
+                        {sel.price > 0 ? money(sel.price) : "GRATIS"}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Section header */}
                 <div className="cs-pay-section-hdr">
@@ -2115,7 +2141,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                     <span className="cs-mp-inter-brand-txt">Checkout oficial</span>
                   </div>
                   <div className="cs-mp-inter-total-lbl">Total a pagar</div>
-                  <div className="cs-mp-inter-total">{money(totalPrice)}</div>
+                  <div className="cs-mp-inter-total">{money(finalTotal)}</div>
                   {(form.nombre || form.apellido) && (
                     <div className="cs-mp-inter-name">
                       Pedido a nombre de {form.nombre} {form.apellido}
@@ -2192,7 +2218,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   </div>
                   <div className="cs-confirm4-row">
                     <span className="cs-confirm4-label">Envío</span>
-                    <span className="cs-confirm4-val--green">GRATIS</span>
+                    <span className={confirmedShippingCost > 0 ? "cs-confirm4-val" : "cs-confirm4-val--green"}>
+                      {confirmedShippingCost > 0 ? money(confirmedShippingCost) : "GRATIS"}
+                    </span>
                   </div>
                   {isCod && (
                     <div className="cs-confirm4-row">
@@ -2240,7 +2268,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 if (!validateStep1()) return;
                 captureAbandoned();
                 track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
-                if (delivery === "caba") { setShowCabaConfirm(true); } else { goToStep(2); }
+                if (delivery === "caba_cod") { setShowCabaConfirm(true); } else { goToStep(2); }
               }}>
                 Continuar con el pago →
               </button>
