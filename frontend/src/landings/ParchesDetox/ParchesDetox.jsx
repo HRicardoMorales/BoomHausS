@@ -302,13 +302,17 @@ export default function ParchesDetoxLanding() {
     const bundle = BUNDLES[selectedBundle] || BUNDLES[0];
     if (!bundle) return;
     const productData = product || { _id: PRODUCT_SLUG, name: CHECKOUT_NAME, slug: PRODUCT_SLUG };
+    const mainImg = productImages[0]?.src;
     addItem(
-      { ...productData, name: CHECKOUT_NAME },
+      { ...productData, name: CHECKOUT_NAME, imageUrl: mainImg },
       bundle.qty || 1,
       {
-        bundleTotal: bundle.price,
+        bundleTotal:    bundle.price,
         compareAtPrice: bundle.compareAt,
-        gifts: [bundle.benefit].filter(Boolean),
+        // Producto principal + producto de regalo lado a lado en el carrito
+        bundleImgs:     mainImg ? [mainImg, mainImg] : undefined,
+        // Texto del regalo del mismo producto (NO el benefit que era descriptivo)
+        gifts:          [`+${bundle.qty} cajas de REGALO 🎁`],
       },
     );
     track('InitiateCheckout', { value: bundle.price, currency: 'ARS', content_name: CHECKOUT_NAME });
