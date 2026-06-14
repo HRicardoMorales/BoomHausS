@@ -32,78 +32,116 @@ function isObjectId(v) {
 
 /**
  * Resuelve el precio real de una línea (producto + cantidad).
+ *
+ * Estrategia:
+ *   1. Lookup en MongoDB (Product) por ObjectId o slug.
+ *   2. Fallback en backend/src/config/productPrices.js.
+ *   3. Si el frontend mandó `bundleTotal`, se valida contra la LISTA de precios
+ *      permitidos del producto (sus bundles o `allowedBundlePrices` del config).
+ *      Sin bundleTotal: precio unitario × qty.
+ *
+ * Esto soporta los dos modelos de bundle que conviven en el proyecto:
+ *   - Bundles con qty distinta (escultor-led, depiladora-ipl, parches-detox)
+ *   - Bundles con qty=1 fija + precios distintos por pack
+ *     (masajeador-ems-eyes, masajeador-facial-iones)
+ *
  * Returns: { ok: true, lineTotal, unitPrice, source } | { ok: false, error }
  */
-async function resolveLinePrice(productIdRaw, qty) {
+async function resolveLinePrice(productIdRaw, qty, bundleTotal) {
   if (!productIdRaw) return { ok: false, error: 'productId vacío' };
   if (!Number.isFinite(qty) || qty <= 0) return { ok: false, error: 'quantity inválida' };
 
+  // ── 1) Reunir precios permitidos: bundles + precio unitario ────────────────
   let product = null;
-
-  // 1) Buscar en BD por ObjectId
   if (isObjectId(productIdRaw)) {
     product = await Product.findById(productIdRaw).lean();
   }
-
-  // 2) Buscar en BD por slug
   if (!product) {
     product = await Product.findOne({ slug: String(productIdRaw) }).lean();
   }
 
+  // allowedBundlePrices: lista de precios TOTALES de bundle permitidos para
+  // este producto. Cualquier `bundleTotal` que el frontend mande debe estar
+  // en esta lista — si no, se rechaza la orden.
+  let allowedBundlePrices = [];
+  let unitPrice = 0;
+  let source = '';
+
   if (product) {
-    // ¿Hay un bundle con esta qty?
-    const bundle = Array.isArray(product.bundles)
-      ? product.bundles.find((b) => Number(b.qty) === Number(qty))
-      : null;
-
-    if (bundle && Number.isFinite(Number(bundle.price)) && Number(bundle.price) > 0) {
-      const lineTotal = Math.round(Number(bundle.price));
-      return {
-        ok: true,
-        lineTotal,
-        unitPrice: Math.round(lineTotal / qty),
-        source: 'db-bundle',
-      };
+    if (Array.isArray(product.bundles)) {
+      allowedBundlePrices = product.bundles
+        .map((b) => Number(b.price))
+        .filter((p) => Number.isFinite(p) && p > 0);
     }
-
-    // Sin bundle: precio unitario × cantidad
     if (Number.isFinite(Number(product.price)) && Number(product.price) > 0) {
-      const unitPrice = Math.round(Number(product.price));
-      return {
-        ok: true,
-        lineTotal: unitPrice * qty,
-        unitPrice,
-        source: 'db-unit',
-      };
+      unitPrice = Math.round(Number(product.price));
+    }
+    source = 'db';
+  } else {
+    const cfg = PRICE_CONFIG[String(productIdRaw)];
+    if (cfg) {
+      // formato nuevo: allowedBundlePrices: [precio1, precio2, ...]
+      if (Array.isArray(cfg.allowedBundlePrices)) {
+        allowedBundlePrices = cfg.allowedBundlePrices
+          .map(Number)
+          .filter((p) => Number.isFinite(p) && p > 0);
+      }
+      // formato legacy: bundles: { qty: precio }
+      if (cfg.bundles && typeof cfg.bundles === 'object') {
+        for (const p of Object.values(cfg.bundles)) {
+          const n = Number(p);
+          if (Number.isFinite(n) && n > 0 && !allowedBundlePrices.includes(n)) {
+            allowedBundlePrices.push(n);
+          }
+        }
+      }
+      if (Number.isFinite(Number(cfg.price)) && Number(cfg.price) > 0) {
+        unitPrice = Math.round(Number(cfg.price));
+      }
+      source = 'config';
     }
   }
 
-  // 3) Fallback: tabla de config
-  const cfg = PRICE_CONFIG[String(productIdRaw)];
-  if (cfg) {
-    if (cfg.bundles && cfg.bundles[qty] != null) {
-      const lineTotal = Math.round(Number(cfg.bundles[qty]));
-      return {
-        ok: true,
-        lineTotal,
-        unitPrice: Math.round(lineTotal / qty),
-        source: 'config-bundle',
-      };
-    }
-    if (Number.isFinite(Number(cfg.price)) && Number(cfg.price) > 0) {
-      const unitPrice = Math.round(Number(cfg.price));
-      return {
-        ok: true,
-        lineTotal: unitPrice * qty,
-        unitPrice,
-        source: 'config-unit',
-      };
-    }
+  if (allowedBundlePrices.length === 0 && unitPrice === 0) {
+    return {
+      ok: false,
+      error: `producto desconocido o sin precio válido: "${productIdRaw}" (qty=${qty})`,
+    };
   }
 
+  // ── 2) Si el frontend mandó un bundleTotal, validarlo contra la lista ──────
+  if (bundleTotal != null && Number.isFinite(Number(bundleTotal)) && Number(bundleTotal) > 0) {
+    const bt = Math.round(Number(bundleTotal));
+    if (allowedBundlePrices.includes(bt)) {
+      return {
+        ok: true,
+        lineTotal: bt,
+        unitPrice: Math.round(bt / qty),
+        source: `${source}-bundle`,
+      };
+    }
+    return {
+      ok: false,
+      error:
+        `precio de bundle no permitido para "${productIdRaw}": ${bt} ` +
+        `(permitidos: ${allowedBundlePrices.join(', ') || '—'})`,
+    };
+  }
+
+  // ── 3) Sin bundleTotal: precio unitario × cantidad ─────────────────────────
+  if (unitPrice > 0) {
+    return {
+      ok: true,
+      lineTotal: unitPrice * qty,
+      unitPrice,
+      source: `${source}-unit`,
+    };
+  }
+
+  // No mandó bundleTotal y no hay unitPrice — todos los precios son de bundle.
   return {
     ok: false,
-    error: `producto desconocido o sin precio válido: "${productIdRaw}" (qty=${qty})`,
+    error: `falta bundleTotal para "${productIdRaw}" (precios permitidos: ${allowedBundlePrices.join(', ')})`,
   };
 }
 
@@ -174,8 +212,11 @@ async function calculateOrderPricing({
     const it = inputItems[i];
     const productIdRaw = it.productId || it._id || it.id;
     const qty = Number(it.quantity);
+    // bundleTotal: precio del pack que el frontend afirma que el usuario eligió.
+    // Se valida contra la lista de precios permitidos del producto antes de aceptarlo.
+    const bundleTotal = it.bundleTotal != null ? Number(it.bundleTotal) : null;
 
-    const resolved = await resolveLinePrice(productIdRaw, qty);
+    const resolved = await resolveLinePrice(productIdRaw, qty, bundleTotal);
     if (!resolved.ok) {
       return { ok: false, error: `Item #${i + 1}: ${resolved.error}` };
     }
