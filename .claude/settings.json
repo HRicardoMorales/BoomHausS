@@ -17,7 +17,8 @@
       "Bash(node -c backend/src/routes/orders.routes.js)",
       "Bash(git commit *)",
       "Bash(node -c backend/src/services/mpSignature.js)",
-      "Bash(node -c backend/src/controllers/mercadopagoWebhook.controller.js)"
+      "Bash(node -c backend/src/controllers/mercadopagoWebhook.controller.js)",
+      "Bash(git rm *)"
     ]
   }
 }
