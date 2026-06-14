@@ -1533,19 +1533,27 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
                         {/* Imágenes: bundle (múltiples) o producto único */}
                         <div style={{ position: "relative", flexShrink: 0 }}>
-                          {it.bundleImgs?.length > 0 ? (
-                            <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                              {it.bundleImgs.map((src, bIdx) => (
-                                <div key={bIdx} style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                  {bIdx > 0 && <span style={{ fontSize: 11, fontWeight: 900, color: "var(--primary)", opacity: .55, lineHeight: 1 }}>+</span>}
-                                  <div style={{ width: 52, height: 52, borderRadius: 9, overflow: "hidden", background: "#f5f0f3", border: "1px solid rgba(0,0,0,.07)", flexShrink: 0 }}>
-                                    <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
+                          {it.bundleImgs?.length > 0 ? (() => {
+                            // Si el item tiene imagen principal y no está ya como primer thumb,
+                            // la prependeamos para que se vea: [producto] + [regalo1] + [regalo2]
+                            const mainImg = it.imageUrl || it.image;
+                            const allImgs = mainImg && it.bundleImgs[0] !== mainImg
+                              ? [mainImg, ...it.bundleImgs]
+                              : it.bundleImgs;
+                            return (
+                              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                {allImgs.map((src, bIdx) => (
+                                  <div key={bIdx} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                    {bIdx > 0 && <span style={{ fontSize: 11, fontWeight: 900, color: "var(--primary)", opacity: .55, lineHeight: 1 }}>+</span>}
+                                    <div style={{ width: 52, height: 52, borderRadius: 9, overflow: "hidden", background: "#f5f0f3", border: "1px solid rgba(0,0,0,.07)", flexShrink: 0 }}>
+                                      <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                              <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
-                            </div>
-                          ) : (
+                                ))}
+                                <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
+                              </div>
+                            );
+                          })() : (
                             <>
                               <div style={{ width: 76, height: 76, borderRadius: 10, overflow: "hidden", background: "#f0f4f8", display: "grid", placeItems: "center", border: "1px solid rgba(0,0,0,.07)" }}>
                                 {thumb ? <img src={thumb} alt={it.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>📦</span>}
