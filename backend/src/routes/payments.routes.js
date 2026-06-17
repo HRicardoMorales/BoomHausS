@@ -53,4 +53,47 @@ router.post('/card', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/payments/mercadopago/:paymentId
+ *
+ * Verifica con la API de Mercado Pago el estado REAL de un pago.
+ * Lo usa SuccessPayment.jsx para confirmar que el pago está aprobado
+ * antes de disparar el evento Purchase del Meta Pixel — así evitamos
+ * que cualquiera pueda forzar el Purchase entrando a
+ * /success-payment?collection_status=approved sin haber pagado.
+ *
+ * Endpoint público: solo devuelve datos del pago (no realiza acciones).
+ * El paymentId que llega es público (viene del redirect de MP), así que
+ * no estamos exponiendo nada nuevo.
+ */
+router.get('/mercadopago/:paymentId', async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    if (!paymentId) {
+      return res.status(400).json({ ok: false, message: 'Falta paymentId.' });
+    }
+
+    const payment = new Payment(client);
+    const result = await payment.get({ id: String(paymentId) });
+
+    return res.json({
+      ok: true,
+      status: result?.status || 'pending',
+      status_detail: result?.status_detail || null,
+      transaction_amount: Number(result?.transaction_amount) || null,
+      external_reference: result?.external_reference || null,
+      payment_type_id: result?.payment_type_id || null,
+      currency_id: result?.currency_id || 'ARS',
+    });
+  } catch (err) {
+    console.error('❌ Error en GET /api/payments/mercadopago/:paymentId:', err?.message || err);
+    // 404 si MP no encuentra el pago, 500 para errores reales
+    const isNotFound = err?.status === 404 || /not found/i.test(err?.message || '');
+    return res.status(isNotFound ? 404 : 500).json({
+      ok: false,
+      message: isNotFound ? 'Pago no encontrado en Mercado Pago.' : 'Error consultando el pago.',
+    });
+  }
+});
+
 module.exports = router;
