@@ -52,13 +52,11 @@ const annMsgs = [
   '💰 GARANTÍA DE DEVOLUCIÓN 90 DÍAS',
 ];
 
-const BENEFITS = [
-  'Papada firme y flácida y cuello de pavo',
-  'Suavizar líneas finas y arrugas',
-  'Unifica el tono y la textura de tu piel',
-  'Conseguí un lifting facial instantáneo en casa',
-  'Reduce la hinchazón y la inflamación',
-  'Aumenta la absorción de los productos para el cuidado de la piel',
+const FOR_WHOM = [
+  'Querés reducir la papada o la flaccidez sin gastar en clínicas',
+  'Usás sérums y cremas pero no ves resultados reales',
+  'Tenés acné, poros grandes o piel sin brillo',
+  'Querés redefinir tu rostro y verte mejor sin depender de nadie',
 ];
 
 /* C4 — Accordion tabs con key para matching de íconos */
@@ -123,29 +121,33 @@ const statsData = [
 
 /* Features — reemplazá cada src con la URL de tu ícono */
 const FEATURES = [
-  { src: '//www.luxcove.co/cdn/shop/files/1_c3ca10bf-3c36-44dc-b12e-e9188af4728e.png?v=1723298248', title: 'Tratamiento de nivel profesional', desc: 'Disfrutá de un tratamiento profesional en la comodidad de tu hogar.' },
-  { src: '//www.luxcove.co/cdn/shop/files/2_8fe3211c-e4d9-487b-bd6a-5315d7204b5e.png?v=1723298321', title: 'Resultados a largo plazo', desc: 'Rejuvenecé tu piel estimulando la producción de colágeno, reduciendo la inflamación y favoreciendo la renovación celular.' },
-  { src: '//www.luxcove.co/cdn/shop/files/3_5f51b942-e250-4831-8c25-d2a8108af37a.png?v=1723298339', title: 'Ahorrá energía y tiempo', desc: 'Máximos resultados en el mínimo tiempo. Piel de aspecto saludable sin dedicar horas a tu rutina.' },
-  { src: '//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-08-10T150022.576.png?v=1723298445', title: 'Probalo sin riesgo 90 días', desc: 'Garantía de devolución de dinero completa si no quedás satisfecha/o.' },
+  { src: '//www.luxcove.co/cdn/shop/files/1_c3ca10bf-3c36-44dc-b12e-e9188af4728e.png?v=1723298248', title: 'Nivel profesional', desc: 'Resultados de clínica, desde tu casa.' },
+  { src: '//www.luxcove.co/cdn/shop/files/2_8fe3211c-e4d9-487b-bd6a-5315d7204b5e.png?v=1723298321', title: 'Resultados duraderos', desc: 'Más colágeno, piel más firme y renovada con el uso continuo.' },
+  { src: '//www.luxcove.co/cdn/shop/files/3_5f51b942-e250-4831-8c25-d2a8108af37a.png?v=1723298339', title: 'Solo 10-15 min por día', desc: 'Sin complicaciones. Usalo mientras ves la tele o antes de dormir.' },
+  { src: '//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-08-10T150022.576.png?v=1723298445', title: 'Garantía 90 días', desc: 'Si no quedás satisfecha/o, te devolvemos el dinero. Sin preguntas.' },
 ];
 
 /* C7 — Mini reviews data */
 const reviewsData = [
+  { title: '¡No lo podía creer!', name: 'Claudia V., 54', avatar: '//www.luxcove.co/cdn/shop/files/2_227e3980-11a4-4119-9ed4-d0963676a467.png?v=1741425800', stars: 5, text: 'A las dos semanas mi marido me preguntó si me había hecho algo en la cara. La papada se redujo y el cuello está mucho más firme. No esperaba estos resultados.' },
   { title: '¡Resultados increíbles!', name: 'Mariana R.', avatar: '//www.luxcove.co/cdn/shop/files/2_227e3980-11a4-4119-9ed4-d0963676a467.png?v=1741425800', stars: 5, text: 'Tenía mis dudas, pero mis líneas de expresión se suavizaron y mi mandíbula luce más definida. ¡Recibo muchísimos cumplidos!' },
+  { title: 'Mi rutina nocturna cambió', name: 'Luciana M., 31', avatar: '//www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640', stars: 5, text: 'Gasto en buenos sérums pero sentía que la piel no absorbía. Con el modo rojo la diferencia es inmediata. Al otro día me levanto con otra piel.' },
   { title: 'Lo recomiendo a todas', name: 'Natalia A.', avatar: '//www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640', stars: 5, text: 'Antes gastaba fortunas en tratamientos de spa. Ahora obtengo los mismos resultados en casa. ¡Me ahorro dinero!' },
+  { title: 'Cero granos nuevos', name: 'Valentina G., 24', avatar: '//www.luxcove.co/cdn/shop/files/6_1bb22647-f558-4396-a07f-58716d687ff7.png?v=1741425681', stars: 5, text: 'Luz azul, 5 minutos por noche. Tres semanas después, cero granos nuevos. El único producto que realmente funcionó para mi acné.' },
   { title: 'Como un masaje de spa', name: 'Karina B.', avatar: '//www.luxcove.co/cdn/shop/files/6_1bb22647-f558-4396-a07f-58716d687ff7.png?v=1741425681', stars: 5, text: 'Super fácil de usar. Me siento, me relajo y lo dejo trabajar mientras veo la tele.' },
   { title: 'Mi favorito de la rutina', name: 'Carla B.', avatar: '//www.luxcove.co/cdn/shop/files/5_4674e838-6296-4ca1-9a34-6cc05243b642.png?v=1741425662', stars: 5, text: 'El calor y las vibraciones se sienten como un masaje de spa. ¡Es mi parte favorita del día!' },
   { title: 'Piel más limpia y luminosa', name: 'Noelia S.', avatar: '//www.luxcove.co/cdn/shop/files/8_3ecc94a3-ae31-49c0-a516-7c5b88caef34.png?v=1741425718', stars: 5, text: 'Mi piel está más limpia, luminosa y uniforme. ¡Es lo único que me ha funcionado a largo plazo!' },
+  { title: 'Resultados de equipo profesional', name: 'Daniela R., 38', avatar: '//www.luxcove.co/cdn/shop/files/8_3ecc94a3-ae31-49c0-a516-7c5b88caef34.png?v=1741425718', stars: 5, text: 'Soy cosmetóloga y lo uso con clientas. Resultados de equipo profesional a una fracción del costo. Mis clientas vuelven a pedirlo.' },
 ];
 
 /* C8 — Luces LED — reemplazá cada src con la URL de tu imagen */
 const lights = [
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_1.png?v=1723311444', color: '#FF4444', name: 'LUZ ROJA', nm: '630 nm', desc: 'Estimula la producción de colágeno y previene líneas de expresión, arrugas y flacidez.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_2.png?v=1723311580', color: '#4444FF', name: 'LUZ AZUL', nm: '415 nm', desc: 'Elimina las bacterias que causan el acné e imperfecciones.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_3.png?v=1723311771', color: '#44AA44', name: 'LUZ VERDE', nm: '525 nm', desc: 'Unifica el tono de la piel y mejora su textura general.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/9_ec8cb23b-11a8-4c0e-aef4-c93ac7971a89.png?v=1733574060', color: '#FF6600', name: 'MODO EMS', nm: null, desc: 'Fortalece y tonifica los músculos faciales, mejora la definición facial y reduce líneas y arrugas.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/10_933f78a5-a30e-43c1-b96d-57b02685bdae.png?v=1733574060', color: '#FF3366', name: 'MODO CALOR', nm: null, desc: 'Abre los poros para mejorar la absorción de productos y aumentar la producción de colágeno.', border: false },
-  { src: '//www.luxcove.co/cdn/shop/files/11_d559de47-ad6d-484e-9f09-45e1147e439e.png?v=1733574060', color: '#64B5F6', name: 'MODO LIMPIO', nm: null, desc: 'Previene el acné e imperfecciones al limpiar células muertas, aceite y suciedad de los poros mediante vibración.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_1.png?v=1723311444', color: '#FF4444', name: 'LUZ ROJA', nm: '630 nm', desc: 'Más colágeno, menos arrugas. Tu sérum penetra el doble. Piel más firme con cada uso.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_2.png?v=1723311580', color: '#4444FF', name: 'LUZ AZUL', nm: '415 nm', desc: 'Combate el acné activo y baja la inflamación. Sin irritar. Para piel joven o sensible.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/LUX_COVE_3.png?v=1723311771', color: '#44AA44', name: 'LUZ VERDE', nm: '525 nm', desc: 'Manchas reducidas, poros más cerrados, tono uniforme. Luminosidad que se nota sin filtros.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/9_ec8cb23b-11a8-4c0e-aef4-c93ac7971a89.png?v=1733574060', color: '#FF6600', name: 'MODO EMS', nm: null, desc: 'Tonificá los músculos faciales. Papada, cuello y mandíbula más definidos.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/10_933f78a5-a30e-43c1-b96d-57b02685bdae.png?v=1733574060', color: '#FF3366', name: 'MODO CALOR', nm: null, desc: 'Abrí los poros para que tus productos penetren mejor. Usalo antes del modo rojo.', border: false },
+  { src: '//www.luxcove.co/cdn/shop/files/11_d559de47-ad6d-484e-9f09-45e1147e439e.png?v=1733574060', color: '#64B5F6', name: 'MODO LIMPIO', nm: null, desc: 'Desincrusta células muertas y exceso de sebo. Poros más limpios y menos visibles.', border: false },
 ];
 
 /* C9 — Comparison rows */
@@ -232,6 +234,13 @@ const beforeAfterData = [
     src: 'https://www.luxcove.co/cdn/shop/files/ROSACEA_BEFORE_AFTER.png?v=1773948185',
     text: 'Compré varios dispositivos antes y ninguno me dio resultados. Este es diferente. La combinación de luces LED con el modo EMS se nota de verdad. Mi piel tiene más brillo y está más firme.',
   },
+];
+
+/* GIFs de secciones de features — precargados al montar */
+const FEAT_GIFS = [
+  '//www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=750',
+  '//www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=750',
+  '//www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=750',
 ];
 
 /* Videos — "Inspírate": pegá la URL del video en cada src */
@@ -414,6 +423,14 @@ export default function LuxCoveLED() {
     });
   }, []);
 
+  /* Precarga GIFs de features para evitar el blanco mientras cargan */
+  useEffect(() => {
+    FEAT_GIFS.forEach(src => {
+      const img = new window.Image();
+      img.src = src.startsWith('//') ? `https:${src}` : src;
+    });
+  }, []);
+
   /* Resetea la imagen activa cuando cambia la campaña */
   useEffect(() => { setActiveImg(0); }, [giftKey]);
 
@@ -490,12 +507,12 @@ export default function LuxCoveLED() {
     setShowCheckout(true);
   };
 
-  const maxTestIdx = Math.max(0, 5 - slidesPerView);
+  const maxTestIdx = Math.max(0, reviewsData.length - slidesPerView);
   const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = useMemo(() => [
-    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HKF0T11XIAA1Mnr?format=jpg&name=small", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
+    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
     { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
@@ -573,14 +590,14 @@ export default function LuxCoveLED() {
                 <span className="led-cuotas">3 cuotas sin interés de <strong>{fmt(Math.ceil(price / 3))}</strong></span>
               </div>
 
-              <ul className="led-benefits">
-                {BENEFITS.map((b, i) => (
-                  <li key={i} className="led-benefit-item">
-                    <span className="led-benefit-check">✅</span>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="led-target-section">
+                <h3 className="led-target-title">¿Es para vos?</h3>
+                <ul className="led-target-list">
+                  {FOR_WHOM.map((item, i) => (
+                    <li key={i}>→ {item}</li>
+                  ))}
+                </ul>
+              </div>
 
               {/* Bundle selector */}
               <div className="led-bundles">
@@ -816,6 +833,7 @@ export default function LuxCoveLED() {
                 </div>
               ))}
             </div>
+            <p className="led-feature-credibility">⭐ Elegido por estetas y cosmetólogas. Resultados de clínica, precio accesible.</p>
             <div className="led-cta-row">
               <button className="led-btn-cta-center" onClick={handleBuy} disabled={soldOut}>
                 {soldOut ? 'AGOTADO' : 'AGREGAR AL CARRITO ➔'}
@@ -833,7 +851,6 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=360 360w, //www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=535 535w, //www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Modo EMS"
-                loading="lazy"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -854,7 +871,6 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=360 360w, //www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=535 535w, //www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Luz roja"
-                loading="lazy"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -874,7 +890,6 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=360 360w, //www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=535 535w, //www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Luz verde"
-                loading="lazy"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -1086,30 +1101,28 @@ export default function LuxCoveLED() {
       </div>
 
       {/* ══ FOOTER ══ */}
-      <footer className="led-footer">
-        <div className="led-footer-body">
-          <div className="led-footer-brand">
-            <div className="led-footer-logo">Amelor</div>
-            <p className="led-footer-tagline">Tecnología que mejora tu vida diaria</p>
+      <footer className="lp-footer">
+        <div className="lp-footer-body">
+          <div className="lp-footer-brand">
+            <div className="lp-footer-logo">Amelor</div>
+            <p className="lp-footer-tagline">Resultados de clínica. Desde tu casa.</p>
           </div>
-          <div className="led-footer-trust-row">
-            <div className="led-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="led-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="led-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="led-footer-ti"><span>💳</span>3 cuotas sin interés</div>
+          <div className="lp-footer-trust">
+            <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
+            <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
+            <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
+            <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
           </div>
-          <div className="led-footer-pay">
-            <span className="led-footer-pay-label">Medios de pago aceptados</span>
-            <div className="led-footer-pay-row">
-              <img className="led-footer-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/3840px-Mercado_Pago.svg.png" alt="MercadoPago" />
-              <img className="led-footer-pay-chip" src="/icons/visa.svg" alt="Visa" />
-              <img className="led-footer-pay-chip" src="/icons/mastercard.svg" alt="Mastercard" />
-              <img className="led-footer-pay-chip" src="/icons/amex.svg" alt="Amex" />
-              <img className="led-footer-pay-chip" src="" alt="" />
-              <img className="led-footer-pay-chip" src="" alt="" />
+          <div className="lp-footer-pay">
+            <span className="lp-footer-pay-label">Medios de pago aceptados</span>
+            <div className="lp-footer-pay-row">
+              <span className="lp-pay-chip">MercadoPago</span>
+              <span className="lp-pay-chip">Visa</span>
+              <span className="lp-pay-chip">Mastercard</span>
+              <span className="lp-pay-chip">Amex</span>
             </div>
           </div>
-          <div className="led-footer-bottom">
+          <div className="lp-footer-bottom">
             <span>© 2026 Amelor · Todos los derechos reservados</span>
           </div>
         </div>

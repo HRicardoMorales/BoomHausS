@@ -250,24 +250,20 @@
   font-weight: 800;
 }
 
-/* Benefits */
-.led-benefits {
+/* Target section (Este aparato es para vos si…) */
+.led-target-section { margin: 0 0 20px; }
+.led-target-title   { margin: 0 0 8px; }
+.led-target-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 20px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-.led-benefit-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   font-size: 14px;
   line-height: 1.5;
   color: var(--led-text);
 }
-.led-benefit-check { color: var(--led-green); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 
 /* Urgency */
 .led-urgency {
@@ -1469,7 +1465,23 @@
   margin-top: 16px;
 }
 
-/* ── Footer (led-footer-*) ──────────────────────────────────── */
+/* ── Footer (lp-footer-*) ──────────────────────────────────── */
+.lp-footer { font-family: inherit; background: #8B1A4A; }
+.lp-footer-body { padding: 28px 20px; padding-bottom: max(100px, calc(env(safe-area-inset-bottom) + 100px)); }
+.lp-footer-brand { text-align: center; margin-bottom: 20px; }
+.lp-footer-logo { font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: -.02em; line-height: 1; }
+.lp-footer-tagline { font-size: .75rem; color: rgba(255,255,255,.45); margin: 5px 0 0; }
+.lp-footer-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-bottom: 20px; }
+.lp-footer-ti { display: flex; align-items: center; gap: 5px; font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.70); }
+.lp-footer-ti > span { font-size: .90rem; line-height: 1; }
+.lp-footer-pay { text-align: center; margin-bottom: 18px; }
+.lp-footer-pay-label { font-size: .60rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.30); display: block; margin-bottom: 8px; }
+.lp-footer-pay-row { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.lp-pay-chip { font-size: .66rem; font-weight: 700; color: rgba(255,255,255,.55); background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15); padding: 4px 10px; border-radius: 6px; }
+.lp-footer-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.lp-footer-bottom > span { font-size: .66rem; color: rgba(255,255,255,.32); }
+
+/* ── Footer viejo (unused — kept for reference) ─────────────── */
 .led-footer {
   background: #111;
   font-family: 'Montserrat', sans-serif;
