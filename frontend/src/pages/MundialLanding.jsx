@@ -1363,16 +1363,10 @@ export default function MundialLanding() {
   };
 
   const handleBuyProduct = (slug, packs, productData, cfg) => {
+    // handleAddProduct ya dispara AddToCart internamente — no duplicamos acá.
     handleAddProduct(slug, packs, productData, cfg);
     const addedValue = parseFloat((productData?.price ?? cfg.price ?? 0) * packs) || 0;
     const projected = (cartTotal || 0) + addedValue;
-    track("AddToCart", {
-      content_ids: [slug],
-      content_type: "product",
-      value: addedValue,
-      currency: "ARS",
-      num_items: packs,
-    });
     // Si el pedido proyectado no llega al mínimo, bloqueamos checkout y avisamos.
     if (!ensureMinOrder(projected)) return;
     track("InitiateCheckout", {

@@ -489,7 +489,7 @@ export default function MasajeadorEmsEyesLanding() {
       { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.compareAt, gifts: selectedBundle.gifts || [], bundleImgs: selectedBundle.imgs || [] },
     );
     track('InitiateCheckout', {
-      value: selectedBundle.price / 100,
+      value: Number(selectedBundle.price) || 0,
       currency: 'ARS',
       content_name: mc.checkoutName,
     });

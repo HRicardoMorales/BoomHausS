@@ -486,7 +486,7 @@ export default function LuxCoveLED() {
         bundleImgs:     bundle.extras.map(e => e.img).filter(Boolean),
       },
     );
-    track('InitiateCheckout', { value: bundle.bundlePrice / 100, currency: 'ARS', content_name: CHECKOUT_NAME });
+    track('InitiateCheckout', { value: Number(bundle.bundlePrice) || 0, currency: 'ARS', content_name: CHECKOUT_NAME });
     setShowCheckout(true);
   };
 
