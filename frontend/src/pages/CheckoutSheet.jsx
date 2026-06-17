@@ -21,7 +21,7 @@ function useCountdown(storageKey = "pd_countdown", minutes = 18) {
   return `${mm}:${ss}`;
 }
 import { useCart } from "../context/CartContext.jsx";
-import { track } from "../lib/metaPixel";
+import { track, trackPurchase } from "../lib/metaPixel";
 import api from "../services/api";
 
 const PROVINCES = [
@@ -385,7 +385,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         bundleTotal:    i.bundleTotal    || undefined,
         compareAtPrice: i.compareAtPrice || undefined,
       }));
-      await api.post("/orders", {
+      const codRes = await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),
         customerEmail:   form.email.trim(),
         customerDni:     form.dni.trim(),
@@ -397,7 +397,14 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         total:           finalTotal,
         items:           cartItems,
       });
-      track("Purchase", { currency: "ARS", value: parseFloat(finalTotal) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
+      // trackPurchase requiere orderId — dedup automatico cross-tab por orderId.
+      const codOrderId = codRes?.data?.data?._id || codRes?.data?.data?.orderId || codRes?.data?._id;
+      trackPurchase(codOrderId, {
+        value: parseFloat(finalTotal) || 0,
+        content_ids: items.map(i => i.productId),
+        num_items: totalItems,
+        content_type: "product",
+      });
       setConfirmedTotal(finalTotal);
       setConfirmedShippingCost(shippingCost);
       setConfirmedItems([...items]);
@@ -447,7 +454,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       const { status, statusDetail } = res.data;
 
       if (status === "approved") {
-        track("Purchase", { currency: "ARS", value: parseFloat(amount) || 0, content_ids: items.map(i => i.productId), num_items: totalItems });
+        // trackPurchase usa orderId como guard cross-tab y como eventID determinístico.
+        trackPurchase(orderId, {
+          value: parseFloat(amount) || 0,
+          content_ids: items.map(i => i.productId),
+          num_items: totalItems,
+          content_type: "product",
+        });
         setConfirmedTotal(Number(amount));
         setConfirmedShippingCost(shippingCost);
         setConfirmedItems([...items]);

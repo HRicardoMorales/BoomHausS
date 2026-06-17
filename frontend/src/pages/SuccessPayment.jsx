@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
-import { track } from '../lib/metaPixel';
+import { trackPurchase } from '../lib/metaPixel';
 
 const S = {
   page: {
@@ -165,6 +165,11 @@ export default function SuccessPayment() {
 
   const [finalStatus, setFinalStatus] = useState(statusParam || 'pending');
   const [checking, setChecking]       = useState(true);
+  // backendVerified: true SOLO si /payments/mercadopago/<paymentId> confirmó
+  // que el pago realmente está aprobado. Nunca confiamos en URL params para
+  // disparar Purchase.
+  const [backendVerified, setBackendVerified] = useState(false);
+  const [backendAmount, setBackendAmount] = useState(null);
 
   const isApproved = finalStatus === 'approved';
   const isRejected = finalStatus === 'rejected' || finalStatus === 'cancelled';
@@ -210,7 +215,12 @@ export default function SuccessPayment() {
         if (!paymentId) { if (alive) setChecking(false); return; }
         const res = await api.get(`/payments/mercadopago/${paymentId}`);
         const backendStatus = res?.data?.status;
-        if (alive && backendStatus) setFinalStatus(backendStatus);
+        const backendAmt    = Number(res?.data?.transaction_amount ?? res?.data?.amount);
+        if (alive && backendStatus) {
+          setFinalStatus(backendStatus);
+          if (backendStatus === 'approved') setBackendVerified(true);
+          if (Number.isFinite(backendAmt) && backendAmt > 0) setBackendAmount(backendAmt);
+        }
       } catch (_) {
         // endpoint opcional, no bloquea
       } finally {
@@ -226,24 +236,29 @@ export default function SuccessPayment() {
     clearCart();
   }, [isApproved, clearCart]);
 
-  // Disparar Purchase UNA SOLA VEZ cuando el pago está aprobado.
-  // La clave de sessionStorage usa paymentId para que sea única por transacción
-  // y evitar un segundo disparo si el usuario recarga la página de éxito.
-  const purchaseFiredRef = useRef(false);
+  // Disparar Purchase SOLO cuando:
+  //   1. checking terminó (no estamos esperando la verificación del backend)
+  //   2. backendVerified === true (el backend confirmó approved — no confiamos
+  //      en URL params como ?collection_status=approved que cualquiera puede
+  //      poner)
+  //   3. Hay un orderId (externalRef o paymentId) — sin ID no se trackea
+  //
+  // El guard contra duplicados vive dentro de trackPurchase (localStorage
+  // por orderId, eventID determinístico). Cross-tab safe.
   useEffect(() => {
-    if (!isApproved) return;
-    if (purchaseFiredRef.current) return;
-    const guardKey = `purchase_fired_${paymentId || externalRef || 'unknown'}`;
-    if (sessionStorage.getItem(guardKey)) return;
-    purchaseFiredRef.current = true;
-    sessionStorage.setItem(guardKey, '1');
-    track('Purchase', {
-      currency: 'ARS',
+    if (checking) return;
+    if (!backendVerified) return;
+
+    const orderRef = externalRef || paymentId;
+    if (!orderRef) return;
+
+    trackPurchase(orderRef, {
       content_type: 'product',
-      ...(paymentId  ? { transaction_id: paymentId }  : {}),
-      ...(externalRef ? { order_id: externalRef }      : {}),
+      ...(paymentId  ? { transaction_id: paymentId } : {}),
+      ...(externalRef ? { order_id: externalRef }    : {}),
+      ...(backendAmount ? { value: backendAmount }   : {}),
     });
-  }, [isApproved, paymentId, externalRef]);
+  }, [checking, backendVerified, paymentId, externalRef, backendAmount]);
 
   const paymentTypeLabel = paymentType === 'credit_card' ? 'Tarjeta de crédito'
     : paymentType === 'debit_card' ? 'Tarjeta de débito'
