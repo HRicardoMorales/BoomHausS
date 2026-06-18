@@ -34,7 +34,7 @@ const GIFT_CONFIGS = {
   espatula: {
     img:     "https://nextcell.com.ar/wp-content/uploads/2026/04/D_NQ_NP_671862-MLA93554403855_092025-O.webp",
     name:    "Espatula Limpieza facial",
-    heroImg: "https://pbs.twimg.com/media/HKF8GwHWIAINvCn?format=jpg&name=small",
+    heroImg: "https://pbs.twimg.com/media/HLEGhEBXAAA794j?format=jpg&name=small",
   },
   // Agregá más campañas acá:
   // rodillo: {
