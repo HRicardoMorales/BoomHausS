@@ -304,6 +304,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       imageUrl:       i.imageUrl       || undefined,
       bundleTotal:    i.bundleTotal    || undefined,
       compareAtPrice: i.compareAtPrice || undefined,
+      gifts:          i.gifts?.length  ? i.gifts : undefined,
     }));
     const res = await api.post("/orders", {
       customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -333,6 +334,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         imageUrl:       i.imageUrl       || undefined,
         bundleTotal:    i.bundleTotal    || undefined,
         compareAtPrice: i.compareAtPrice || undefined,
+        gifts:          i.gifts?.length  ? i.gifts : undefined,
       }));
       const res = await api.post("/orders", {
         customerName:    `${form.nombre} ${form.apellido}`.trim(),

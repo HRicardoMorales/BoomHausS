@@ -452,6 +452,11 @@ export default function AdminOrders() {
                                       )}
                                       <div className="ao-item-body">
                                         <div className="ao-item-name">{it.name || '—'}</div>
+                                        {it.gifts?.length > 0 && (
+                                          <div className="ao-item-gifts">
+                                            🎁 <span>{it.gifts.join(' + ')}</span>
+                                          </div>
+                                        )}
                                         <div className="ao-item-meta">
                                           <span className="ao-item-pill">x{it.quantity} ud</span>
                                           <span className="ao-item-uprice">{money(it.price)} c/u</span>
@@ -793,6 +798,7 @@ export default function AdminOrders() {
 .ao-item-img{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;flex-shrink:0}
 .ao-item-body{flex:1;min-width:0}
 .ao-item-name{font-weight:700;font-size:.88rem;color:#1e293b;line-height:1.3;margin-bottom:5px}
+.ao-item-gifts{font-size:.75rem;color:#059669;font-weight:600;margin-bottom:5px}
 .ao-item-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ao-item-pill{font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#475569}
 .ao-item-pill--save{background:#dcfce7;color:#15803d}

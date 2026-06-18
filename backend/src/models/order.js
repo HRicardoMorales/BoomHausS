@@ -13,6 +13,7 @@ const orderItemSchema = new mongoose.Schema(
         imageUrl: { type: String, default: null },
         bundleTotal: { type: Number, default: null },   // precio total del pack (precio real cobrado)
         compareAtPrice: { type: Number, default: null }, // precio tachado (antes de descuento)
+        gifts: { type: [String], default: [] },          // regalos incluidos en el pack
     },
     { _id: false }
 );
