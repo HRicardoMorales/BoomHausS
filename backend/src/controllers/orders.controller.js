@@ -6,6 +6,7 @@ const Order = require("../models/order.js");
 const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
+const { sendPurchaseEvent } = require("../services/metaCapi");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -108,6 +109,9 @@ async function createOrder(req, res, next) {
             if (Number.isFinite(bundleTotal) && bundleTotal > 0) normalized.bundleTotal = bundleTotal;
             const compareAtPrice = toNumber(it?.compareAtPrice);
             if (Number.isFinite(compareAtPrice) && compareAtPrice > 0) normalized.compareAtPrice = compareAtPrice;
+            if (Array.isArray(it?.gifts) && it.gifts.length > 0) {
+                normalized.gifts = it.gifts.filter(g => typeof g === 'string' && g.trim()).map(g => g.trim());
+            }
 
             return normalized;
         });
@@ -243,6 +247,11 @@ async function createOrder(req, res, next) {
                 await sendOrderConfirmationEmail(newOrder, { mode: "cod" });
             } catch (e) {
                 console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
+            }
+            try {
+                await sendPurchaseEvent(newOrder, { ip: req.ip, userAgent: req.headers?.['user-agent'] });
+            } catch (capiErr) {
+                console.warn("⚠️ Meta CAPI error (COD):", capiErr?.message || capiErr);
             }
 
             return res.status(201).json({

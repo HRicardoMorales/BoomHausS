@@ -2102,7 +2102,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#009ee3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         <div>
                           <div className="cs-mp2-footer-main">Te llevaremos a Mercado Pago</div>
-                          <div className="cs-mp2-footer-sub">Si no tenés una cuenta, podés usar tu e-mail.</div>
+                          <div className="cs-mp2-footer-sub">Allí podés elegir pagar en 3 cuotas sin interés. Si no tenés cuenta, usá tu e-mail.</div>
                         </div>
                       </div>
                     </div>
@@ -2151,6 +2151,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 <h2 className="cs-mp-inter-title">¡Tu pedido está listo!</h2>
                 <p className="cs-mp-inter-sub">
                   Te estamos llevando a <strong style={{ color: "#009ee3" }}>Mercado Pago</strong> para que completes el pago de forma segura.
+                  Allí podés elegir o confirmar las <strong>3 cuotas sin interés</strong>.
                 </p>
 
                 <div className="cs-mp-inter-card">

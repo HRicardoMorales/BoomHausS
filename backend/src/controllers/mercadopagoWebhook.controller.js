@@ -1,6 +1,7 @@
 const Order = require("../models/order.js");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
+const { sendPurchaseEvent } = require("../services/metaCapi");
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
@@ -42,6 +43,11 @@ async function mercadopagoWebhook(req, res) {
         await sendOrderConfirmationEmail(updatedOrder, { mode: "mercadopago" });
       } catch (emailErr) {
         console.warn("⚠️ No se pudo enviar email de confirmación MP:", emailErr?.message || emailErr);
+      }
+      try {
+        await sendPurchaseEvent(updatedOrder);
+      } catch (capiErr) {
+        console.warn("⚠️ Meta CAPI error (MP webhook):", capiErr?.message || capiErr);
       }
     }
 

@@ -12,14 +12,14 @@ const DEFAULT_PRICE  = 88900;
 const DEFAULT_COMPARE = 189000;
 
 // 🖼 Imágenes del bundle — reemplazá con tus URLs
-const BUNDLE_PRODUCT_IMG = "https://http2.mlstatic.com/D_NQ_NP_2X_704868-MLB94776110131_102025-F.webp";
+const BUNDLE_PRODUCT_IMG = "https://pbs.twimg.com/media/HLTKZJmXwAAfbK5?format=jpg&name=small";
 const BUNDLE_RAZOR_IMG   = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/chatgpt-image-3-jun-2026-14_48_12-b49e057d39ac8d5a9917805092514062-1024-1024.webp";
-const BUNDLE_EBOOK_IMG   = "https://pbs.twimg.com/media/HKF3ODKWEAAqpdo?format=jpg&name=small";
+const BUNDLE_EBOOK_IMG   = "https://nextcell.com.ar/wp-content/uploads/2026/02/D_NQ_NP_2X_736057-MLA54551293127_032023-F.webp";
 
 // ✏️ Textos debajo de cada imagen del bundle
 const BUNDLE_PRODUCT_NAME = "Depiladora IPL";
 const BUNDLE_RAZOR_NAME   = "Depiladora De Cejas De Regalo";
-const BUNDLE_EBOOK_NAME   = "Guía de uso";
+const BUNDLE_EBOOK_NAME   = "Depiladora 4en1";
 
 /* Announcement bar */
 const annMsgs = [
@@ -450,7 +450,7 @@ export default function DepiladoraIPL() {
 
 
   const FALLBACK_IMAGES = [
-    { src: 'https://pbs.twimg.com/media/HKgHUl8WgAA0PJF?format=jpg&name=large', alt: 'Depiladora IPL — vista principal' },
+    { src: 'https://pbs.twimg.com/media/HLTHxJ3XMAEJAU4?format=jpg&name=small', alt: 'Depiladora IPL — vista principal' },
     { src: 'https://pbs.twimg.com/media/HKgHfXqWgAApELS?format=jpg&name=large', alt: 'Depiladora IPL — uso en piernas' },
     { src: 'https://myshinnyskin.com/cdn/shop/files/3_a3c66998-a4ec-4c3c-a8aa-8d7cb0fde62c.png?v=1775490312&width=900', alt: 'Depiladora IPL — kit completo' },
     { src: 'https://myshinnyskin.com/cdn/shop/files/5_782843b2-6902-4f3d-83fc-27f1a9dbc644.png?v=1775490312&width=900', alt: 'Depiladora IPL — niveles de intensidad' },

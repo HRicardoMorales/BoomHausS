@@ -17,6 +17,7 @@ const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
+const { sendPurchaseEvent } = require("../services/metaCapi");
 
 /**
  * Público:
@@ -76,7 +77,14 @@ router.post("/card-payment", async (req, res) => {
 
     if (result.status === "approved" && orderId) {
       try {
-        await Order.findByIdAndUpdate(orderId, { paymentStatus: "approved" });
+        const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: "approved" }, { new: true });
+        if (updatedOrder) {
+          try {
+            await sendPurchaseEvent(updatedOrder, { ip: req.ip, userAgent: req.headers['user-agent'] });
+          } catch (capiErr) {
+            console.warn("⚠️ Meta CAPI error (card):", capiErr?.message || capiErr);
+          }
+        }
       } catch (dbErr) {
         console.warn("No se pudo actualizar el estado del pedido:", dbErr.message);
       }
