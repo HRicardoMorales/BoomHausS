@@ -236,13 +236,20 @@ export default function Checkout() {
 
   // ── Pago ──────────────────────────────────────────────────────────────────
   const [payExpanded, setPayExpanded] = useState(true); // MP abierto por defecto
-  const [onlinePayMethod] = useState("mercadopago");
+  const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
   const [cardPaymentDone, setCardPaymentDone] = useState(false);
   const [sameAddr, setSameAddr] = useState(true); // dirección de facturación
 
   // ── Cupón ─────────────────────────────────────────────────────────────────
+  const [couponOpen,     setCouponOpen]     = useState(false);
   const [couponInput,    setCouponInput]    = useState("");
-  const [appliedCoupon,  setAppliedCoupon]  = useState(null);
+  const [appliedCoupon,  setAppliedCoupon]  = useState(() => {
+    try {
+      const stored = sessionStorage.getItem("pendingCoupon");
+      if (stored) { sessionStorage.removeItem("pendingCoupon"); return JSON.parse(stored); }
+    } catch (_) {}
+    return null;
+  });
   const [couponError,    setCouponError]    = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
@@ -724,6 +731,37 @@ export default function Checkout() {
             );
           })()}
 
+          {/* ── Cupón (mobile only — desktop lo tiene en sidebar) ── */}
+          <div className="ckfp-section ckfp-coupon-mobile">
+            {!appliedCoupon ? (
+              <>
+                <button type="button" className="ckfp-coupon-toggle" onClick={() => setCouponOpen(o => !o)}>
+                  🎟 ¿Tenés un código de descuento?
+                </button>
+                {couponOpen && (
+                  <div className="ckfp-coupon-row">
+                    <input
+                      type="text" placeholder="Código de descuento"
+                      value={couponInput}
+                      onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                      onKeyDown={e => e.key === "Enter" && handleApplyCoupon()}
+                      className="ckfp-coupon-inp"
+                    />
+                    <button type="button" className="ckfp-coupon-btn" onClick={handleApplyCoupon} disabled={applyingCoupon}>
+                      {applyingCoupon ? "..." : "Aplicar"}
+                    </button>
+                  </div>
+                )}
+                {couponError && <div className="ckfp-coupon-err">{couponError}</div>}
+              </>
+            ) : (
+              <div className="ckfp-coupon-applied">
+                <span>🎟 {appliedCoupon.code} — <strong style={{ color: "#15803d" }}>−{money(couponDiscount)}</strong></span>
+                <button type="button" className="ckfp-coupon-remove" onClick={handleRemoveCoupon}>Quitar</button>
+              </div>
+            )}
+          </div>
+
           {/* ── SECCIÓN: Pago ── */}
           <div className="ckfp-section">
             <h2 className="ckfp-section-title">Pago</h2>
@@ -746,7 +784,7 @@ export default function Checkout() {
               </div>
               {payExpanded && onlinePayMethod === "mercadopago" && (
                 <div className="ckfp-pay-card-body">
-                  Se te redirigirá a Mercado Pago para que completes la compra.
+                  Te llevamos a Mercado Pago para completar el pago de forma segura. Allí podés elegir pagar en <strong>3 cuotas sin interés</strong>.
                 </div>
               )}
             </div>
@@ -993,6 +1031,10 @@ function Styles() {
       .ckfp-sa-row--accent { color: #16a34a; }
       .ckfp-sa-free { color: #16a34a; font-weight: 700; }
       .ckfp-sa-final { display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 8px; margin-top: 2px; }
+
+      /* ── Coupon mobile section (oculto en desktop porque está en el sidebar) ── */
+      .ckfp-coupon-mobile { margin-top: 0; padding-top: 0; }
+      @media (min-width: 900px) { .ckfp-coupon-mobile { display: none; } }
 
       /* ── Coupon ── */
       .ckfp-coupon-toggle { background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #6b7280; padding: 0; text-decoration: underline; margin-bottom: 8px; display: block; }

@@ -146,6 +146,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const processCardPaymentRef = useRef(null);
 
   const sheetRef = useRef(null);
+  const bodyRef  = useRef(null);
   const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
   // Full price (without promos) for savings calc
@@ -210,6 +211,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
     setTimeout(() => {
       setStep(n);
       setStepTransition("entering");
+      bodyRef.current?.scrollTo({ top: 0, behavior: "instant" });
       setTimeout(() => setStepTransition("idle"), 300);
     }, 180);
   }
@@ -1178,6 +1180,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
         /* ══════ Interstitial MP (step 3) ══════ */
         @keyframes csSpin { to { transform: rotate(360deg); } }
+        @keyframes csCheckPop {
+          0%   { transform: scale(0); opacity: 0; }
+          65%  { transform: scale(1.18); opacity: 1; }
+          100% { transform: scale(1); }
+        }
         @keyframes csPulseRing {
           0% { box-shadow: 0 0 0 0 rgba(0,158,227,.5); }
           70% { box-shadow: 0 0 0 18px rgba(0,158,227,0); }
@@ -1210,6 +1217,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           font-size: 28px; font-weight: 900;
           margin: 0 auto 12px;
           box-shadow: 0 10px 24px rgba(16,185,129,.35);
+          animation: csCheckPop .42s cubic-bezier(.22,1,.36,1) .1s both;
         }
         .cs-mp-inter-title {
           font-size: 20px; font-weight: 900;
@@ -1512,7 +1520,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           )}
 
           {/* ─── BODY ─── */}
-          <div className={`cs-body${stepTransition === "exiting" ? " cs-body--exiting" : stepTransition === "entering" ? " cs-body--entering" : ""}`}>
+          <div ref={bodyRef} className={`cs-body${stepTransition === "exiting" ? " cs-body--exiting" : stepTransition === "entering" ? " cs-body--entering" : ""}`}>
 
             {/* ══════ STEP 0 — CART ══════ */}
             {step === 0 && (() => {
@@ -2274,6 +2282,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           {step === 0 && (
             <div className="cs-footer">
               <button className="cs-cta" disabled={items.length === 0} onClick={() => {
+                if (appliedCoupon) {
+                  try { sessionStorage.setItem("pendingCoupon", JSON.stringify(appliedCoupon)); } catch (_) {}
+                } else {
+                  try { sessionStorage.removeItem("pendingCoupon"); } catch (_) {}
+                }
                 onClose();
                 navigate("/checkout", { state: { skipCart: true } });
               }}>
