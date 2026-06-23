@@ -78,7 +78,7 @@ const accordionIcons = [
 const heroReviews = [
   { name: 'Valentina C.', avatar: 'https://i.pravatar.cc/80?img=47', stars: 5, text: 'Primera noche y el parche amaneció oscuro. Me desperté sin el peso de siempre — algo funcionó.' },
   { name: 'Luciana P.',   avatar: 'https://i.pravatar.cc/80?img=49', stars: 5, text: 'Llevaba meses con las piernas pesadas. Dos semanas de uso y ya no siento esa hinchazón.' },
-  { name: 'Martín R.',    avatar: 'https://i.pravatar.cc/80?img=12', stars: 5, text: 'Ver el parche negro en la mano al despertar me convenció. No hice nada, solo dormí.' },
+  { name: 'Sabrina S..',    avatar: 'https://www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640', stars: 5, text: 'Ver el parche negro en la mano al despertar me convenció. No hice nada, solo dormí.' },
 ];
 
 /* Stats circulares */
