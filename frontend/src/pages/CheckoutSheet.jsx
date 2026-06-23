@@ -89,7 +89,7 @@ const INITIAL_FORM = {
   cp: "", ciudad: "", provincia: "Buenos Aires", notes: "",
 };
 
-export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31", accentColor = "#1D9E75", fontFamily = null }) {
+export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31", accentColor = "#1D9E75", fontFamily = null, accentBg = "#fff0f5", accentBorder = "#FFC6C6", accentText = "#a0003e" }) {
   const navigate = useNavigate();
   const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal: ctxCalc } = useCart();
   const calc = ctxCalc || calcItemTotal;
@@ -648,7 +648,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-nav-secure {
           display: flex; align-items: center; gap: 4px;
           font-size: 11px; font-weight: 800; color: var(--cs-done);
-          background: #fff0f5; border: 1px solid #FFC6C6;
+          background: var(--cs-accent-bg); border: 1px solid var(--cs-accent-border);
           border-radius: 999px; padding: 4px 10px; white-space: nowrap;
           margin-right: 2px;
         }
@@ -770,7 +770,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-pay-panel { overflow: hidden; animation: csSlideDown .22s ease forwards; }
 
         /* Benefit bar (legacy) */
-        .cs-benefits { background: #fff5f5; border-bottom: 1px solid #FFC6C6; padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
+        .cs-benefits { background: var(--cs-accent-bg); border-bottom: 1px solid var(--cs-accent-border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
         .cs-benefits-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: #1a1a1a; }
         .cs-benefits-line { width: 28px; height: 2px; background: var(--cs-done); border-radius: 2px; }
 
@@ -780,8 +780,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           flex-direction: column;
           gap: 8px;
           padding: 14px 16px 12px;
-          background: linear-gradient(180deg, #fff5f5 0%, #fff0f5 100%);
-          border-bottom: 1px solid #FFC6C6;
+          background: var(--cs-accent-bg);
+          border-bottom: 1px solid var(--cs-accent-border);
         }
         .cs-hero-free,
         .cs-hero-gifts {
@@ -791,7 +791,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
           padding: 11px 14px;
           border-radius: 12px;
           background: #fff;
-          border: 1.5px solid #FFC6C6;
+          border: 1.5px solid var(--cs-accent-border);
           box-shadow: 0 4px 12px rgba(15,157,110,.08);
         }
         .cs-hero-gifts {
@@ -1169,8 +1169,8 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         .cs-ship-banner {
           display: flex; align-items: center; justify-content: center; gap: 8px;
           padding: 10px 16px;
-          background: #fff5f5;
-          border-bottom: 1px solid #FFC6C6;
+          background: var(--cs-accent-bg);
+          border-bottom: 1px solid var(--cs-accent-border);
           flex-wrap: wrap;
         }
         .cs-ship-banner-text {
@@ -1415,7 +1415,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         </div>
       )}
 
-      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor, '--text': '#0b1220', '--border': '#ebebeb', '--border2': '#d0d0d0', '--bg': '#f8f8f8' }}>
+      <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor, '--text': '#0b1220', '--border': '#ebebeb', '--border2': '#d0d0d0', '--bg': '#f8f8f8', '--cs-accent-bg': accentBg, '--cs-accent-border': accentBorder, '--cs-accent-text': accentText }}>
         <div className="cs-sheet" ref={sheetRef}>
 
           {/* ─── NAVBAR ─── */}
@@ -1601,20 +1601,15 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                           })()}
                           <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 5 }}>
                             {hasDiscount && it.promo?.discountPct > 0 && (
-                              <span style={{ fontSize: 10.5, background: "#ffe8e8", color: "#c06b6b", border: "1px solid #FFC6C6", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                              <span style={{ fontSize: 10.5, background: accentBg, color: accentText, border: `1px solid ${accentBorder}`, borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
                                 -{it.promo.discountPct}% OFF
                               </span>
                             )}
                             {hasDiscount && it.bundleTotal && (
-                              <span style={{ fontSize: 10.5, background: "#ffe8e8", color: "#c06b6b", border: "1px solid #FFC6C6", borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
+                              <span style={{ fontSize: 10.5, background: accentBg, color: accentText, border: `1px solid ${accentBorder}`, borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
                                 PACK AHORRO
                               </span>
                             )}
-                          </div>
-                          <div style={{ marginTop: 5 }}>
-                            <span style={{ fontSize: 11.5, fontWeight: 700, color: "rgba(11,18,32,.38)" }}>
-                              Cant: {it.quantity}
-                            </span>
                           </div>
                         </div>
 
@@ -1710,7 +1705,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                   )}
 
                   {/* Social proof */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: "#a0003e", background: "#fff0f5", border: "1px solid #FFC6C6", borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: accentText, background: accentBg, border: `1px solid ${accentBorder}`, borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
                     <span style={{ fontSize: 15, lineHeight: 1 }}>🔥</span>
                     <span>{socialProofCount} personas compraron esto en las últimas 24 horas</span>
                   </div>

@@ -1,22 +1,52 @@
 // backend/src/services/emailService.js
 const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-// Inicializamos Resend
-const resend = process.env.RESEND_API_KEY 
-    ? new Resend(process.env.RESEND_API_KEY) 
+// Primario: Resend. Fallback: SMTP (Gmail u otro).
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
     : null;
 
+const smtpTransport = (!resend && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)
+    ? nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    })
+    : null;
+
+async function sendEmail({ from, to, subject, html }) {
+    if (resend) {
+        const result = await resend.emails.send({ from, to, subject, html });
+        if (result.error) throw new Error(JSON.stringify(result.error));
+        console.log('✅ Email enviado via Resend. ID:', result.data?.id);
+        return;
+    }
+    if (smtpTransport) {
+        const info = await smtpTransport.sendMail({
+            from: process.env.SMTP_FROM || from,
+            to,
+            subject,
+            html,
+        });
+        console.log('✅ Email enviado via SMTP. ID:', info.messageId);
+        return;
+    }
+    throw new Error('Sin proveedor de email: configurá RESEND_API_KEY o SMTP_HOST/USER/PASS en .env');
+}
+
 async function sendOrderConfirmationEmail(order, opts = {}) {
-    if (!resend) {
-        console.error("⚠️ FALTA RESEND_API_KEY. No se envió el correo.");
+    if (!resend && !smtpTransport) {
+        console.error("⚠️ Sin proveedor de email. Configurá RESEND_API_KEY o SMTP_* en .env");
         return false;
     }
 
     if (!order.customerEmail) return;
 
     try {
-        const whatsappNumber = process.env.WHATSAPP_NUMBER || "5491112345678";
-        const storeName = process.env.STORE_NAME || "BoomHausS";
+        const whatsappNumber = process.env.WHATSAPP_NUMBER || "";
+        const storeName = process.env.STORE_NAME || "Amelor";
         const mode = opts?.mode || (order.paymentMethod === "cod" ? "cod" : (order.paymentMethod === "mercadopago" ? "mercadopago" : "transfer"));
 
         const waBase = whatsappNumber ? `https://wa.me/${whatsappNumber}` : null;
@@ -65,44 +95,37 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
             </p>
           </div>` : '';
 
-        // 2. Lista de productos (Diseño limpio y técnico)
         const productsHtml = order.items.map(item => `
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 12px 0;">
-                <span style="color: #333; font-weight: 500;">
-                    <span style="color: #0B5CFF; font-weight: bold;">${item.quantity}x</span> 
-                    ${item.title || item.name}
-                </span>
-                <span style="color: #333; font-weight: bold;">$${item.price}</span>
+            <div class="product-row">
+                <span><span class="product-qty">${item.quantity}x</span><span class="product-name">${item.title || item.name}</span></span>
+                <span class="product-price">${new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(item.price || 0)}</span>
             </div>
         `).join('');
 
-        // 2. HTML CON TU PALETA DE COLORES (#0B5CFF)
+        const totalFormatted = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(order.totalAmount || 0);
+
         const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
                 <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; }
-                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-                    
-                    /* TUS COLORES */
-                    .header { background-color: #0B5CFF; padding: 35px 20px; text-align: center; }
-                    .logo { font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; }
-                    
-                    .content { padding: 40px 30px; }
-                    .h1 { color: #0B5CFF; font-size: 24px; margin-bottom: 10px; text-align: center; font-weight: 700; }
-                    .subtitle { color: #666; text-align: center; margin-bottom: 30px; font-size: 16px; }
-                    
-                    /* CAJA DEL PEDIDO CON COLOR SECONDARY SOFT */
-                    .order-box { background-color: #DDF5FF; padding: 25px; border-radius: 12px; border: 1px solid #22C3FF; margin-bottom: 30px; }
-                    .order-id { font-size: 13px; color: #0637A5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: bold; }
-                    
-                    .total { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 2px solid #fff; font-size: 20px; font-weight: 800; color: #0B5CFF; }
-                    
-                    .btn { display: block; width: 80%; margin: 30px auto; padding: 16px; background-color: #25D366; color: white; text-align: center; text-decoration: none; font-weight: bold; border-radius: 50px; font-size: 16px; transition: background 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
-                    
-                    .footer { background-color: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; }
-                    .footer a { color: #0B5CFF; text-decoration: none; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+                    .header { background-color: #8B1A4A; padding: 32px 20px; text-align: center; }
+                    .logo { font-size: 28px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px; }
+                    .content { padding: 36px 28px; }
+                    .h1 { color: #1a1a2e; font-size: 22px; margin: 0 0 8px; text-align: center; font-weight: 800; }
+                    .subtitle { color: #555; text-align: center; margin: 0 0 28px; font-size: 15px; line-height: 1.5; }
+                    .order-box { background-color: #fff5f8; padding: 22px; border-radius: 10px; border: 1px solid #f0c0d0; margin-bottom: 24px; }
+                    .order-id { font-size: 12px; color: #8B1A4A; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 800; }
+                    .product-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f0c0d0; padding: 10px 0; font-size: 14px; }
+                    .product-qty { color: #8B1A4A; font-weight: 800; margin-right: 6px; }
+                    .product-name { color: #333; font-weight: 500; flex: 1; }
+                    .product-price { color: #333; font-weight: 700; white-space: nowrap; }
+                    .total-row { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 2px solid #e0a0b5; font-size: 18px; font-weight: 900; color: #8B1A4A; }
+                    .btn { display: block; width: 80%; margin: 24px auto; padding: 15px; background-color: #25D366; color: white; text-align: center; text-decoration: none; font-weight: 800; border-radius: 50px; font-size: 15px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
+                    .footer { background-color: #f9f0f3; padding: 20px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+                    .footer strong { color: #8B1A4A; }
                 </style>
             </head>
             <body>
@@ -110,29 +133,25 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
                     <div class="header">
                         <div class="logo">${storeName}</div>
                     </div>
-
                     <div class="content">
-                        <h1 class="h1">¡Gracias por tu pedido! ✅</h1>
-                        <p class="subtitle">Hola <strong>${order.customerName || 'Cliente'}</strong>, acá está el detalle de tu compra.</p>
+                        <h1 class="h1">¡Gracias por tu compra! ✅</h1>
+                        <p class="subtitle">Hola <strong>${order.customerName || 'Cliente'}</strong>, recibimos tu pedido y ya está en preparación.</p>
 
                         <div class="order-box">
-                            <div class="order-id">Orden #${order._id}</div>
-                            
+                            <div class="order-id">Pedido #${order._id}</div>
                             ${productsHtml}
                             ${trackingHtml}
-
-                            <div class="total">
-                                <span>TOTAL</span>
-                                <span>$${order.totalAmount}</span>
+                            <div class="total-row">
+                                <span>Total</span>
+                                <span>${totalFormatted}</span>
                             </div>
                         </div>
 
                         ${ctaHtml}
                     </div>
-
                     <div class="footer">
                         <p><strong>${storeName}</strong></p>
-                        <p>¿Necesitas ayuda? Responde a este correo.</p>
+                        <p>¿Tenés alguna duda? Respondé este correo y te ayudamos.</p>
                         <p>© ${new Date().getFullYear()} ${storeName}. Todos los derechos reservados.</p>
                     </div>
                 </div>
@@ -141,19 +160,12 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
         `;
 
         // 3. ENVIAR EL CORREO
-        const data = await resend.emails.send({
-            from: 'BoomHausS <pedidos@boomhauss.com.ar>', 
-            to: order.customerEmail, 
+        await sendEmail({
+            from: `${storeName} <pedidos@boomhauss.com.ar>`,
+            to: order.customerEmail,
             subject: `✅ Confirmación de Pedido #${order._id} - ${storeName}`,
-            html: htmlContent
+            html: htmlContent,
         });
-
-        if (data.error) {
-            console.error('❌ Error de Resend:', data.error);
-            return false;
-        }
-
-        console.log('✅ Email enviado con éxito. ID:', data.data?.id);
         return true;
 
     } catch (err) {
@@ -162,7 +174,9 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
     }
 }
 async function sendPasswordResetEmail(email, resetUrl) {
-    if (!resend) return false;
+    if (!resend && !smtpTransport) return false;
+
+    const storeName = process.env.STORE_NAME || "Amelor";
 
     try {
         const htmlContent = `
@@ -170,30 +184,30 @@ async function sendPasswordResetEmail(email, resetUrl) {
             <html>
             <body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f6f8; padding: 20px;">
                 <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="background-color: #0B5CFF; padding: 20px; text-align: center;">
+                    <div style="background-color: #8B1A4A; padding: 20px; text-align: center;">
                         <h2 style="color: white; margin: 0;">Restablecer Contraseña 🔐</h2>
                     </div>
                     <div style="padding: 30px; text-align: center;">
                         <p style="color: #666; font-size: 16px;">Hola,</p>
-                        <p style="color: #666; font-size: 16px;">Recibimos una solicitud para cambiar tu contraseña en <strong>BoomHausS</strong>.</p>
-                        <p style="color: #666;">Haz clic en el botón de abajo para crear una nueva (este enlace expira en 1 hora):</p>
-                        
-                        <a href="${resetUrl}" style="display: inline-block; background-color: #0B5CFF; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0;">
+                        <p style="color: #666; font-size: 16px;">Recibimos una solicitud para cambiar tu contraseña en <strong>${storeName}</strong>.</p>
+                        <p style="color: #666;">Hacé clic en el botón de abajo para crear una nueva (este enlace expira en 1 hora):</p>
+
+                        <a href="${resetUrl}" style="display: inline-block; background-color: #8B1A4A; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0;">
                             Cambiar mi Contraseña
                         </a>
-                        
-                        <p style="font-size: 12px; color: #999;">Si no fuiste tú, ignora este correo.</p>
+
+                        <p style="font-size: 12px; color: #999;">Si no fuiste vos, ignorá este correo.</p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        await resend.emails.send({
-            from: 'BoomHausS Security <seguridad@boomhauss.com.ar>',
+        await sendEmail({
+            from: `${storeName} <pedidos@boomhauss.com.ar>`,
             to: email,
-            subject: '🔐 Recupera tu acceso a BoomHausS',
-            html: htmlContent
+            subject: `🔐 Recuperá tu acceso a ${storeName}`,
+            html: htmlContent,
         });
         return true;
     } catch (error) {
@@ -252,15 +266,13 @@ async function sendAbandonedCartEmail(cart) {
     </div></body></html>
     `;
 
-    const result = await resend.emails.send({
+    await sendEmail({
       from: `${storeName} <pedidos@boomhauss.com.ar>`,
       to: cart.email,
       subject: `🛒 ¿Olvidaste algo? Tu carrito te espera — ${storeName}`,
       html: htmlContent,
     });
-
-    if (result.error) return false;
-    console.log('✅ Email abandoned cart enviado:', result.data?.id);
+    console.log('✅ Email abandoned cart enviado a:', cart.email);
     return true;
   } catch (err) {
     console.error('❌ Error sendAbandonedCartEmail:', err);
