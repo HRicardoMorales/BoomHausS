@@ -537,6 +537,7 @@ export default function Checkout() {
           {/* Error box */}
           {error && <div ref={errorRef} className="ckfp-error-box">⚠️ {error}</div>}
 
+
           {/* ── SECCIÓN: Contacto ── */}
           <div className="ckfp-section">
             <div className="ckfp-section-hdr">
@@ -784,7 +785,11 @@ export default function Checkout() {
               </div>
               {payExpanded && onlinePayMethod === "mercadopago" && (
                 <div className="ckfp-pay-card-body">
-                  Te llevamos a Mercado Pago para completar el pago de forma segura. Allí podés elegir pagar en <strong>3 cuotas sin interés</strong>.
+                  <div className="ckfp-mp-trust">
+                    <div className="ckfp-mp-trust-cuotas">
+                      Pagá en <strong>3 cuotas sin interés</strong> con tu tarjeta en Mercado Pago
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1201,6 +1206,27 @@ function Styles() {
       /* ── Privacy link ── */
       .ckfp-privacy-link { font-size: 11.5px; color: #9ca3af; text-align: center; text-decoration: underline; display: block; font-weight: 600; }
       .ckfp-privacy-link:hover { color: #374151; }
+
+      /* ── Free shipping banner ── */
+      .ckfp-free-shipping-banner {
+        display: flex; align-items: center; gap: 10px;
+        background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+        padding: 12px 16px; margin-bottom: 24px;
+        font-size: 14px; font-weight: 500; color: #166534;
+      }
+      .ckfp-fsb-icon { font-size: 20px; line-height: 1; }
+      .ckfp-fsb-text { color: #166534; }
+      .ckfp-fsb-text strong { font-weight: 700; }
+
+      /* ── MP trust block ── */
+      .ckfp-mp-trust { padding: 4px 0 2px; }
+      .ckfp-mp-trust-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+      .ckfp-mp-trust-logo { height: 24px; width: auto; }
+      .ckfp-mp-trust-tagline { font-size: 12.5px; color: #4b5563; font-weight: 500; }
+      .ckfp-mp-trust-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+      .ckfp-mp-trust-badge { font-size: 12px; font-weight: 600; color: #374151; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; padding: 5px 10px; }
+      .ckfp-mp-trust-cuotas { font-size: 13px; color: #374151; }
+      .ckfp-mp-trust-cuotas strong { color: #009ee3; }
 
       /* ── Success ── */
       .ckfp-success { display: flex; justify-content: center; padding: 40px 20px; }

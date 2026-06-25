@@ -38,6 +38,7 @@ import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
 import ScrollToTop from './components/ScrollToTop.jsx';
+import WhatsAppButton from './components/WhatsAppButton.jsx';
 function PrivateRoute({ children }) {
   const location = useLocation();
   const { token, user } = getStoredAuth();
@@ -160,6 +161,7 @@ export default function App() {
       </div>
 
       {!hideChrome && !hideFooter && <Footer />}
+      <WhatsAppButton />
     </div>
   );
 }
