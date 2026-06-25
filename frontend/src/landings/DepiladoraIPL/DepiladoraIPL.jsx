@@ -449,7 +449,6 @@ export default function DepiladoraIPL() {
         bundleImgs:     bundle.extras.map(e => e.img).filter(Boolean),
       },
     );
-    track('InitiateCheckout', { value: parseFloat(bundle.bundlePrice) || 0, currency: 'ARS', content_name: CHECKOUT_NAME });
     setShowCheckout(true);
   };
 

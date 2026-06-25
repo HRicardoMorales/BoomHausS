@@ -173,6 +173,10 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   // Stores the UUID generated at InitiateCheckout — shared with all submit handlers
   // so the same eventID goes to both the browser Pixel and the CAPI server event.
   const metaEventIdRef = useRef(null);
+  // Guard: ensures InitiateCheckout fires at most once per checkout session,
+  // even if the user navigates back to step 0 and clicks "Continuar" again
+  // (which would reuse the same metaEventIdRef.current → duplicate event_id).
+  const icFiredRef = useRef(false);
   const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
   // Full price (without promos) for savings calc
@@ -2338,11 +2342,14 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                 // Generate once — the same ID goes to the browser Pixel AND
                 // the backend CAPI call so Meta can deduplicate both events.
                 if (!metaEventIdRef.current) metaEventIdRef.current = genCheckoutEventId();
-                track("InitiateCheckout", {
-                  value: finalTotal, currency: "ARS",
-                  content_ids: items.map(i => String(i.productId)),
-                  num_items: totalItems, content_type: "product",
-                }, metaEventIdRef.current);
+                if (!icFiredRef.current) {
+                  icFiredRef.current = true;
+                  track("InitiateCheckout", {
+                    value: finalTotal, currency: "ARS",
+                    content_ids: items.map(i => String(i.productId)),
+                    num_items: totalItems, content_type: "product",
+                  }, metaEventIdRef.current);
+                }
                 track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
                 if (delivery === "caba_cod") { setShowCabaConfirm(true); } else { goToStep(2); }
               }}>

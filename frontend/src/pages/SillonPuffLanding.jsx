@@ -441,11 +441,6 @@ export default function SillonPuffLanding() {
       1,
       { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.compareAt, gifts: selectedBundle.gifts || [] },
     );
-    track('InitiateCheckout', {
-      value: Number(selectedBundle.price) || 0,
-      currency: 'ARS',
-      content_name: mc.checkoutName,
-    });
     setShowSheet(true);
   };
 

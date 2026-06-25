@@ -1533,13 +1533,6 @@ export default function ProductDetail() {
       if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
     }
     addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
-    track("InitiateCheckout", {
-      content_ids: [String(contentId)],
-      content_type: "product",
-      value: Number(displayTotal) || 0,
-      currency: "ARS",
-      num_items: Number(totalQty) || 1,
-    });
     setShowCheckout(true);
   };
 
@@ -1568,13 +1561,6 @@ export default function ProductDetail() {
     } else if (bundle?.accProduct) {
       addItem(bundle.accProduct, 1);
     }
-    track("InitiateCheckout", {
-      content_ids: [String(contentId)],
-      content_type: "product",
-      value: Number(bundle ? displayTotal + (bundle.accProduct?.price ?? 0) : displayTotal) || 0,
-      currency: "ARS",
-      num_items: bundle?.accProduct ? totalQty + 1 : totalQty,
-    });
     setShowCheckout(true);
   };
 

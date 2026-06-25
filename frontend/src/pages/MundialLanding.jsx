@@ -1362,13 +1362,6 @@ export default function MundialLanding() {
     const projected = (cartTotal || 0) + addedValue;
     // Si el pedido proyectado no llega al mínimo, bloqueamos checkout y avisamos.
     if (!ensureMinOrder(projected)) return;
-    track("InitiateCheckout", {
-      content_ids: [slug],
-      content_type: "product",
-      value: projected,
-      currency: "ARS",
-      num_items: packs,
-    });
     setShowCheckout(true);
   };
 
@@ -1385,13 +1378,6 @@ export default function MundialLanding() {
     const kitPrice = Number(pd?.price) || c.price || 0;
     const projected = (cartTotal || 0) + kitPrice;
     if (!ensureMinOrder(projected)) return;
-    track("InitiateCheckout", {
-      content_ids: [c.slug],
-      content_name: "Kit Completo Revendedor",
-      currency: "ARS",
-      value: projected,
-      num_items: 1,
-    });
     setShowCheckout(true);
   };
 
@@ -1401,12 +1387,6 @@ export default function MundialLanding() {
     // comportamiento histórico: agregar el Kit Completo y abrir checkout.
     if (cartItems && cartItems.length > 0) {
       if (!ensureMinOrder(cartTotal || 0)) return;
-      track("InitiateCheckout", {
-        content_type: "product",
-        currency: "ARS",
-        value: cartTotal || 0,
-        num_items: cartItems.reduce((s, i) => s + (Number(i.quantity) || 0), 0),
-      });
       setShowCheckout(true);
       return;
     }

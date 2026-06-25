@@ -580,11 +580,6 @@ export default function MasajeadorFacialIonesLanding() {
       1,
       { bundleTotal: selectedBundle.price, compareAtPrice: selectedBundle.compareAt, gifts: selectedBundle.gifts || [], bundleImgs: selectedBundle.imgs || [] },
     );
-    track('InitiateCheckout', {
-      value: Number(selectedBundle.price) || 0,
-      currency: 'ARS',
-      content_name: mc.checkoutName,
-    });
     setShowCheckout(true);
   };
 

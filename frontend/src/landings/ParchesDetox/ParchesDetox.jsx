@@ -354,7 +354,6 @@ export default function ParchesDetoxLanding() {
         bundleImgs:     bundle.img ? [bundle.img] : (mainImg ? [mainImg] : undefined),
       },
     );
-    track('InitiateCheckout', { value: parseFloat(bundle.price) || 0, currency: 'ARS', content_name: CHECKOUT_NAME });
     setShowCheckout(true);
   };
 
