@@ -1581,14 +1581,6 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!effectiveProduct) return;
 
-    track("AddToCart", {
-      content_ids: [String(contentId)],
-      content_type: "product",
-      value: Number(displayTotal) || 0,
-      currency: "ARS",
-      num_items: Number(totalQty) || 1,
-    });
-
     const mainOpts = {};
     if (activeBundleData) {
       mainOpts.bundleTotal = activeBundleData.price;

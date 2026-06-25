@@ -28,7 +28,9 @@ function genEventId() {
 // Tiempo de vida del guard de Purchase en localStorage (30 días).
 const PURCHASE_GUARD_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-export function track(eventName, params = {}) {
+// Optional eventID: pass a pre-generated ID to deduplicate against a CAPI server event.
+// If omitted, a random ID is generated (fine for events without server-side counterpart).
+export function track(eventName, params = {}, eventID) {
   if (typeof window === "undefined") return;
 
   const fbq = window.fbq;
@@ -37,8 +39,8 @@ export function track(eventName, params = {}) {
     return;
   }
 
-  const eventID = genEventId();
-  fbq("track", eventName, params, { eventID });
+  const eid = eventID || genEventId();
+  fbq("track", eventName, params, { eventID: eid });
 }
 
 export function trackPageView(pathname) {

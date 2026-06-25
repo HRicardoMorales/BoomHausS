@@ -415,6 +415,10 @@ export default function LuxCoveLED() {
       .catch(() => setProductReady(true));
   }, []);
 
+  useEffect(() => {
+    track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
+  }, []);
+
   /* Precarga imágenes del before/after para que estén listas al instante */
   useEffect(() => {
     beforeAfterData.forEach(item => {
@@ -465,6 +469,11 @@ export default function LuxCoveLED() {
     return () => observer.disconnect();
   }, [productReady]);
 
+  useEffect(() => {
+    document.body.classList.toggle('pdx-sticky-active', stickyVisible);
+    return () => document.body.classList.remove('pdx-sticky-active');
+  }, [stickyVisible]);
+
   const price = product?.price ?? DEFAULT_PRICE;
   const compareAt = product?.compareAtPrice ?? DEFAULT_COMPARE;
   const discountPct = compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 65;
@@ -494,7 +503,7 @@ export default function LuxCoveLED() {
     const bundle = BUNDLES[selectedBundle];
     const productData = product || { _id: PRODUCT_SLUG, name: CHECKOUT_NAME, slug: PRODUCT_SLUG };
     addItem(
-      { ...productData, name: CHECKOUT_NAME },
+      { ...productData, name: CHECKOUT_NAME, imageUrl: productImages[0]?.src },
       1,
       {
         bundleTotal:    bundle.bundlePrice,

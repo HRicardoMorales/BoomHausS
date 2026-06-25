@@ -365,6 +365,10 @@ export default function DepiladoraIPL() {
       .catch(() => setProductReady(true));
   }, []);
 
+  useEffect(() => {
+    track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
+  }, []);
+
 
   /* Slides per view */
   useEffect(() => {
@@ -402,6 +406,11 @@ export default function DepiladoraIPL() {
     return () => observer.disconnect();
   }, [productReady]);
 
+  useEffect(() => {
+    document.body.classList.toggle('pdx-sticky-active', stickyVisible);
+    return () => document.body.classList.remove('pdx-sticky-active');
+  }, [stickyVisible]);
+
   const price      = product?.price ?? DEFAULT_PRICE;
   const compareAt  = product?.compareAtPrice ?? DEFAULT_COMPARE;
   const discountPct = compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 55;
@@ -431,7 +440,7 @@ export default function DepiladoraIPL() {
     const bundle = BUNDLES[selectedBundle];
     const productData = product || { _id: PRODUCT_SLUG, name: CHECKOUT_NAME, slug: PRODUCT_SLUG };
     addItem(
-      { ...productData, name: CHECKOUT_NAME },
+      { ...productData, name: CHECKOUT_NAME, imageUrl: productImages[0]?.src },
       1,
       {
         bundleTotal:    bundle.bundlePrice,

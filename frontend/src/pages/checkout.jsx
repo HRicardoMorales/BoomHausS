@@ -14,6 +14,23 @@ const PROVINCES = [
   "Santiago del Estero","Tierra del Fuego","Tucumán",
 ];
 
+function getMetaCookies() {
+  try {
+    return document.cookie.split(';').reduce((acc, c) => {
+      const eq = c.indexOf('=');
+      const k = c.slice(0, eq).trim();
+      const v = c.slice(eq + 1).trim();
+      if (k === '_fbp') acc.fbp = v || null;
+      if (k === '_fbc') acc.fbc = v || null;
+      return acc;
+    }, { fbp: null, fbc: null });
+  } catch { return { fbp: null, fbc: null }; }
+}
+function genCheckoutEventId() {
+  try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 const INITIAL_FORM = {
   nombre: "", apellido: "", email: "", tel: "",
   direccion: "", extra: "",
@@ -298,11 +315,14 @@ export default function Checkout() {
 
   // ── Warmup + pixel ────────────────────────────────────────────────────────
   const firedRef = useRef(false);
+  const metaEventIdRef = useRef(null);
   useEffect(() => { warmUpApi(); }, []);
   useEffect(() => {
     if (isCartEmpty || firedRef.current) return;
     firedRef.current = true;
-    track("InitiateCheckout", { value: Number(totalPrice) || 0, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" });
+    const eid = genCheckoutEventId();
+    metaEventIdRef.current = eid;
+    track("InitiateCheckout", { value: Number(totalPrice) || 0, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" }, eid);
   }, [isCartEmpty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Captura abandonada ────────────────────────────────────────────────────
@@ -358,6 +378,7 @@ export default function Checkout() {
 
   // ── Construir body de orden ───────────────────────────────────────────────
   function buildOrderBody(overrides = {}) {
+    const { fbp, fbc } = getMetaCookies();
     return {
       clientOrderId:   getOrCreateClientOrderId(),
       customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -383,6 +404,9 @@ export default function Checkout() {
         bundleTotal:    it.bundleTotal    || undefined,
         compareAtPrice: it.compareAtPrice || undefined,
       })),
+      ...(fbp ? { fbp } : {}),
+      ...(fbc ? { fbc } : {}),
+      ...(metaEventIdRef.current ? { metaEventId: metaEventIdRef.current } : {}),
       ...overrides,
     };
   }

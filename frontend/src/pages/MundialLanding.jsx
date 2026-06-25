@@ -1340,13 +1340,6 @@ export default function MundialLanding() {
     const cartProduct = buildCartProduct(cfg, productData);
     const compareAt = Number(productData?.compareAtPrice) || cfg.compareAtPrice || null;
     addItem(cartProduct, packs, compareAt ? { compareAtPrice: compareAt } : undefined);
-    track("AddToCart", {
-      content_ids: [slug],
-      content_type: "product",
-      value: parseFloat((productData?.price ?? cfg.price ?? 0) * packs) || 0,
-      currency: "ARS",
-      num_items: packs,
-    });
   };
 
   // Chequea si un total proyectado llega al mínimo; si no, dispara warning y

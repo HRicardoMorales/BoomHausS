@@ -527,6 +527,10 @@ export default function MasajeadorFacialIonesLanding() {
   }, []);
 
   useEffect(() => {
+    track('ViewContent', { content_name: mc.checkoutName, content_type: 'product', currency: 'ARS', value: mc.bundles?.[0]?.price || 0 });
+  }, []);
+
+  useEffect(() => {
     if (!productReady) return;
     const heroCTA = document.querySelector('.bnd2-cta');
     const stickyBar = document.querySelector('.pd-sticky-bar');

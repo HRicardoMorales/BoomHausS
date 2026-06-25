@@ -261,6 +261,10 @@ export default function ParchesDetoxLanding() {
       .catch(() => setProductReady(true));
   }, []);
 
+  useEffect(() => {
+    track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
+  }, []);
+
   /* Announcement rotation */
   useEffect(() => {
     const t = setInterval(() => {
@@ -288,6 +292,11 @@ export default function ParchesDetoxLanding() {
     observer.observe(ctaRef.current);
     return () => observer.disconnect();
   }, [productReady]);
+
+  useEffect(() => {
+    document.body.classList.toggle('pdx-sticky-active', stickyVisible);
+    return () => document.body.classList.remove('pdx-sticky-active');
+  }, [stickyVisible]);
 
   const soldOut = product?.stock === 0;
 
@@ -342,7 +351,7 @@ export default function ParchesDetoxLanding() {
         bundleTotal:    bundle.price,
         compareAtPrice: bundle.compareAt,
         gifts:          bundle.giftQty ? [`+${bundle.giftQty} ${bundle.giftQty === 1 ? 'caja' : 'cajas'} de REGALO 🎁`] : [],
-        bundleImgs:     mainImg ? [mainImg, mainImg] : undefined,
+        bundleImgs:     bundle.img ? [bundle.img] : (mainImg ? [mainImg] : undefined),
       },
     );
     track('InitiateCheckout', { value: parseFloat(bundle.price) || 0, currency: 'ARS', content_name: CHECKOUT_NAME });

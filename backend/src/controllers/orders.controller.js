@@ -6,7 +6,7 @@ const Order = require("../models/order.js");
 const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
-const { sendPurchaseEvent } = require("../services/metaCapi");
+const { sendPurchaseEvent, sendInitiateCheckoutEvent } = require("../services/metaCapi");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -36,7 +36,6 @@ async function createOrder(req, res, next) {
 
         if (!process.env.MP_ACCESS_TOKEN) {
             console.error("❌ ERROR CRÍTICO: No existe MP_ACCESS_TOKEN en el archivo .env");
-            // No cortamos acá para no romper transferencias, pero MP fallará si lo usan.
         }
 
         const {
@@ -51,6 +50,10 @@ async function createOrder(req, res, next) {
             notes,
             paymentMethod,
             total: frontendTotal,
+            // Meta CAPI fields — sent by CheckoutSheet.jsx
+            fbp,
+            fbc,
+            metaEventId,
         } = req.body || {};
 
         const badReq = (msg) => {
@@ -74,7 +77,6 @@ async function createOrder(req, res, next) {
         const address = normalizeStr(shippingAddress);
         const shipMethod = normalizeStr(shippingMethod) || "correo_argentino";
 
-        // Método de pago
         const payMethod = normalizeStr(paymentMethod) || "bank_transfer";
         const userNotes = normalizeStr(notes);
 
@@ -103,7 +105,6 @@ async function createOrder(req, res, next) {
 
             const normalized = { productId, name: itemName, price, quantity: qty };
 
-            // Campos opcionales — presentes en items de landings con bundles y variantes
             if (it?.imageUrl) normalized.imageUrl = normalizeStr(it.imageUrl);
             const bundleTotal = toNumber(it?.bundleTotal);
             if (Number.isFinite(bundleTotal) && bundleTotal > 0) normalized.bundleTotal = bundleTotal;
@@ -117,8 +118,6 @@ async function createOrder(req, res, next) {
         });
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
-        // totalAmount: usamos el total enviado por el frontend (ya incluye promos)
-        // como fallback calculamos precio bruto
         const computedTotal = normalizedItems.reduce((acc, it) => acc + it.price * it.quantity, 0);
         const totalAmount = (Number.isFinite(Number(frontendTotal)) && Number(frontendTotal) > 0)
             ? Math.round(Number(frontendTotal))
@@ -134,7 +133,6 @@ async function createOrder(req, res, next) {
 
             const result = await preference.create({
                 body: {
-                    // Reemplazamos el .map() por un único ítem general
                     items: [
                         {
                             title: "Compra en Amelor",
@@ -144,11 +142,7 @@ async function createOrder(req, res, next) {
                             picture_url: process.env.MP_STORE_IMAGE_URL || undefined,
                         }
                     ],
-                    payer: {
-                        name,
-                        email,
-                        // phone opcional. Para evitar validaciones raras, no lo mandamos.
-                    },
+                    payer: { name, email },
                     back_urls: {
                         success: `${frontendUrl}/success-payment`,
                         failure: `${frontendUrl}/success-payment`,
@@ -170,7 +164,6 @@ async function createOrder(req, res, next) {
             if (existing) {
                 console.log("⚠️ Orden duplicada detectada");
 
-                // ✅ Si es Mercado Pago, devolvemos init_point (producción) igual
                 if (payMethod === "mercadopago" || existing.paymentMethod === "mercadopago") {
                     try {
                         console.log("🔁 Regenerando link de Mercado Pago para orden duplicada...");
@@ -198,7 +191,6 @@ async function createOrder(req, res, next) {
                     }
                 }
 
-                // No es MP -> devolvemos duplicada normal
                 return res.status(200).json({
                     ok: true,
                     data: {
@@ -220,7 +212,7 @@ async function createOrder(req, res, next) {
             req.userId ||
             null;
 
-        // 1) Crear orden en BD
+        // 1) Crear orden en BD — incluye campos Meta CAPI
         const newOrder = await Order.create({
             clientOrderId: clientOrderId || undefined,
             userId: userId || undefined,
@@ -237,9 +229,17 @@ async function createOrder(req, res, next) {
             paymentMethod: payMethod,
             paymentStatus: "pending",
             notes: userNotes || "",
+            // Meta CAPI — stored for server-side events (Purchase, InitiateCheckout)
+            metaEventId:     metaEventId     || null,
+            fbp:             fbp             || null,
+            fbc:             fbc             || null,
+            clientIp:        req.ip          || null,
+            clientUserAgent: req.headers?.['user-agent'] || null,
         });
 
-        // 2) Pago contra entrega (CABA)
+        // 2) COD — contra entrega (CABA)
+        //    Fire InitiateCheckout (not Purchase) at creation.
+        //    Purchase fires when admin marks the order as paid via updateOrderStatus.
         if (payMethod === "cod") {
             console.log("💵 Procesando como pago al recibir (COD)...");
 
@@ -248,11 +248,10 @@ async function createOrder(req, res, next) {
             } catch (e) {
                 console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
             }
-            try {
-                await sendPurchaseEvent(newOrder, { ip: req.ip, userAgent: req.headers?.['user-agent'] });
-            } catch (capiErr) {
-                console.warn("⚠️ Meta CAPI error (COD):", capiErr?.message || capiErr);
-            }
+            // Non-blocking: InitiateCheckout, not Purchase (user hasn't paid yet)
+            sendInitiateCheckoutEvent(newOrder).catch(e =>
+                console.warn("⚠️ Meta CAPI error (COD InitiateCheckout):", e?.message || e)
+            );
 
             return res.status(201).json({
                 ok: true,
@@ -270,6 +269,12 @@ async function createOrder(req, res, next) {
                 console.log("✅ LINK GENERADO (init_point):", result.init_point);
                 console.log("✅ LINK SANDBOX:", result.sandbox_init_point);
 
+                // Non-blocking: InitiateCheckout fires when user starts MP flow.
+                // Purchase fires from the webhook when MP confirms payment.
+                sendInitiateCheckoutEvent(newOrder).catch(e =>
+                    console.warn("⚠️ Meta CAPI error (MP InitiateCheckout):", e?.message || e)
+                );
+
                 return res.status(201).json({
                     ok: true,
                     data: newOrder,
@@ -282,13 +287,17 @@ async function createOrder(req, res, next) {
             }
         }
 
-        // 4) Transferencia
+        // 4) Transferencia bancaria
         console.log("🏦 Procesando como transferencia");
         try {
             await sendOrderConfirmationEmail(newOrder, { mode: "transfer" });
         } catch (e) {
             console.warn("⚠️ No se pudo enviar email:", e?.message || e);
         }
+        // Non-blocking: InitiateCheckout. Purchase fires in verifyPaymentProofController.
+        sendInitiateCheckoutEvent(newOrder).catch(e =>
+            console.warn("⚠️ Meta CAPI error (transfer InitiateCheckout):", e?.message || e)
+        );
 
         return res.status(201).json({
             ok: true,
@@ -325,6 +334,18 @@ async function updateOrderStatus(req, res, next) {
         if (shippingStatus !== undefined) updateData.shippingStatus = shippingStatus;
 
         const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
+
+        // Fire CAPI Purchase for COD orders when admin marks them as paid.
+        // MP orders use the webhook; transfer orders use verifyPaymentProofController.
+        if (
+            ['approved', 'confirmed'].includes(paymentStatus) &&
+            updatedOrder?.paymentMethod === 'cod'
+        ) {
+            sendPurchaseEvent(updatedOrder).catch(e =>
+                console.warn("⚠️ Meta CAPI error (COD Purchase):", e?.message || e)
+            );
+        }
+
         return res.json({ ok: true, data: updatedOrder });
     } catch (error) {
         next(error);
@@ -373,6 +394,12 @@ async function verifyPaymentProofController(req, res, next) {
         const order = await Order.findById(id);
         order.paymentStatus = "confirmed";
         await order.save();
+
+        // Non-blocking: fire CAPI Purchase when admin approves a transfer payment proof.
+        sendPurchaseEvent(order).catch(e =>
+            console.warn("⚠️ Meta CAPI error (transfer Purchase):", e?.message || e)
+        );
+
         return res.json({ ok: true, data: order });
     } catch (error) {
         next(error);

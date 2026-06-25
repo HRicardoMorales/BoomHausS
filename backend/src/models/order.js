@@ -55,7 +55,15 @@ const orderSchema = new mongoose.Schema(
         paymentProofPublicId: { type: String, default: null }, // opcional (cloudinary)
         paymentReviewedAt: { type: Date, default: null },
         paymentReviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-        notes: { type: String, default: '' }
+        notes: { type: String, default: '' },
+        cartCreatedAt: { type: Date, default: null },
+        paymentInfoAt: { type: Date, default: null },
+        // Meta CAPI — captured at order creation for server-side event tracking
+        metaEventId:      { type: String, default: null }, // UUID from frontend InitiateCheckout Pixel
+        fbp:              { type: String, default: null }, // _fbp cookie (plain text, not hashed)
+        fbc:              { type: String, default: null }, // _fbc cookie (plain text, not hashed)
+        clientIp:         { type: String, default: null }, // IP of the request that created the order
+        clientUserAgent:  { type: String, default: null }, // User-Agent of that request
     },
     { timestamps: true }
 );

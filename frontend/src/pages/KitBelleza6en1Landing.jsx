@@ -375,6 +375,10 @@ export default function KitBelleza6en1Landing() {
   }, []);
 
   useEffect(() => {
+    track('ViewContent', { content_name: mc.checkoutName, content_type: 'product', currency: 'ARS', value: mc.bundles?.[0]?.price || 0 });
+  }, []);
+
+  useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 2500);
     fetch('https://ipapi.co/json/', { signal: controller.signal })

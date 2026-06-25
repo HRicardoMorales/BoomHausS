@@ -276,14 +276,15 @@ export default function AdminOrders() {
               {!loading && orders.length > 0 && (
                 <div className="ao-stats">
                   {[
-                    { label: 'Recaudado', value: money(stats.total), cls: 'ao-st--green' },
-                    { label: 'Aprobados', value: stats.approved, cls: 'ao-st--green' },
-                    { label: 'A revisar', value: stats.review, cls: 'ao-st--yellow' },
-                    { label: 'Pendientes', value: stats.pending, cls: 'ao-st--muted' },
-                    { label: 'En camino', value: stats.shipped, cls: 'ao-st--blue' },
-                    { label: 'Entregados', value: stats.delivered, cls: 'ao-st--green' },
+                    { label: 'Recaudado',  value: money(stats.total),   cls: 'ao-st--green',  icon: '💰', bar: '#16a34a' },
+                    { label: 'Aprobados',  value: stats.approved,        cls: 'ao-st--green',  icon: '✅', bar: '#16a34a' },
+                    { label: 'A revisar',  value: stats.review,          cls: 'ao-st--yellow', icon: '⚠️', bar: '#ca8a04' },
+                    { label: 'Pendientes', value: stats.pending,         cls: 'ao-st--muted',  icon: '⏳', bar: '#94a3b8' },
+                    { label: 'En camino',  value: stats.shipped,         cls: 'ao-st--blue',   icon: '🚚', bar: '#2563eb' },
+                    { label: 'Entregados', value: stats.delivered,       cls: 'ao-st--green',  icon: '📦', bar: '#16a34a' },
                   ].map(s => (
-                    <div key={s.label} className={`ao-stat ${s.cls}`}>
+                    <div key={s.label} className={`ao-stat ${s.cls}`} style={{ '--ao-stat-bar': s.bar }}>
+                      <div className="ao-stat-icon">{s.icon}</div>
                       <div className="ao-stat-val">{s.value}</div>
                       <div className="ao-stat-lbl">{s.label}</div>
                     </div>
@@ -698,9 +699,11 @@ export default function AdminOrders() {
 
 /* Stats */
 .ao-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:20px}
-.ao-stat{padding:14px 12px;border-radius:12px;text-align:center;border:1px solid #e2e8f0;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ao-stat{padding:14px 12px 12px;border-radius:12px;text-align:center;border:1px solid #e2e8f0;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.ao-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ao-stat-bar,#94a3b8);border-radius:12px 12px 0 0}
+.ao-stat-icon{font-size:1.15rem;margin-bottom:6px;line-height:1}
 .ao-stat-val{font-size:1.2rem;font-weight:900}
-.ao-stat-lbl{font-size:.68rem;font-weight:700;color:#64748b;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.ao-stat-lbl{font-size:.68rem;font-weight:700;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
 .ao-st--green .ao-stat-val{color:#16a34a}
 .ao-st--yellow .ao-stat-val{color:#ca8a04}
 .ao-st--muted .ao-stat-val{color:#64748b}

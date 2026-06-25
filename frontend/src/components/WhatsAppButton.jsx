@@ -1,7 +1,31 @@
+import { useState, useEffect } from 'react';
+
 const WA_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "5491123915075";
 const WA_MSG = encodeURIComponent("Hola! Tengo una consulta sobre mi pedido");
 
 export default function WhatsAppButton() {
+  const [lifted, setLifted] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const isMobile = window.innerWidth < 768;
+      const stickyActive = document.body.classList.contains('pdx-sticky-active');
+      setLifted(isMobile && stickyActive);
+    };
+
+    const observer = new MutationObserver(update);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', update);
+    update();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  const bottomValue = lifted ? 'calc(72px + 16px)' : undefined;
+
   return (
     <>
       <a
@@ -9,6 +33,7 @@ export default function WhatsAppButton() {
         target="_blank"
         rel="noopener noreferrer"
         className="wa-float-btn"
+        style={bottomValue ? { bottom: bottomValue } : undefined}
         aria-label="Contactar por WhatsApp"
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -32,13 +57,13 @@ export default function WhatsAppButton() {
           justify-content: center;
           box-shadow: 0 4px 16px rgba(0,0,0,.22);
           text-decoration: none;
-          transition: transform .15s, box-shadow .15s;
+          transition: transform .15s, box-shadow .15s, bottom .3s ease;
         }
         .wa-float-btn:hover {
           transform: scale(1.08);
           box-shadow: 0 6px 24px rgba(0,0,0,.32);
         }
-        @media (max-width: 600px) {
+        @media (max-width: 767px) {
           .wa-float-btn { bottom: 16px; right: 16px; width: 50px; height: 50px; }
         }
       `}</style>
