@@ -1,6 +1,7 @@
 // src/pages/checkout.jsx
 // Checkout fullpage — página única, sin pasos, estilo TiendaNube/Shopify
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
@@ -432,7 +433,12 @@ export default function Checkout() {
         // NO disparar Purchase aquí — el usuario todavía no pagó.
         // Purchase se dispara en SuccessPayment cuando MP confirma el pago aprobado.
         setRedirecting(true);
-        setTimeout(() => { window.location.href = url; }, 1200);
+        // rAF ensures the overlay paints at least one frame before navigating
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTimeout(() => { window.location.href = url; }, 1100);
+          });
+        });
         return;
       }
       showError("Hubo un error generando el link de pago. Intentá de nuevo.");
@@ -500,22 +506,27 @@ export default function Checkout() {
   }
 
   // ── Overlay MP ────────────────────────────────────────────────────────────
-  const mpOverlay = redirecting && (
-    <div className="ckfp-mp-overlay">
-      <div className="ckfp-mp-card">
-        <div className="ckfp-mp-logo-wrap">
-          <svg viewBox="0 0 40 40" width="52" height="52" fill="none">
-            <rect width="40" height="40" rx="12" fill="#009ee3"/>
-            <path d="M10.5 20.8c0-3.4 2.2-6.2 5.2-6.2 1.6 0 2.7.7 3.3 1.5.6-.8 1.7-1.5 3.3-1.5 3 0 5.2 2.8 5.2 6.2 0 4.8-5 9.2-8.5 11.2-3.5-2-8.5-6.4-8.5-11.2z" fill="#fff"/>
-          </svg>
-        </div>
-        <h2 className="ckfp-mp-title">Conectando con Mercado Pago</h2>
-        <p className="ckfp-mp-sub">Estamos generando tu link de pago seguro</p>
-        <div className="ckfp-mp-bar-track"><div className="ckfp-mp-bar" /></div>
-        <p className="ckfp-mp-note">No cerrés esta pantalla — serás redirigido en segundos</p>
-      </div>
-    </div>
-  );
+  // Rendered via portal on document.body to escape .ckfp-shell's animation
+  // stacking context, which would break position:fixed on mobile Safari/WebView.
+  const mpOverlay = redirecting
+    ? createPortal(
+        <div className="ckfp-mp-overlay">
+          <div className="ckfp-mp-card">
+            <div className="ckfp-mp-logo-wrap">
+              <svg viewBox="0 0 40 40" width="52" height="52" fill="none">
+                <rect width="40" height="40" rx="12" fill="#009ee3"/>
+                <path d="M10.5 20.8c0-3.4 2.2-6.2 5.2-6.2 1.6 0 2.7.7 3.3 1.5.6-.8 1.7-1.5 3.3-1.5 3 0 5.2 2.8 5.2 6.2 0 4.8-5 9.2-8.5 11.2-3.5-2-8.5-6.4-8.5-11.2z" fill="#fff"/>
+              </svg>
+            </div>
+            <h2 className="ckfp-mp-title">Conectando con Mercado Pago</h2>
+            <p className="ckfp-mp-sub">Estamos generando tu link de pago seguro</p>
+            <div className="ckfp-mp-bar-track"><div className="ckfp-mp-bar" /></div>
+            <p className="ckfp-mp-note">No cerrés esta pantalla — serás redirigido en segundos</p>
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
 
   // ── Shipping options ──────────────────────────────────────────────────────
   const SHIP_OPTS = [
@@ -527,6 +538,7 @@ export default function Checkout() {
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="ckfp-shell">
+      {/* mpOverlay is portaled to document.body — see above */}
       {mpOverlay}
 
       {/* ── HEADER ── */}
