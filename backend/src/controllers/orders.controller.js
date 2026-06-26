@@ -135,7 +135,9 @@ async function createOrder(req, res, next) {
                 body: {
                     items: [
                         {
+                            id: "amelor-order",
                             title: "Compra en Amelor",
+                            description: "Productos seleccionados en Amelor",
                             quantity: 1,
                             unit_price: Number(totalAmount),
                             currency_id: "ARS",
