@@ -165,4 +165,41 @@ async function sendInitiateCheckoutEvent(order, ctx = {}) {
     });
 }
 
-module.exports = { sendPurchaseEvent, sendInitiateCheckoutEvent };
+/**
+ * Early InitiateCheckout — fires immediately when the browser Pixel fires,
+ * before the user creates an order. Used by POST /api/meta/initiate-checkout.
+ *
+ * No order object available yet — only cookies + request context.
+ * The metaEventId must match the UUID passed to the browser track() call so
+ * Meta can deduplicate both as a single InitiateCheckout event.
+ *
+ * @param {Object} params
+ * @param {string}  params.metaEventId     UUID from the browser Pixel call
+ * @param {string}  [params.fbp]           _fbp cookie value (plain text)
+ * @param {string}  [params.fbc]           _fbc cookie value (plain text)
+ * @param {number}  params.value           Cart total (validated > 0 by caller)
+ * @param {string}  params.currency        Always 'ARS' (validated by caller)
+ * @param {string}  [params.clientIp]      req.ip
+ * @param {string}  [params.clientUserAgent] req.headers['user-agent']
+ */
+async function sendEarlyInitiateCheckoutEvent({ metaEventId, fbp, fbc, value, currency, clientIp, clientUserAgent }) {
+    const eventId = metaEventId || `initcheckout_early_${Date.now()}`;
+    const userData = {};
+    if (fbp)             userData.fbp                = fbp;
+    if (fbc)             userData.fbc                = fbc;
+    if (clientIp)        userData.client_ip_address  = clientIp;
+    if (clientUserAgent) userData.client_user_agent  = clientUserAgent;
+
+    return sendCapiEvent({
+        eventName:  'InitiateCheckout',
+        eventId,
+        userData,
+        customData: {
+            currency:     currency || 'ARS',
+            value:        Number(value) || 0,
+            content_type: 'product',
+        },
+    });
+}
+
+module.exports = { sendPurchaseEvent, sendInitiateCheckoutEvent, sendEarlyInitiateCheckoutEvent };

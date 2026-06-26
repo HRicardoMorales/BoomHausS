@@ -323,7 +323,17 @@ export default function Checkout() {
     firedRef.current = true;
     const eid = genCheckoutEventId();
     metaEventIdRef.current = eid;
-    track("InitiateCheckout", { value: Number(totalPrice) || 0, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" }, eid);
+    const pixelValue = Number(totalPrice) || 0;
+    track("InitiateCheckout", { value: pixelValue, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" }, eid);
+    // Early CAPI: fire server-side at the same moment as the browser Pixel.
+    const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
+    api.post("/meta/initiate-checkout", {
+      metaEventId: eid,
+      value:       pixelValue,
+      currency:    "ARS",
+      ...(_fbp ? { fbp: _fbp } : {}),
+      ...(_fbc ? { fbc: _fbc } : {}),
+    }).catch(() => {});
   }, [isCartEmpty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Captura abandonada ────────────────────────────────────────────────────

@@ -21,6 +21,7 @@ const webhooksRoutes = require('./routes/webhooks.router');
 const paymentsRoutes = require('./routes/payments.routes');
 const couponsRoutes = require('./routes/coupons.routes');
 const metricsRoutes = require('./routes/metrics');
+const metaRoutes    = require('./routes/meta.routes');
 
 const AbandonedCart = require('./models/AbandonedCart');
 const { authRequired, adminOnly } = require('./middlewares/authMiddleware');
@@ -140,6 +141,7 @@ app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/coupons', couponsRoutes);
 app.use('/api/metrics', metricsRoutes);
+app.use('/api/meta',    metaRoutes);
 
 // ──────────────────────────────────────────────────────────────
 //  CARRITOS ABANDONADOS

@@ -2349,6 +2349,16 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
                     content_ids: items.map(i => String(i.productId)),
                     num_items: totalItems, content_type: "product",
                   }, metaEventIdRef.current);
+                  // Early CAPI: fire server-side at the same moment as the browser Pixel
+                  // so Meta can deduplicate even if the user abandons before creating an order.
+                  const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
+                  api.post("/meta/initiate-checkout", {
+                    metaEventId: metaEventIdRef.current,
+                    value:       finalTotal,
+                    currency:    "ARS",
+                    ...(_fbp ? { fbp: _fbp } : {}),
+                    ...(_fbc ? { fbc: _fbc } : {}),
+                  }).catch(() => {});
                 }
                 track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
                 if (delivery === "caba_cod") { setShowCabaConfirm(true); } else { goToStep(2); }
