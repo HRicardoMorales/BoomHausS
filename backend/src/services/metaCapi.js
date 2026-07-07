@@ -8,6 +8,9 @@
 
 const crypto = require('crypto');
 
+// Meta tracking desactivado el 2026-07-06 por migración a Shopify. Poner en true para reactivar.
+const META_TRACKING_ENABLED = process.env.META_TRACKING_ENABLED === 'true';
+
 const PIXEL_ID        = process.env.META_PIXEL_ID;
 const ACCESS_TOKEN    = process.env.META_CAPI_TOKEN;
 const TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || null;
@@ -67,6 +70,7 @@ function buildUserData(order, ctx = {}) {
 
 // Low-level function: POST a single event to the Graph API
 async function sendCapiEvent({ eventName, eventId, userData, customData }) {
+    if (!META_TRACKING_ENABLED) return;
     if (!PIXEL_ID || !ACCESS_TOKEN) {
         console.warn('⚠️ Meta CAPI: META_PIXEL_ID o META_CAPI_TOKEN no configurados — saltando evento.');
         return;

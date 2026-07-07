@@ -29,7 +29,20 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\\\\src\\\\landings\" -Name)",
       "Bash(Select-String -Pattern \"5en1|masaje\")",
       "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\Usuario\\\\Downloads\\\\Encontratodo_FINAL_multi_landing_admin_inline_checkout_v2\\\\frontend\\\\src\\\\pages\" -Name | Where-Object { $_ -match \"masaje|5en1\" })",
-      "Bash(chat\")"
+      "Bash(chat\")",
+      "Bash(xargs ls -la)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:cdn.simpleicons.org)",
+      "WebSearch",
+      "WebFetch(domain:simpleicons.org)",
+      "WebFetch(domain:worldvectorlogo.com)",
+      "WebFetch(domain:cdn.worldvectorlogo.com)",
+      "WebFetch(domain:www.svgrepo.com)",
+      "WebFetch(domain:seeklogo.com)",
+      "WebFetch(domain:getlogovector.com)",
+      "WebFetch(domain:brandfetch.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/Tgentil/Bancos-em-SVG/main/Mercado%20Pago/mercado-pago.svg\")"
     ]
   }
 }

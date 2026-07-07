@@ -20,6 +20,9 @@
 //    eventID random — esos eventos se pueden disparar varias veces sin
 //    problema porque no representan conversiones únicas.
 
+// Meta tracking desactivado el 2026-07-06 por migración a Shopify. Poner en true para reactivar.
+const META_TRACKING_ENABLED = typeof window !== 'undefined' && window.META_TRACKING_ENABLED === true;
+
 function genEventId() {
   try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
   return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -31,6 +34,7 @@ const PURCHASE_GUARD_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 // Optional eventID: pass a pre-generated ID to deduplicate against a CAPI server event.
 // If omitted, a random ID is generated (fine for events without server-side counterpart).
 export function track(eventName, params = {}, eventID) {
+  if (!META_TRACKING_ENABLED) return;
   if (typeof window === "undefined") return;
 
   const fbq = window.fbq;
@@ -44,6 +48,7 @@ export function track(eventName, params = {}, eventID) {
 }
 
 export function trackPageView(pathname) {
+  if (!META_TRACKING_ENABLED) return;
   if (typeof window === "undefined") return;
 
   const fbq = window.fbq;
@@ -65,6 +70,7 @@ export function trackPageView(pathname) {
  * params típicos: { value, currency, content_ids, num_items, content_type }
  */
 export function trackPurchase(orderId, params = {}) {
+  if (!META_TRACKING_ENABLED) return;
   if (typeof window === "undefined") return;
 
   if (!orderId) {
