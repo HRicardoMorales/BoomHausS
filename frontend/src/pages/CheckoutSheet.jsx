@@ -21,7 +21,7 @@ function useCountdown(storageKey = "pd_countdown", minutes = 18) {
   return `${mm}:${ss}`;
 }
 import { useCart } from "../context/CartContext.jsx";
-import { track, trackPurchase } from "../lib/metaPixel";
+// import { track, trackPurchase } from "../lib/metaPixel"; // META DESACTIVADO
 import api from "../services/api";
 
 const PROVINCES = [
@@ -83,27 +83,26 @@ const LogoMP = () => (
   </svg>
 );
 
-// ── Meta CAPI helpers ──────────────────────────────────────────────────────────
-function getMetaCookies() {
-  try {
-    return document.cookie.split(';').reduce((acc, c) => {
-      const eq = c.indexOf('=');
-      if (eq < 0) return acc;
-      const k = c.slice(0, eq).trim();
-      const v = c.slice(eq + 1).trim();
-      if (k === '_fbp') acc.fbp = v || null;
-      if (k === '_fbc') acc.fbc = v || null;
-      return acc;
-    }, { fbp: null, fbc: null });
-  } catch {
-    return { fbp: null, fbc: null };
-  }
-}
-
-function genCheckoutEventId() {
-  try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
-  return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
+// META DESACTIVADO ─────────────────────────────────────────────────────────────
+// function getMetaCookies() {
+//   try {
+//     return document.cookie.split(';').reduce((acc, c) => {
+//       const eq = c.indexOf('=');
+//       if (eq < 0) return acc;
+//       const k = c.slice(0, eq).trim();
+//       const v = c.slice(eq + 1).trim();
+//       if (k === '_fbp') acc.fbp = v || null;
+//       if (k === '_fbc') acc.fbc = v || null;
+//       return acc;
+//     }, { fbp: null, fbc: null });
+//   } catch {
+//     return { fbp: null, fbc: null };
+//   }
+// }
+// function genCheckoutEventId() {
+//   try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
+//   return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+// }
 // ──────────────────────────────────────────────────────────────────────────────
 
 const INITIAL_FORM = {
@@ -170,13 +169,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
   const sheetRef = useRef(null);
   const bodyRef  = useRef(null);
-  // Stores the UUID generated at InitiateCheckout — shared with all submit handlers
-  // so the same eventID goes to both the browser Pixel and the CAPI server event.
-  const metaEventIdRef = useRef(null);
-  // Guard: ensures InitiateCheckout fires at most once per checkout session,
-  // even if the user navigates back to step 0 and clicks "Continuar" again
-  // (which would reuse the same metaEventIdRef.current → duplicate event_id).
-  const icFiredRef = useRef(false);
+  // META DESACTIVADO
+  // const metaEventIdRef = useRef(null);
+  // const icFiredRef = useRef(false);
   const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
   // Full price (without promos) for savings calc
@@ -328,7 +323,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
 
   // ── Crear el pedido en el backend y devolver el orderId ──
   async function createOrderInDB() {
-    const { fbp, fbc } = getMetaCookies();
+    // META DESACTIVADO: const { fbp, fbc } = getMetaCookies();
     const cartItems = items.map(i => ({
       productId:      i.productId,
       name:           i.name,
@@ -348,9 +343,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       shippingMethod:  delivery,
       paymentMethod:   payment === "mp" ? "mercadopago" : "card",
       notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
-      fbp:             fbp || undefined,
-      fbc:             fbc || undefined,
-      metaEventId:     metaEventIdRef.current || undefined,
+      // META DESACTIVADO: fbp: fbp || undefined,
+      // META DESACTIVADO: fbc: fbc || undefined,
+      // META DESACTIVADO: metaEventId: metaEventIdRef.current || undefined,
       total:           finalTotal,
       items:           cartItems,
     });
@@ -362,7 +357,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const { fbp, fbc } = getMetaCookies();
+      // META DESACTIVADO: const { fbp, fbc } = getMetaCookies();
       const cartItems = items.map(i => ({
         productId:      i.productId,
         name:           i.name,
@@ -384,9 +379,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
         total:           finalTotal,
         items:           cartItems,
-        fbp:             fbp || undefined,
-        fbc:             fbc || undefined,
-        metaEventId:     metaEventIdRef.current || undefined,
+        // META DESACTIVADO: fbp: fbp || undefined,
+        // META DESACTIVADO: fbc: fbc || undefined,
+        // META DESACTIVADO: metaEventId: metaEventIdRef.current || undefined,
       });
 
       const isProd = import.meta.env.MODE === "production";
@@ -418,7 +413,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   async function handleCodSubmit() {
     setSubmitting(true);
     try {
-      const { fbp, fbc } = getMetaCookies();
+      // META DESACTIVADO: const { fbp, fbc } = getMetaCookies();
       const cartItems = items.map(i => ({
         productId:      i.productId,
         name:           i.name,
@@ -439,18 +434,18 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         notes:           ["Pago al recibir", form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(". "),
         total:           finalTotal,
         items:           cartItems,
-        fbp:             fbp || undefined,
-        fbc:             fbc || undefined,
-        metaEventId:     metaEventIdRef.current || undefined,
+        // META DESACTIVADO: fbp: fbp || undefined,
+        // META DESACTIVADO: fbc: fbc || undefined,
+        // META DESACTIVADO: metaEventId: metaEventIdRef.current || undefined,
       });
-      // trackPurchase requiere orderId — dedup automatico cross-tab por orderId.
+      // META DESACTIVADO
       const codOrderId = codRes?.data?.data?._id || codRes?.data?.data?.orderId || codRes?.data?._id;
-      trackPurchase(codOrderId, {
-        value: parseFloat(finalTotal) || 0,
-        content_ids: items.map(i => i.productId),
-        num_items: totalItems,
-        content_type: "product",
-      });
+      // trackPurchase(codOrderId, {
+      //   value: parseFloat(finalTotal) || 0,
+      //   content_ids: items.map(i => i.productId),
+      //   num_items: totalItems,
+      //   content_type: "product",
+      // });
       setConfirmedTotal(finalTotal);
       setConfirmedShippingCost(shippingCost);
       setConfirmedItems([...items]);
@@ -500,13 +495,13 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       const { status, statusDetail } = res.data;
 
       if (status === "approved") {
-        // trackPurchase usa orderId como guard cross-tab y como eventID determinístico.
-        trackPurchase(orderId, {
-          value: parseFloat(amount) || 0,
-          content_ids: items.map(i => i.productId),
-          num_items: totalItems,
-          content_type: "product",
-        });
+        // META DESACTIVADO
+        // trackPurchase(orderId, {
+        //   value: parseFloat(amount) || 0,
+        //   content_ids: items.map(i => i.productId),
+        //   num_items: totalItems,
+        //   content_type: "product",
+        // });
         setConfirmedTotal(Number(amount));
         setConfirmedShippingCost(shippingCost);
         setConfirmedItems([...items]);
@@ -2339,28 +2334,25 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
               <button className="cs-cta" onClick={() => {
                 if (!validateStep1()) return;
                 captureAbandoned();
-                // Generate once — the same ID goes to the browser Pixel AND
-                // the backend CAPI call so Meta can deduplicate both events.
-                if (!metaEventIdRef.current) metaEventIdRef.current = genCheckoutEventId();
-                if (!icFiredRef.current) {
-                  icFiredRef.current = true;
-                  track("InitiateCheckout", {
-                    value: finalTotal, currency: "ARS",
-                    content_ids: items.map(i => String(i.productId)),
-                    num_items: totalItems, content_type: "product",
-                  }, metaEventIdRef.current);
-                  // Early CAPI: fire server-side at the same moment as the browser Pixel
-                  // so Meta can deduplicate even if the user abandons before creating an order.
-                  const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
-                  api.post("/meta/initiate-checkout", {
-                    metaEventId: metaEventIdRef.current,
-                    value:       finalTotal,
-                    currency:    "ARS",
-                    ...(_fbp ? { fbp: _fbp } : {}),
-                    ...(_fbc ? { fbc: _fbc } : {}),
-                  }).catch(() => {});
-                }
-                track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
+                // META DESACTIVADO
+                // if (!metaEventIdRef.current) metaEventIdRef.current = genCheckoutEventId();
+                // if (!icFiredRef.current) {
+                //   icFiredRef.current = true;
+                //   track("InitiateCheckout", {
+                //     value: finalTotal, currency: "ARS",
+                //     content_ids: items.map(i => String(i.productId)),
+                //     num_items: totalItems, content_type: "product",
+                //   }, metaEventIdRef.current);
+                //   const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
+                //   api.post("/meta/initiate-checkout", {
+                //     metaEventId: metaEventIdRef.current,
+                //     value:       finalTotal,
+                //     currency:    "ARS",
+                //     ...(_fbp ? { fbp: _fbp } : {}),
+                //     ...(_fbc ? { fbc: _fbc } : {}),
+                //   }).catch(() => {});
+                // }
+                // track("AddPaymentInfo", { value: totalPrice, currency: "ARS", content_ids: items.map(i => i.productId), content_type: "product", num_items: totalItems });
                 if (delivery === "caba_cod") { setShowCabaConfirm(true); } else { goToStep(2); }
               }}>
                 Continuar con el pago →

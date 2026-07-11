@@ -2,7 +2,7 @@
 import api from '../services/api';
 import { CheckoutSheet } from './CheckoutSheet';
 import { useCart } from '../context/CartContext';
-import { track } from '../lib/metaPixel';
+// import { track } from '../lib/metaPixel'; // META DESACTIVADO
 import mc from '../landings/masajeador-ems-eyes';
 
 /* ============================================================
@@ -434,9 +434,10 @@ export default function MasajeadorEmsEyesLanding() {
       .catch(() => { setProductReady(true); });
   }, []);
 
-  useEffect(() => {
-    track('ViewContent', { content_name: mc.checkoutName, content_type: 'product', currency: 'ARS', value: mc.bundles?.[0]?.price || 0 });
-  }, []);
+  // META DESACTIVADO
+  // useEffect(() => {
+  //   track('ViewContent', { content_name: mc.checkoutName, content_type: 'product', currency: 'ARS', value: mc.bundles?.[0]?.price || 0 });
+  // }, []);
 
   useEffect(() => {
     if (!productReady) return;

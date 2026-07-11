@@ -76,33 +76,32 @@ async function sendCapiEvent({ eventName, eventId, userData, customData }) {
         return;
     }
 
-    const payload = {
-        data: [{
-            event_name:    eventName,
-            event_time:    Math.floor(Date.now() / 1000),
-            event_id:      eventId,
-            action_source: 'website',
-            user_data:     userData,
-            custom_data:   customData,
-        }],
-        // Only included in TEST environment — remove META_TEST_EVENT_CODE in production
-        ...(TEST_EVENT_CODE ? { test_event_code: TEST_EVENT_CODE } : {}),
-    };
-
-    try {
-        const res  = await fetch(
-            `https://graph.facebook.com/${GRAPH_VERSION}/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
-            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-        );
-        const json = await res.json();
-        if (!res.ok) {
-            console.warn(`⚠️ Meta CAPI [${eventName}] error:`, JSON.stringify(json));
-        } else {
-            console.log(`✅ Meta CAPI ${eventName} enviado — eventID: ${eventId}`);
-        }
-    } catch (err) {
-        console.warn(`⚠️ Meta CAPI [${eventName}] fetch error:`, err?.message || err);
-    }
+    // META DESACTIVADO
+    // const payload = {
+    //     data: [{
+    //         event_name:    eventName,
+    //         event_time:    Math.floor(Date.now() / 1000),
+    //         event_id:      eventId,
+    //         action_source: 'website',
+    //         user_data:     userData,
+    //         custom_data:   customData,
+    //     }],
+    //     ...(TEST_EVENT_CODE ? { test_event_code: TEST_EVENT_CODE } : {}),
+    // };
+    // try {
+    //     const res  = await fetch(
+    //         `https://graph.facebook.com/${GRAPH_VERSION}/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+    //         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
+    //     );
+    //     const json = await res.json();
+    //     if (!res.ok) {
+    //         console.warn(`⚠️ Meta CAPI [${eventName}] error:`, JSON.stringify(json));
+    //     } else {
+    //         console.log(`✅ Meta CAPI ${eventName} enviado — eventID: ${eventId}`);
+    //     }
+    // } catch (err) {
+    //     console.warn(`⚠️ Meta CAPI [${eventName}] fetch error:`, err?.message || err);
+    // }
 }
 
 /**

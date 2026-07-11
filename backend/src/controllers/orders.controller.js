@@ -6,7 +6,7 @@ const Order = require("../models/order.js");
 const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
-const { sendPurchaseEvent, sendInitiateCheckoutEvent } = require("../services/metaCapi");
+// const { sendPurchaseEvent, sendInitiateCheckoutEvent } = require("../services/metaCapi"); // META DESACTIVADO
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -250,10 +250,10 @@ async function createOrder(req, res, next) {
             } catch (e) {
                 console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
             }
-            // Non-blocking: InitiateCheckout, not Purchase (user hasn't paid yet)
-            sendInitiateCheckoutEvent(newOrder).catch(e =>
-                console.warn("⚠️ Meta CAPI error (COD InitiateCheckout):", e?.message || e)
-            );
+            // META DESACTIVADO
+            // sendInitiateCheckoutEvent(newOrder).catch(e =>
+            //     console.warn("⚠️ Meta CAPI error (COD InitiateCheckout):", e?.message || e)
+            // );
 
             return res.status(201).json({
                 ok: true,
@@ -271,11 +271,10 @@ async function createOrder(req, res, next) {
                 console.log("✅ LINK GENERADO (init_point):", result.init_point);
                 console.log("✅ LINK SANDBOX:", result.sandbox_init_point);
 
-                // Non-blocking: InitiateCheckout fires when user starts MP flow.
-                // Purchase fires from the webhook when MP confirms payment.
-                sendInitiateCheckoutEvent(newOrder).catch(e =>
-                    console.warn("⚠️ Meta CAPI error (MP InitiateCheckout):", e?.message || e)
-                );
+                // META DESACTIVADO
+                // sendInitiateCheckoutEvent(newOrder).catch(e =>
+                //     console.warn("⚠️ Meta CAPI error (MP InitiateCheckout):", e?.message || e)
+                // );
 
                 return res.status(201).json({
                     ok: true,
@@ -296,10 +295,10 @@ async function createOrder(req, res, next) {
         } catch (e) {
             console.warn("⚠️ No se pudo enviar email:", e?.message || e);
         }
-        // Non-blocking: InitiateCheckout. Purchase fires in verifyPaymentProofController.
-        sendInitiateCheckoutEvent(newOrder).catch(e =>
-            console.warn("⚠️ Meta CAPI error (transfer InitiateCheckout):", e?.message || e)
-        );
+        // META DESACTIVADO
+        // sendInitiateCheckoutEvent(newOrder).catch(e =>
+        //     console.warn("⚠️ Meta CAPI error (transfer InitiateCheckout):", e?.message || e)
+        // );
 
         return res.status(201).json({
             ok: true,
@@ -337,16 +336,15 @@ async function updateOrderStatus(req, res, next) {
 
         const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
 
-        // Fire CAPI Purchase for COD orders when admin marks them as paid.
-        // MP orders use the webhook; transfer orders use verifyPaymentProofController.
-        if (
-            ['approved', 'confirmed'].includes(paymentStatus) &&
-            updatedOrder?.paymentMethod === 'cod'
-        ) {
-            sendPurchaseEvent(updatedOrder).catch(e =>
-                console.warn("⚠️ Meta CAPI error (COD Purchase):", e?.message || e)
-            );
-        }
+        // META DESACTIVADO
+        // if (
+        //     ['approved', 'confirmed'].includes(paymentStatus) &&
+        //     updatedOrder?.paymentMethod === 'cod'
+        // ) {
+        //     sendPurchaseEvent(updatedOrder).catch(e =>
+        //         console.warn("⚠️ Meta CAPI error (COD Purchase):", e?.message || e)
+        //     );
+        // }
 
         return res.json({ ok: true, data: updatedOrder });
     } catch (error) {
@@ -397,10 +395,10 @@ async function verifyPaymentProofController(req, res, next) {
         order.paymentStatus = "confirmed";
         await order.save();
 
-        // Non-blocking: fire CAPI Purchase when admin approves a transfer payment proof.
-        sendPurchaseEvent(order).catch(e =>
-            console.warn("⚠️ Meta CAPI error (transfer Purchase):", e?.message || e)
-        );
+        // META DESACTIVADO
+        // sendPurchaseEvent(order).catch(e =>
+        //     console.warn("⚠️ Meta CAPI error (transfer Purchase):", e?.message || e)
+        // );
 
         return res.json({ ok: true, data: order });
     } catch (error) {

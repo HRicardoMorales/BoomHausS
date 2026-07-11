@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
-import { trackPurchase } from '../lib/metaPixel';
+// import { trackPurchase } from '../lib/metaPixel'; // META DESACTIVADO
 
 const S = {
   page: {
@@ -252,12 +252,13 @@ export default function SuccessPayment() {
     const orderRef = externalRef || paymentId;
     if (!orderRef) return;
 
-    trackPurchase(orderRef, {
-      content_type: 'product',
-      ...(paymentId  ? { transaction_id: paymentId } : {}),
-      ...(externalRef ? { order_id: externalRef }    : {}),
-      ...(backendAmount ? { value: backendAmount }   : {}),
-    });
+    // META DESACTIVADO
+    // trackPurchase(orderRef, {
+    //   content_type: 'product',
+    //   ...(paymentId  ? { transaction_id: paymentId } : {}),
+    //   ...(externalRef ? { order_id: externalRef }    : {}),
+    //   ...(backendAmount ? { value: backendAmount }   : {}),
+    // });
   }, [checking, backendVerified, paymentId, externalRef, backendAmount]);
 
   const paymentTypeLabel = paymentType === 'credit_card' ? 'Tarjeta de crédito'

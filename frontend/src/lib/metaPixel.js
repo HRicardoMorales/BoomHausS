@@ -44,7 +44,7 @@ export function track(eventName, params = {}, eventID) {
   }
 
   const eid = eventID || genEventId();
-  fbq("track", eventName, params, { eventID: eid });
+  // META DESACTIVADO: fbq("track", eventName, params, { eventID: eid });
 }
 
 export function trackPageView(pathname) {
@@ -54,7 +54,7 @@ export function trackPageView(pathname) {
   const fbq = window.fbq;
   if (typeof fbq !== "function") return;
 
-  fbq("track", "PageView");
+  // META DESACTIVADO: fbq("track", "PageView");
 }
 
 /**
@@ -104,9 +104,9 @@ export function trackPurchase(orderId, params = {}) {
 
   try { localStorage.setItem(guardKey, String(Date.now())); } catch (_) {}
 
-  fbq("track", "Purchase", {
-    ...params,
-    // currency siempre presente para que Meta no descarte el evento
-    currency: params.currency || "ARS",
-  }, { eventID });
+  // META DESACTIVADO
+  // fbq("track", "Purchase", {
+  //   ...params,
+  //   currency: params.currency || "ARS",
+  // }, { eventID });
 }

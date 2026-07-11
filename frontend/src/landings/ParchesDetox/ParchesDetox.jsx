@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
-import { track } from '../../lib/metaPixel';
+// import { track } from '../../lib/metaPixel'; // META DESACTIVADO
 import api from '../../services/api';
 import mc from '../parches-detox';
 import './ParchesDetox.css';
@@ -261,9 +261,10 @@ export default function ParchesDetoxLanding() {
       .catch(() => setProductReady(true));
   }, []);
 
-  useEffect(() => {
-    track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
-  }, []);
+  // META DESACTIVADO
+  // useEffect(() => {
+  //   track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
+  // }, []);
 
   /* Announcement rotation */
   useEffect(() => {

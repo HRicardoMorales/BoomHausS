@@ -5,7 +5,7 @@
 
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const { sendEarlyInitiateCheckoutEvent } = require('../services/metaCapi');
+// const { sendEarlyInitiateCheckoutEvent } = require('../services/metaCapi'); // META DESACTIVADO
 
 const router = express.Router();
 
@@ -29,15 +29,16 @@ router.post('/initiate-checkout', metaLimiter, async (req, res) => {
         return res.status(400).json({ ok: false, error: 'currency debe ser "ARS".' });
     }
 
-    sendEarlyInitiateCheckoutEvent({
-        metaEventId:     metaEventId     || undefined,
-        fbp:             fbp             || undefined,
-        fbc:             fbc             || undefined,
-        value:           numValue,
-        currency:        'ARS',
-        clientIp:        req.ip          || undefined,
-        clientUserAgent: req.headers['user-agent'] || undefined,
-    }).catch(e => console.warn('⚠️ Meta CAPI early InitiateCheckout error:', e?.message || e));
+    // META DESACTIVADO
+    // sendEarlyInitiateCheckoutEvent({
+    //     metaEventId:     metaEventId     || undefined,
+    //     fbp:             fbp             || undefined,
+    //     fbc:             fbc             || undefined,
+    //     value:           numValue,
+    //     currency:        'ARS',
+    //     clientIp:        req.ip          || undefined,
+    //     clientUserAgent: req.headers['user-agent'] || undefined,
+    // }).catch(e => console.warn('⚠️ Meta CAPI early InitiateCheckout error:', e?.message || e));
 
     return res.json({ ok: true });
 });

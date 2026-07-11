@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
 import { useCart } from "../context/CartContext.jsx";
-import { track } from "../lib/metaPixel";
+// import { track } from "../lib/metaPixel"; // META DESACTIVADO
 
 const PROVINCES = [
   "Buenos Aires","CABA","Catamarca","Chaco","Chubut","Córdoba","Corrientes",
@@ -15,22 +15,23 @@ const PROVINCES = [
   "Santiago del Estero","Tierra del Fuego","Tucumán",
 ];
 
-function getMetaCookies() {
-  try {
-    return document.cookie.split(';').reduce((acc, c) => {
-      const eq = c.indexOf('=');
-      const k = c.slice(0, eq).trim();
-      const v = c.slice(eq + 1).trim();
-      if (k === '_fbp') acc.fbp = v || null;
-      if (k === '_fbc') acc.fbc = v || null;
-      return acc;
-    }, { fbp: null, fbc: null });
-  } catch { return { fbp: null, fbc: null }; }
-}
-function genCheckoutEventId() {
-  try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
-  return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
+// META DESACTIVADO
+// function getMetaCookies() {
+//   try {
+//     return document.cookie.split(';').reduce((acc, c) => {
+//       const eq = c.indexOf('=');
+//       const k = c.slice(0, eq).trim();
+//       const v = c.slice(eq + 1).trim();
+//       if (k === '_fbp') acc.fbp = v || null;
+//       if (k === '_fbc') acc.fbc = v || null;
+//       return acc;
+//     }, { fbp: null, fbc: null });
+//   } catch { return { fbp: null, fbc: null }; }
+// }
+// function genCheckoutEventId() {
+//   try { if (crypto?.randomUUID) return crypto.randomUUID(); } catch (_) {}
+//   return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+// }
 
 const INITIAL_FORM = {
   nombre: "", apellido: "", email: "", tel: "",
@@ -315,26 +316,26 @@ export default function Checkout() {
   ].filter(Boolean).join(", "), [form]);
 
   // ── Warmup + pixel ────────────────────────────────────────────────────────
-  const firedRef = useRef(false);
-  const metaEventIdRef = useRef(null);
+  // META DESACTIVADO: const firedRef = useRef(false);
+  // META DESACTIVADO: const metaEventIdRef = useRef(null);
   useEffect(() => { warmUpApi(); }, []);
-  useEffect(() => {
-    if (isCartEmpty || firedRef.current) return;
-    firedRef.current = true;
-    const eid = genCheckoutEventId();
-    metaEventIdRef.current = eid;
-    const pixelValue = Number(totalPrice) || 0;
-    track("InitiateCheckout", { value: pixelValue, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" }, eid);
-    // Early CAPI: fire server-side at the same moment as the browser Pixel.
-    const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
-    api.post("/meta/initiate-checkout", {
-      metaEventId: eid,
-      value:       pixelValue,
-      currency:    "ARS",
-      ...(_fbp ? { fbp: _fbp } : {}),
-      ...(_fbc ? { fbc: _fbc } : {}),
-    }).catch(() => {});
-  }, [isCartEmpty]); // eslint-disable-line react-hooks/exhaustive-deps
+  // META DESACTIVADO
+  // useEffect(() => {
+  //   if (isCartEmpty || firedRef.current) return;
+  //   firedRef.current = true;
+  //   const eid = genCheckoutEventId();
+  //   metaEventIdRef.current = eid;
+  //   const pixelValue = Number(totalPrice) || 0;
+  //   track("InitiateCheckout", { value: pixelValue, currency: "ARS", num_items: totalItems, content_ids: contentIds, content_type: "product" }, eid);
+  //   const { fbp: _fbp, fbc: _fbc } = getMetaCookies();
+  //   api.post("/meta/initiate-checkout", {
+  //     metaEventId: eid,
+  //     value:       pixelValue,
+  //     currency:    "ARS",
+  //     ...(_fbp ? { fbp: _fbp } : {}),
+  //     ...(_fbc ? { fbc: _fbc } : {}),
+  //   }).catch(() => {});
+  // }, [isCartEmpty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Captura abandonada ────────────────────────────────────────────────────
   function captureAbandoned() {
@@ -389,7 +390,7 @@ export default function Checkout() {
 
   // ── Construir body de orden ───────────────────────────────────────────────
   function buildOrderBody(overrides = {}) {
-    const { fbp, fbc } = getMetaCookies();
+    // META DESACTIVADO: const { fbp, fbc } = getMetaCookies();
     return {
       clientOrderId:   getOrCreateClientOrderId(),
       customerName:    `${form.nombre} ${form.apellido}`.trim(),
@@ -415,9 +416,9 @@ export default function Checkout() {
         bundleTotal:    it.bundleTotal    || undefined,
         compareAtPrice: it.compareAtPrice || undefined,
       })),
-      ...(fbp ? { fbp } : {}),
-      ...(fbc ? { fbc } : {}),
-      ...(metaEventIdRef.current ? { metaEventId: metaEventIdRef.current } : {}),
+      // META DESACTIVADO: ...(fbp ? { fbp } : {}),
+      // META DESACTIVADO: ...(fbc ? { fbc } : {}),
+      // META DESACTIVADO: ...(metaEventIdRef.current ? { metaEventId: metaEventIdRef.current } : {}),
       ...overrides,
     };
   }
@@ -431,7 +432,7 @@ export default function Checkout() {
       return;
     }
     captureAbandoned();
-    track("AddPaymentInfo", { value: Number(finalTotal) || 0, currency: "ARS", content_ids: contentIds, content_type: "product", payment_type: onlinePayMethod });
+    // META DESACTIVADO: track("AddPaymentInfo", { value: Number(finalTotal) || 0, currency: "ARS", content_ids: contentIds, content_type: "product", payment_type: onlinePayMethod });
     setLoading(true); setError("");
     try {
       const res = await api.post("/orders", buildOrderBody());
