@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
-// import { trackPurchase } from '../lib/metaPixel'; // META DESACTIVADO
+import { trackPurchase } from '../lib/metaPixel';
 
 const S = {
   page: {
@@ -252,13 +252,16 @@ export default function SuccessPayment() {
     const orderRef = externalRef || paymentId;
     if (!orderRef) return;
 
-    // META DESACTIVADO
-    // trackPurchase(orderRef, {
-    //   content_type: 'product',
-    //   ...(paymentId  ? { transaction_id: paymentId } : {}),
-    //   ...(externalRef ? { order_id: externalRef }    : {}),
-    //   ...(backendAmount ? { value: backendAmount }   : {}),
-    // });
+    // trackPurchase eventID = "purchase_<orderRef>" — matches the server-side
+    // sendPurchaseEvent that fires from the MP webhook. Guard localStorage
+    // 30d dentro de trackPurchase evita doble disparo si el user recarga.
+    trackPurchase(orderRef, {
+      content_type:  'product',
+      currency:      'ARS',
+      ...(paymentId    ? { transaction_id: paymentId }    : {}),
+      ...(externalRef  ? { order_id:       externalRef }  : {}),
+      ...(backendAmount ? { value:         backendAmount } : {}),
+    });
   }, [checking, backendVerified, paymentId, externalRef, backendAmount]);
 
   const paymentTypeLabel = paymentType === 'credit_card' ? 'Tarjeta de crédito'
