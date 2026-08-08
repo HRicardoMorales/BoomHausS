@@ -59,7 +59,7 @@ const orderSchema = new mongoose.Schema(
         cartCreatedAt: { type: Date, default: null },
         paymentInfoAt: { type: Date, default: null },
         // Meta CAPI — captured at order creation for server-side event tracking
-        metaEventId:      { type: String, default: null }, // UUID from frontend InitiateCheckout Pixel
+        purchaseEventId:  { type: String, default: null }, // Deterministic "purchase_<orderId>" — shared by browser Pixel and CAPI for dedup
         fbp:              { type: String, default: null }, // _fbp cookie (plain text, not hashed)
         fbc:              { type: String, default: null }, // _fbc cookie (plain text, not hashed)
         clientIp:         { type: String, default: null }, // IP of the request that created the order
