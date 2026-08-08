@@ -245,8 +245,13 @@ async function createOrder(req, res, next) {
         await newOrder.save();
 
         // 2) COD — contra entrega (CABA)
-        //    Fire InitiateCheckout (not Purchase) at creation.
-        //    Purchase fires when admin marks the order as paid via updateOrderStatus.
+        //    Purchase fires HERE, at order creation — same moment as the
+        //    browser trackPurchase in CheckoutSheet.handleCodSubmit. Meta's
+        //    dedup window is 48h; if we waited for the admin to mark the
+        //    order approved (could be days later), the browser and server
+        //    events would fall outside the window and Meta would count two
+        //    Purchases. Firing here keeps them in sync and also gives us
+        //    the freshest ip/UA from the actual customer request.
         if (payMethod === "cod") {
             console.log("💵 Procesando como pago al recibir (COD)...");
 
@@ -255,10 +260,8 @@ async function createOrder(req, res, next) {
             } catch (e) {
                 console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
             }
-            // No InitiateCheckout server-side here: the frontend already fires
-            // it via trackWithCapi() → /api/track with a shared eventID.
-            // Purchase fires later from updateOrderStatus when the admin marks
-            // the COD order as paid.
+
+            sendPurchaseEvent(newOrder, { ip: req.ip, userAgent: req.headers?.['user-agent'] });
 
             return res.status(201).json({
                 ok: true,
@@ -339,14 +342,10 @@ async function updateOrderStatus(req, res, next) {
 
         const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
 
-        // Purchase for COD fires when the admin marks the order as paid.
-        // sendPurchaseEvent is fire-and-forget (never blocks the response).
-        if (
-            ['approved', 'confirmed'].includes(paymentStatus) &&
-            updatedOrder?.paymentMethod === 'cod'
-        ) {
-            sendPurchaseEvent(updatedOrder);
-        }
+        // No Purchase re-fire here for COD: it was already sent at order
+        // creation (see createOrder) to stay within Meta's 48h dedup window
+        // against the browser event. Firing again on admin confirmation
+        // would count as a second Purchase.
 
         return res.json({ ok: true, data: updatedOrder });
     } catch (error) {
