@@ -6,7 +6,7 @@ const Order = require("../models/order.js");
 const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
-// const { sendPurchaseEvent, sendInitiateCheckoutEvent } = require("../services/metaCapi"); // META DESACTIVADO
+const { sendPurchaseEvent } = require("../services/metaCapi");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -50,10 +50,9 @@ async function createOrder(req, res, next) {
             notes,
             paymentMethod,
             total: frontendTotal,
-            // Meta CAPI fields — sent by CheckoutSheet.jsx
+            // Meta CAPI fields — sent by the checkout (CheckoutSheet.jsx / checkout.jsx)
             fbp,
             fbc,
-            metaEventId,
         } = req.body || {};
 
         const badReq = (msg) => {
@@ -231,13 +230,19 @@ async function createOrder(req, res, next) {
             paymentMethod: payMethod,
             paymentStatus: "pending",
             notes: userNotes || "",
-            // Meta CAPI — stored for server-side events (Purchase, InitiateCheckout)
-            metaEventId:     metaEventId     || null,
+            // Meta CAPI — stored for server-side Purchase event.
+            // purchaseEventId is set right below with the deterministic form
+            // "purchase_<orderId>" so both browser Pixel and CAPI dedup on it.
             fbp:             fbp             || null,
             fbc:             fbc             || null,
             clientIp:        req.ip          || null,
             clientUserAgent: req.headers?.['user-agent'] || null,
         });
+
+        // Deterministic purchaseEventId — shared by browser Pixel trackPurchase()
+        // and server-side sendPurchaseEvent() so Meta deduplicates the pair.
+        newOrder.purchaseEventId = `purchase_${newOrder._id}`;
+        await newOrder.save();
 
         // 2) COD — contra entrega (CABA)
         //    Fire InitiateCheckout (not Purchase) at creation.
@@ -250,10 +255,10 @@ async function createOrder(req, res, next) {
             } catch (e) {
                 console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
             }
-            // META DESACTIVADO
-            // sendInitiateCheckoutEvent(newOrder).catch(e =>
-            //     console.warn("⚠️ Meta CAPI error (COD InitiateCheckout):", e?.message || e)
-            // );
+            // No InitiateCheckout server-side here: the frontend already fires
+            // it via trackWithCapi() → /api/track with a shared eventID.
+            // Purchase fires later from updateOrderStatus when the admin marks
+            // the COD order as paid.
 
             return res.status(201).json({
                 ok: true,
@@ -271,10 +276,9 @@ async function createOrder(req, res, next) {
                 console.log("✅ LINK GENERADO (init_point):", result.init_point);
                 console.log("✅ LINK SANDBOX:", result.sandbox_init_point);
 
-                // META DESACTIVADO
-                // sendInitiateCheckoutEvent(newOrder).catch(e =>
-                //     console.warn("⚠️ Meta CAPI error (MP InitiateCheckout):", e?.message || e)
-                // );
+                // No InitiateCheckout server-side here: the frontend fires it
+                // via trackWithCapi() → /api/track. Purchase for MP fires from
+                // mercadopagoWebhook when MP confirms payment approved.
 
                 return res.status(201).json({
                     ok: true,
@@ -295,10 +299,9 @@ async function createOrder(req, res, next) {
         } catch (e) {
             console.warn("⚠️ No se pudo enviar email:", e?.message || e);
         }
-        // META DESACTIVADO
-        // sendInitiateCheckoutEvent(newOrder).catch(e =>
-        //     console.warn("⚠️ Meta CAPI error (transfer InitiateCheckout):", e?.message || e)
-        // );
+        // No InitiateCheckout server-side here: the frontend fires it via
+        // trackWithCapi() → /api/track. Purchase for transfer fires from
+        // verifyPaymentProofController when the admin approves the proof.
 
         return res.status(201).json({
             ok: true,
@@ -336,15 +339,14 @@ async function updateOrderStatus(req, res, next) {
 
         const updatedOrder = await Order.findByIdAndUpdate(id, updateData, { new: true });
 
-        // META DESACTIVADO
-        // if (
-        //     ['approved', 'confirmed'].includes(paymentStatus) &&
-        //     updatedOrder?.paymentMethod === 'cod'
-        // ) {
-        //     sendPurchaseEvent(updatedOrder).catch(e =>
-        //         console.warn("⚠️ Meta CAPI error (COD Purchase):", e?.message || e)
-        //     );
-        // }
+        // Purchase for COD fires when the admin marks the order as paid.
+        // sendPurchaseEvent is fire-and-forget (never blocks the response).
+        if (
+            ['approved', 'confirmed'].includes(paymentStatus) &&
+            updatedOrder?.paymentMethod === 'cod'
+        ) {
+            sendPurchaseEvent(updatedOrder);
+        }
 
         return res.json({ ok: true, data: updatedOrder });
     } catch (error) {
@@ -395,10 +397,8 @@ async function verifyPaymentProofController(req, res, next) {
         order.paymentStatus = "confirmed";
         await order.save();
 
-        // META DESACTIVADO
-        // sendPurchaseEvent(order).catch(e =>
-        //     console.warn("⚠️ Meta CAPI error (transfer Purchase):", e?.message || e)
-        // );
+        // Purchase for bank transfer fires when the admin verifies the proof.
+        sendPurchaseEvent(order);
 
         return res.json({ ok: true, data: order });
     } catch (error) {

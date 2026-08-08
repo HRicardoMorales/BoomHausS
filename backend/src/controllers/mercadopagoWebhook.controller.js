@@ -1,7 +1,7 @@
 const Order = require("../models/order.js");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
-// const { sendPurchaseEvent } = require("../services/metaCapi"); // META DESACTIVADO
+const { sendPurchaseEvent } = require("../services/metaCapi");
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
@@ -44,12 +44,9 @@ async function mercadopagoWebhook(req, res) {
       } catch (emailErr) {
         console.warn("⚠️ No se pudo enviar email de confirmación MP:", emailErr?.message || emailErr);
       }
-      // META DESACTIVADO
-      // try {
-      //   await sendPurchaseEvent(updatedOrder);
-      // } catch (capiErr) {
-      //   console.warn("⚠️ Meta CAPI error (MP webhook):", capiErr?.message || capiErr);
-      // }
+      // Purchase for MP flows through here. clientIp/userAgent were captured
+      // when the order was created, so no ctx needed. Fire-and-forget.
+      sendPurchaseEvent(updatedOrder);
     }
 
     return res.status(200).json({ ok: true });
