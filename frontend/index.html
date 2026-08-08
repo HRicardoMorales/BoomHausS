@@ -34,35 +34,10 @@
   <meta name="twitter:description" content="Comprá rápido y seguro. Envío a coordinar. Pagos protegidos." />
   <meta name="twitter:image" content="https://boom-haus-2pbt3so0z-ricardo-morales-projects.vercel.app" />
 
-  <!-- Meta tracking desactivado el 2026-07-06 por migración a Shopify. Poner en true para reactivar. -->
-  <!-- Meta Pixel Code — DESACTIVADO. Para reactivar: descomentar el contenido del script -->
-  <script>
-    /* META PIXEL DESACTIVADO — quitar este bloque de comentario para reactivar
-    window.META_TRACKING_ENABLED = true;
-    !function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () {
-        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-      };
-      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-      n.queue = []; t = b.createElement(e); t.async = !0;
-      t.src = v; s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s)
-    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '26235812346071895');
-    fbq('track', 'PageView');
-    */
-  </script>
-  <!-- End Meta Pixel Code -->
+  <!-- Meta Pixel se inicializa en main.jsx desde VITE_META_PIXEL_ID (ver lib/metaPixelInit.js). -->
 </head>
 
 <body>
-  <!-- Meta Pixel Noscript (desactivado — ver META_TRACKING_ENABLED)
-  <noscript>
-    <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=26235812346071895&ev=PageView&noscript=1" />
-  </noscript>
-  -->
-
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
