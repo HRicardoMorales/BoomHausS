@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
-// import { track } from '../../lib/metaPixel'; // META DESACTIVADO
+import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './DepiladoraIPL.css';
 
@@ -365,10 +365,14 @@ export default function DepiladoraIPL() {
       .catch(() => setProductReady(true));
   }, []);
 
-  // META DESACTIVADO
-  // useEffect(() => {
-  //   track('ViewContent', { content_name: CHECKOUT_NAME, content_type: 'product', currency: 'ARS', value: DEFAULT_PRICE });
-  // }, []);
+  useEffect(() => {
+    trackWithCapi('ViewContent', {
+      content_name: CHECKOUT_NAME,
+      content_type: 'product',
+      currency:     'ARS',
+      value:        DEFAULT_PRICE,
+    });
+  }, []);
 
 
   /* Slides per view */

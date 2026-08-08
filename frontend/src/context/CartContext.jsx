@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-// import { track } from '../lib/metaPixel'; // META DESACTIVADO
+import { trackWithCapi } from '../lib/metaPixel';
 
 const CartContext = createContext(null);
 const CART_KEY = "cartItems";
@@ -65,16 +65,18 @@ export function CartProvider({ children }) {
         const gifts = options?.gifts?.length ? options.gifts : null;
         const bundleImgs = options?.bundleImgs?.length ? options.bundleImgs : null;
 
-            // META DESACTIVADO
-            // try {
-            //     track('AddToCart', {
-            //         value:        bundleTotal || (Number(product.price) * q) || 0,
-            //         currency:     'ARS',
-            //         content_ids:  [String(product._id)],
-            //         content_type: 'product',
-            //         num_items:    q,
-            //     });
-            // } catch (_) {}
+            // AddToCart canónico: cualquier landing/página que agregue al
+            // carrito pasa por acá, así no se duplica en cada landing.
+            // trackWithCapi genera eventID compartido browser+server-side.
+            try {
+                trackWithCapi('AddToCart', {
+                    value:        bundleTotal || (Number(product.price) * q) || 0,
+                    currency:     'ARS',
+                    content_ids:  [String(product._id)],
+                    content_type: 'product',
+                    num_items:    q,
+                });
+            } catch (_) {}
 
         // 🔥 Disparamos evento para que App.jsx muestre el Popup
         window.dispatchEvent(new CustomEvent('cart:added', {

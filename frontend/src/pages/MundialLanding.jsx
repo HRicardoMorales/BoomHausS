@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
-// import { track } from "../lib/metaPixel"; // META DESACTIVADO
+import { trackWithCapi } from "../lib/metaPixel";
 import { CheckoutSheet } from "./CheckoutSheet";
 import MC from "../landings/mundial-revendedores.js";
 
@@ -1215,14 +1215,13 @@ export default function MundialLanding() {
     };
   }, []);
 
-  // META DESACTIVADO
-  // useEffect(() => {
-  //   track("ViewContent", {
-  //     content_name: "Mundial Revendedores",
-  //     content_category: "B2B",
-  //     currency: "ARS",
-  //   });
-  // }, []);
+  useEffect(() => {
+    trackWithCapi("ViewContent", {
+      content_name:     "Mundial Revendedores",
+      content_category: "B2B",
+      currency:         "ARS",
+    });
+  }, []);
 
   // Scroll-reveal animations (mismo patrón que ProductDetail)
   useEffect(() => {

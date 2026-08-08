@@ -36,7 +36,7 @@ import LuxCoveLED from './landings/LuxCoveLED/LuxCoveLED';
 import DepiladoraIPL from './landings/DepiladoraIPL/DepiladoraIPL';
 import { getStoredAuth } from './utils/auth';
 
-// import { trackPageView } from "./lib/metaPixel"; // META DESACTIVADO
+import { trackPageView } from "./lib/metaPixel";
 import ScrollToTop from './components/ScrollToTop.jsx';
 import WhatsAppButton from './components/WhatsAppButton.jsx';
 function PrivateRoute({ children }) {
@@ -58,10 +58,11 @@ export default function App() {
   // ✅ Footer oculto en checkout y landing B2B mundial
   const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
 
-  // META DESACTIVADO
-  // useEffect(() => {
-  //   trackPageView(location.pathname);
-  // }, [location.pathname]);
+  // PageView en cada cambio de ruta SPA. El primer PageView lo dispara
+  // metaPixelInit al bootear la app.
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
 
   // ✅ SCROLL TOP REFORZADO (FIX DEFINITIVO)
   useEffect(() => {

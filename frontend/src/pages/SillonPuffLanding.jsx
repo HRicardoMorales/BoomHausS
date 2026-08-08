@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
-// import { track } from '../lib/metaPixel'; // META DESACTIVADO
+import { trackWithCapi } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
 import mc from '../landings/sillon-puff-inflable';
 
@@ -374,10 +374,14 @@ export default function SillonPuffLanding() {
       .catch(() => { setProductReady(true); });
   }, []);
 
-  // META DESACTIVADO
-  // useEffect(() => {
-  //   track('ViewContent', { content_name: mc.checkoutName, content_type: 'product', currency: 'ARS', value: mc.bundles?.[0]?.price || 0 });
-  // }, []);
+  useEffect(() => {
+    trackWithCapi('ViewContent', {
+      content_name: mc.checkoutName,
+      content_type: 'product',
+      currency:     'ARS',
+      value:        mc.bundles?.[0]?.price || 0,
+    });
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

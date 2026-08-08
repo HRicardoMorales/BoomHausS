@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
-// import { track } from "../lib/metaPixel"; // META DESACTIVADO
+import { trackWithCapi } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
@@ -1421,13 +1421,14 @@ export default function ProductDetail() {
     if (lastViewedRef.current === contentId) return;
     lastViewedRef.current = contentId;
 
-    // META DESACTIVADO
-    // track("ViewContent", {
-    //   content_ids: [String(contentId)],
-    //   content_type: "product",
-    //   value: Number(price) || 0,
-    //   currency: "ARS",
-    // });
+    // lastViewedRef guarda el guard: un ViewContent por producto por render
+    // aunque el user vuelva atrás y adelante.
+    trackWithCapi("ViewContent", {
+      content_ids:  [String(contentId)],
+      content_type: "product",
+      value:        Number(price) || 0,
+      currency:     "ARS",
+    });
   }, [product, contentId, price]);
 
   // Scroll-reveal: animar solo los elementos debajo del fold
