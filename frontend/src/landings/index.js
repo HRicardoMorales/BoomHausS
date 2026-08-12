@@ -145,6 +145,13 @@ export const LANDING_META = [
     status: 'active',
     emoji: '✨',
   },
+  {
+    slug: 'antimoho-pisos',
+    name: 'Anti-Moho PRO — Pisos y Juntas',
+    desc: 'Réplica adaptada de clean-eez.com/grouteez: 14 secciones, mobile-first, header propio sin navbar/marquee/footer. Bundles, fotos y reseñas son PLACEHOLDER — hay que cargar fotos reales, ajustar precios y dar de alta el producto en /admin/products con slug "antimoho-pisos" para que traiga precio/stock reales (si no existe, la landing sigue funcionando con los valores placeholder del código). Renderiza AntimohoPisos.jsx.',
+    status: 'draft',
+    emoji: '🧽',
+  },
   // Para agregar una nueva landing:
   // 1. Crear frontend/src/landings/mi-producto.js (copiar TEMPLATE.js)
   // 2. Importar arriba y agregar a LANDING_CONFIGS

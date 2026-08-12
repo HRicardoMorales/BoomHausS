@@ -34,6 +34,7 @@ import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
 import MasajeadorFacialIonesLanding from './pages/MasajeadorFacialIonesLanding.jsx';
 import LuxCoveLED from './landings/LuxCoveLED/LuxCoveLED';
 import DepiladoraIPL from './landings/DepiladoraIPL/DepiladoraIPL';
+import AntimohoPisos from './landings/AntimohoPisos/AntimohoPisos';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
@@ -52,11 +53,11 @@ export default function App() {
   const location = useLocation();
 
   // ✅ Navbar/marquee ocultos en checkout y landing B2B
-  const hideChrome = location.pathname === '/checkout';
+  const hideChrome = location.pathname === '/checkout' || location.pathname === '/lp/antimoho-pisos';
   // ✅ Marquee oculto además en landings con header propio
-  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
+  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
   // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
 
   // PageView en cada cambio de ruta SPA. El primer PageView lo dispara
   // metaPixelInit al bootear la app.
@@ -138,6 +139,8 @@ export default function App() {
           <Route path="/lp/escultor-led" element={<LuxCoveLED />} />
           {/* ✅ Depiladora IPL Profesional — componente dedicado */}
           <Route path="/lp/depiladora-ipl" element={<DepiladoraIPL />} />
+          {/* ✅ Anti-Moho PRO (pisos y juntas) — componente dedicado, header propio sin navbar/marquee/footer */}
+          <Route path="/lp/antimoho-pisos" element={<AntimohoPisos />} />
           {/* ✅ Landing pages — ProductDetail con slug, sin navbar/footer */}
           <Route path="/lp/:slug" element={<ProductDetail />} />
           <Route path="/products" element={<Products />} />
