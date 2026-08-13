@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { trackWithCapi } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
+import SafeImg from '../components/SafeImg.jsx';
 import mc from '../landings/sillon-puff-inflable';
 
 /* ============================================================
@@ -433,7 +434,11 @@ export default function SillonPuffLanding() {
         if (url && !arr.find(a => a.src === url)) arr.push({ src: url, alt: 'Sillón Puff Inflable Sunfield' });
       });
     }
-    return arr.length ? arr : mc.heroImages;
+    if (arr.length) return arr;
+    // Fallback del config: filtrar entries con src vacio (mc.heroImages tiene
+    // 4 slots vacios como template para completar desde el admin — no queremos
+    // renderizarlos como thumbs vacios).
+    return mc.heroImages.filter(h => h?.src && String(h.src).trim());
   }, [product]);
 
   // FIX: story images from config only — never pulled from product.images API array
@@ -462,7 +467,8 @@ export default function SillonPuffLanding() {
     );
   }
 
-  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Sillón Puff Inflable Sunfield' };
+  const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: mc.checkoutName || 'Sillón Puff Inflable Sunfield' };
+  const productDisplayName = mc.checkoutName || 'Sillón Puff Inflable Sunfield';
 
   return (
     <div className="spf-wrap">
@@ -475,22 +481,14 @@ export default function SillonPuffLanding() {
         <section className="pd-media-fullwidth">
           <section className="pd-media">
             <div className="pd-mediaMain pd-mediaMain--bigger">
-              {activeImg.src
-                ? (
-                  <img
-                    key={activeImgIdx}
-                    className="pd-mainImg pd-mainImg--anim"
-                    src={activeImg.src}
-                    alt={activeImg.alt}
-                    style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
-                  />
-                ) : (
-                  <div className="spf-hero-ph" aria-label={activeImg.alt}>
-                    <span className="spf-hero-ph-icon">🛋️</span>
-                    <span className="spf-hero-ph-text">{activeImg.alt}</span>
-                  </div>
-                )
-              }
+              <SafeImg
+                key={activeImgIdx}
+                className="pd-mainImg pd-mainImg--anim"
+                src={activeImg.src}
+                alt={activeImg.alt}
+                name={productDisplayName}
+                style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+              />
             </div>
             <div className="pd-thumbs-row">
               {heroImgs.map((img, idx) => (
@@ -500,10 +498,12 @@ export default function SillonPuffLanding() {
                   onClick={() => setActiveImgIdx(idx)}
                   aria-label={img.alt}
                 >
-                  {img.src
-                    ? <img src={img.src} alt={img.alt} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                    : <div className="spf-thumb-ph">🛋️</div>
-                  }
+                  <SafeImg
+                    src={img.src}
+                    alt={img.alt}
+                    name={productDisplayName}
+                    style={{ width:'100%', height:'100%', objectFit:'cover' }}
+                  />
                 </button>
               ))}
             </div>

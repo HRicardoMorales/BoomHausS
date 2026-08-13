@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { LANDING_CONFIGS } from "../landings/index.js";
+import SafeImg from "../components/SafeImg.jsx";
 
 /* ── useCountdown — mismo hook que marquee.jsx y ProductDetail.jsx ── */
 /* Misma sessionStorage key "pd_countdown" → sincronizado con el marquee */
@@ -102,9 +103,13 @@ function ProductCard({ product, index = 0 }) {
       onClick={() => navigate(href)}
     >
       <div className="hc-card-img">
-        {img
-          ? <img src={img} alt={product.name} loading="lazy" decoding="async" />
-          : <div className="hc-card-no-img">📦</div>}
+        <SafeImg
+          src={img}
+          name={product.name}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+        />
         {pct > 0 && <span className="hc-badge-off">-{pct}%</span>}
       </div>
       <div className="hc-card-body">
