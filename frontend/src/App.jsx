@@ -147,7 +147,7 @@ export default function App() {
           <Route path="/lp/masajeador-ems-eyes" element={<MasajeadorEmsEyesLanding />} />
           {/* ✅ Masajeador Facial 5 en 1 Lambo Lady — componente dedicado */}
           <Route path="/lp/masajeador-facial-iones-lambo" element={<MasajeadorFacialIonesLanding />} />
-          {/* ✅ Escultor Facial LED 3 en 1 — componente dedicado LuxCoveLED */}
+          {/* ✅ Escultor Facial LED (nombre real en BD) — componente dedicado LuxCoveLED */}
           <Route path="/lp/escultor-led" element={<LuxCoveLED />} />
           {/* ✅ Depiladora IPL Profesional — componente dedicado */}
           <Route path="/lp/depiladora-ipl" element={<DepiladoraIPL />} />

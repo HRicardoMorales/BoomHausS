@@ -4,11 +4,14 @@ import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../context/CartContext';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
+import mc from '../escultor-led';
 import './LuxCoveLED.css';
 
 /* ── Constantes ───────────────────────────────────────────── */
+// Nombre del producto: la fuente de verdad es la BD (product.name).
+// mc.checkoutName es solo fallback si el fetch falla. NO hardcodear
+// "X en 1" aca — se cambia desde admin → productos → escultor-led.
 const PRODUCT_SLUG = 'escultor-led';
-const CHECKOUT_NAME = 'Escultor Facial LED 3 en 1';
 const DEFAULT_PRICE = 39900;
 const DEFAULT_COMPARE = 115000;
 
@@ -416,8 +419,13 @@ export default function LuxCoveLED() {
   }, []);
 
   useEffect(() => {
+    // ViewContent se dispara una vez al montar. Usamos mc.checkoutName
+    // como fallback estable — evita doble-fire cuando llega product de la
+    // BD. Si querés precision perfecta con el nombre real de BD en Meta,
+    // habria que retrasar el ViewContent al post-fetch (cambio de
+    // comportamiento de tracking — se deja para otro sprint).
     trackWithCapi('ViewContent', {
-      content_name: CHECKOUT_NAME,
+      content_name: mc.checkoutName,
       content_type: 'product',
       currency:     'ARS',
       value:        DEFAULT_PRICE,
@@ -483,6 +491,8 @@ export default function LuxCoveLED() {
   const compareAt = product?.compareAtPrice ?? DEFAULT_COMPARE;
   const discountPct = compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 65;
   const soldOut = product?.stock === 0;
+  // Nombre para mostrar en UI y carrito. Prioridad: BD > config fallback > literal.
+  const displayName = product?.name || mc.checkoutName || 'Escultor Facial LED';
 
   const fmt = (n) =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
@@ -506,9 +516,9 @@ export default function LuxCoveLED() {
   const handleBuy = () => {
     if (soldOut) return;
     const bundle = BUNDLES[selectedBundle];
-    const productData = product || { _id: PRODUCT_SLUG, name: CHECKOUT_NAME, slug: PRODUCT_SLUG };
+    const productData = product || { _id: PRODUCT_SLUG, name: displayName, slug: PRODUCT_SLUG };
     addItem(
-      { ...productData, name: CHECKOUT_NAME, imageUrl: productImages[0]?.src },
+      { ...productData, name: displayName, imageUrl: productImages[0]?.src },
       1,
       {
         bundleTotal:    bundle.bundlePrice,
@@ -525,16 +535,16 @@ export default function LuxCoveLED() {
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
   const productImages = useMemo(() => [
-    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: 'Escultor Facial LED 3 en 1 — Vista principal (img-hero.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo (img-galeria-2.jpg)' },
-    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles (img-galeria-3.jpg)' },
-  ], [giftConfig.heroImg]);
+    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles' },
+  ], [giftConfig.heroImg, displayName]);
 
   if (!productReady) {
     return (
@@ -594,7 +604,7 @@ export default function LuxCoveLED() {
                 <span className="led-reviews-count">| Más de 10.000 clientes satisfechos</span>
               </div>
 
-              <h1 className="led-product-title">Escultor Facial LED 3 en 1 de Amelor</h1>
+              <h1 className="led-product-title">{displayName} de Amelor</h1>
 
               <div className="led-pricing">
                 <span className="led-price-original">{fmt(compareAt)}</span>
@@ -638,7 +648,7 @@ export default function LuxCoveLED() {
                             <div className="led-bundle-item">
                               <div className="led-bundle-thumb">
                                 {(BUNDLE_PRODUCT_IMG || productImages[0]?.src)
-                                  ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt="Escultor Facial LED" />
+                                  ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt={displayName} />
                                   : <span>💡</span>}
                               </div>
                               <span className="led-bundle-item-name">{b.productThumbName}</span>

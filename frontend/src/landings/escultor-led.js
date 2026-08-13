@@ -1,8 +1,11 @@
 // Minimal config para LANDING_CONFIGS / home page
 // El componente completo vive en src/landings/LuxCoveLED/LuxCoveLED.jsx
+// checkoutName es SOLO fallback: LuxCoveLED lee product.name de la BD
+// y usa este valor si el fetch falla. Fuente de verdad = admin → producto
+// escultor-led → campo Name. Cambiá alli para actualizar UI + card.
 const escultorLed = {
   productSlug: 'escultor-led',
-  checkoutName: 'Escultor Facial LED 3 en 1',
+  checkoutName: 'Escultor Facial LED 7 en 1',
   bundles: [
     { qty: 1, price: 39900, compareAt: 115000, label: '1 unidad', popular: true },
   ],
@@ -13,6 +16,5 @@ const escultorLed = {
   heroImages: [],
 };
 
-// Alt text del item eliminado en el fix de src vacio: 'Escultor Facial LED 3 en 1'
 
 export default escultorLed;
