@@ -11,3 +11,6 @@ frontend/.env
 dist
 .vite
 frontend/.env.production
+
+# Local scratch / prompt drafts
+PROMPT_*.txt
