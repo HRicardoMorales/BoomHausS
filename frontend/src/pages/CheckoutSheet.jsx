@@ -468,9 +468,11 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         setSavedOrderId(orderId);
       }
 
-      // 2. Procesar pago con tarjeta
+      // 2. Procesar pago con tarjeta. `amount` NO se envia: el backend usa
+      // order.totalAmount como fuente autoritativa para prevenir manipulacion
+      // de precios desde el cliente. Ver backend/src/routes/orders.routes.js.
       const res = await api.post("/orders/card-payment", {
-        token, paymentMethodId, issuerId, installments, amount,
+        token, paymentMethodId, issuerId, installments,
         email: email || "comprador@Amelor.com",
         identificationType, identificationNumber,
         customerName: `${form.nombre} ${form.apellido}`.trim(),
