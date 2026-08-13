@@ -81,6 +81,13 @@ function findLandingSlug(productSlug) {
 /* ── ProductCard ─────────────────────────────────────────────────── */
 function ProductCard({ product, index = 0 }) {
   const navigate = useNavigate();
+
+  // Defensa en profundidad: nunca renderizar una card sin precio valido.
+  // El filtro `visible` de arriba ya deberia bloquearlo, pero si algo se cuela
+  // (bug futuro, virtual del landing config sin bundle, product entry corrupto)
+  // mejor que la card no exista a que aparezca con "$ 0" + boton "Ver oferta".
+  if (!(Number(product?.price) > 0)) return null;
+
   const img  = product.images?.[0] || product.imageUrl || "";
   const pct  = discountPct(product.price, product.compareAtPrice);
   const landingSlug = findLandingSlug(product.slug);
@@ -215,10 +222,11 @@ export default function Home() {
           return true;
         });
         const merged = [...extras, ...filteredApiProducts];
-        // Filtrar productos sin imagen y sin precio (DB entries incompletos)
-        const visible = merged.filter((p) =>
-          (p.images?.length > 0 && p.images[0]) || p.imageUrl || Number(p.price) > 0
-        );
+        // Filtro estricto: precio > 0 es REQUERIDO. El OR anterior
+        // (imagen || precio) dejaba pasar cards con imagen + $0, lo que
+        // generaba "$ 0" con boton "Ver oferta" para productos desactivados
+        // o virtuales de landing configs sin bundle. Nunca cobrar $0.
+        const visible = merged.filter((p) => Number(p.price) > 0);
         setProducts(visible);
       } catch (e) {
         console.error("Home catalog error:", e);

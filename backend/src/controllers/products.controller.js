@@ -12,8 +12,11 @@ async function getSingleProduct(req, res) {
             return res.status(500).json({ ok: false, message: 'SINGLE_PRODUCT_ID not set' });
         }
 
+        // Filtro isActive para consistencia con /products, /products/:id y
+        // /products/slug/:slug. Un producto desactivado nunca deberia salir
+        // por endpoints publicos (defensa de precios y de UX).
         const product = await Product.findById(id);
-        if (!product) {
+        if (!product || !product.isActive) {
             return res.status(404).json({ ok: false, message: 'Single product not found' });
         }
 
