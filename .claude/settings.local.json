@@ -42,7 +42,11 @@
       "WebFetch(domain:getlogovector.com)",
       "WebFetch(domain:brandfetch.com)",
       "WebFetch(domain:github.com)",
-      "Bash(curl -s \"https://raw.githubusercontent.com/Tgentil/Bancos-em-SVG/main/Mercado%20Pago/mercado-pago.svg\")"
+      "Bash(curl -s \"https://raw.githubusercontent.com/Tgentil/Bancos-em-SVG/main/Mercado%20Pago/mercado-pago.svg\")",
+      "Bash(git branch *)",
+      "Bash(git merge *)",
+      "Bash(git stash *)",
+      "PowerShell($backup = \"$env:TEMP\\\\bh-claude-backup\"; New-Item -ItemType Directory -Force -Path $backup | Out-Null; Copy-Item \".claude\\\\settings.json\" \"$backup\\\\settings.json\" -Force; Copy-Item \".claude\\\\settings.local.json\" \"$backup\\\\settings.local.json\" -Force; Get-ChildItem $backup | Select-Object Name, Length)"
     ]
   }
 }
