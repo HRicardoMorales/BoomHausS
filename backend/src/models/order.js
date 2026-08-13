@@ -55,6 +55,10 @@ const orderSchema = new mongoose.Schema(
         paymentProofPublicId: { type: String, default: null }, // opcional (cloudinary)
         paymentReviewedAt: { type: Date, default: null },
         paymentReviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+        // MP payment id persisted when a webhook approves the order — used by
+        // mercadopagoWebhook to short-circuit duplicate webhooks for the same
+        // paymentId (MP retries on 5xx and sometimes on 2xx too).
+        mpPaymentId: { type: String, default: null, index: true, sparse: true },
         notes: { type: String, default: '' },
         cartCreatedAt: { type: Date, default: null },
         paymentInfoAt: { type: Date, default: null },
