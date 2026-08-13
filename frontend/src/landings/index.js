@@ -133,8 +133,8 @@ export const LANDING_META = [
   },
   {
     slug: 'escultor-led',
-    name: 'Escultor Facial LED 7 en 1',
-    desc: 'Landing Luxcove-inspired: 16 secciones, diseño rosa/blanco alterno, Montserrat. Slug admin: "escultor-led". Renderiza LuxCoveLED.jsx.',
+    name: 'Escultor Facial LED 3 en 1',
+    desc: 'Landing Luxcove-inspired: 16 secciones, diseño rosa/blanco alterno, Montserrat. Slug admin: "escultor-led". Renderiza LuxCoveLED.jsx. Nombre "3 en 1" refiere a los 3 modos (Limpieza + EMS + Calor) x 3 luces LED (rojo/azul/verde) del producto.',
     status: 'active',
     emoji: '💡',
   },
