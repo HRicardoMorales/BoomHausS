@@ -7,6 +7,11 @@ const User = require("../models/User");
 const { sendOrderConfirmationEmail } = require("../services/emailService");
 const { uploadPaymentProofFromPath } = require("../services/cloudinaryService.js");
 const { sendPurchaseEvent } = require("../services/metaCapi");
+const {
+    computeExpectedTotal,
+    incrementCouponUsage,
+    getEnforcementMode,
+} = require("../services/orderPricing");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
@@ -50,6 +55,9 @@ async function createOrder(req, res, next) {
             notes,
             paymentMethod,
             total: frontendTotal,
+            // Coupon aplicado por el usuario (opcional). Se usa para
+            // recalcular el descuento server-side en orderPricing.
+            couponCode,
             // Meta CAPI fields — sent by the checkout (CheckoutSheet.jsx / checkout.jsx)
             fbp,
             fbc,
@@ -118,9 +126,61 @@ async function createOrder(req, res, next) {
 
         const totalItems = normalizedItems.reduce((acc, it) => acc + it.quantity, 0);
         const computedTotal = normalizedItems.reduce((acc, it) => acc + it.price * it.quantity, 0);
-        const totalAmount = (Number.isFinite(Number(frontendTotal)) && Number(frontendTotal) > 0)
-            ? Math.round(Number(frontendTotal))
-            : computedTotal;
+        const frontendTotalNum = Number(frontendTotal);
+        const hasFrontendTotal = Number.isFinite(frontendTotalNum) && frontendTotalNum > 0;
+
+        // ── PRICE_ENFORCEMENT ─────────────────────────────────────────
+        // Recalculamos el total desde la BD (Product + Coupon + tabla de
+        // envio) sin creerle al cliente. En 'shadow' logueamos las
+        // discrepancias pero seguimos cobrando lo que mando el frontend
+        // (transicion segura para acumular datos). En 'enforce' el server
+        // manda: cualquier intento de bajar el precio queda bloqueado.
+        const enforcementMode = getEnforcementMode();
+        let expectedTotal = null;
+        let priceBreakdown = null;
+        let priceDiscrepancies = [];
+        try {
+            const result = await computeExpectedTotal({
+                items: normalizedItems,
+                shippingMethod: shipMethod,
+                couponCode,
+            });
+            expectedTotal = result.expectedTotal;
+            priceBreakdown = result.breakdown;
+            priceDiscrepancies = result.discrepancies || [];
+
+            if (hasFrontendTotal && expectedTotal !== Math.round(frontendTotalNum)) {
+                const diff = Math.round(frontendTotalNum) - expectedTotal;
+                const sign = diff > 0 ? "+" : "";
+                console.warn(
+                    `⚠️ DISCREPANCIA precio: frontend $${Math.round(frontendTotalNum)} vs server $${expectedTotal} (diff ${sign}$${diff}) [mode=${enforcementMode}]`,
+                    {
+                        breakdown: priceBreakdown,
+                        discrepancies: priceDiscrepancies,
+                        itemDetails: result.itemDetails,
+                    }
+                );
+            } else if (priceDiscrepancies.length) {
+                // Match de total pero hay items marcados como discrepancia
+                // (ej. bundle_no_match donde el sumatorio compensó). Loguear
+                // igual — es señal de datos raros.
+                console.warn(
+                    `⚠️ DISCREPANCIA items (total OK): server $${expectedTotal}`,
+                    { discrepancies: priceDiscrepancies }
+                );
+            }
+        } catch (priceErr) {
+            // Nunca romper la orden por un fallo del recalculo. Log y sigue.
+            console.error("❌ computeExpectedTotal falló:", priceErr?.message || priceErr);
+        }
+
+        const totalAmount = (() => {
+            if (enforcementMode === 'enforce' && Number.isFinite(expectedTotal) && expectedTotal > 0) {
+                return expectedTotal;
+            }
+            if (hasFrontendTotal) return Math.round(frontendTotalNum);
+            return computedTotal;
+        })();
 
         if (!Number.isFinite(totalAmount) || totalAmount <= 0)
             throw badReq("Total inválido.");
@@ -230,6 +290,7 @@ async function createOrder(req, res, next) {
             paymentMethod: payMethod,
             paymentStatus: "pending",
             notes: userNotes || "",
+            couponCode: couponCode ? String(couponCode).trim().toUpperCase() : null,
             // Meta CAPI — stored for server-side Purchase event.
             // purchaseEventId is set right below with the deterministic form
             // "purchase_<orderId>" so both browser Pixel and CAPI dedup on it.
@@ -243,6 +304,23 @@ async function createOrder(req, res, next) {
         // and server-side sendPurchaseEvent() so Meta deduplicates the pair.
         newOrder.purchaseEventId = `purchase_${newOrder._id}`;
         await newOrder.save();
+
+        // Coupon.usedCount++ atomico con guard de maxUses + expiresAt.
+        // Fire-and-forget: si falla (race, cupon agotado, cupon inactivo),
+        // logueamos pero no rompemos la orden — la validacion ya paso en el
+        // paso previo del checkout y el costo de una cuenta desviada es
+        // menor que rechazar una compra buena.
+        if (couponCode) {
+            incrementCouponUsage(couponCode)
+                .then(updated => {
+                    if (!updated) {
+                        console.warn(`⚠️ Cupón ${couponCode}: no se incrementó usedCount (agotado, expirado o inactivo)`);
+                    }
+                })
+                .catch(err => {
+                    console.warn(`⚠️ Cupón ${couponCode}: error incrementando usedCount:`, err?.message || err);
+                });
+        }
 
         // 2) COD — contra entrega (CABA)
         //    Purchase fires HERE, at order creation — same moment as the

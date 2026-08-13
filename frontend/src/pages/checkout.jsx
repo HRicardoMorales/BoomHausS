@@ -387,6 +387,9 @@ export default function Checkout() {
         !sameAddr && form.billingEmail ? `Facturación: ${form.billingEmail.trim()}` : "",
       ].filter(Boolean).join(" | "),
       coupon:          appliedCoupon?.code || null,
+      // couponCode canonical: backend/orderPricing lo usa para recalcular
+      // el descuento server-side e incrementar usedCount.
+      couponCode:      appliedCoupon?.code || null,
       couponDiscount,
       total: finalTotal,
       items: items.map(it => ({

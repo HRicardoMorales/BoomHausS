@@ -324,6 +324,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       shippingMethod:  delivery,
       paymentMethod:   payment === "mp" ? "mercadopago" : "card",
       notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
+      // couponCode explicito: el backend lo usa para recalcular el descuento
+      // (orderPricing.js) y para incrementar Coupon.usedCount atomicamente.
+      couponCode:      appliedCoupon?.code || null,
       // Meta CAPI — fbp/fbc para armar user_data en el Purchase server-side.
       // purchaseEventId lo setea el server (determinístico "purchase_<orderId>").
       ...(fbp ? { fbp } : {}),
@@ -359,6 +362,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         shippingMethod:  delivery,
         paymentMethod:   "mercadopago",
         notes:           [form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(" | ") || "",
+        couponCode:      appliedCoupon?.code || null,
         total:           finalTotal,
         items:           cartItems,
         // Meta CAPI — fbp/fbc para el Purchase server-side desde el webhook MP.
@@ -414,6 +418,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         shippingMethod:  delivery,
         paymentMethod:   "cod",
         notes:           ["Pago al recibir", form.notes, appliedCoupon ? `Cupón: ${appliedCoupon.code}` : ""].filter(Boolean).join(". "),
+        couponCode:      appliedCoupon?.code || null,
         total:           finalTotal,
         items:           cartItems,
         // Meta CAPI — fbp/fbc para el Purchase server-side (COD dispara

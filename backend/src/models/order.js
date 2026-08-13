@@ -59,6 +59,9 @@ const orderSchema = new mongoose.Schema(
         // mercadopagoWebhook to short-circuit duplicate webhooks for the same
         // paymentId (MP retries on 5xx and sometimes on 2xx too).
         mpPaymentId: { type: String, default: null, index: true, sparse: true },
+        // Codigo del cupon aplicado (para auditoria y para reconciliar
+        // Coupon.usedCount si hace falta rollback). Uppercase por convencion.
+        couponCode: { type: String, default: null },
         notes: { type: String, default: '' },
         cartCreatedAt: { type: Date, default: null },
         paymentInfoAt: { type: Date, default: null },
