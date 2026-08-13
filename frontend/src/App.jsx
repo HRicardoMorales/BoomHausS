@@ -57,6 +57,19 @@ export default function App() {
   const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
   // ✅ Footer oculto en checkout y landing B2B mundial
   const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox';
+  // ✅ WhatsApp global oculto donde la pagina renderiza su propio boton
+  //    (evita duplicar). Alcance:
+  //    - landings (/lp/*): todas tienen su <WaTab> propio con estilo custom
+  //    - product detail (/products/:id): tiene <WaTab>
+  //    - admin (/admin/*): no queremos WA de cliente en el panel admin
+  //    - checkout: UI densa, floating extra molesta
+  //    Home (/, /public) SI muestra el global (antes tenia un .hc-wa-fab
+  //    local duplicado; se removio para consolidar en el componente global).
+  const hideWhatsApp =
+    location.pathname === '/checkout' ||
+    location.pathname.startsWith('/lp/') ||
+    location.pathname.startsWith('/products/') ||
+    location.pathname.startsWith('/admin');
 
   // PageView en cada cambio de ruta SPA. El primer PageView lo dispara
   // metaPixelInit al bootear la app.
@@ -162,7 +175,7 @@ export default function App() {
       </div>
 
       {!hideChrome && !hideFooter && <Footer />}
-      <WhatsAppButton />
+      {!hideWhatsApp && <WhatsAppButton />}
     </div>
   );
 }

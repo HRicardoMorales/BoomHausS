@@ -926,20 +926,9 @@ export default function Home() {
         )}
       </div>
 
-      {/* ─── FLOATING WA (fixed) ─────────────────────────────────────── */}
-      {waLink && (
-        <a
-          className="hc-wa-fab"
-          href={waLink}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Contactar por WhatsApp"
-        >
-          <span className="hc-wa-fab-ring" />
-          <span className="hc-wa-fab-ico">💬</span>
-          <span className="hc-wa-fab-lbl">WhatsApp</span>
-        </a>
-      )}
+      {/* WhatsApp: se usa el componente global <WhatsAppButton /> desde
+          App.jsx. Antes habia un .hc-wa-fab local aca que duplicaba el
+          floating button. Un solo boton por pagina. */}
     </main>
   );
 }
