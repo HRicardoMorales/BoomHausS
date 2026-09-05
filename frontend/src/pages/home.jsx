@@ -1,5 +1,5 @@
 // frontend/src/pages/home.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { LANDING_CONFIGS } from "../landings/index.js";
@@ -151,6 +151,8 @@ function SkeletonCard() {
 export default function Home() {
   const [products, setProducts]   = useState([]);
   const [loading, setLoading]     = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0); // 0 = primer intento, 1+ = reintento
   const [activeCat, setActiveCat] = useState("todos");
   const catalogRef = useRef(null);
 
@@ -193,9 +195,28 @@ export default function Home() {
     }, []);
   }, []);
 
-  /* Fetch */
-  useEffect(() => {
-    (async () => {
+  /* Fetch con retry + backoff para cubrir cold start de Render (~30-60s).
+     Regla dura: los productos virtuales de configs NUNCA salen como fallback
+     de un error de red — solo se agregan cuando la API respondio OK y su
+     slug no matchea con ningun producto de la BD. Si la API falla despues
+     de todos los reintentos, mostramos error explicito, no un catalogo
+     fantasma con $ 0. */
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setFetchError(false);
+    setRetryAttempt(0);
+
+    // Delays entre intentos: 0 (inmediato), 1s, 3s, 6s. Cubre cold start
+    // tipico de Render free tier sin castigar al usuario si la API vuelve
+    // rapido. Total worst-case: ~10s antes de mostrar error.
+    const delays = [0, 1000, 3000, 6000];
+    let lastError = null;
+
+    for (let i = 0; i < delays.length; i++) {
+      if (delays[i] > 0) {
+        setRetryAttempt(i);
+        await new Promise(r => setTimeout(r, delays[i]));
+      }
       try {
         const [productsRes, slugsRes] = await Promise.all([
           api.get("/products"),
@@ -215,7 +236,9 @@ export default function Home() {
         const landingProductSlugs = new Set(
           Object.values(LANDING_CONFIGS).map(cfg => cfg.productSlug).filter(Boolean)
         );
-        // Excluir virtual si su slug existe en DB (active o inactive)
+        // Excluir virtual si su slug existe en DB (active o inactive).
+        // Virtuales solo aparecen aca — donde la API respondio OK y el slug
+        // realmente no existe en la BD. Nunca en el catch (ver regla arriba).
         const extras = landingVirtualProducts.filter((p) => !allDbSlugs.has(p.slug));
         // Excluir productos de DB cuyo slug extiende un productSlug de landing
         const filteredApiProducts = apiProducts.filter(p => {
@@ -233,15 +256,28 @@ export default function Home() {
         // o virtuales de landing configs sin bundle. Nunca cobrar $0.
         const visible = merged.filter((p) => Number(p.price) > 0);
         setProducts(visible);
-      } catch (e) {
-        console.error("Home catalog error:", e);
-        // Si la API falla igual mostramos las landings
-        setProducts(landingVirtualProducts);
-      } finally {
+        setFetchError(false);
         setLoading(false);
+        setRetryAttempt(0);
+        return;
+      } catch (e) {
+        lastError = e;
+        console.warn(`Home catalog fetch attempt ${i + 1}/${delays.length} failed:`, e?.message || e);
       }
-    })();
+    }
+
+    // Todos los intentos fallaron. NO caemos al fallback de virtuales
+    // (mostrarian $ 0 con boton de compra — peor UX que un mensaje claro).
+    console.error("Home catalog: todos los reintentos fallaron", lastError);
+    setProducts([]);
+    setFetchError(true);
+    setLoading(false);
+    setRetryAttempt(0);
   }, [landingVirtualProducts]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   /* Scroll-reveal — mismo patrón que MundialLanding:
      elementos en viewport → is-visible inmediato (con stagger via transitionDelay)
@@ -856,7 +892,7 @@ export default function Home() {
         {/* ─── CATALOG HEADER + TABS ──────────────────────────────── */}
         <div className="hc-sec-head hc-anim" ref={catalogRef}>
           <h2 className="hc-sec-title">Catálogo</h2>
-          {!loading && (
+          {!loading && !fetchError && (
             <span className="hc-sec-count">
               {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
               {activeCat !== "todos" ? ` en "${catLabel(activeCat)}"` : ""}
@@ -885,36 +921,77 @@ export default function Home() {
           </div>
         )}
 
+        {/* Mini banner de reintento — solo visible en retry 2+ para que
+            el usuario sepa que estamos activamente reintentando. */}
+        {loading && retryAttempt > 0 && (
+          <div style={{
+            textAlign: 'center', fontSize: '.82rem', color: '#8A6A63',
+            marginTop: 14, padding: '10px 14px', borderRadius: 12,
+            background: 'rgba(200, 146, 139, .08)', border: '1px solid rgba(200, 146, 139, .18)',
+          }}>
+            ⏳ Contactando con el servidor… (intento {retryAttempt + 1} de 4)
+          </div>
+        )}
+
         {/* ─── PRODUCT GRID ────────────────────────────────────────── */}
         <div className="hc-grid">
-          {loading
-            ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            : filtered.length === 0
-            ? (
-              <div className="hc-empty">
-                <div className="hc-empty-ico">🛍️</div>
-                <h3 className="hc-empty-title">
-                  {activeCat !== "todos"
-                    ? "No hay productos en esta categoría"
-                    : "Sin productos disponibles"}
-                </h3>
-                <p className="hc-empty-sub">
-                  {activeCat !== "todos"
-                    ? (
-                      <button
-                        className="btn btn-ghost"
-                        style={{ display: "inline", padding: "4px 12px", fontSize: ".82rem" }}
-                        onClick={() => setActiveCat("todos")}
-                      >
-                        Ver todos
-                      </button>
-                    )
-                    : "Volvé pronto — estamos cargando novedades."}
-                </p>
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+          ) : fetchError ? (
+            <div className="hc-empty">
+              <div className="hc-empty-ico">📡</div>
+              <h3 className="hc-empty-title">Estamos teniendo un problema técnico</h3>
+              <p className="hc-empty-sub" style={{ marginBottom: 18 }}>
+                No pudimos cargar el catálogo. Reintentá en unos segundos —
+                o hablanos por WhatsApp y te ayudamos a comprar directamente.
+              </p>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ padding: '10px 22px', borderRadius: 999 }}
+                  onClick={fetchProducts}
+                >
+                  Reintentar
+                </button>
+                {waLink && (
+                  <a
+                    className="btn btn-ghost"
+                    style={{ padding: '10px 22px', borderRadius: 999 }}
+                    href={waLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    💬 Comprar por WhatsApp
+                  </a>
+                )}
               </div>
-            )
-            : filtered.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)
-          }
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="hc-empty">
+              <div className="hc-empty-ico">🛍️</div>
+              <h3 className="hc-empty-title">
+                {activeCat !== "todos"
+                  ? "No hay productos en esta categoría"
+                  : "Sin productos disponibles"}
+              </h3>
+              <p className="hc-empty-sub">
+                {activeCat !== "todos"
+                  ? (
+                    <button
+                      className="btn btn-ghost"
+                      style={{ display: "inline", padding: "4px 12px", fontSize: ".82rem" }}
+                      onClick={() => setActiveCat("todos")}
+                    >
+                      Ver todos
+                    </button>
+                  )
+                  : "Volvé pronto — estamos cargando novedades."}
+              </p>
+            </div>
+          ) : (
+            filtered.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)
+          )}
         </div>
 
         {/* ─── BOTTOM NAV ──────────────────────────────────────────── */}
