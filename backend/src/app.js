@@ -10,6 +10,7 @@ const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { isDbReady } = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
@@ -136,11 +137,25 @@ app.use('/api/orders', ordersLimiter);
 // bypassa el gate — ahi decimos EL estado real de la BD (ver
 // health.routes.js). El middleware corre despues de los rate limiters
 // (evita que un DDoS por 503s escape del limit).
+//
+// Webhooks (MP, futuros): tambien se gatean con 503. Es lo correcto —
+// MP reintenta ante 5xx con backoff exponencial (ver docs de MP), asi
+// que un 503 NO significa notificacion perdida, solo diferida. Cuando
+// Mongo vuelva, MP reintentara y procesaremos el pago con normalidad.
+// Log especial con marca [WEBHOOK] para que se pueda auditar despues
+// de una caida: grep "DB gate 503 [WEBHOOK]" en Render logs.
 app.use('/api', (req, res, next) => {
     // req.path aca es relativo al mount ('/api'), asi que llegan cosas como
     // '/health', '/products', '/orders/card-payment', etc.
     if (req.path === '/health' || req.path.startsWith('/health/')) return next();
     if (isDbReady()) return next();
+
+    const isWebhook = req.path.startsWith('/webhooks/');
+    const tag = isWebhook ? '⚠️ DB gate 503 [WEBHOOK — proveedor reintentara]' : '⚠️ DB gate 503';
+    console.warn(
+        `${tag} ${req.method} /api${req.path} (mongoose.readyState=${mongoose.connection.readyState})`
+    );
+
     res.set('Retry-After', '5');
     return res.status(503).json({
         ok: false,
