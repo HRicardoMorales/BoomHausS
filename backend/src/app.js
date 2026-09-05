@@ -11,6 +11,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/db');
+const { isDbReady } = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 
 const productsRoutes = require('./routes/products.routes');
@@ -128,6 +129,25 @@ const ordersLimiter = rateLimit({
 app.use('/api', generalLimiter);
 app.use('/api/auth', authLimiter);
 app.use('/api/orders', ordersLimiter);
+
+// ✅ DB readiness gate: si Mongoose no esta conectada, cortamos con 503
+// + Retry-After en vez de dejar que la request cuelgue 30s buscando
+// server selection. /api/health es el unico endpoint bajo /api que
+// bypassa el gate — ahi decimos EL estado real de la BD (ver
+// health.routes.js). El middleware corre despues de los rate limiters
+// (evita que un DDoS por 503s escape del limit).
+app.use('/api', (req, res, next) => {
+    // req.path aca es relativo al mount ('/api'), asi que llegan cosas como
+    // '/health', '/products', '/orders/card-payment', etc.
+    if (req.path === '/health' || req.path.startsWith('/health/')) return next();
+    if (isDbReady()) return next();
+    res.set('Retry-After', '5');
+    return res.status(503).json({
+        ok: false,
+        message: 'Base de datos no disponible temporalmente. Reintentá en unos segundos.',
+        retry_after: 5,
+    });
+});
 
 // ✅ uploads
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
@@ -276,9 +296,8 @@ app.delete('/api/abandoned-carts/:id', authRequired, adminOnly, async (req, res)
 // ✅ errors al final
 app.use(errorHandler);
 
-// Ruta para mantener vivo el servidor (Ping)
-app.get("/ping", (req, res) => {
-  res.status(200).send("Pong! El backend esta despierto 🥩");
-});
+// (Se removio /ping — redundante con /api/health, que ahora es el health
+// check real y refleja el estado de la BD. Si algun servicio externo
+// pinguea /ping esperando 200, cambiar a /api/health.)
 
 module.exports = app;
