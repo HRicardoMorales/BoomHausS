@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../services/api';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
 import SafeImg from '../components/SafeImg.jsx';
@@ -365,7 +365,7 @@ export default function SillonPuffLanding() {
   const [product,      setProduct]      = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
-  const [selectedBundle, setSelectedBundle] = useState(mc.bundles[0]);
+  const [selectedBundleId, setSelectedBundleId] = useState(mc.bundles[0].id);
   const [openFaq,      setOpenFaq]      = useState(null);
   const [showSheet,    setShowSheet]    = useState(false);
   const [allowCod,     setAllowCod]     = useState(false);
@@ -421,11 +421,9 @@ export default function SillonPuffLanding() {
     });
   }, [product]);
 
-  useEffect(() => {
-    const idx = mc.bundles.findIndex(b => b.id === selectedBundle.id);
-    const next = displayBundles[idx >= 0 ? idx : 0] ?? displayBundles[0];
-    if (next) setSelectedBundle(next);
-  }, [displayBundles]); // eslint-disable-line react-hooks/exhaustive-deps
+  // El bundle seleccionado se deriva del id + datos del producto (no se
+  // sincroniza con un useEffect): siempre refleja label/precio actualizados.
+  const selectedBundle = displayBundles.find(b => b.id === selectedBundleId) ?? displayBundles[0];
 
   const heroImgs = useMemo(() => {
     const arr = [];
@@ -570,11 +568,11 @@ export default function SillonPuffLanding() {
                   <div
                     key={b.id}
                     className={`bnd2-card${!b.soldOut && selectedBundle.id === b.id ? ' bnd2-card--on' : ''}${b.popular ? ' bnd2-card--pop' : ''}${b.soldOut ? ' spf-card--sold' : ''}`}
-                    onClick={() => !b.soldOut && setSelectedBundle(b)}
+                    onClick={() => !b.soldOut && setSelectedBundleId(b.id)}
                     role="button"
                     tabIndex={b.soldOut ? -1 : 0}
                     aria-disabled={b.soldOut}
-                    onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundle(b)}
+                    onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundleId(b.id)}
                   >
                     {b.popular && !b.soldOut && <div className="bnd2-float-badge">⭐ MÁS POPULAR</div>}
                     {b.soldOut && <div className="bnd2-float-badge spf-sold-badge">AGOTADO</div>}

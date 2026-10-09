@@ -20,7 +20,7 @@ function useCountdown(storageKey = "pd_countdown", minutes = 18) {
   if (hh > 0) return `${hh}:${mm}:${ss}`;
   return `${mm}:${ss}`;
 }
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi, trackPurchase, getFbCookies } from "../lib/metaPixel";
 import api from "../services/api";
 
@@ -590,6 +590,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
         setCardFormInstance(null);
       }
     };
+  // Flujo de pago: el CardForm se monta por método/SDK/clave; totalPrice se lee
+  // al montar a propósito. No modificar deps sin revisar el flujo de MercadoPago.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payment, mpLoaded, mpPublicKey]);
 
   function handleOverlayClick(e) {

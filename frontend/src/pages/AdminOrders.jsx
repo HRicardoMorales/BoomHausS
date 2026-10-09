@@ -74,6 +74,9 @@ export default function AdminOrders() {
   useEffect(() => {
     if (tab === 'orders') fetchOrders();
     if (tab === 'abandoned') fetchCarts();
+  // fetchOrders/fetchCarts se recrean en cada render y leen el estado vigente;
+  // el efecto se dispara solo por cambio de pestaña o del filtro de recuperados.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, cartShowAll]);
 
   async function fetchOrders() {

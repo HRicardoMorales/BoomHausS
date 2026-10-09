@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
@@ -1418,6 +1418,8 @@ export default function ProductDetail() {
       }
     }
     fetchOne();
+  // MC/activeVariant son config estática por slug: la clave real del fetch es productSlug.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, slug, activeVariant?.productSlug]);
 
   // Al cambiar variante: resetear imagen activa, color e índice de bundle
@@ -1432,6 +1434,8 @@ export default function ProductDetail() {
         setSelectedBundleIdx(pop >= 0 ? pop : 1);
       }
     }
+  // Reset intencional solo al cambiar de variante (no al re-render del config).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariantIdx]);
 
   const images = useMemo(() => {

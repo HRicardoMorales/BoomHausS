@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import mc from '../escultor-led';
@@ -358,7 +358,6 @@ function LedStatsCircles({ items }) {
   );
 }
 
-
 /* ── Componente principal ─────────────────────────────────── */
 export default function LuxCoveLED() {
   const [searchParams] = useSearchParams();
@@ -367,10 +366,18 @@ export default function LuxCoveLED() {
   const giftConfig = GIFT_CONFIGS[giftKey] || Object.values(GIFT_CONFIGS)[0];
   const REGALO_IMG         = giftConfig.img;
   const BUNDLE_REGALO_NAME = giftConfig.name;
+  const heroImg            = giftConfig.heroImg;
 
   const [product, setProduct] = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  // Resetea la imagen activa cuando cambia la campaña (?regalo=). Ajuste de
+  // estado durante el render en vez de useEffect: sin render intermedio.
+  const [prevGiftKey, setPrevGiftKey] = useState(giftKey);
+  if (prevGiftKey !== giftKey) {
+    setPrevGiftKey(giftKey);
+    setActiveImg(0);
+  }
   const [openTab, setOpenTab] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -448,9 +455,6 @@ export default function LuxCoveLED() {
     });
   }, []);
 
-  /* Resetea la imagen activa cuando cambia la campaña */
-  useEffect(() => { setActiveImg(0); }, [giftKey]);
-
   /* Slides per view */
   useEffect(() => {
     const update = () => setSlidesPerView(window.innerWidth >= 768 ? 3 : 1);
@@ -497,6 +501,18 @@ export default function LuxCoveLED() {
   const fmt = (n) =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
+  const productImages = useMemo(() => [
+    { src: heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles' },
+  ], [heroImg, displayName]);
+
   const BUNDLES = useMemo(() => [
     {
       id: 0,
@@ -511,7 +527,7 @@ export default function LuxCoveLED() {
         { id: "ebook",  label: BUNDLE_EBOOK_NAME,  img: EBOOK_IMG  },
       ],
     },
-  ], [price, compareAt]);
+  ], [price, compareAt, BUNDLE_REGALO_NAME, REGALO_IMG]);
 
   const handleBuy = () => {
     if (soldOut) return;
@@ -533,18 +549,6 @@ export default function LuxCoveLED() {
   const maxTestIdx = Math.max(0, reviewsData.length - slidesPerView);
   const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
-
-  const productImages = useMemo(() => [
-    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles' },
-    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles' },
-    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles' },
-  ], [giftConfig.heroImg, displayName]);
 
   if (!productReady) {
     return (

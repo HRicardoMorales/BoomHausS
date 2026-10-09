@@ -188,7 +188,12 @@ export default function AdminProducts() {
     } finally { setLoading(false); }
   }
 
+  // Carga inicial única.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchAll(); }, []);
+  // Re-hidrata el formulario solo al cambiar de producto, no cuando se
+  // refresca la lista (pisaría ediciones sin guardar).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (selected) hydrate(selected); }, [selectedId]);
 
   function flash(msg) { setOk(msg); setTimeout(() => setOk(''), 2600); }

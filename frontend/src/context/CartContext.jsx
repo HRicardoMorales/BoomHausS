@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CartContext } from "./cart.context";
 import { trackWithCapi } from '../lib/metaPixel';
 
-const CartContext = createContext(null);
 const CART_KEY = "cartItems";
 
 // 🔧 Config promo (mantenelo igual que en ProductDetail)
@@ -195,10 +195,4 @@ export function CartProvider({ children }) {
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-}
-
-export function useCart() {
-    const ctx = useContext(CartContext);
-    if (!ctx) throw new Error("useCart() debe usarse dentro de <CartProvider>");
-    return ctx;
 }

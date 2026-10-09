@@ -6,9 +6,9 @@
 // CheckoutSheet, .wa-tab, etc. Lo único nuevo de verdad es la
 // CALCULADORA DE GANANCIA, que es el corazón del pitch B2B.
 // ─────────────────────────────────────────────────────────────
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import { CheckoutSheet } from "./CheckoutSheet";
 import MC from "../landings/mundial-revendedores.js";
@@ -252,7 +252,8 @@ function ProfitCalculator({ onBuyNow }) {
 
   const product = products.find((p) => p.slug === slug) || products[0];
 
-  const calc = useMemo(() => {
+  // Cálculo aritmético barato: se recalcula en cada render (sin useMemo).
+  const calc = (() => {
     if (!product) return null;
     const inversion = product.price * packs;
     const totalUnits = product.unitsPerPack * packs;
@@ -265,7 +266,7 @@ function ProfitCalculator({ onBuyNow }) {
     // Ganancia por unidad (venta sugerida - costo por unidad)
     const gananciaPorUnidad = product.suggestedResale - porUnidad;
     return { inversion, totalUnits, ingreso, ganancia, margen, porUnidad, multiplicador, gananciaPorUnidad };
-  }, [product, packs]);
+  })();
 
   if (!product || !calc) return null;
 

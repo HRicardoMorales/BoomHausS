@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './DepiladoraIPL.css';

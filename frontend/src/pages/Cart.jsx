@@ -1,7 +1,7 @@
 // frontend/src/pages/Cart.jsx
 import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext.jsx';
+import { useCart } from '../hooks/useCart';
 
 function money(n) {
     const num = Number(n);

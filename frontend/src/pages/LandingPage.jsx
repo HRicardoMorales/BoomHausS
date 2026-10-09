@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../services/api';
-import { useCart } from '../context/CartContext.jsx';
+import { useCart } from '../hooks/useCart';
 import MarqueeBar from '../components/marquee.jsx';
 import CheckoutDrawer from '../components/CheckoutDrawer.jsx';
 

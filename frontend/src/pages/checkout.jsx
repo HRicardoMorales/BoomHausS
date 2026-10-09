@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi, getFbCookies } from "../lib/metaPixel";
 
 const PROVINCES = [

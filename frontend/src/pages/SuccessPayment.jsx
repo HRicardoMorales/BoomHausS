@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import api from '../services/api';
 import { trackPurchase } from '../lib/metaPixel';
 
