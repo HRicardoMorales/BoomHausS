@@ -208,9 +208,9 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
    STATS CIRCLES
 ============================================================ */
 function StatsCircles({ mc }) {
-  const items = mc.statsCircles;
-  if (!items?.length) return null;
+  const items = mc.statsCircles || [];
 
+  // Los hooks van siempre antes de cualquier return condicional (rules-of-hooks).
   const circleRefs = useRef([]);
   const animatedRef = useRef(items.map(() => false));
   const [values, setValues] = useState(() => items.map(() => 0));
@@ -245,6 +245,8 @@ function StatsCircles({ mc }) {
     circleRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!items.length) return null;
 
   return (
     <section className="sc-section anim-el">

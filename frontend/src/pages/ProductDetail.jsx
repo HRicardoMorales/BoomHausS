@@ -1039,9 +1039,9 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
    Stats Circles — gráficos circulares animados
 ========================= */
 function StatsCircles({ mc = MARKETING_CONTENT }) {
-  const items = mc.statsCircles;
-  if (!items?.length) return null;
+  const items = mc.statsCircles || [];
 
+  // Los hooks van siempre antes de cualquier return condicional (rules-of-hooks).
   const circleRefs = useRef([]);
   const animatedRef = useRef(items.map(() => false));
   const [values, setValues] = useState(() => items.map(() => 0));
@@ -1076,6 +1076,8 @@ function StatsCircles({ mc = MARKETING_CONTENT }) {
     circleRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!items.length) return null;
 
   return (
     <section className="sc-section anim-el">
@@ -1132,11 +1134,11 @@ function StatsCircles({ mc = MARKETING_CONTENT }) {
 ========================= */
 function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
   const data = mc.facebookComments;
-  if (!data?.pages?.length) return null;
-
   const [page, setPage] = useState(0);
-  const total = data.pages.length;
   const sectionRef = useRef(null);
+
+  if (!data?.pages?.length) return null;
+  const total = data.pages.length;
 
   function goTo(n) {
     setPage(n);
