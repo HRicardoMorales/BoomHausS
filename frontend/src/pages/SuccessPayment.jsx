@@ -173,7 +173,6 @@ export default function SuccessPayment() {
 
   const isApproved = finalStatus === 'approved';
   const isRejected = finalStatus === 'rejected' || finalStatus === 'cancelled';
-  const isPending  = !isApproved && !isRejected;
 
   const cfg = useMemo(() => {
     if (isApproved) return {
@@ -221,7 +220,7 @@ export default function SuccessPayment() {
           if (backendStatus === 'approved') setBackendVerified(true);
           if (Number.isFinite(backendAmt) && backendAmt > 0) setBackendAmount(backendAmt);
         }
-      } catch (_) {
+      } catch {
         // endpoint opcional, no bloquea
       } finally {
         if (alive) setChecking(false);

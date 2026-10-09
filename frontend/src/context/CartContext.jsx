@@ -76,7 +76,7 @@ export function CartProvider({ children }) {
                     content_type: 'product',
                     num_items:    q,
                 });
-            } catch (_) {}
+            } catch { /* best-effort: se ignora */ }
 
         // 🔥 Disparamos evento para que App.jsx muestre el Popup
         window.dispatchEvent(new CustomEvent('cart:added', {

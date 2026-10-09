@@ -33,7 +33,7 @@ import api from '../services/api';
 const PURCHASE_GUARD_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function generateEventId() {
-    try { if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID(); } catch (_) {}
+    try { if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID(); } catch { /* best-effort: se ignora */ }
     return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
@@ -123,10 +123,10 @@ export function trackPurchase(orderId, params = {}) {
                 return; // ya lo disparamos para este orderId hace menos de 30d
             }
         }
-    } catch (_) {}
+    } catch { /* best-effort: se ignora */ }
 
     const eventID = `purchase_${orderId}`;
-    try { localStorage.setItem(guardKey, String(Date.now())); } catch (_) {}
+    try { localStorage.setItem(guardKey, String(Date.now())); } catch { /* best-effort: se ignora */ }
 
     window.fbq('track', 'Purchase', {
         ...params,

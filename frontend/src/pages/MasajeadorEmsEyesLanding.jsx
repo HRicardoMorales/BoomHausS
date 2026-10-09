@@ -490,7 +490,6 @@ export default function MasajeadorEmsEyesLanding() {
     return arr.length ? arr : mc.heroImages;
   }, [product]);
 
-  const storyImgs = mc.storyBlocks.map(b => b.img || '');
 
   const handleBuy = () => {
     if (!product || selectedBundle.soldOut) return;

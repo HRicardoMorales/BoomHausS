@@ -107,15 +107,6 @@ const FEATURES = [
   { icon: '🛡️', title: 'Probalo sin riesgo 90 días', desc: 'Garantía de devolución total si no quedás completamente satisfecha/o. Sin preguntas.' },
 ];
 
-/* Testimonios carrusel */
-const reviewsData = [
-  { title: '¡Sin dolor y sin vello!', name: 'Analía R.', avatar: '//www.luxcove.co/cdn/shop/files/2_227e3980-11a4-4119-9ed4-d0963676a467.png?v=1741425800', stars: 5, text: 'Tenía muchos pelos encarnados de la cera. Con la IPL eso desapareció completamente. Mi piel está lisa y sin irritación. ¡La mejor compra del año!' },
-  { title: 'Me ahorré un dineral', name: 'Natalia B.', avatar: '//www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640', stars: 5, text: 'Antes gastaba en depilación cada mes. Con la IPL ya no necesito ir al centro estético. En 2 meses recuperé lo que pagué y sigo ahorrando.' },
-  { title: 'Perfecta para el verano', name: 'Karina F.', avatar: '//www.luxcove.co/cdn/shop/files/6_1bb22647-f558-4396-a07f-58716d687ff7.png?v=1741425681', stars: 5, text: 'Compré en noviembre para estar lista en verano. ¡Fue la mejor decisión! A los 45 días ya tenía las piernas y axilas lisísimas. Voy a la pileta sin preocupación.' },
-  { title: 'Resultados increíbles', name: 'Mariana P.', avatar: '//www.luxcove.co/cdn/shop/files/5_4674e838-6296-4ca1-9a34-6cc05243b642.png?v=1741425662', stars: 5, text: 'Me sorprendió porque nunca había probado IPL. El nivel 4 funciona perfecto para mi piel clara. Muy recomendable y fácil de usar.' },
-  { title: 'Chau cera para siempre', name: 'Romina S.', avatar: '//www.luxcove.co/cdn/shop/files/8_3ecc94a3-ae31-49c0-a516-7c5b88caef34.png?v=1741425718', stars: 5, text: 'Llevo 8 semanas usándola y el vello redujo un montón. Antes me depilaba cada 15 días, ahora casi no tengo pelo. La uso mientras veo la tele, súper cómodo.' },
-];
-
 /* Imagen placeholder compartida */
 const PLACEHOLDER = 'https://acdn-us.mitiendanube.com/stores/006/731/084/products/6428cf2f-d00e-4db4-a9b6-44635b9c302e-f1709437539a2f618417603729146590-1024-1024.webp';
 
@@ -345,8 +336,6 @@ export default function DepiladoraIPL() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [annIdx, setAnnIdx]             = useState(0);
   const [annVisible, setAnnVisible]     = useState(true);
-  const [testIdx, setTestIdx]           = useState(0);
-  const [slidesPerView, setSlidesPerView] = useState(1);
   const [stickyVisible, setStickyVisible] = useState(false);
   const [hrIdx, setHrIdx]               = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(0);
@@ -374,14 +363,6 @@ export default function DepiladoraIPL() {
     });
   }, []);
 
-
-  /* Slides per view */
-  useEffect(() => {
-    const update = () => setSlidesPerView(window.innerWidth >= 768 ? 3 : 1);
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
 
   /* Announcement rotation */
   useEffect(() => {
@@ -457,9 +438,6 @@ export default function DepiladoraIPL() {
     setShowCheckout(true);
   };
 
-  const maxTestIdx = Math.max(0, reviewsData.length - slidesPerView);
-  const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
-  const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
 
   const FALLBACK_IMAGES = [

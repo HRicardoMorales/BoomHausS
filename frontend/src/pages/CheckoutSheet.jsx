@@ -94,7 +94,7 @@ const INITIAL_FORM = {
 
 export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3e", primaryHover = "#153d31", accentColor = "#1D9E75", fontFamily = null, accentBg = "#fff0f5", accentBorder = "#FFC6C6", accentText = "#a0003e" }) {
   const navigate = useNavigate();
-  const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal: ctxCalc } = useCart();
+  const { items, totalPrice, clearCart, calcItemTotal: ctxCalc } = useCart();
   const calc = ctxCalc || calcItemTotal;
 
   const [step, setStep] = useState(0);
@@ -525,7 +525,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
     }
     return () => {
       if (cardFormRef.current) {
-        try { cardFormRef.current.unmount(); } catch {}
+        try { cardFormRef.current.unmount(); } catch { /* best-effort: se ignora */ }
       }
     };
   }, []);
@@ -585,7 +585,7 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
     return () => {
       clearTimeout(timer);
       if (cardFormRef.current) {
-        try { cardFormRef.current.unmount(); } catch {}
+        try { cardFormRef.current.unmount(); } catch { /* best-effort: se ignora */ }
         cardFormRef.current = null;
         setCardFormInstance(null);
       }
@@ -2303,9 +2303,9 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
             <div className="cs-footer">
               <button className="cs-cta" disabled={items.length === 0} onClick={() => {
                 if (appliedCoupon) {
-                  try { sessionStorage.setItem("pendingCoupon", JSON.stringify(appliedCoupon)); } catch (_) {}
+                  try { sessionStorage.setItem("pendingCoupon", JSON.stringify(appliedCoupon)); } catch { /* best-effort: se ignora */ }
                 } else {
-                  try { sessionStorage.removeItem("pendingCoupon"); } catch (_) {}
+                  try { sessionStorage.removeItem("pendingCoupon"); } catch { /* best-effort: se ignora */ }
                 }
                 onClose();
                 navigate("/checkout", { state: { skipCart: true } });

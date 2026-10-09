@@ -41,7 +41,7 @@ function GalleryCarousel({
     const canAutoplay = images.length > 1 && !paused;
 
     const go = (nextIndex) => {
-        setIndex((cur) => {
+        setIndex(() => {
             const max = images.length - 1;
             return clamp(nextIndex, 0, max);
         });
@@ -89,7 +89,7 @@ function GalleryCarousel({
         setPaused(true);
     }
 
-    function onPointerMove(e) {
+    function onPointerMove() {
         if (!isDraggingRef.current) return;
         // No hacemos drag visual, solo detectamos intención
     }

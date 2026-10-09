@@ -7,7 +7,6 @@
 // CALCULADORA DE GANANCIA, que es el corazón del pitch B2B.
 // ─────────────────────────────────────────────────────────────
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useCart } from "../context/CartContext.jsx";
 import { trackWithCapi } from "../lib/metaPixel";
@@ -1155,7 +1154,6 @@ function StickyBarMundial({ kitPrice, onBuy, onWhatsapp, cartCount, cartTotal, m
    MAIN
 ========================= */
 export default function MundialLanding() {
-  const navigate = useNavigate();
   const { addItem, items: cartItems, totalPrice: cartTotal } = useCart();
 
   const [products, setProducts] = useState({});
@@ -1188,7 +1186,7 @@ export default function MundialLanding() {
             if (res.data?.ok && res.data.data) {
               return [cfg.slug, res.data.data];
             }
-          } catch (_) {}
+          } catch { /* best-effort: se ignora */ }
           // Fallback sintético — la página funciona aunque no haya seed
           return [
             cfg.slug,
@@ -1271,8 +1269,6 @@ export default function MundialLanding() {
     };
   }, [loading]);
 
-  const scrollToCalc = () =>
-    calcRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   const scrollToCatalog = () =>
     catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 

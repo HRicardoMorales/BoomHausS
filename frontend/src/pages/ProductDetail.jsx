@@ -1364,8 +1364,9 @@ export default function ProductDetail() {
   // ── Fin soporte variantes ───────────────────────────────────────────────────
   const [showToast, setShowToast] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [qty, setQty] = useState(1);
-  const [bundle, setBundle] = useState(1);
+  // TODO(refactor ProductDetail): qty/bundle quedaron fijos; el selector real es selectedBundleIdx
+  const [qty] = useState(1);
+  const [bundle] = useState(1);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
     if (MCRaw.defaultBundleIdx !== undefined) return MCRaw.defaultBundleIdx;
     const bundles = activeVariant?.bundles || MCRaw.bundles;
@@ -1373,8 +1374,6 @@ export default function ProductDetail() {
     const pop = bundles.findIndex(b => b.popular);
     return pop >= 0 ? pop : 1;
   });
-  const [isDescExpanded, setIsDescExpanded] = useState(false);
-  const [isShippingExpanded, setIsShippingExpanded] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [showUpsellSheet, setShowUpsellSheet] = useState(false);
 
@@ -1384,8 +1383,6 @@ export default function ProductDetail() {
   const lastViewedRef = useRef(null);
   // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
   const hasLoadedOnce = useRef(false);
-  // Evita que el useEffect de variante pise el defaultBundleIdx en el mount inicial
-  const didInitBundle = useRef(false);
 
   useEffect(() => {
     async function fetchOne() {
@@ -1665,30 +1662,6 @@ export default function ProductDetail() {
       addItem(bundle.accProduct, 1);
     }
     setShowCheckout(true);
-  };
-
-  const handleAddToCart = () => {
-    if (!effectiveProduct) return;
-
-    const mainOpts = {};
-    if (activeBundleData) {
-      mainOpts.bundleTotal = activeBundleData.price;
-      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
-    } else {
-      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-      if (promo) mainOpts.promo = promo;
-      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
-    }
-    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
-
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 5000);
-    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: effectiveProduct?.name || "Producto" } }));
-  };
-
-  const scrollToReviews = (e) => {
-    e.preventDefault();
-    document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   if (loading && !hasLoadedOnce.current)
