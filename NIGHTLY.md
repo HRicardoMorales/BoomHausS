@@ -25,7 +25,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [x] Bugs de hooks (2026-10-09): los 22 errores `rules-of-hooks` estaban en `StatsCircles` (ProductDetail + 4 landings, copia/pega) y `SocialCommentsSection` de ProductDetail; hooks movidos antes del return. `CheckoutSheet`, `MundialLanding` y `Admin*` no tenían errores de este tipo (la auditoría los incluyó por error). Lint 94 → 72. Nota: `StatsCircles` está duplicado 5 veces → extraer a `components/` en la tarea de landings.
 - [x] Lint parte 1 (2026-10-09): catch vacíos → `catch { /* … */ }`, variables/estado/handlers sin uso y código muerto eliminados (ProductDetail `handleAddToCart`/`scrollToReviews`, carrusel de testimonios muerto en DepiladoraIPL, etc.), directivas eslint huérfanas. Lint 72 → 22. Nota: en `ProductDetail` `qty`/`bundle` quedaron fijos (no hay setter usado) → revisar en el refactor.
 - [x] Lint parte 2 (2026-10-09): **lint en 0**. `set-state-in-effect` resueltos con estado derivado (SafeImg guarda el src fallido; bundle seleccionado por id en las 4 landings; `loading` derivado en AdminHome) y ajuste de estado durante el render al cambiar ruta/campaña (navbar, AdminRoute, LuxCoveLED). Bug real corregido: en LuxCoveLED `BUNDLES` no dependía del regalo de `?regalo=` (nombre/imagen viejos en el carrito). `useCart` → `hooks/useCart.js` + `context/cart.context.js`. `exhaustive-deps` intencionales documentados con motivo (CheckoutSheet: solo comentario). Smoke test con Chromium en 7 rutas sin errores de runtime.
-- [ ] SEO/meta en `frontend/index.html`: `canonical`/`og:url` apuntan a una URL de preview de Vercel (`boom-haus-2pbt3so0z-...`); `og:image` y `twitter:image` apuntan a una página, no a una imagen. Crear `public/og-image.jpg` 1200x630 y usar URL relativa/dominio real (preguntar dominio a Rick → mientras, dejar comentado). Agregar `robots.txt`/`sitemap.xml` si faltan.
+- [x] SEO/meta (2026-10-09): `index.html` sin URLs de previews; `public/og-image.jpg` 1200x630 (35 KB) generada con Chromium; `build/seo-plugin.js` resuelve la URL absoluta en build desde `VERCEL_PROJECT_PRODUCTION_URL` (o `SITE_URL` opcional) y genera `robots.txt` + `sitemap.xml`; `src/seo/RouteSeo.jsx` pone title/canonical/noindex por ruta con la metadata nativa de React 19. Manifest con marca. Pendiente: títulos por producto en `ProductDetail` (cuando se refactorice) y `og:image` por landing (los crawlers de FB no corren JS → requeriría prerender).
 - [ ] Logs: 41 `console.log` en backend y 4 en frontend → logger mínimo con niveles (silenciar en prod). No tocar `metaCapi.js` ni el webhook.
 
 ### Fase 2 — Performance (el bundle es lo primero que mira un senior)
@@ -66,9 +66,8 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - Antes de mergear esta rama: confirmar que todas las `VITE_*` estén cargadas en Vercel, porque `frontend/.env` ya no se sube al repo.
 - Decidir si se limpia el historial de Git (reescribe `main`).
 - **Privacidad:** `backend/uploads/` (3 MB) está commiteado con comprobantes de pago (`proof_*.png`) que pueden tener datos de clientes, y el repo es público. Recomendado: sacarlos del repo, agregar `backend/uploads/` al `.gitignore` y servirlos desde Cloudinary (ya está como dependencia). No lo hice porque `app.js` los sirve en `/uploads` y puede afectar producción.
-- `frontend/public/og.jpg` pesa 0 bytes (vacío); se reemplaza en la tarea de SEO.
 - **Imágenes de terceros:** `DepiladoraIPL` y `LuxCoveLED` (y 1 archivo más) usan imágenes hotlinkeadas de `luxcove.co` y `lummia.com.co` (avatares, producto). Para un portafolio público conviene reemplazarlas por assets propios (riesgo de marca y de que se caigan).
-- Confirmar dominio final de la tienda para `canonical`/`og:url` en `index.html`.
+- Dominio: el build toma `VERCEL_PROJECT_PRODUCTION_URL` (la pone Vercel sola). Si el dominio real es otro, definir `SITE_URL` en Vercel (opcional, no es secreto). Verificar en la preview que `og:image` sea absoluta con el debugger de Facebook.
 
 ## Skills recomendadas
 
@@ -86,3 +85,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-09 | 05:52 | Fix de 22 errores rules-of-hooks (StatsCircles x5, SocialCommentsSection). Build OK, lint 94 → 72. | 57bdf36 |
 | 2026-10-09 | 06:53 | Lint parte 1: catch vacíos, vars sin uso y código muerto (−59 líneas netas). Build OK, lint 72 → 22. | 139a0a0 |
 | 2026-10-09 | 07:52 | Lint parte 2: 22 → 0 problemas, estado derivado en vez de setState en effects, fix de deps de BUNDLES en LuxCoveLED, `useCart` a `hooks/`. Build OK. | 6313f64 |
+| 2026-10-09 | 08:53 | SEO: OG image real, URL absoluta resuelta en build (plugin de Vite), robots/sitemap generados, title/canonical/noindex por ruta con React 19. Build y lint OK, verificado con Chromium en 7 rutas. | 1868fbf |
