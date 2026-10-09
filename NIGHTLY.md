@@ -21,7 +21,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [x] **Auditoría completa** (2026-10-09): ver hallazgos abajo.
 
 ### Fase 1 — Higiene y bugs reales (rápido, alto impacto en la revisión de código)
-- [ ] Limpieza de assets: borrar `frontend/src/images/` completo (13 MB, **ningún archivo está referenciado**; incluye un .mp4 de 11,7 MB) y `public/logo` (archivo sin extensión duplicado de `logo-navbar.png`). Comprimir `public/logo.png` (2,1 MB) y `public/logo-navbar.png` (795 KB) a WebP/PNG optimizado (< 60 KB) verificando dónde se usan.
+- [x] Limpieza de assets (2026-10-09): borrado `src/images/` (13 MB), `logo navbar.png` duplicado y `favicon.svg` (1,2 MB). Logos a WebP 3x (navbar 795 KB → 4,5 KB, footer 2,1 MB → 4,2 KB) con PNG optimizado de fallback y `width/height`. Pendiente visual: el logo del footer tiene mucho padding transparente (contenido ~10 px de alto a 36 px); recortarlo en la tarea de design system.
 - [ ] Bugs de hooks (22 errores `react-hooks/rules-of-hooks`): hooks llamados después de un `return` condicional en `ProductDetail.jsx` (~L1045-1137), `MundialLanding.jsx`, `CheckoutSheet.jsx`, `SillonPuffLanding.jsx`, `KitBelleza6en1Landing.jsx`, `MasajeadorEmsEyesLanding.jsx`, `MasajeadorFacialIonesLanding.jsx`, `AdminOrders.jsx`, `AdminProducts.jsx`. Son bugs reales (crash "Rendered more hooks"). Mover hooks arriba de los returns. Parte 1: ProductDetail + CheckoutSheet (solo reordenar, sin tocar lógica de pago); parte 2: el resto.
 - [ ] Lint en verde: 36 `no-unused-vars`, 12 `no-empty` (catch vacíos → comentario o log), 7 `exhaustive-deps`, 2 setState sincrónico en effect (`navbar.jsx`, `SuccessPayment.jsx`). Objetivo: `npm run lint` con 0 errores.
 - [ ] SEO/meta en `frontend/index.html`: `canonical`/`og:url` apuntan a una URL de preview de Vercel (`boom-haus-2pbt3so0z-...`); `og:image` y `twitter:image` apuntan a una página, no a una imagen. Crear `public/og-image.jpg` 1200x630 y usar URL relativa/dominio real (preguntar dominio a Rick → mientras, dejar comentado). Agregar `robots.txt`/`sitemap.xml` si faltan.
@@ -65,6 +65,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - Antes de mergear esta rama: confirmar que todas las `VITE_*` estén cargadas en Vercel, porque `frontend/.env` ya no se sube al repo.
 - Decidir si se limpia el historial de Git (reescribe `main`).
 - **Privacidad:** `backend/uploads/` (3 MB) está commiteado con comprobantes de pago (`proof_*.png`) que pueden tener datos de clientes, y el repo es público. Recomendado: sacarlos del repo, agregar `backend/uploads/` al `.gitignore` y servirlos desde Cloudinary (ya está como dependencia). No lo hice porque `app.js` los sirve en `/uploads` y puede afectar producción.
+- `frontend/public/og.jpg` pesa 0 bytes (vacío); se reemplaza en la tarea de SEO.
 - Confirmar dominio final de la tienda para `canonical`/`og:url` en `index.html`.
 
 ## Skills recomendadas
@@ -79,3 +80,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 |---|---|---|---|
 | 2026-10-08 | setup | Rama creada, limpieza de seguridad, este archivo | — |
 | 2026-10-09 | 03:53 | Auditoría completa (build, bundle 1,46 MB sin splitting, 94 problemas de lint con 22 bugs de hooks, 13 MB de imágenes sin usar, SEO roto, uploads con comprobantes). Backlog reescrito en 6 fases. | 107dd3f |
+| 2026-10-09 | 04:52 | Limpieza de assets: −15 MB en el repo, logos WebP optimizados, favicon.svg pesado eliminado. Build OK, lint sin cambios (94 previos). | 6e13afb |
