@@ -61,7 +61,7 @@ export default function Navbar() {
 
                     {/* Brand Desktop */}
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                        <img src="/logo-navbar.png" alt={storeName} style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
+                        <img src="/logo-navbar.webp" alt={storeName} width={148} height={74} decoding="async" style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
                     </Link>
 
                     {/* Menú Desktop */}
@@ -112,7 +112,7 @@ export default function Navbar() {
                     
                     <div className="mn-center">
                         <Link to="/" className="mn-brand">
-                            <img src="/logo-navbar.png" alt={storeName} style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
+                            <img src="/logo-navbar.webp" alt={storeName} width={116} height={58} decoding="async" style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
                         </Link>
                     </div>
                     
