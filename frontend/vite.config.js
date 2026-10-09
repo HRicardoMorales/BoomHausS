@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import seoPlugin from "./build/seo-plugin.js";
 
 // ✅ En local: /api y /uploads van a tu backend local
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), seoPlugin()],
   server: {
     proxy: {
       "/api": {

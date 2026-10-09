@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 import Navbar from './components/navbar.jsx';
+import RouteSeo from './seo/RouteSeo.jsx';
 import Marquee from './components/marquee.jsx';
 import Footer from './components/Footer.jsx';
 
@@ -125,6 +126,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <ScrollToTop />
+      <RouteSeo />
       {!hideMarquee && <Marquee countdownKey="pd_countdown" />}
       {!hideChrome && <Navbar />}
       
