@@ -23,7 +23,8 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 ### Fase 1 — Higiene y bugs reales (rápido, alto impacto en la revisión de código)
 - [x] Limpieza de assets (2026-10-09): borrado `src/images/` (13 MB), `logo navbar.png` duplicado y `favicon.svg` (1,2 MB). Logos a WebP 3x (navbar 795 KB → 4,5 KB, footer 2,1 MB → 4,2 KB) con PNG optimizado de fallback y `width/height`. Pendiente visual: el logo del footer tiene mucho padding transparente (contenido ~10 px de alto a 36 px); recortarlo en la tarea de design system.
 - [x] Bugs de hooks (2026-10-09): los 22 errores `rules-of-hooks` estaban en `StatsCircles` (ProductDetail + 4 landings, copia/pega) y `SocialCommentsSection` de ProductDetail; hooks movidos antes del return. `CheckoutSheet`, `MundialLanding` y `Admin*` no tenían errores de este tipo (la auditoría los incluyó por error). Lint 94 → 72. Nota: `StatsCircles` está duplicado 5 veces → extraer a `components/` en la tarea de landings.
-- [ ] Lint en verde: 36 `no-unused-vars`, 12 `no-empty` (catch vacíos → comentario o log), 7 `exhaustive-deps`, 2 setState sincrónico en effect (`navbar.jsx`, `SuccessPayment.jsx`). Objetivo: `npm run lint` con 0 errores.
+- [x] Lint parte 1 (2026-10-09): catch vacíos → `catch { /* … */ }`, variables/estado/handlers sin uso y código muerto eliminados (ProductDetail `handleAddToCart`/`scrollToReviews`, carrusel de testimonios muerto en DepiladoraIPL, etc.), directivas eslint huérfanas. Lint 72 → 22. Nota: en `ProductDetail` `qty`/`bundle` quedaron fijos (no hay setter usado) → revisar en el refactor.
+- [ ] Lint parte 2 (22 restantes, 14 errores): 10 `set-state-in-effect` (navbar x2, SafeImg, AdminHome, AdminRoute, LuxCoveLED, KitBelleza, MasajeadorEms, MasajeadorFacial, SillonPuff — las 4 landings son el mismo patrón copiado), 7 `exhaustive-deps` (AdminOrders, AdminProducts x2, ProductDetail x2, LuxCoveLED, CheckoutSheet:593 → **solo comentar/eslint-disable, no tocar lógica de pago**), 4 `preserve-manual-memoization` (LuxCoveLED, MundialLanding), `only-export-components` en CartContext (mover `useCart` a `hooks/useCart.js`). Objetivo: 0 errores.
 - [ ] SEO/meta en `frontend/index.html`: `canonical`/`og:url` apuntan a una URL de preview de Vercel (`boom-haus-2pbt3so0z-...`); `og:image` y `twitter:image` apuntan a una página, no a una imagen. Crear `public/og-image.jpg` 1200x630 y usar URL relativa/dominio real (preguntar dominio a Rick → mientras, dejar comentado). Agregar `robots.txt`/`sitemap.xml` si faltan.
 - [ ] Logs: 41 `console.log` en backend y 4 en frontend → logger mínimo con niveles (silenciar en prod). No tocar `metaCapi.js` ni el webhook.
 
@@ -66,6 +67,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - Decidir si se limpia el historial de Git (reescribe `main`).
 - **Privacidad:** `backend/uploads/` (3 MB) está commiteado con comprobantes de pago (`proof_*.png`) que pueden tener datos de clientes, y el repo es público. Recomendado: sacarlos del repo, agregar `backend/uploads/` al `.gitignore` y servirlos desde Cloudinary (ya está como dependencia). No lo hice porque `app.js` los sirve en `/uploads` y puede afectar producción.
 - `frontend/public/og.jpg` pesa 0 bytes (vacío); se reemplaza en la tarea de SEO.
+- **Imágenes de terceros:** `DepiladoraIPL` y `LuxCoveLED` (y 1 archivo más) usan imágenes hotlinkeadas de `luxcove.co` y `lummia.com.co` (avatares, producto). Para un portafolio público conviene reemplazarlas por assets propios (riesgo de marca y de que se caigan).
 - Confirmar dominio final de la tienda para `canonical`/`og:url` en `index.html`.
 
 ## Skills recomendadas
@@ -82,3 +84,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-09 | 03:53 | Auditoría completa (build, bundle 1,46 MB sin splitting, 94 problemas de lint con 22 bugs de hooks, 13 MB de imágenes sin usar, SEO roto, uploads con comprobantes). Backlog reescrito en 6 fases. | 107dd3f |
 | 2026-10-09 | 04:52 | Limpieza de assets: −15 MB en el repo, logos WebP optimizados, favicon.svg pesado eliminado. Build OK, lint sin cambios (94 previos). | 6e13afb |
 | 2026-10-09 | 05:52 | Fix de 22 errores rules-of-hooks (StatsCircles x5, SocialCommentsSection). Build OK, lint 94 → 72. | 57bdf36 |
+| 2026-10-09 | 06:53 | Lint parte 1: catch vacíos, vars sin uso y código muerto (−59 líneas netas). Build OK, lint 72 → 22. | 139a0a0 |
