@@ -86,3 +86,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-09 | 06:53 | Lint parte 1: catch vacíos, vars sin uso y código muerto (−59 líneas netas). Build OK, lint 72 → 22. | 139a0a0 |
 | 2026-10-09 | 07:52 | Lint parte 2: 22 → 0 problemas, estado derivado en vez de setState en effects, fix de deps de BUNDLES en LuxCoveLED, `useCart` a `hooks/`. Build OK. | 6313f64 |
 | 2026-10-09 | 08:53 | SEO: OG image real, URL absoluta resuelta en build (plugin de Vite), robots/sitemap generados, title/canonical/noindex por ruta con React 19. Build y lint OK, verificado con Chromium en 7 rutas. | 1868fbf |
+| 2026-10-09 | 09:53 | Revisión final: build OK, lint 0, smoke test Chromium mobile en 5 rutas sin errores. PR borrador #1 `nightly/portfolio` → `main` abierto (no mergear). | PR #1 |
