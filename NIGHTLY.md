@@ -18,23 +18,60 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 ## Backlog (en orden de prioridad)
 
 - [x] Seguridad/limpieza: sacar `.claude/` y `frontend/.env` del repo, borrar instaladores (.exe/.jar) de `src/images`, ignorar `.claude/`
-- [ ] **Auditoría completa** (primera sesión): visual, mobile, performance (bundle, imágenes), accesibilidad, código (componentes gigantes, duplicación, código muerto). Reescribir este backlog priorizado con lo encontrado.
-- [ ] Design system: tokens (colores, tipografía, espaciado, radios, sombras) en CSS variables; tipografía con carácter
-- [ ] Home nueva estilo Luxcove: hero con promesa concreta → franja "visto en" → bestsellers (carrusel) → testimonios → grilla con video → beneficios → antes/después + estadísticas → garantía → newsletter → footer
-- [ ] Micro-interacciones con Framer Motion (ya instalado): reveal on scroll, hover en cards, drawer del carrito, respetando `prefers-reduced-motion`
-- [ ] Refactor de `ProductDetail.jsx` (5.280 líneas) en componentes
-- [ ] Refactor de `MundialLanding.jsx` (3.719 líneas) y landings con CSS duplicado
-- [ ] Performance: code splitting por ruta (`React.lazy`), imágenes responsive/lazy, Lighthouse ≥ 90 en mobile
-- [ ] Accesibilidad WCAG AA: contraste, foco visible, labels, navegación con teclado
-- [ ] Estados de UI: skeletons, vacíos, errores
-- [ ] Tests: Vitest + Testing Library (carrito, cálculo de totales); tests de API en backend
-- [ ] README de portafolio: capturas, arquitectura, stack, decisiones técnicas, cómo correrlo
+- [x] **Auditoría completa** (2026-10-09): ver hallazgos abajo.
+
+### Fase 1 — Higiene y bugs reales (rápido, alto impacto en la revisión de código)
+- [ ] Limpieza de assets: borrar `frontend/src/images/` completo (13 MB, **ningún archivo está referenciado**; incluye un .mp4 de 11,7 MB) y `public/logo` (archivo sin extensión duplicado de `logo-navbar.png`). Comprimir `public/logo.png` (2,1 MB) y `public/logo-navbar.png` (795 KB) a WebP/PNG optimizado (< 60 KB) verificando dónde se usan.
+- [ ] Bugs de hooks (22 errores `react-hooks/rules-of-hooks`): hooks llamados después de un `return` condicional en `ProductDetail.jsx` (~L1045-1137), `MundialLanding.jsx`, `CheckoutSheet.jsx`, `SillonPuffLanding.jsx`, `KitBelleza6en1Landing.jsx`, `MasajeadorEmsEyesLanding.jsx`, `MasajeadorFacialIonesLanding.jsx`, `AdminOrders.jsx`, `AdminProducts.jsx`. Son bugs reales (crash "Rendered more hooks"). Mover hooks arriba de los returns. Parte 1: ProductDetail + CheckoutSheet (solo reordenar, sin tocar lógica de pago); parte 2: el resto.
+- [ ] Lint en verde: 36 `no-unused-vars`, 12 `no-empty` (catch vacíos → comentario o log), 7 `exhaustive-deps`, 2 setState sincrónico en effect (`navbar.jsx`, `SuccessPayment.jsx`). Objetivo: `npm run lint` con 0 errores.
+- [ ] SEO/meta en `frontend/index.html`: `canonical`/`og:url` apuntan a una URL de preview de Vercel (`boom-haus-2pbt3so0z-...`); `og:image` y `twitter:image` apuntan a una página, no a una imagen. Crear `public/og-image.jpg` 1200x630 y usar URL relativa/dominio real (preguntar dominio a Rick → mientras, dejar comentado). Agregar `robots.txt`/`sitemap.xml` si faltan.
+- [ ] Logs: 41 `console.log` en backend y 4 en frontend → logger mínimo con niveles (silenciar en prod). No tocar `metaCapi.js` ni el webhook.
+
+### Fase 2 — Performance (el bundle es lo primero que mira un senior)
+- [ ] Code splitting por ruta en `App.jsx`: hoy **todo** (admin, 10 landings, checkout) está en un único chunk de **1,46 MB (390 KB gzip)**. `React.lazy` + `Suspense` con fallback skeleton para admin, landings y checkout; `manualChunks` para vendor (react, framer-motion, mercadopago). Meta: chunk inicial de home < 200 KB gzip.
+- [ ] CSS: `index.css` (1.874 líneas, 130 KB total de CSS) carga estilos de todas las landings; 31 bloques `<style>` inline dentro de JSX. Mover CSS de cada landing a su chunk (se resuelve en parte con lazy).
+- [ ] Imágenes: 146 `<img>`, solo 49 con `loading="lazy"`; sin `width/height` (CLS). Componente `<Img>` (extender `SafeImg.jsx`) con lazy, `decoding="async"`, dimensiones y `srcset` de Cloudinary (`f_auto,q_auto,w_*`).
+- [ ] Fuentes: Google Fonts por `<link>` bloqueante (Cormorant + Inter, 8 pesos). Reducir pesos, `preload` del woff2 crítico o self-host con `@fontsource`.
+
+### Fase 3 — Design system + Home premium
+- [ ] Design system: `index.css` tiene solo ~20 variables. Crear `src/styles/tokens.css` (color, tipografía fluida con `clamp`, espaciado, radios, sombras, z-index, easing) y reemplazar valores hardcodeados en navbar/footer/home. Paleta actual: rosa `#C8928B` (marca "Amelor").
+- [ ] Home parte 1 (`pages/home.jsx`, 1.011 líneas): partir en `components/home/*` (Hero, ProductCard, ProductCarousel, Countdown) sin cambiar visual.
+- [ ] Home parte 2: hero con promesa concreta + franja "visto en" + bestsellers (Embla ya instalado).
+- [ ] Home parte 3: testimonios (`components/Testimonials.jsx` existe, reutilizar) + grilla con video + beneficios.
+- [ ] Home parte 4: antes/después con estadísticas animadas + garantía + newsletter (solo UI, sin backend nuevo o con endpoint mock).
+- [ ] Micro-interacciones con Framer Motion: reveal on scroll, hover en cards, drawer del carrito (`CheckoutDrawer.jsx`), con `useReducedMotion`.
+
+### Fase 4 — Arquitectura del frontend
+- [ ] Refactor `ProductDetail.jsx` (5.280 líneas) parte 1: extraer galería, bloque de precio/variantes, reviews, FAQ a `components/product/*`.
+- [ ] Refactor `ProductDetail.jsx` parte 2: hooks `useProduct`, `useVariants`; eliminar código muerto.
+- [ ] Landings duplicadas: `SillonPuffLanding.jsx` y `KitBelleza6en1Landing.jsx` tienen **exactamente 1.223 líneas** cada una (copia/pega); `MasajeadorEms*` y `MasajeadorFacial*` ~1.400. Ya existe `src/landings/*.js` con config por producto + `TEMPLATE.js`: unificar en un `<LandingTemplate config={...}/>`.
+- [ ] `MundialLanding.jsx` (3.719 líneas): partir en secciones.
+- [ ] `CheckoutSheet.jsx` (2.411) y `checkout.jsx` (1.296): solo extraer componentes de presentación; **no tocar lógica de pago**.
+- [ ] `App.jsx`: las listas de rutas que ocultan navbar/footer/WhatsApp son `||` encadenados → config declarativa por ruta (`routes.config.js`) o layouts anidados de React Router.
+
+### Fase 5 — Accesibilidad y estados
+- [ ] Accesibilidad: 18 `onClick` en `<div>/<span>/<img>` (sin teclado/rol), 12 `outline: none` sin reemplazo de foco, ~50 `<img>` sin `alt`. Agregar `:focus-visible` global, botones reales, `alt`, skip-link. Contraste del rosa sobre blanco a verificar (AA).
+- [ ] Estados de UI: skeletons consistentes (home ya tiene `SkeletonCard`), vacíos y errores en products/cart/myOrders; error boundary global.
+
+### Fase 6 — Backend y calidad
+- [ ] Backend: `app.js` define 5 rutas de abandoned-cart inline → mover a `routes/abandonedCarts.routes.js` + controller. Validación de inputs con zod en auth/orders (sin tocar validación de precios).
+- [ ] Tests: Vitest + Testing Library (CartContext, cálculo de totales, `discountPct`); backend con `node:test` + supertest para health/products (mock de Mongo).
+- [ ] CI: GitHub Action en la rama con lint + build + tests.
+- [ ] README de portafolio (raíz; hoy no existe y `frontend/README.md` es el default de Vite): capturas, diagrama de arquitectura, stack, decisiones técnicas, cómo correrlo.
 
 ## Pendientes para Rick (requieren decisión o acceso)
 
 - Rotar las credenciales que estuvieron expuestas en `.claude/settings.json` (siguen en el historial de Git; el repo es público).
 - Antes de mergear esta rama: confirmar que todas las `VITE_*` estén cargadas en Vercel, porque `frontend/.env` ya no se sube al repo.
 - Decidir si se limpia el historial de Git (reescribe `main`).
+- **Privacidad:** `backend/uploads/` (3 MB) está commiteado con comprobantes de pago (`proof_*.png`) que pueden tener datos de clientes, y el repo es público. Recomendado: sacarlos del repo, agregar `backend/uploads/` al `.gitignore` y servirlos desde Cloudinary (ya está como dependencia). No lo hice porque `app.js` los sirve en `/uploads` y puede afectar producción.
+- Confirmar dominio final de la tienda para `canonical`/`og:url` en `index.html`.
+
+## Skills recomendadas
+
+- `design:accessibility-review` — para la tarea de Fase 5 (auditoría WCAG AA con checklist de contraste/teclado).
+- `marketing:seo-audit` — para la tarea de meta/SEO de Fase 1.
+- Lighthouse CLI (`npx lighthouse` con el Chromium preinstalado vía Playwright) para medir antes/después de la Fase 2.
 
 ## Registro de sesiones
 
