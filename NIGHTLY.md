@@ -78,3 +78,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | Fecha | Hora | Hecho | Commit |
 |---|---|---|---|
 | 2026-10-08 | setup | Rama creada, limpieza de seguridad, este archivo | — |
+| 2026-10-09 | 03:53 | Auditoría completa (build, bundle 1,46 MB sin splitting, 94 problemas de lint con 22 bugs de hooks, 13 MB de imágenes sin usar, SEO roto, uploads con comprobantes). Backlog reescrito en 6 fases. | 107dd3f |
