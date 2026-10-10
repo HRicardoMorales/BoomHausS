@@ -29,8 +29,8 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [x] Logs (2026-10-10): `backend/src/utils/logger.js` sin dependencias (niveles, JSON por línea en prod, `child(scope)`, `maskEmail`, `LOG_LEVEL` opcional) + `middlewares/requestLogger.js` (X-Request-Id, ruta sin query, status, ms). Todos los `console.*` del backend migrados salvo `metaCapi.js`, webhook de MP y scripts de seed (CLI). Ya no se loguean links de pago ni emails completos; ruido de `createOrder` a debug. Frontend: `utils/logger.js`, logs de `api.js`/`metaPixelInit` solo en dev. Smoke test sin Mongo en dev y prod OK.
 
 ### Fase 2 — Performance (el bundle es lo primero que mira un senior)
-- [ ] Code splitting por ruta en `App.jsx`: hoy **todo** (admin, 10 landings, checkout) está en un único chunk de **1,46 MB (390 KB gzip)**. `React.lazy` + `Suspense` con fallback skeleton para admin, landings y checkout; `manualChunks` para vendor (react, framer-motion, mercadopago). Meta: chunk inicial de home < 200 KB gzip.
-- [ ] CSS: `index.css` (1.874 líneas, 130 KB total de CSS) carga estilos de todas las landings; 31 bloques `<style>` inline dentro de JSX. Mover CSS de cada landing a su chunk (se resuelve en parte con lazy).
+- [x] Code splitting (2026-10-10): `React.lazy` + `Suspense` en todas las rutas salvo home, `utils/lazyWithRetry.js` (recarga una vez ante chunk viejo post-deploy, `preload()`; ProductDetail se precarga en idle), `RouteFallback` con skeleton, `vendor-react` separado. **JS inicial 1.462 KB/391 KB gzip → 483 KB/155 KB gzip; CSS inicial 130 → 39 KB.** Bug evitado: los CSS de landings hacen `@import` de Google Fonts y si falla (adblock/red) Vite rechazaba el chunk → landing en blanco; se maneja `vite:preloadError`. Reveal on scroll ahora usa MutationObserver (las rutas lazy montan después del effect). Nota: `.lp-footer` de LuxCoveLED.css ya no "filtra" a las otras landings (cada una tiene su copia inline; sin cambio visual). MercadoPago SDK no aparece en el bundle (`CardPaymentBrick` no se importa en ningún lado → código muerto a revisar).
+- [ ] CSS: con lazy el CSS de landings ya va en su chunk (inicial 39 KB). Queda: 31 bloques `<style>` inline dentro de JSX (re-parseados en cada montaje, duplicados entre landings, p. ej. `.lp-footer*` x5) → CSS modules o archivo por landing; los `@import` de Google Fonts dentro de los CSS de landings (cadena bloqueante) → mover a la tarea de fuentes. Error boundary global alrededor del `Suspense` (si el chunk falla dos veces hoy queda en blanco).
 - [ ] Imágenes: 146 `<img>`, solo 49 con `loading="lazy"`; sin `width/height` (CLS). Componente `<Img>` (extender `SafeImg.jsx`) con lazy, `decoding="async"`, dimensiones y `srcset` de Cloudinary (`f_auto,q_auto,w_*`).
 - [ ] Fuentes: Google Fonts por `<link>` bloqueante (Cormorant + Inter, 8 pesos). Reducir pesos, `preload` del woff2 crítico o self-host con `@fontsource`.
 
@@ -75,6 +75,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 
 - `design:accessibility-review` — para la tarea de Fase 5 (auditoría WCAG AA con checklist de contraste/teclado).
 - `marketing:seo-audit` — para la tarea de meta/SEO de Fase 1.
+- `rollup-plugin-visualizer` (devDependency) para un `stats.html` del bundle: ayudaría a ver qué pesa en el chunk `index` (257 KB) en la próxima sesión de performance.
 - Lighthouse CLI (`npx lighthouse` con el Chromium preinstalado vía Playwright) para medir antes/después de la Fase 2.
 
 ## Registro de sesiones
@@ -90,3 +91,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-09 | 08:53 | SEO: OG image real, URL absoluta resuelta en build (plugin de Vite), robots/sitemap generados, title/canonical/noindex por ruta con React 19. Build y lint OK, verificado con Chromium en 7 rutas. | 1868fbf |
 | 2026-10-09 | 09:53 | Revisión final: build OK, lint 0, smoke test Chromium mobile en 5 rutas sin errores. PR borrador #1 `nightly/portfolio` → `main` abierto (no mergear). | PR #1 |
 | 2026-10-10 | 03:52 | Logger con niveles (JSON en prod) + access log con request id; console.* del backend migrados sin PII ni links de pago; logs del front solo en dev. Build y lint OK, `node --check` y smoke test HTTP. | e338d1a |
+| 2026-10-10 | 04:52 | Code splitting por ruta + vendor-react + lazyWithRetry + fallback skeleton; manejo de `vite:preloadError`. JS inicial 391 → 155 KB gzip. Build y lint OK, smoke test Chromium mobile en 10 rutas + navegación SPA. | 9035dc7 |
