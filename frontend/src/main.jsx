@@ -16,6 +16,16 @@ import { CartProvider } from './context/CartContext.jsx';
 import { initMetaPixel } from './lib/metaPixelInit';
 initMetaPixel();
 
+// Vite precarga el CSS de cada chunk lazy y, si un <link> falla, rechaza el
+// import() completo y la ruta queda en blanco. Pasa en la práctica: los CSS de
+// las landings hacen @import de Google Fonts, que bloqueadores de contenido o
+// redes móviles inestables cortan. Seguimos sin ese CSS en vez de romper la
+// página; si lo que falta es el JS, el import() real falla igual y lo maneja
+// `lazyWithRetry` (recarga una vez para traer el index.html del deploy nuevo).
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault();
+});
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>

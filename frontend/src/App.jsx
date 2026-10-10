@@ -1,46 +1,56 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
 import Navbar from './components/navbar.jsx';
 import RouteSeo from './seo/RouteSeo.jsx';
 import Marquee from './components/marquee.jsx';
 import Footer from './components/Footer.jsx';
 
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
-
+// Home queda en el chunk inicial (es la entrada desde Instagram/Facebook).
+// Todo lo demás se descarga recién al navegar a la ruta: admin, landings,
+// checkout y ProductDetail (5k líneas) no deberían pesar en la primera carga.
 import Home from './pages/home.jsx';
-import Products from './pages/products.jsx';
-import ProductDetail from './pages/ProductDetail.jsx';
-import Cart from './pages/Cart.jsx';
-import Checkout from './pages/checkout.jsx';
-import Login from './pages/login.jsx';
-import Register from './pages/register.jsx';
-import MyOrders from './pages/myOrders.jsx';
-import TiendaRedirect from './pages/tiendaRedirect.jsx';
-import AdminOrders from './pages/AdminOrders.jsx';
-import AdminProducts from './pages/AdminProducts.jsx';
-import Terms from './pages/Terms.jsx';
-import Privacy from './pages/Privacy.jsx';
-import Returns from './pages/Returns.jsx';
-import SuccessPayment from './pages/SuccessPayment';
-import AdminHome from './pages/AdminHome.jsx';
-import AdminCoupons from './pages/AdminCoupons.jsx';
+import RouteFallback from './components/RouteFallback.jsx';
+import { lazyWithRetry, whenIdle } from './utils/lazyWithRetry.js';
+
 import AdminRoute from './components/AdminRoute.jsx';
-import MundialLanding from './pages/MundialLanding.jsx';
-import ParchesDetoxLanding from './landings/ParchesDetox/ParchesDetox.jsx';
-import SillonPuffLanding from './pages/SillonPuffLanding.jsx';
-import KitBelleza6en1Landing from './pages/KitBelleza6en1Landing.jsx';
-import MasajeadorEmsEyesLanding from './pages/MasajeadorEmsEyesLanding.jsx';
-import MasajeadorFacialIonesLanding from './pages/MasajeadorFacialIonesLanding.jsx';
-import LuxCoveLED from './landings/LuxCoveLED/LuxCoveLED';
-import DepiladoraIPL from './landings/DepiladoraIPL/DepiladoraIPL';
-import AntimohoPisos from './landings/AntimohoPisos/AntimohoPisos';
 import { getStoredAuth } from './utils/auth';
 
 import { trackPageView } from "./lib/metaPixel";
 import ScrollToTop from './components/ScrollToTop.jsx';
 import WhatsAppButton from './components/WhatsAppButton.jsx';
+
+const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword'));
+const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
+
+const Products = lazyWithRetry(() => import('./pages/products.jsx'));
+const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail.jsx'));
+const Cart = lazyWithRetry(() => import('./pages/Cart.jsx'));
+const Checkout = lazyWithRetry(() => import('./pages/checkout.jsx'));
+const Login = lazyWithRetry(() => import('./pages/login.jsx'));
+const Register = lazyWithRetry(() => import('./pages/register.jsx'));
+const MyOrders = lazyWithRetry(() => import('./pages/myOrders.jsx'));
+const TiendaRedirect = lazyWithRetry(() => import('./pages/tiendaRedirect.jsx'));
+const Terms = lazyWithRetry(() => import('./pages/Terms.jsx'));
+const Privacy = lazyWithRetry(() => import('./pages/Privacy.jsx'));
+const Returns = lazyWithRetry(() => import('./pages/Returns.jsx'));
+const SuccessPayment = lazyWithRetry(() => import('./pages/SuccessPayment'));
+
+const AdminHome = lazyWithRetry(() => import('./pages/AdminHome.jsx'));
+const AdminOrders = lazyWithRetry(() => import('./pages/AdminOrders.jsx'));
+const AdminProducts = lazyWithRetry(() => import('./pages/AdminProducts.jsx'));
+const AdminCoupons = lazyWithRetry(() => import('./pages/AdminCoupons.jsx'));
+
+const MundialLanding = lazyWithRetry(() => import('./pages/MundialLanding.jsx'));
+const ParchesDetoxLanding = lazyWithRetry(() => import('./landings/ParchesDetox/ParchesDetox.jsx'));
+const SillonPuffLanding = lazyWithRetry(() => import('./pages/SillonPuffLanding.jsx'));
+const KitBelleza6en1Landing = lazyWithRetry(() => import('./pages/KitBelleza6en1Landing.jsx'));
+const MasajeadorEmsEyesLanding = lazyWithRetry(() => import('./pages/MasajeadorEmsEyesLanding.jsx'));
+const MasajeadorFacialIonesLanding = lazyWithRetry(() => import('./pages/MasajeadorFacialIonesLanding.jsx'));
+const LuxCoveLED = lazyWithRetry(() => import('./landings/LuxCoveLED/LuxCoveLED'));
+const DepiladoraIPL = lazyWithRetry(() => import('./landings/DepiladoraIPL/DepiladoraIPL'));
+const AntimohoPisos = lazyWithRetry(() => import('./landings/AntimohoPisos/AntimohoPisos'));
+
 function PrivateRoute({ children }) {
   const location = useLocation();
   const { token, user } = getStoredAuth();
@@ -101,10 +111,16 @@ export default function App() {
     
   }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta (ej: ir a checkout)
 
-  // Animación Reveal
+  // Desde la home, el siguiente paso casi siempre es la ficha de producto:
+  // precargamos ese chunk cuando el navegador queda ocioso.
+  useEffect(() => whenIdle(() => { ProductDetail.preload(); }), []);
+
+  // Animación Reveal. Las rutas lazy montan su contenido después de este
+  // effect, así que además de los nodos actuales observamos los que se
+  // agreguen al DOM (MutationObserver).
   useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll('.reveal'));
-    if (!nodes.length) return;
+    const root = document.querySelector('.app-shell');
+    if (!root || typeof IntersectionObserver === 'undefined') return;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -116,11 +132,13 @@ export default function App() {
       },
       { threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
     );
-    nodes.forEach((el) => {
-      if (el.classList.contains('is-visible')) return;
-      io.observe(el);
-    });
-    return () => io.disconnect();
+    const observeAll = () => {
+      root.querySelectorAll('.reveal:not(.is-visible)').forEach((el) => io.observe(el));
+    };
+    observeAll();
+    const mo = new MutationObserver(observeAll);
+    mo.observe(root, { childList: true, subtree: true });
+    return () => { mo.disconnect(); io.disconnect(); };
   }, [location.pathname]);
 
   return (
@@ -133,6 +151,7 @@ export default function App() {
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
       <div className="app-body">
+        <Suspense fallback={<RouteFallback />}>
         <Routes>
           {/* ✅ Home público — accesible sin login */}
           <Route path="/" element={<Home />} />
@@ -181,6 +200,7 @@ export default function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/success-payment" element={<SuccessPayment />} />
         </Routes>
+        </Suspense>
       </div>
 
       {!hideChrome && !hideFooter && <Footer />}
