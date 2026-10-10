@@ -11,27 +11,11 @@ import StickyBuyBar from "../components/landing/StickyBuyBar";
 import WhatsAppTab from "../components/landing/WhatsAppTab";
 import LandingLoader from "../components/landing/LandingLoader";
 import { useStickyCta } from "../components/landing/useStickyCta";
+import WaveSeparator from "../components/landing/WaveSeparator";
+import LandingFaq from "../components/landing/LandingFaq";
 
-/* ============================================================
-   WAVE SEPARATOR
-============================================================ */
-function WaveSeparator({ from }) {
-  const topColor  = from === 'blue' ? '#1B4D3E' : '#ffffff';
-  const fillColor = from === 'blue' ? '#ffffff' : '#1B4D3E';
-  return (
-    <div className="wave-divider" style={{ '--wave-top-color': topColor }}>
-      <svg className="waves-anim" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
-        <defs>
-          <path id="spf-gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-        </defs>
-        <g className="parallax1"><use xlinkHref="#spf-gentle-wave" x="48" y="0" fill={fillColor} /></g>
-        <g className="parallax2"><use xlinkHref="#spf-gentle-wave" x="48" y="3" fill={fillColor} /></g>
-        <g className="parallax3"><use xlinkHref="#spf-gentle-wave" x="48" y="5" fill={fillColor} /></g>
-        <g className="parallax4"><use xlinkHref="#spf-gentle-wave" x="48" y="7" fill={fillColor} /></g>
-      </svg>
-    </div>
-  );
-}
+/* Colores de las bandas para los separadores de olas. */
+const WAVE = { dark: "#1B4D3E", light: "#ffffff" };
 
 /* ============================================================
    COUNTDOWN TIMER
@@ -267,7 +251,6 @@ export default function SillonPuffLanding() {
   const [productReady, setProductReady] = useState(false);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [selectedBundleId, setSelectedBundleId] = useState(mc.bundles[0].id);
-  const [openFaq,      setOpenFaq]      = useState(null);
   const [showSheet,    setShowSheet]    = useState(false);
   const [allowCod,     setAllowCod]     = useState(false);
   const { addItem } = useCart();
@@ -546,7 +529,7 @@ export default function SillonPuffLanding() {
           </div>
         </section>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" {...WAVE} />
 
         {/* ── 2. VERDE — Antes/Después + Garantía ── */}
         <section className="pd-band pd-band--blue">
@@ -586,7 +569,7 @@ export default function SillonPuffLanding() {
           </div>
         </section>
 
-        <WaveSeparator from="blue" />
+        <WaveSeparator from="dark" {...WAVE} />
 
         {/* ── 3. BLANCO — Reseñas con barras ── */}
         <section className="pd-band pd-band--light">
@@ -602,7 +585,7 @@ export default function SillonPuffLanding() {
           </div>
         </section>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" {...WAVE} />
 
         {/* ── 4. VERDE — Estadísticas ── */}
         <section className="pd-band pd-band--blue">
@@ -611,27 +594,12 @@ export default function SillonPuffLanding() {
           </div>
         </section>
 
-        <WaveSeparator from="blue" />
+        <WaveSeparator from="dark" {...WAVE} />
 
         {/* ── 5. BLANCO — FAQ ── */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container dtx-py" style={{ paddingBottom: '100px' }}>
-            <div className="faq-acc-wrap">
-              <h2 className="faq-acc-title">{mc.faqTitle}</h2>
-              <div className="faq-acc">
-                {mc.faq.map((item, i) => (
-                  <div key={i} className={`faq-acc-item${openFaq === i ? ' active' : ''}`}>
-                    <div className="faq-acc-header" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                      {item.q}
-                      <span className="faq-acc-indicator">▾</span>
-                    </div>
-                    <div className="faq-acc-content">
-                      <p>{item.a}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <LandingFaq title={mc.faqTitle} items={mc.faq} tone="green" icon="chevron" />
           </div>
         </section>
 
@@ -776,19 +744,6 @@ export default function SillonPuffLanding() {
         @media (min-width:900px) { .sec-title { font-size:1.85rem; } }
         .sec-sub { margin-top:8px; color:rgba(11,18,32,.60); font-weight:850; font-size:.95rem; }
 
-        /* ── Wave divider ── */
-        .wave-divider { position:relative; width:100%; overflow:hidden; background:var(--wave-top-color); line-height:0; pointer-events:none; margin-top:-1px; margin-bottom:-1px; }
-        .waves-anim { display:block; width:100%; height:auto; max-height:3rem; margin:0; }
-        @media (min-width:1000px) { .waves-anim { max-height:6rem; } }
-        .parallax1>use { animation:wMove1 10s linear infinite; animation-delay:-2s; }
-        .parallax2>use { animation:wMove2  8s linear infinite; opacity:.4; animation-delay:-2s; }
-        .parallax3>use { animation:wMove3  6s linear infinite; opacity:.3; animation-delay:-2s; }
-        .parallax4>use { animation:wMove4  4s linear infinite; opacity:.2; animation-delay:-2s; }
-        @keyframes wMove1 { 0%{transform:translate(85px,0)}  100%{transform:translate(-90px,0)} }
-        @keyframes wMove2 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)}  }
-        @keyframes wMove3 { 0%{transform:translate(85px,0)}  100%{transform:translate(-90px,0)} }
-        @keyframes wMove4 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)}  }
-        @media (prefers-reduced-motion:reduce) { .parallax1>use,.parallax2>use,.parallax3>use,.parallax4>use { animation:none !important; } }
 
         /* ── Mini reviews bar ── */
         .mrb { margin-top:14px; background:transparent; padding-bottom:28px; }
@@ -945,21 +900,6 @@ export default function SillonPuffLanding() {
         .grt-cta.spf-grt-cta:active { transform:scale(.98); }
         @media (max-width:520px) { .grt-section{padding:44px 16px 40px;} .grt-pill{font-size:.79rem;padding:8px 12px;} .grt-cta.spf-grt-cta{width:100%;padding:16px;} }
 
-        /* ── FAQ ── */
-        .faq-acc-wrap { width:100%; max-width:760px; margin:0 auto; padding:24px 0 8px; }
-        .faq-acc-title { font-size:1.55rem; font-weight:900; color:rgba(11,18,32,.90); text-align:center; margin:0 0 24px; letter-spacing:-.02em; line-height:1.2; }
-        @media (max-width:520px) { .faq-acc-title{font-size:1.25rem;} }
-        .faq-acc { width:100%; border-radius:5px; }
-        .faq-acc-item { border-bottom:1px solid #ccc; margin-bottom:3px; }
-        .faq-acc-item:last-child { border-bottom:none; }
-        .faq-acc-header { padding:14px 8px; cursor:pointer; font-weight:700; font-size:14px; display:flex; justify-content:space-between; align-items:center; color:rgba(11,18,32,.88); user-select:none; line-height:1.4; transition:color .2s ease; }
-        .faq-acc-header:hover { color:#1B4D3E; }
-        .faq-acc-item.active .faq-acc-header { color:#1B4D3E; }
-        .faq-acc-indicator { font-size:1.4em; margin-left:12px; flex-shrink:0; color:#1B4D3E; font-weight:400; line-height:1; transition:transform .3s ease; display:inline-block; }
-        .faq-acc-item.active .faq-acc-indicator { transform:rotate(180deg); }
-        .faq-acc-content { max-height:0; overflow:hidden; padding:0 10px; transition:max-height .35s ease,padding .3s ease; }
-        .faq-acc-content p { margin:6px 0 14px; font-size:13.5px; color:rgba(11,18,32,.62); line-height:1.6; }
-        .faq-acc-item.active .faq-acc-content { max-height:300px; padding:4px 10px 4px; }
 
 
 
