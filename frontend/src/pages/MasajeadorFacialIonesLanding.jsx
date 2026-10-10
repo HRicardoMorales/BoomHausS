@@ -6,6 +6,10 @@ import { trackWithCapi } from '../lib/metaPixel';
 import mc from '../landings/masajeador-facial-iones-lambo';
 import LandingFooter from '../components/landing/LandingFooter.jsx';
 import StatsCircles from "../components/landing/StatsCircles";
+import StickyBuyBar from "../components/landing/StickyBuyBar";
+import WhatsAppTab from "../components/landing/WhatsAppTab";
+import LandingLoader from "../components/landing/LandingLoader";
+import { useStickyCta } from "../components/landing/useStickyCta";
 
 /* ============================================================
    WAVE SEPARATOR
@@ -284,21 +288,6 @@ function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, sco
 }
 
 /* ============================================================
-   WHATSAPP TAB
-============================================================ */
-function WaTab({ wa }) {
-  if (!wa?.show) return null;
-  const href = `https://wa.me/${wa.number}?text=${encodeURIComponent(wa.message)}`;
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="wa-tab" aria-label="Consultas por WhatsApp">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-      </svg>
-    </a>
-  );
-}
-
-/* ============================================================
    TRUST PILLS (3 desplegables debajo del CTA)
 ============================================================ */
 function TrustPills() {
@@ -459,23 +448,8 @@ export default function MasajeadorFacialIonesLanding() {
     });
   }, []);
 
-  useEffect(() => {
-    if (!productReady) return;
-    const heroCTA = document.querySelector('.bnd2-cta');
-    const stickyBar = document.querySelector('.pd-sticky-bar');
-    if (!heroCTA || !stickyBar) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const pastCta = !entry.isIntersecting && entry.boundingClientRect.top < 0;
-        stickyBar.classList.toggle('sticky--visible', pastCta);
-        const waTab = document.querySelector('.wa-tab');
-        if (waTab) waTab.classList.toggle('wa-tab--raised', pastCta);
-      },
-      { threshold: 0 }
-    );
-    observer.observe(heroCTA);
-    return () => observer.disconnect();
-  }, [productReady]);
+  // Barra de compra fija + botón de WhatsApp: se muestran/suben al pasar el CTA.
+  const stickyVisible = useStickyCta('.bnd2-cta', productReady);
 
   const displayBundles = useMemo(() => {
     return mc.bundles.map((b, idx) => {
@@ -513,14 +487,7 @@ export default function MasajeadorFacialIonesLanding() {
   const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
 
   if (!productReady) {
-    return (
-      <>
-        <style>{`@keyframes _lamBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
-        <div style={{ minHeight:'100vh', background:'#fff' }}>
-          <div style={{ height:3, background:'linear-gradient(90deg,#AD1457,#C2185B,#AD1457)', backgroundSize:'200% 100%', animation:'_lamBar 1.1s linear infinite' }} />
-        </div>
-      </>
-    );
+    return <LandingLoader />;
   }
 
   const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Masajeador Facial 5 en 1 Lambo Lady LT-25M33' };
@@ -825,36 +792,17 @@ export default function MasajeadorFacialIonesLanding() {
       </div>
 
       {/* ── STICKY BAR ── */}
-      <div className="pd-sticky-bar">
-        <div className="pd-sticky-inner">
-          <div className="pd-sticky-info">
-            <div className="pd-sticky-prices lp-sticky-price-block">
-              {!selectedBundle.soldOut && (
-                <span className="pd-sticky-old">{fmt(selectedBundle.compareAt)}</span>
-              )}
-              <span className="pd-sticky-now">
-                {selectedBundle.soldOut ? 'Agotado' : fmt(selectedBundle.price)}
-              </span>
-              {!selectedBundle.soldOut && (
-                <span className="lp-sticky-cuotas">
-                  3 cuotas de ${Math.ceil(selectedBundle.price / 3).toLocaleString('es-AR')}
-                </span>
-              )}
-            </div>
-          </div>
-          <button
-            className="pd-sticky-btn spf-sticky-btn"
-            onClick={handleBuy}
-            disabled={selectedBundle.soldOut || !product}
-          >
-            {mc.stickyBtnText}
-          </button>
-        </div>
-        <p className="pd-cta-guarantee pd-sticky-grt--full">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
-        <p className="pd-cta-guarantee pd-sticky-grt--short">🛡️ Garantía 30 días</p>
-      </div>
+      <StickyBuyBar
+        bundle={selectedBundle}
+        visible={stickyVisible}
+        onBuy={handleBuy}
+        disabled={!product}
+        buttonText={mc.stickyBtnText}
+        showInstallments
+        showLabel={false}
+      />
 
-      <WaTab wa={mc.whatsapp} />
+      <WhatsAppTab wa={mc.whatsapp} raised={stickyVisible} />
 
       <style>{`
 
@@ -1111,36 +1059,6 @@ export default function MasajeadorFacialIonesLanding() {
         .faq-acc-content p { margin:0 0 16px; font-size:14px; color:rgba(11,18,32,.62); line-height:1.65; }
         .faq-acc-item.active .faq-acc-content { max-height:1400px; padding:0 4px 16px; }
 
-        .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%) translateY(100%); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
-        .pd-sticky-bar.sticky--visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
-        .pd-sticky-inner { display:flex; align-items:center; gap:12px; width:100%; }
-        .pd-sticky-bar .pd-cta-guarantee { font-size:11px; margin:0; color:rgba(11,18,32,.38); }
-        .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
-        .pd-sticky-prices { display:flex; flex-direction:column; gap:0; }
-        .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
-        .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.92rem; white-space:nowrap; line-height:1.25; }
-        .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#8B1A4A; white-space:nowrap; line-height:1.3; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#AD1457 0%,#C2185B 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(173,20,87,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
-        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(173,20,87,.22); }
-        .pd-sticky-btn.spf-sticky-btn:disabled { opacity:.50; cursor:not-allowed; }
-        .pd-sticky-grt--short { display:none; }
-        @media (max-width:540px) {
-          .pd-sticky-bar { padding:8px 8px 7px 14px; }
-          .pd-sticky-inner { gap:8px; }
-          .pd-sticky-btn.spf-sticky-btn { font-size:.72rem; padding:10px 12px; }
-          .pd-sticky-grt--full { display:none; }
-          .pd-sticky-grt--short { display:block; }
-        }
-        @media (max-width:389px) {
-          .pd-sticky-bar { padding:6px 6px 5px 10px; width:min(calc(100% - 16px),560px); }
-          .pd-sticky-inner { gap:4px; }
-          .pd-sticky-now { font-size:.78rem; }
-          .pd-sticky-qty { display:none; }
-          .pd-sticky-btn.spf-sticky-btn { font-size:.66rem; padding:9px 10px; }
-        }
-
-        .wa-tab { position:fixed; right:16px; bottom:24px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); transform:translateY(0); transition:transform .3s cubic-bezier(.22,1,.36,1); }
-        .wa-tab.wa-tab--raised { transform:translateY(-82px); }
 
         .ems-pain-hl { margin:8px 0 4px; text-align:center; font-size:1.55rem; font-weight:1000; line-height:1.15; color:rgba(11,18,32,.93); letter-spacing:-.02em; }
         @media (max-width:520px) { .ems-pain-hl { font-size:1.25rem; } }
@@ -1186,8 +1104,6 @@ export default function MasajeadorFacialIonesLanding() {
         .lp-cta-subtext.dark-section { color:rgba(255,255,255,.70); }
         .lp-cta-subtext strong { font-weight:700; }
 
-        .lp-sticky-price-block { display:flex; flex-direction:column; align-items:flex-start; }
-        .lp-sticky-cuotas { font-size:10px; color:rgba(11,18,32,.45); font-weight:500; line-height:1; margin-top:1px; }
 
         /* ── Circulación Facial ─────────────────────────── */
         .circ-section { padding:32px 0 24px; display:flex; flex-direction:column; gap:20px; }
