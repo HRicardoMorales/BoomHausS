@@ -50,7 +50,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [ ] Refactor `ProductDetail.jsx` (5.280 líneas) parte 1: extraer galería, bloque de precio/variantes, reviews, FAQ a `components/product/*`.
 - [ ] Refactor `ProductDetail.jsx` parte 2: hooks `useProduct`, `useVariants`; eliminar código muerto.
 - [ ] Landings duplicadas: `SillonPuffLanding.jsx` y `KitBelleza6en1Landing.jsx` tienen **exactamente 1.223 líneas** cada una (copia/pega); `MasajeadorEms*` y `MasajeadorFacial*` ~1.400. Ya existe `src/landings/*.js` con config por producto + `TEMPLATE.js`: unificar en un `<LandingTemplate config={...}/>`.
-- [ ] `MundialLanding.jsx` (3.719 líneas): partir en secciones.
+- [ ] `MundialLanding.jsx` (3.719 líneas): partir en secciones. Ojo: tiene **8 `id` duplicados** en el DOM (detectado en la revisión del 2026-10-10 con Playwright); probablemente SVGs copiados, resolver con `useId`.
 - [ ] `CheckoutSheet.jsx` (2.411) y `checkout.jsx` (1.296): solo extraer componentes de presentación; **no tocar lógica de pago**.
 - [ ] `App.jsx`: las listas de rutas que ocultan navbar/footer/WhatsApp son `||` encadenados → config declarativa por ruta (`routes.config.js`) o layouts anidados de React Router.
 
@@ -103,3 +103,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-10 | 06:52 | CSS parte 2a: `StatsCircles` compartido (5 copias → 1) con tonos por custom properties, reduced motion, cleanup de rAF y `<dl>` accesible. Build y lint OK, Playwright mobile en 4 landings. | c1e3e7d |
 | 2026-10-10 | 07:52 | CSS parte 2b: `StickyBuyBar` + `useStickyCta`, `WhatsAppTab` y `LandingLoader` compartidos (4 copias → 1, −347 líneas), estado de React en vez de manipular el DOM, `inert`/`aria-hidden`, táctil 44 px. Build y lint OK, Playwright mobile en 4 landings. | b077a8a |
 | 2026-10-10 | 08:52 | CSS parte 2c-1: `LandingFaq` accesible (botones, aria, `inert`, grid-rows) y `WaveSeparator` con ids únicos compartidos (4 copias → 1 c/u, −279 líneas). Build y lint OK, Playwright mobile en 4 landings (teclado, ids, consola). | ccf2134 |
+| 2026-10-10 | 09:53 | Revisión final: build OK, lint 0, `node --check` backend OK, Playwright mobile en 11 rutas sin errores de runtime (8 ids duplicados en MundialLanding → backlog). Descripción del PR borrador #1 actualizada con lo de la noche. | PR #1 |
