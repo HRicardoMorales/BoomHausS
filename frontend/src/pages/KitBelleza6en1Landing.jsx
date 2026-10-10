@@ -1,30 +1,20 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../services/api';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
 import mc from '../landings/kit-belleza-6en1';
+import LandingFooter from '../components/landing/LandingFooter.jsx';
+import StatsCircles from "../components/landing/StatsCircles";
+import StickyBuyBar from "../components/landing/StickyBuyBar";
+import WhatsAppTab from "../components/landing/WhatsAppTab";
+import LandingLoader from "../components/landing/LandingLoader";
+import { useStickyCta } from "../components/landing/useStickyCta";
+import WaveSeparator from "../components/landing/WaveSeparator";
+import LandingFaq from "../components/landing/LandingFaq";
 
-/* ============================================================
-   WAVE SEPARATOR
-============================================================ */
-function WaveSeparator({ from }) {
-  const topColor  = from === 'blue' ? '#1B4D3E' : '#ffffff';
-  const fillColor = from === 'blue' ? '#ffffff' : '#1B4D3E';
-  return (
-    <div className="wave-divider" style={{ '--wave-top-color': topColor }}>
-      <svg className="waves-anim" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
-        <defs>
-          <path id="spf-gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-        </defs>
-        <g className="parallax1"><use xlinkHref="#spf-gentle-wave" x="48" y="0" fill={fillColor} /></g>
-        <g className="parallax2"><use xlinkHref="#spf-gentle-wave" x="48" y="3" fill={fillColor} /></g>
-        <g className="parallax3"><use xlinkHref="#spf-gentle-wave" x="48" y="5" fill={fillColor} /></g>
-        <g className="parallax4"><use xlinkHref="#spf-gentle-wave" x="48" y="7" fill={fillColor} /></g>
-      </svg>
-    </div>
-  );
-}
+/* Colores de las bandas para los separadores de olas. */
+const WAVE = { dark: "#1B4D3E", light: "#ffffff" };
 
 /* ============================================================
    COUNTDOWN TIMER
@@ -174,94 +164,6 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
 /* ============================================================
    STATS CIRCLES — idéntico a ProductDetail (lámpara magnética)
 ============================================================ */
-function StatsCircles({ mc }) {
-  const items = mc.statsCircles;
-  if (!items?.length) return null;
-
-  const circleRefs = useRef([]);
-  const animatedRef = useRef(items.map(() => false));
-  const [values, setValues] = useState(() => items.map(() => 0));
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          if (animatedRef.current[idx]) return;
-          animatedRef.current[idx] = true;
-          const target = items[idx].target;
-          let current = 0;
-          const step = () => {
-            if (current <= target) {
-              setValues(prev => {
-                const next = [...prev];
-                next[idx] = current;
-                return next;
-              });
-              current++;
-              requestAnimationFrame(step);
-            }
-          };
-          step();
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.1 }
-    );
-    circleRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <section className="sc-section anim-el">
-      {mc.statsTitle && (
-        <h2 className="sc-title">{mc.statsTitle}</h2>
-      )}
-      <div className="sc-list">
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className="sc-row"
-            ref={el => circleRefs.current[i] = el}
-            data-idx={i}
-          >
-            <div className="sc-circle" style={{ "--sc-pct": `${values[i]}%` }}>
-              <span className="sc-pct">{values[i]}%</span>
-            </div>
-            <p
-              className="sc-text"
-              dangerouslySetInnerHTML={{ __html: item.text }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="sc-footer">
-        <p className="sc-footer-note">{mc.statsFooterNote || "*Basado en compras verificadas"}</p>
-        <div className="sc-footer-stats">
-          {mc.soldCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.soldCount.toLocaleString("es-AR")}</span>
-              <span className="sc-stat-lbl">CLIENTES</span>
-            </div>
-          )}
-          {mc.reviewScore && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">{mc.reviewScore * 20}%</span>
-              <span className="sc-stat-lbl">SATISFACCIÓN</span>
-            </div>
-          )}
-          {mc.reviewCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.reviewCount}</span>
-              <span className="sc-stat-lbl">RESEÑAS</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ============================================================
    REVIEWS WITH BARS — puntuación + barras + carousel
@@ -341,29 +243,13 @@ function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, sco
 }
 
 /* ============================================================
-   WHATSAPP TAB
-============================================================ */
-function WaTab({ wa }) {
-  if (!wa?.show) return null;
-  const href = `https://wa.me/${wa.number}?text=${encodeURIComponent(wa.message)}`;
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="wa-tab" aria-label="Consultas por WhatsApp">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-      </svg>
-    </a>
-  );
-}
-
-/* ============================================================
    MAIN COMPONENT
 ============================================================ */
 export default function KitBelleza6en1Landing() {
   const [product,      setProduct]      = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
-  const [selectedBundle, setSelectedBundle] = useState(mc.bundles[0]);
-  const [openFaq,      setOpenFaq]      = useState(null);
+  const [selectedBundleId, setSelectedBundleId] = useState(mc.bundles[0].id);
   const [showSheet,    setShowSheet]    = useState(false);
   const [allowCod,     setAllowCod]     = useState(false);
   const { addItem } = useCart();
@@ -394,22 +280,8 @@ export default function KitBelleza6en1Landing() {
     return () => { controller.abort(); clearTimeout(timer); };
   }, []);
 
-  useEffect(() => {
-    if (!productReady) return;
-    const heroCTA = document.querySelector('.bnd2-cta');
-    const stickyBar = document.querySelector('.pd-sticky-bar');
-    if (!heroCTA || !stickyBar) return;
-    let ctaSeen = false;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) ctaSeen = true;
-        stickyBar.classList.toggle('sticky--visible', ctaSeen && !entry.isIntersecting);
-      },
-      { threshold: 0 }
-    );
-    observer.observe(heroCTA);
-    return () => observer.disconnect();
-  }, [productReady]);
+  // Barra de compra fija + botón de WhatsApp: se muestran/suben al pasar el CTA.
+  const stickyVisible = useStickyCta('.bnd2-cta', productReady);
 
   const displayBundles = useMemo(() => {
     return mc.bundles.map((b, idx) => {
@@ -418,11 +290,9 @@ export default function KitBelleza6en1Landing() {
     });
   }, [product]);
 
-  useEffect(() => {
-    const idx = mc.bundles.findIndex(b => b.id === selectedBundle.id);
-    const next = displayBundles[idx >= 0 ? idx : 0] ?? displayBundles[0];
-    if (next) setSelectedBundle(next);
-  }, [displayBundles]); // eslint-disable-line react-hooks/exhaustive-deps
+  // El bundle seleccionado se deriva del id + datos del producto (no se
+  // sincroniza con un useEffect): siempre refleja label/precio actualizados.
+  const selectedBundle = displayBundles.find(b => b.id === selectedBundleId) ?? displayBundles[0];
 
   const heroImgs = useMemo(() => {
     const arr = [];
@@ -452,14 +322,7 @@ export default function KitBelleza6en1Landing() {
   const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
 
   if (!productReady) {
-    return (
-      <>
-        <style>{`@keyframes _spfBar{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
-        <div style={{ minHeight:'100vh', background:'#fff' }}>
-          <div style={{ height:3, background:'linear-gradient(90deg,#C2185B,#E91E8C,#C2185B)', backgroundSize:'200% 100%', animation:'_spfBar 1.1s linear infinite' }} />
-        </div>
-      </>
-    );
+    return <LandingLoader colors={['#C2185B', '#E91E8C']} />;
   }
 
   const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: 'Kit de Belleza 6 en 1 Boxili' };
@@ -568,11 +431,11 @@ export default function KitBelleza6en1Landing() {
                   <div
                     key={b.id}
                     className={`bnd2-card${!b.soldOut && selectedBundle.id === b.id ? ' bnd2-card--on' : ''}${b.popular ? ' bnd2-card--pop' : ''}${b.soldOut ? ' spf-card--sold' : ''}`}
-                    onClick={() => !b.soldOut && setSelectedBundle(b)}
+                    onClick={() => !b.soldOut && setSelectedBundleId(b.id)}
                     role="button"
                     tabIndex={b.soldOut ? -1 : 0}
                     aria-disabled={b.soldOut}
-                    onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundle(b)}
+                    onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundleId(b.id)}
                   >
                     {b.popular && !b.soldOut && <div className="bnd2-float-badge">⭐ MÁS POPULAR</div>}
                     {b.soldOut && <div className="bnd2-float-badge spf-sold-badge">AGOTADO</div>}
@@ -666,7 +529,7 @@ export default function KitBelleza6en1Landing() {
           </div>
         </section>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" {...WAVE} />
 
         {/* ── 2. VERDE — Antes/Después + Garantía ── */}
         <section className="pd-band pd-band--blue">
@@ -706,7 +569,7 @@ export default function KitBelleza6en1Landing() {
           </div>
         </section>
 
-        <WaveSeparator from="blue" />
+        <WaveSeparator from="dark" {...WAVE} />
 
         {/* ── 3. BLANCO — Reseñas con barras ── */}
         <section className="pd-band pd-band--light">
@@ -722,7 +585,7 @@ export default function KitBelleza6en1Landing() {
           </div>
         </section>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" {...WAVE} />
 
         {/* ── 4. VERDE — Estadísticas ── */}
         <section className="pd-band pd-band--blue">
@@ -731,102 +594,33 @@ export default function KitBelleza6en1Landing() {
           </div>
         </section>
 
-        <WaveSeparator from="blue" />
+        <WaveSeparator from="dark" {...WAVE} />
 
         {/* ── 5. BLANCO — FAQ ── */}
         <section className="pd-band pd-band--light">
           <div className="dtx-container dtx-py" style={{ paddingBottom: '100px' }}>
-            <div className="faq-acc-wrap">
-              <h2 className="faq-acc-title">{mc.faqTitle}</h2>
-              <div className="faq-acc">
-                {mc.faq.map((item, i) => (
-                  <div key={i} className={`faq-acc-item${openFaq === i ? ' active' : ''}`}>
-                    <div className="faq-acc-header" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                      {item.q}
-                      <span className="faq-acc-indicator">▾</span>
-                    </div>
-                    <div className="faq-acc-content">
-                      <p>{item.a}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <LandingFaq title={mc.faqTitle} items={mc.faq} tone="green" icon="chevron" />
           </div>
         </section>
 
       </div>{/* /pd-bands */}
 
       {/* ── FOOTER ── */}
-      <footer className="lp-footer">
-        <div className="lp-footer-wave" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 52" preserveAspectRatio="none" style={{width:'100%',height:'54px',display:'block'}}>
-            <rect width="150" height="52" fill="#fff"/>
-            <path d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v52h-352z" fill="#111827"/>
-          </svg>
-        </div>
-        <div className="lp-footer-body">
-          <div className="lp-footer-brand">
-            <div className="lp-footer-logo">Amelor</div>
-            <p className="lp-footer-tagline">Tecnología que mejora tu vida diaria</p>
-          </div>
-          <div className="lp-footer-trust">
-            <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-          </div>
-          <div className="lp-footer-pay">
-            <span className="lp-footer-pay-label">Medios de pago aceptados</span>
-            <div className="lp-footer-pay-row">
-              <span className="lp-pay-chip">MercadoPago</span>
-              <span className="lp-pay-chip">Visa</span>
-              <span className="lp-pay-chip">Mastercard</span>
-              <span className="lp-pay-chip">Amex</span>
-            </div>
-          </div>
-          <div className="lp-footer-bottom">
-            <span>© 2026 Amelor · Todos los derechos reservados</span>
-            {mc.whatsapp?.number && (
-              <a href={`https://wa.me/${mc.whatsapp.number}`} className="lp-footer-wa" target="_blank" rel="noopener noreferrer">
-                💬 Consultas por WhatsApp
-              </a>
-            )}
-          </div>
-        </div>
-      </footer>
+      <LandingFooter waveFrom="#fff" whatsappNumber={mc.whatsapp?.number} />
 
       {/* ============================================================
           STICKY BAR
       ============================================================ */}
-      <div className="pd-sticky-bar">
-        <div className="pd-sticky-inner">
-          <div className="pd-sticky-info">
-            <div className="pd-sticky-prices">
-              {!selectedBundle.soldOut && (
-                <span className="pd-sticky-old">{fmt(selectedBundle.compareAt)}</span>
-              )}
-              <span className="pd-sticky-now">
-                {selectedBundle.soldOut ? 'Agotado' : fmt(selectedBundle.price)}
-              </span>
-            </div>
-            <span className="pd-sticky-qty">
-              {selectedBundle.soldOut ? 'Elegí otro kit arriba' : selectedBundle.label.split('—')[0].trim()}
-            </span>
-          </div>
-          <button
-            className="pd-sticky-btn spf-sticky-btn"
-            onClick={handleBuy}
-            disabled={selectedBundle.soldOut || !product}
-          >
-            {mc.stickyBtnText}
-          </button>
-        </div>
-        <p className="pd-cta-guarantee pd-sticky-grt--full">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
-        <p className="pd-cta-guarantee pd-sticky-grt--short">🛡️ Garantía 30 días</p>
-      </div>
+      <StickyBuyBar
+        bundle={selectedBundle}
+        visible={stickyVisible}
+        onBuy={handleBuy}
+        disabled={!product}
+        buttonText={mc.stickyBtnText}
+        theme={{ from: '#C2185B', to: '#E91E8C', shadow: '194, 24, 91', label: '#1B4D3E' }}
+      />
 
-      <WaTab wa={mc.whatsapp} />
+      <WhatsAppTab wa={mc.whatsapp} raised={stickyVisible} />
 
       {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} allowCod={allowCod} />}
 
@@ -950,19 +744,6 @@ export default function KitBelleza6en1Landing() {
         @media (min-width:900px) { .sec-title { font-size:1.85rem; } }
         .sec-sub { margin-top:8px; color:rgba(11,18,32,.60); font-weight:850; font-size:.95rem; }
 
-        /* ── Wave divider ── */
-        .wave-divider { position:relative; width:100%; overflow:hidden; background:var(--wave-top-color); line-height:0; pointer-events:none; margin-top:-1px; margin-bottom:-1px; }
-        .waves-anim { display:block; width:100%; height:auto; max-height:3rem; margin:0; }
-        @media (min-width:1000px) { .waves-anim { max-height:6rem; } }
-        .parallax1>use { animation:wMove1 10s linear infinite; animation-delay:-2s; }
-        .parallax2>use { animation:wMove2  8s linear infinite; opacity:.4; animation-delay:-2s; }
-        .parallax3>use { animation:wMove3  6s linear infinite; opacity:.3; animation-delay:-2s; }
-        .parallax4>use { animation:wMove4  4s linear infinite; opacity:.2; animation-delay:-2s; }
-        @keyframes wMove1 { 0%{transform:translate(85px,0)}  100%{transform:translate(-90px,0)} }
-        @keyframes wMove2 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)}  }
-        @keyframes wMove3 { 0%{transform:translate(85px,0)}  100%{transform:translate(-90px,0)} }
-        @keyframes wMove4 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)}  }
-        @media (prefers-reduced-motion:reduce) { .parallax1>use,.parallax2>use,.parallax3>use,.parallax4>use { animation:none !important; } }
 
         /* ── Mini reviews bar ── */
         .mrb { margin-top:14px; background:transparent; padding-bottom:28px; }
@@ -1045,37 +826,6 @@ export default function KitBelleza6en1Landing() {
         .spf-ba-hint { text-align:center; margin-top:14px; font-size:.85rem; color:rgba(255,255,255,.45); font-weight:600; }
         @media (max-width:520px) { .ba-container{border-radius:12px;} .ba-img-after{max-height:280px;} }
 
-        /* ── Stats circles — sc-section (idéntico a lámpara magnética) ── */
-        .sc-section { display:flex; flex-direction:column; gap:0; padding:28px 0 16px; width:100%; max-width:500px; margin:0 auto; }
-        .sc-title { font-size:1.45rem; font-weight:1000; color:rgba(11,18,32,.90); text-align:center; margin:0 0 22px; line-height:1.2; letter-spacing:-.01em; }
-        @media (max-width:520px) { .sc-title { font-size:1.18rem; } }
-        .sc-list { display:flex; flex-direction:column; gap:0; }
-        .sc-row { display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid rgba(11,18,32,.06); }
-        .sc-row:last-child { border-bottom:none; }
-        .sc-circle { position:relative; width:58px; height:58px; border-radius:50%; flex-shrink:0; background:conic-gradient(from 0deg,#2F855A 0%,#1B4D3E var(--sc-pct,0%),rgba(11,18,32,.10) 0%); }
-        .sc-circle::after { content:""; position:absolute; top:12%; left:12%; width:76%; height:76%; background:#fff; border-radius:50%; }
-        .sc-pct { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; font-weight:900; color:#1B4D3E; z-index:1; letter-spacing:-.02em; }
-        .sc-text { font-size:.88rem; font-weight:500; color:rgba(11,18,32,.70); line-height:1.5; margin:0; }
-        .sc-text strong { color:rgba(11,18,32,.88); font-weight:800; }
-        .sc-footer { margin-top:22px; padding-top:18px; border-top:1px solid rgba(11,18,32,.08); text-align:center; }
-        .sc-footer-note { font-size:.72rem; color:rgba(11,18,32,.40); margin:0 0 14px; font-style:italic; }
-        .sc-footer-stats { display:flex; justify-content:center; gap:0; }
-        .sc-stat { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:0 8px; border-right:1px solid rgba(11,18,32,.08); }
-        .sc-stat:last-child { border-right:none; }
-        .sc-stat-val { font-size:1.10rem; font-weight:1000; color:#1B4D3E; letter-spacing:-.01em; }
-        .sc-stat-lbl { font-size:.62rem; font-weight:800; color:rgba(11,18,32,.45); letter-spacing:.08em; text-transform:uppercase; }
-        .pd-band--blue .sc-title { color:rgba(255,255,255,.92); }
-        .pd-band--blue .sc-row { border-bottom-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-circle { background:conic-gradient(from 0deg,#2F855A 0%,#4ade80 var(--sc-pct,0%),rgba(255,255,255,.10) 0%); }
-        .pd-band--blue .sc-circle::after { background:#1B4D3E; }
-        .pd-band--blue .sc-pct { color:#4ade80; }
-        .pd-band--blue .sc-text { color:rgba(226,232,240,.70); }
-        .pd-band--blue .sc-text strong { color:rgba(255,255,255,.90); }
-        .pd-band--blue .sc-footer { border-top-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-footer-note { color:rgba(226,232,240,.40); }
-        .pd-band--blue .sc-stat { border-right-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-stat-val { color:#4ade80; }
-        .pd-band--blue .sc-stat-lbl { color:rgba(226,232,240,.45); }
 
         /* ── Cómo se usa ── */
         .pd-howto-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:24px; }
@@ -1150,72 +900,8 @@ export default function KitBelleza6en1Landing() {
         .grt-cta.spf-grt-cta:active { transform:scale(.98); }
         @media (max-width:520px) { .grt-section{padding:44px 16px 40px;} .grt-pill{font-size:.79rem;padding:8px 12px;} .grt-cta.spf-grt-cta{width:100%;padding:16px;} }
 
-        /* ── FAQ ── */
-        .faq-acc-wrap { width:100%; max-width:760px; margin:0 auto; padding:24px 0 8px; }
-        .faq-acc-title { font-size:1.55rem; font-weight:900; color:rgba(11,18,32,.90); text-align:center; margin:0 0 24px; letter-spacing:-.02em; line-height:1.2; }
-        @media (max-width:520px) { .faq-acc-title{font-size:1.25rem;} }
-        .faq-acc { width:100%; border-radius:5px; }
-        .faq-acc-item { border-bottom:1px solid #ccc; margin-bottom:3px; }
-        .faq-acc-item:last-child { border-bottom:none; }
-        .faq-acc-header { padding:14px 8px; cursor:pointer; font-weight:700; font-size:14px; display:flex; justify-content:space-between; align-items:center; color:rgba(11,18,32,.88); user-select:none; line-height:1.4; transition:color .2s ease; }
-        .faq-acc-header:hover { color:#1B4D3E; }
-        .faq-acc-item.active .faq-acc-header { color:#1B4D3E; }
-        .faq-acc-indicator { font-size:1.4em; margin-left:12px; flex-shrink:0; color:#1B4D3E; font-weight:400; line-height:1; transition:transform .3s ease; display:inline-block; }
-        .faq-acc-item.active .faq-acc-indicator { transform:rotate(180deg); }
-        .faq-acc-content { max-height:0; overflow:hidden; padding:0 10px; transition:max-height .35s ease,padding .3s ease; }
-        .faq-acc-content p { margin:6px 0 14px; font-size:13.5px; color:rgba(11,18,32,.62); line-height:1.6; }
-        .faq-acc-item.active .faq-acc-content { max-height:300px; padding:4px 10px 4px; }
 
-        /* ── Sticky bar ── */
-        .pd-sticky-bar { position:fixed; left:50%; bottom:18px; width:min(calc(100% - 24px),560px); transform:translateX(-50%) translateY(100%); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:9999; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(255,255,255,.97); backdrop-filter:blur(14px); border:1px solid rgba(11,18,32,.10); border-radius:20px; padding:9px 10px 7px 20px; box-shadow:0 22px 54px rgba(2,8,23,.22); overflow:hidden; }
-        .pd-sticky-bar.sticky--visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
-        .pd-sticky-inner { display:flex; align-items:center; gap:12px; width:100%; }
-        .pd-sticky-bar .pd-cta-guarantee { font-size:11px; margin:0; color:rgba(11,18,32,.38); }
-        .pd-sticky-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; }
-        .pd-sticky-prices { display:flex; flex-direction:column; gap:0; }
-        .pd-sticky-old { color:rgba(11,18,32,.38); font-weight:700; text-decoration:line-through; font-size:.65rem; white-space:nowrap; line-height:1.3; }
-        .pd-sticky-now { font-weight:900; color:rgba(11,18,32,.92); font-size:.92rem; white-space:nowrap; line-height:1.25; }
-        .pd-sticky-qty { font-size:.58rem; font-weight:600; color:#1B4D3E; white-space:nowrap; line-height:1.3; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-        .pd-sticky-btn.spf-sticky-btn { flex-shrink:0; border:none; background:linear-gradient(135deg,#C2185B 0%,#E91E8C 100%); color:#fff; font-weight:900; font-size:.80rem; border-radius:999px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 20px rgba(194,24,91,.28); letter-spacing:.04em; text-transform:uppercase; transition:transform .12s ease,box-shadow .12s ease; white-space:nowrap; }
-        .pd-sticky-btn.spf-sticky-btn:active { transform:scale(.98); box-shadow:0 4px 14px rgba(194,24,91,.22); }
-        .pd-sticky-btn.spf-sticky-btn:disabled { opacity:.50; cursor:not-allowed; }
-        .pd-sticky-grt--short { display:none; }
-        @media (max-width:540px) {
-          .pd-sticky-bar { padding:8px 8px 7px 14px; }
-          .pd-sticky-inner { gap:8px; }
-          .pd-sticky-btn.spf-sticky-btn { font-size:.72rem; padding:10px 12px; }
-          .pd-sticky-grt--full { display:none; }
-          .pd-sticky-grt--short { display:block; }
-        }
-        @media (max-width:389px) {
-          .pd-sticky-bar { padding:6px 6px 5px 10px; width:min(calc(100% - 16px),560px); }
-          .pd-sticky-inner { gap:4px; }
-          .pd-sticky-now { font-size:.78rem; }
-          .pd-sticky-qty { display:none; }
-          .pd-sticky-btn.spf-sticky-btn { font-size:.66rem; padding:9px 10px; }
-        }
 
-        /* ── WhatsApp tab ── */
-        .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
-
-        /* ── Landing Footer ── */
-        .lp-footer { font-family:inherit; }
-        .lp-footer-wave { line-height:0; display:block; }
-        .lp-footer-body { background:#111827; padding:32px 20px; padding-bottom:max(90px, calc(env(safe-area-inset-bottom) + 90px)); }
-        .lp-footer-brand { text-align:center; margin-bottom:24px; }
-        .lp-footer-logo { font-size:1.5rem; font-weight:900; color:#fff; letter-spacing:-.02em; line-height:1; }
-        .lp-footer-tagline { font-size:.78rem; color:rgba(255,255,255,.38); margin:5px 0 0; }
-        .lp-footer-trust { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 18px; margin-bottom:24px; }
-        .lp-footer-ti { display:flex; align-items:center; gap:5px; font-size:.80rem; font-weight:700; color:rgba(255,255,255,.65); }
-        .lp-footer-ti > span { font-size:.95rem; line-height:1; }
-        .lp-footer-pay { text-align:center; margin-bottom:22px; }
-        .lp-footer-pay-label { font-size:.62rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.28); display:block; margin-bottom:8px; }
-        .lp-footer-pay-row { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
-        .lp-pay-chip { font-size:.68rem; font-weight:700; color:rgba(255,255,255,.50); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.11); padding:4px 10px; border-radius:6px; }
-        .lp-footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:16px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
-        .lp-footer-bottom > span { font-size:.68rem; color:rgba(255,255,255,.28); }
-        .lp-footer-wa { font-size:.76rem; font-weight:700; color:rgba(255,255,255,.50); text-decoration:none; }
-        .lp-footer-wa:hover { color:#fff; }
 
       `}</style>
     </div>

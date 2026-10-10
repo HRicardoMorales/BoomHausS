@@ -2,11 +2,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
+import StatsCircles from "../components/landing/StatsCircles";
 
 /* ========================================================================
    MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
@@ -1038,105 +1039,17 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
 /* =========================
    Stats Circles — gráficos circulares animados
 ========================= */
-function StatsCircles({ mc = MARKETING_CONTENT }) {
-  const items = mc.statsCircles;
-  if (!items?.length) return null;
-
-  const circleRefs = useRef([]);
-  const animatedRef = useRef(items.map(() => false));
-  const [values, setValues] = useState(() => items.map(() => 0));
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          if (animatedRef.current[idx]) return;
-          animatedRef.current[idx] = true;
-          const target = items[idx].target;
-          let current = 0;
-          const step = () => {
-            if (current <= target) {
-              setValues(prev => {
-                const next = [...prev];
-                next[idx] = current;
-                return next;
-              });
-              current++;
-              requestAnimationFrame(step);
-            }
-          };
-          step();
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.1 }
-    );
-    circleRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <section className="sc-section anim-el">
-      {mc.statsTitle && (
-        <h2 className="sc-title">{mc.statsTitle}</h2>
-      )}
-      <div className="sc-list">
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className="sc-row"
-            ref={el => circleRefs.current[i] = el}
-            data-idx={i}
-          >
-            <div className="sc-circle" style={{ "--sc-pct": `${values[i]}%` }}>
-              <span className="sc-pct">{values[i]}%</span>
-            </div>
-            <p
-              className="sc-text"
-              dangerouslySetInnerHTML={{ __html: item.text }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="sc-footer">
-        <p className="sc-footer-note">{mc.statsFooterNote || "*Basado en compras verificadas"}</p>
-        <div className="sc-footer-stats">
-          {mc.soldCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.soldCount.toLocaleString("es-AR")}</span>
-              <span className="sc-stat-lbl">CLIENTES</span>
-            </div>
-          )}
-          {mc.reviewScore && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">{mc.reviewScore * 20}%</span>
-              <span className="sc-stat-lbl">SATISFACCIÓN</span>
-            </div>
-          )}
-          {mc.reviewCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.reviewCount}</span>
-              <span className="sc-stat-lbl">RESEÑAS</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* =========================
    Social Comments — estilo Facebook con paginación
 ========================= */
 function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
   const data = mc.facebookComments;
-  if (!data?.pages?.length) return null;
-
   const [page, setPage] = useState(0);
-  const total = data.pages.length;
   const sectionRef = useRef(null);
+
+  if (!data?.pages?.length) return null;
+  const total = data.pages.length;
 
   function goTo(n) {
     setPage(n);
@@ -1362,8 +1275,9 @@ export default function ProductDetail() {
   // ── Fin soporte variantes ───────────────────────────────────────────────────
   const [showToast, setShowToast] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [qty, setQty] = useState(1);
-  const [bundle, setBundle] = useState(1);
+  // TODO(refactor ProductDetail): qty/bundle quedaron fijos; el selector real es selectedBundleIdx
+  const [qty] = useState(1);
+  const [bundle] = useState(1);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
     if (MCRaw.defaultBundleIdx !== undefined) return MCRaw.defaultBundleIdx;
     const bundles = activeVariant?.bundles || MCRaw.bundles;
@@ -1371,8 +1285,6 @@ export default function ProductDetail() {
     const pop = bundles.findIndex(b => b.popular);
     return pop >= 0 ? pop : 1;
   });
-  const [isDescExpanded, setIsDescExpanded] = useState(false);
-  const [isShippingExpanded, setIsShippingExpanded] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [showUpsellSheet, setShowUpsellSheet] = useState(false);
 
@@ -1382,8 +1294,6 @@ export default function ProductDetail() {
   const lastViewedRef = useRef(null);
   // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
   const hasLoadedOnce = useRef(false);
-  // Evita que el useEffect de variante pise el defaultBundleIdx en el mount inicial
-  const didInitBundle = useRef(false);
 
   useEffect(() => {
     async function fetchOne() {
@@ -1419,6 +1329,8 @@ export default function ProductDetail() {
       }
     }
     fetchOne();
+  // MC/activeVariant son config estática por slug: la clave real del fetch es productSlug.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, slug, activeVariant?.productSlug]);
 
   // Al cambiar variante: resetear imagen activa, color e índice de bundle
@@ -1433,6 +1345,8 @@ export default function ProductDetail() {
         setSelectedBundleIdx(pop >= 0 ? pop : 1);
       }
     }
+  // Reset intencional solo al cambiar de variante (no al re-render del config).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariantIdx]);
 
   const images = useMemo(() => {
@@ -1663,30 +1577,6 @@ export default function ProductDetail() {
       addItem(bundle.accProduct, 1);
     }
     setShowCheckout(true);
-  };
-
-  const handleAddToCart = () => {
-    if (!effectiveProduct) return;
-
-    const mainOpts = {};
-    if (activeBundleData) {
-      mainOpts.bundleTotal = activeBundleData.price;
-      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
-    } else {
-      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-      if (promo) mainOpts.promo = promo;
-      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
-    }
-    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
-
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 5000);
-    window.dispatchEvent(new CustomEvent("cart:added", { detail: { name: effectiveProduct?.name || "Producto" } }));
-  };
-
-  const scrollToReviews = (e) => {
-    e.preventDefault();
-    document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   if (loading && !hasLoadedOnce.current)
@@ -2253,7 +2143,7 @@ export default function ProductDetail() {
           <div className="pd-sections-new">
             <BoxContents mc={MC} />
             {!MC.statsCircles && <HowToSteps mc={MC} />}
-            <StatsCircles mc={MC} />
+            <StatsCircles mc={MC} className="sc-section--navy-hole" />
             <AuthorityCard mc={MC} />
             <GuaranteeSection mc={MC} />
           </div>
@@ -4573,140 +4463,6 @@ export default function ProductDetail() {
       @media (max-width: 520px){
         .ba-container{ border-radius: 12px; }
         .ba-img-after, .ba-img-before{ max-height: 280px; }
-      }
-
-      /* ===== STATS CIRCLES ===== */
-      .sc-section{
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        padding: 28px 0 16px;
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-      }
-      .sc-title{
-        font-size: 1.45rem;
-        font-weight: 1000;
-        color: rgba(11,18,32,.90);
-        text-align: center;
-        margin: 0 0 22px;
-        line-height: 1.2;
-        letter-spacing: -.01em;
-      }
-      @media (max-width: 520px){
-        .sc-title{ font-size: 1.18rem; }
-      }
-      .sc-list{
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-      }
-      .sc-row{
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 14px 0;
-        border-bottom: 1px solid rgba(11,18,32,.06);
-      }
-      .sc-row:last-child{ border-bottom: none; }
-      /* Donut circular animado con conic-gradient */
-      .sc-circle{
-        position: relative;
-        width: 58px;
-        height: 58px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        background: conic-gradient(
-          from 0deg,
-          #2F855A 0%,
-          #1B4D3E var(--sc-pct, 0%),
-          rgba(11,18,32,.10) 0%
-        );
-      }
-      /* Donut hole */
-      .sc-circle::after{
-        content: "";
-        position: absolute;
-        top: 12%; left: 12%;
-        width: 76%; height: 76%;
-        background: #fff;
-        border-radius: 50%;
-      }
-      /* Dark band overrides */
-      .pd-band--blue .sc-title{ color: rgba(255,255,255,.92); }
-      .pd-band--blue .sc-row{ border-bottom-color: rgba(255,255,255,.08); }
-      .pd-band--blue .sc-circle{ background: conic-gradient(from 0deg, #2F855A 0%, #4ade80 var(--sc-pct, 0%), rgba(255,255,255,.10) 0%); }
-      .pd-band--blue .sc-circle::after{ background: #0b172a; }
-      .pd-band--blue .sc-pct{ color: #4ade80; }
-      .pd-band--blue .sc-text{ color: rgba(226,232,240,.70); }
-      .pd-band--blue .sc-text strong{ color: rgba(255,255,255,.90); }
-      .pd-band--blue .sc-footer{ border-top-color: rgba(255,255,255,.08); }
-      .pd-band--blue .sc-footer-note{ color: rgba(226,232,240,.40); }
-      .pd-band--blue .sc-stat{ border-right-color: rgba(255,255,255,.08); }
-      .pd-band--blue .sc-stat-val{ color: #4ade80; }
-      .pd-band--blue .sc-stat-lbl{ color: rgba(226,232,240,.45); }
-      .sc-pct{
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 10px;
-        font-weight: 900;
-        color: #1B4D3E;
-        z-index: 1;
-        letter-spacing: -.02em;
-      }
-      .sc-text{
-        font-size: .88rem;
-        font-weight: 500;
-        color: rgba(11,18,32,.70);
-        line-height: 1.5;
-        margin: 0;
-      }
-      .sc-text strong{
-        color: rgba(11,18,32,.88);
-        font-weight: 800;
-      }
-      /* Footer stats */
-      .sc-footer{
-        margin-top: 22px;
-        padding-top: 18px;
-        border-top: 1px solid rgba(11,18,32,.08);
-        text-align: center;
-      }
-      .sc-footer-note{
-        font-size: .72rem;
-        color: rgba(11,18,32,.40);
-        margin: 0 0 14px;
-        font-style: italic;
-      }
-      .sc-footer-stats{
-        display: flex;
-        justify-content: center;
-        gap: 0;
-      }
-      .sc-stat{
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 3px;
-        padding: 0 8px;
-        border-right: 1px solid rgba(11,18,32,.08);
-      }
-      .sc-stat:last-child{ border-right: none; }
-      .sc-stat-val{
-        font-size: 1.10rem;
-        font-weight: 1000;
-        color: #1B4D3E;
-        letter-spacing: -.01em;
-      }
-      .sc-stat-lbl{
-        font-size: .62rem;
-        font-weight: 800;
-        color: rgba(11,18,32,.45);
-        letter-spacing: .08em;
-        text-transform: uppercase;
       }
 
       /* ===== SOCIAL COMMENTS (Facebook style) ===== */

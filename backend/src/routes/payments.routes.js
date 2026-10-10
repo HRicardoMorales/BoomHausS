@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { MercadoPagoConfig, Payment } = require('mercadopago');
+const logger = require('../utils/logger').child('payments');
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
@@ -47,7 +48,7 @@ router.post('/card', async (req, res) => {
       id: result.id,
     });
   } catch (err) {
-    console.error('❌ Error en POST /api/payments/card:', err);
+    logger.error('Error en POST /api/payments/card', err, { reqId: req.id });
     const mpError = err?.cause?.[0]?.description || err.message || 'Error procesando el pago.';
     return res.status(500).json({ ok: false, message: mpError });
   }
@@ -86,7 +87,7 @@ router.get('/mercadopago/:paymentId', async (req, res) => {
       currency_id: result?.currency_id || 'ARS',
     });
   } catch (err) {
-    console.error('❌ Error en GET /api/payments/mercadopago/:paymentId:', err?.message || err);
+    logger.error('Error en GET /api/payments/mercadopago/:paymentId', err, { reqId: req.id });
     // 404 si MP no encuentra el pago, 500 para errores reales
     const isNotFound = err?.status === 404 || /not found/i.test(err?.message || '');
     return res.status(isNotFound ? 404 : 500).json({

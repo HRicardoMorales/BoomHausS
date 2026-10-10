@@ -6,6 +6,8 @@
 // env var), no hace nada — window.fbq queda undefined y todas las funciones
 // de metaPixel.js son no-op silencioso.
 
+import logger from "../utils/logger";
+
 let initialized = false;
 
 export function initMetaPixel() {
@@ -14,12 +16,11 @@ export function initMetaPixel() {
 
     const pixelId = import.meta.env.VITE_META_PIXEL_ID;
     if (!pixelId || pixelId === 'META_PIXEL_ID_PLACEHOLDER') {
-        console.log('[MetaPixel] VITE_META_PIXEL_ID no configurado — Pixel deshabilitado.');
+        logger.info('[MetaPixel] VITE_META_PIXEL_ID no configurado — Pixel deshabilitado.');
         return;
     }
 
     // Snippet oficial de Meta (inline, para que fbq esté listo antes del primer track).
-    /* eslint-disable */
     !function (f, b, e, v, n, t, s) {
         if (f.fbq) return; n = f.fbq = function () {
             n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -29,7 +30,6 @@ export function initMetaPixel() {
         t.src = v; s = b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t, s);
     }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-    /* eslint-enable */
 
     window.fbq('init', pixelId);
     window.fbq('track', 'PageView');

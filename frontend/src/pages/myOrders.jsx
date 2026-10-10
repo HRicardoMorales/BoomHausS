@@ -68,7 +68,6 @@ export default function MyOrders() {
 
     useEffect(() => {
         fetchMyOrders();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const totalOrders = orders.length;

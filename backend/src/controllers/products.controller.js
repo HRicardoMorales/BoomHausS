@@ -3,6 +3,7 @@
 // puede detectar sintaxis ESM y romper con: "require is not defined in ES module scope".
 
 const Product = require('../models/Product');
+const logger = require('../utils/logger').child('products');
 
 // GET /api/products/single
 async function getSingleProduct(req, res) {
@@ -22,7 +23,7 @@ async function getSingleProduct(req, res) {
 
         return res.json({ ok: true, data: product });
     } catch (err) {
-        console.error('getSingleProduct error:', err);
+        logger.error('Error en getSingleProduct', err, { reqId: req.id });
         return res.status(500).json({ ok: false, message: err.message || 'Server error' });
     }
 }

@@ -1,0 +1,23 @@
+.lp-wa {
+  position: fixed;
+  right: 16px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  width: 44px;            /* área táctil mínima recomendada */
+  height: 44px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+  transform: translateY(0);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lp-wa--raised { transform: translateY(-82px); }
+.lp-wa:focus-visible { outline: 3px solid #0b1220; outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-wa { transition: none; }
+}

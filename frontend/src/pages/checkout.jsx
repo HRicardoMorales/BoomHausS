@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart } from '../hooks/useCart';
 import { trackWithCapi, getFbCookies } from "../lib/metaPixel";
 
 const PROVINCES = [
@@ -36,7 +36,7 @@ function getOrCreateClientOrderId() {
   const ex = localStorage.getItem(KEY);
   if (ex) return ex;
   let id = "";
-  try { if (crypto?.randomUUID) id = crypto.randomUUID(); } catch (_) {}
+  try { if (crypto?.randomUUID) id = crypto.randomUUID(); } catch { /* best-effort: se ignora */ }
   if (!id) id = `co_${Date.now()}_${Math.random().toString(16).slice(2)}`;
   localStorage.setItem(KEY, id);
   return id;
@@ -48,13 +48,12 @@ function rSession(key, fallback) {
   catch { return fallback; }
 }
 function wSession(key, val) {
-  try { sessionStorage.setItem(key, JSON.stringify(val)); } catch (_) {}
+  try { sessionStorage.setItem(key, JSON.stringify(val)); } catch { /* best-effort: se ignora */ }
 }
 
 // ── Acordeón del resumen (mobile top / desktop sidebar) ─────────────────────
 function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, savings, couponDiscount, appliedCoupon, shippingCost = 0 }) {
   const [open, setOpen] = useState(false);
-  const totalItems = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
 
   return (
     <div className="ckfp-sa">
@@ -194,7 +193,7 @@ function SidebarSummary({ items, calcItemTotal, totalPrice, finalTotal, savings,
 export default function Checkout() {
   const { user } = getStoredAuth();
   const isLogged = Boolean(user?.email);
-  const { items, totalPrice, clearCart, calcItemTotal } = useCart();
+  const { items, totalPrice, calcItemTotal } = useCart();
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
   const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
@@ -240,7 +239,7 @@ export default function Checkout() {
   // ── Pago ──────────────────────────────────────────────────────────────────
   const [payExpanded, setPayExpanded] = useState(true); // MP abierto por defecto
   const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
-  const [cardPaymentDone, setCardPaymentDone] = useState(false);
+  const [cardPaymentDone] = useState(false);
   const [sameAddr, setSameAddr] = useState(true); // dirección de facturación
 
   // ── Cupón ─────────────────────────────────────────────────────────────────
@@ -250,7 +249,7 @@ export default function Checkout() {
     try {
       const stored = sessionStorage.getItem("pendingCoupon");
       if (stored) { sessionStorage.removeItem("pendingCoupon"); return JSON.parse(stored); }
-    } catch (_) {}
+    } catch { /* best-effort: se ignora */ }
     return null;
   });
   const [couponError,    setCouponError]    = useState("");
@@ -262,7 +261,7 @@ export default function Checkout() {
   const [error,         setError]         = useState("");
   const [subscribeEmail, setSubscribeEmail] = useState(false);
   const [stickyOpen,    setStickyOpen]    = useState(false);
-  const [orderData,   setOrderData]   = useState(null);
+  const [orderData] = useState(null);
   const errorRef = useRef(null);
 
   function showError(msg) {

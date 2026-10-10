@@ -17,7 +17,7 @@
 //   className  Se pasa tanto al <img> como al <div> fallback.
 //   style, loading, decoding, referrerPolicy, crossOrigin — passthrough a <img>.
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // Monograma de marca (primer caracter de VITE_STORE_NAME). Sale del env
 // para que se auto-sincronice si cambia el nombre de la tienda.
@@ -35,12 +35,12 @@ export default function SafeImg({
     referrerPolicy,
     crossOrigin,
 }) {
-    const [failed, setFailed] = useState(false);
+    // Guardamos QUÉ src falló en vez de un booleano: si el mismo <SafeImg> se
+    // reutiliza con otra URL (ej. carousel), el fallback se resetea solo,
+    // sin un useEffect que dispare un render extra.
+    const [failedSrc, setFailedSrc] = useState(null);
+    const failed = failedSrc !== null && failedSrc === src;
     const hasSrc = src && String(src).trim();
-
-    // Reset failed cuando cambia src (el mismo <SafeImg> puede reutilizarse
-    // con nueva URL, ej. carousel de imagenes).
-    useEffect(() => { setFailed(false); }, [src]);
 
     if (!hasSrc || failed) {
         const label = name || alt || 'Producto';
@@ -116,7 +116,7 @@ export default function SafeImg({
             decoding={decoding}
             referrerPolicy={referrerPolicy}
             crossOrigin={crossOrigin}
-            onError={() => setFailed(true)}
+            onError={() => setFailedSrc(src)}
         />
     );
 }

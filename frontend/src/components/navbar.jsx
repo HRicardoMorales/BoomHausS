@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext.jsx';
+import { useCart } from '../hooks/useCart';
 import { clearAuth, getStoredAuth, isAdmin } from '../utils/auth';
 
 function Marquee({ items }) {
@@ -35,10 +35,18 @@ export default function Navbar() {
         setCurrentUser(user || null);
     }
 
-    useEffect(() => { refreshUser(); }, [location.pathname]);
+    // Al cambiar de ruta: refrescar usuario y cerrar el menú lateral.
+    // Se ajusta el estado durante el render (patrón recomendado por React)
+    // en lugar de en un useEffect, evitando un render intermedio.
+    const [prevPath, setPrevPath] = useState(location.pathname);
+    if (prevPath !== location.pathname) {
+        setPrevPath(location.pathname);
+        setCurrentUser(getStoredAuth().user || null);
+        setOpen(false);
+    }
+
     useEffect(() => { window.addEventListener('auth:changed', refreshUser); return () => window.removeEventListener('auth:changed', refreshUser); }, []);
     useEffect(() => { function onFocus() { refreshUser(); } window.addEventListener('focus', onFocus); return () => window.removeEventListener('focus', onFocus); }, []);
-    useEffect(() => setOpen(false), [location.pathname]); // Cerrar menú al cambiar de página
 
     const admin = isAdmin(currentUser);
 
@@ -61,7 +69,7 @@ export default function Navbar() {
 
                     {/* Brand Desktop */}
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                        <img src="/logo-navbar.png" alt={storeName} style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
+                        <img src="/logo-navbar.webp" alt={storeName} width={148} height={74} decoding="async" style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
                     </Link>
 
                     {/* Menú Desktop */}
@@ -112,7 +120,7 @@ export default function Navbar() {
                     
                     <div className="mn-center">
                         <Link to="/" className="mn-brand">
-                            <img src="/logo-navbar.png" alt={storeName} style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
+                            <img src="/logo-navbar.webp" alt={storeName} width={116} height={58} decoding="async" style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
                         </Link>
                     </div>
                     

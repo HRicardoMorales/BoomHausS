@@ -13,6 +13,7 @@
 // permitiría a un cliente inflar conversiones con value arbitrario.
 
 const { sendEvent } = require('../services/metaCapi');
+const logger = require('../utils/logger').child('track');
 
 const ALLOWED_EVENTS = new Set([
     'PageView',
@@ -69,7 +70,7 @@ async function trackEvent(req, res) {
 
         return res.json({ ok: true });
     } catch (err) {
-        console.error('[/api/track] Error inesperado:', err.message);
+        logger.error('Error inesperado en /api/track', err, { reqId: req.id });
         return res.status(500).json({ ok: false });
     }
 }

@@ -18,6 +18,7 @@ const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
+const logger = require('../utils/logger').child('orders');
 
 /**
  * Público:
@@ -84,7 +85,7 @@ router.post("/card-payment", async (req, res) => {
           sendPurchaseEvent(updatedOrder, { ip: req.ip, userAgent: req.headers['user-agent'] });
         }
       } catch (dbErr) {
-        console.warn("No se pudo actualizar el estado del pedido:", dbErr.message);
+        logger.warn("No se pudo actualizar el estado del pedido", dbErr);
       }
     }
 
@@ -95,7 +96,7 @@ router.post("/card-payment", async (req, res) => {
       paymentId: result.id,
     });
   } catch (err) {
-    console.error("MP card payment error:", err);
+    logger.error("Error en pago con tarjeta (MP)", err, { reqId: req.id });
     res.status(500).json({
       ok: false,
       message: err?.cause?.[0]?.description || err.message || "Error al procesar el pago",

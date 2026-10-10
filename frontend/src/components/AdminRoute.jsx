@@ -13,11 +13,13 @@ export default function AdminRoute({ children }) {
         setAuth(getStoredAuth());
     }
 
-    // ✅ refresca al cambiar ruta (por si venís navegando)
-    useEffect(() => {
-        refreshAuth();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    // ✅ refresca al cambiar ruta (por si venís navegando). Ajuste de estado
+    // durante el render en lugar de useEffect: sin render intermedio.
+    const [prevPath, setPrevPath] = useState(location.pathname);
+    if (prevPath !== location.pathname) {
+        setPrevPath(location.pathname);
+        setAuth(getStoredAuth());
+    }
 
     // ✅ refresca al hacer login/logout (evento auth:changed)
     useEffect(() => {
