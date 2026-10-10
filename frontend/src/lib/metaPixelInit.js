@@ -6,6 +6,8 @@
 // env var), no hace nada — window.fbq queda undefined y todas las funciones
 // de metaPixel.js son no-op silencioso.
 
+import logger from "../utils/logger";
+
 let initialized = false;
 
 export function initMetaPixel() {
@@ -14,7 +16,7 @@ export function initMetaPixel() {
 
     const pixelId = import.meta.env.VITE_META_PIXEL_ID;
     if (!pixelId || pixelId === 'META_PIXEL_ID_PLACEHOLDER') {
-        console.log('[MetaPixel] VITE_META_PIXEL_ID no configurado — Pixel deshabilitado.');
+        logger.info('[MetaPixel] VITE_META_PIXEL_ID no configurado — Pixel deshabilitado.');
         return;
     }
 

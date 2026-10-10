@@ -15,6 +15,7 @@
 // re-conectar desde cero (ej. Atlas cambia credenciales, DNS temporal, etc).
 
 const mongoose = require('mongoose');
+const logger = require('../utils/logger').child('db');
 
 // Estado observable para el middleware de gate y para /api/health.
 function isDbReady() {
@@ -23,19 +24,19 @@ function isDbReady() {
 
 // Listeners: se registran UNA sola vez al importar el modulo.
 mongoose.connection.on('connected', () => {
-    console.log('✅ MongoDB conectado');
+    logger.info('MongoDB conectado');
 });
 mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️ MongoDB desconectado');
+    logger.warn('MongoDB desconectado');
 });
 mongoose.connection.on('reconnected', () => {
-    console.log('✅ MongoDB reconectado');
+    logger.info('MongoDB reconectado');
 });
 mongoose.connection.on('error', (err) => {
     // No hacemos throw ni exit — solo loggeamos. Mongoose maneja reconexion
     // internamente. Si el error es persistente, isDbReady() devuelve false
     // y el middleware de app.js gatea con 503.
-    console.error('❌ MongoDB error:', err?.message || err);
+    logger.error('MongoDB error', err);
 });
 
 // Backoff exponencial capado. Delays: 1s, 2s, 4s, 8s, 16s, 30s, 30s, 30s, ...
@@ -47,7 +48,7 @@ function nextDelay(attempt) {
 async function connectWithRetry() {
     const uri = process.env.MONGO_URI;
     if (!uri) {
-        console.error('❌ FALTA MONGO_URI en env. El server arranco pero no puede servir datos.');
+        logger.error('Falta MONGO_URI en el entorno. El server arrancó pero no puede servir datos.');
         return;
     }
 
@@ -64,8 +65,8 @@ async function connectWithRetry() {
             return;
         } catch (err) {
             const delay = nextDelay(attempt);
-            console.warn(
-                `⚠️ MongoDB conexion intento ${attempt} fallido: ${err?.message || err}. Reintentando en ${Math.round(delay / 1000)}s.`
+            logger.warn(
+                `MongoDB conexión intento ${attempt} fallido: ${err?.message || err}. Reintentando en ${Math.round(delay / 1000)}s.`
             );
             await new Promise((r) => setTimeout(r, delay));
         }
@@ -79,7 +80,7 @@ function connectDB() {
     connectWithRetry().catch((err) => {
         // Guard defensivo — connectWithRetry no deberia rechazar (loop infinito
         // tiene su try/catch interno), pero por si acaso.
-        console.error('❌ connectWithRetry rejected (no deberia pasar):', err);
+        logger.error('connectWithRetry rechazó (no debería pasar)', err);
     });
 }
 

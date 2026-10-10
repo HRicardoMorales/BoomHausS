@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { isDbReady } = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
+const requestLogger = require('./middlewares/requestLogger');
 
 const productsRoutes = require('./routes/products.routes');
 const healthRoutes = require('./routes/health.routes');
@@ -27,10 +28,14 @@ const trackRoutes   = require('./routes/track.routes');
 
 const AbandonedCart = require('./models/AbandonedCart');
 const { authRequired, adminOnly } = require('./middlewares/authMiddleware');
+const logger = require('./utils/logger').child('app');
 
 const app = express();
 
 app.set('trust proxy', 1);
+
+// Access log + X-Request-Id (ver middlewares/requestLogger.js)
+app.use(requestLogger);
 app.disable('x-powered-by');
 
 connectDB();
@@ -151,10 +156,11 @@ app.use('/api', (req, res, next) => {
     if (isDbReady()) return next();
 
     const isWebhook = req.path.startsWith('/webhooks/');
-    const tag = isWebhook ? '⚠️ DB gate 503 [WEBHOOK — proveedor reintentara]' : '⚠️ DB gate 503';
-    console.warn(
-        `${tag} ${req.method} /api${req.path} (mongoose.readyState=${mongoose.connection.readyState})`
-    );
+    const tag = isWebhook ? 'DB gate 503 [WEBHOOK — proveedor reintentará]' : 'DB gate 503';
+    logger.warn(`${tag} ${req.method} /api${req.path}`, {
+        readyState: mongoose.connection.readyState,
+        reqId: req.id,
+    });
 
     res.set('Retry-After', '5');
     return res.status(503).json({
@@ -238,7 +244,7 @@ app.post('/api/abandoned-cart', async (req, res) => {
 
     res.json({ ok: true });
   } catch (error) {
-    console.error('❌ Error guardando carrito abandonado:', error);
+    logger.error('Error guardando carrito abandonado', error, { reqId: req.id });
     res.status(500).json({ ok: false, error: 'Error' });
   }
 });
@@ -255,7 +261,7 @@ app.get('/api/abandoned-carts', authRequired, adminOnly, async (req, res) => {
       .limit(limit);
     res.json({ ok: true, data: carts });
   } catch (error) {
-    console.error('❌ Error listando abandoned carts:', error);
+    logger.error('Error listando carritos abandonados', error, { reqId: req.id });
     res.status(500).json({ ok: false, error: 'Error al obtener carritos' });
   }
 });

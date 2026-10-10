@@ -10,6 +10,7 @@ const { sendPurchaseEvent } = require("../services/metaCapi");
 
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
+const logger = require('../utils/logger').child('orders');
 
 // Cliente MP (PRODUCCIÓN)
 const client = new MercadoPagoConfig({
@@ -31,11 +32,10 @@ const allowedShippingStatuses = ["pending", "shipped", "delivered", "cancelled"]
 ============================= */
 async function createOrder(req, res, next) {
     try {
-        console.log("------------------------------------------------");
-        console.log("📥 NUEVA ORDEN RECIBIDA");
+        logger.debug("Nueva orden recibida", { reqId: req.id });
 
         if (!process.env.MP_ACCESS_TOKEN) {
-            console.error("❌ ERROR CRÍTICO: No existe MP_ACCESS_TOKEN en el archivo .env");
+            logger.error("Falta MP_ACCESS_TOKEN en el entorno");
         }
 
         const {
@@ -79,7 +79,7 @@ async function createOrder(req, res, next) {
         const payMethod = normalizeStr(paymentMethod) || "bank_transfer";
         const userNotes = normalizeStr(notes);
 
-        console.log("💳 Método procesado:", payMethod);
+        logger.debug("Método de pago procesado", { payMethod });
 
         if (!name) throw badReq("Falta customerName.");
         if (!dni) throw badReq("Falta customerDni.");
@@ -163,11 +163,11 @@ async function createOrder(req, res, next) {
             const existing = await Order.findOne({ clientOrderId });
 
             if (existing) {
-                console.log("⚠️ Orden duplicada detectada");
+                logger.warn("Orden duplicada detectada", { reqId: req.id });
 
                 if (payMethod === "mercadopago" || existing.paymentMethod === "mercadopago") {
                     try {
-                        console.log("🔁 Regenerando link de Mercado Pago para orden duplicada...");
+                        logger.debug("Regenerando link de Mercado Pago para orden duplicada");
                         const result = await createMpPreference(existing._id.toString());
 
                         return res.status(200).json({
@@ -184,7 +184,7 @@ async function createOrder(req, res, next) {
                             sandbox_init_point: result.sandbox_init_point,
                         });
                     } catch (mpError) {
-                        console.error("❌ ERROR MERCADO PAGO (duplicada):", mpError);
+                        logger.error("Error de Mercado Pago (orden duplicada)", mpError, { reqId: req.id });
                         return res.status(500).json({
                             ok: false,
                             error: "No se pudo generar el link de Mercado Pago.",
@@ -253,12 +253,12 @@ async function createOrder(req, res, next) {
         //    Purchases. Firing here keeps them in sync and also gives us
         //    the freshest ip/UA from the actual customer request.
         if (payMethod === "cod") {
-            console.log("💵 Procesando como pago al recibir (COD)...");
+            logger.debug("Procesando como pago al recibir (COD)");
 
             try {
                 await sendOrderConfirmationEmail(newOrder, { mode: "cod" });
             } catch (e) {
-                console.warn("⚠️ No se pudo enviar email COD:", e?.message || e);
+                logger.warn("No se pudo enviar email COD", e);
             }
 
             sendPurchaseEvent(newOrder, { ip: req.ip, userAgent: req.headers?.['user-agent'] });
@@ -271,13 +271,12 @@ async function createOrder(req, res, next) {
 
         // 3) Mercado Pago
         if (payMethod === "mercadopago") {
-            console.log("🔄 Entrando a lógica de Mercado Pago...");
+            logger.debug("Creando preferencia de Mercado Pago");
 
             try {
                 const result = await createMpPreference(newOrder._id.toString());
 
-                console.log("✅ LINK GENERADO (init_point):", result.init_point);
-                console.log("✅ LINK SANDBOX:", result.sandbox_init_point);
+                logger.info("Preferencia de Mercado Pago creada", { preferenceId: result.id, reqId: req.id });
 
                 // No InitiateCheckout server-side here: the frontend fires it
                 // via trackWithCapi() → /api/track. Purchase for MP fires from
@@ -290,17 +289,17 @@ async function createOrder(req, res, next) {
                     sandbox_init_point: result.sandbox_init_point,
                 });
             } catch (mpError) {
-                console.error("❌ ERROR MERCADO PAGO:", mpError);
+                logger.error("Error de Mercado Pago", mpError, { reqId: req.id });
                 throw new Error("Error interno de Mercado Pago: " + mpError.message);
             }
         }
 
         // 4) Transferencia bancaria
-        console.log("🏦 Procesando como transferencia");
+        logger.debug("Procesando como transferencia");
         try {
             await sendOrderConfirmationEmail(newOrder, { mode: "transfer" });
         } catch (e) {
-            console.warn("⚠️ No se pudo enviar email:", e?.message || e);
+            logger.warn("No se pudo enviar email de transferencia", e);
         }
         // No InitiateCheckout server-side here: the frontend fires it via
         // trackWithCapi() → /api/track. Purchase for transfer fires from
@@ -316,7 +315,7 @@ async function createOrder(req, res, next) {
             },
         });
     } catch (error) {
-        console.error("❌ ERROR EN CREATE ORDER:", error);
+        logger.error("Error en createOrder", error, { reqId: req.id });
         next(error);
     }
 }
