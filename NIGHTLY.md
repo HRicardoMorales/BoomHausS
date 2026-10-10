@@ -26,7 +26,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [x] Lint parte 1 (2026-10-09): catch vacíos → `catch { /* … */ }`, variables/estado/handlers sin uso y código muerto eliminados (ProductDetail `handleAddToCart`/`scrollToReviews`, carrusel de testimonios muerto en DepiladoraIPL, etc.), directivas eslint huérfanas. Lint 72 → 22. Nota: en `ProductDetail` `qty`/`bundle` quedaron fijos (no hay setter usado) → revisar en el refactor.
 - [x] Lint parte 2 (2026-10-09): **lint en 0**. `set-state-in-effect` resueltos con estado derivado (SafeImg guarda el src fallido; bundle seleccionado por id en las 4 landings; `loading` derivado en AdminHome) y ajuste de estado durante el render al cambiar ruta/campaña (navbar, AdminRoute, LuxCoveLED). Bug real corregido: en LuxCoveLED `BUNDLES` no dependía del regalo de `?regalo=` (nombre/imagen viejos en el carrito). `useCart` → `hooks/useCart.js` + `context/cart.context.js`. `exhaustive-deps` intencionales documentados con motivo (CheckoutSheet: solo comentario). Smoke test con Chromium en 7 rutas sin errores de runtime.
 - [x] SEO/meta (2026-10-09): `index.html` sin URLs de previews; `public/og-image.jpg` 1200x630 (35 KB) generada con Chromium; `build/seo-plugin.js` resuelve la URL absoluta en build desde `VERCEL_PROJECT_PRODUCTION_URL` (o `SITE_URL` opcional) y genera `robots.txt` + `sitemap.xml`; `src/seo/RouteSeo.jsx` pone title/canonical/noindex por ruta con la metadata nativa de React 19. Manifest con marca. Pendiente: títulos por producto en `ProductDetail` (cuando se refactorice) y `og:image` por landing (los crawlers de FB no corren JS → requeriría prerender).
-- [ ] Logs: 41 `console.log` en backend y 4 en frontend → logger mínimo con niveles (silenciar en prod). No tocar `metaCapi.js` ni el webhook.
+- [x] Logs (2026-10-10): `backend/src/utils/logger.js` sin dependencias (niveles, JSON por línea en prod, `child(scope)`, `maskEmail`, `LOG_LEVEL` opcional) + `middlewares/requestLogger.js` (X-Request-Id, ruta sin query, status, ms). Todos los `console.*` del backend migrados salvo `metaCapi.js`, webhook de MP y scripts de seed (CLI). Ya no se loguean links de pago ni emails completos; ruido de `createOrder` a debug. Frontend: `utils/logger.js`, logs de `api.js`/`metaPixelInit` solo en dev. Smoke test sin Mongo en dev y prod OK.
 
 ### Fase 2 — Performance (el bundle es lo primero que mira un senior)
 - [ ] Code splitting por ruta en `App.jsx`: hoy **todo** (admin, 10 landings, checkout) está en un único chunk de **1,46 MB (390 KB gzip)**. `React.lazy` + `Suspense` con fallback skeleton para admin, landings y checkout; `manualChunks` para vendor (react, framer-motion, mercadopago). Meta: chunk inicial de home < 200 KB gzip.
@@ -71,6 +71,8 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 
 ## Skills recomendadas
 
+- Remote nuevo: GitHub avisa que el repo se movió a `https://github.com/HRicardoMorales/BoomHausS.git` (el push funciona igual por redirect); conviene actualizar el `origin` en el setup.
+
 - `design:accessibility-review` — para la tarea de Fase 5 (auditoría WCAG AA con checklist de contraste/teclado).
 - `marketing:seo-audit` — para la tarea de meta/SEO de Fase 1.
 - Lighthouse CLI (`npx lighthouse` con el Chromium preinstalado vía Playwright) para medir antes/después de la Fase 2.
@@ -87,3 +89,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-09 | 07:52 | Lint parte 2: 22 → 0 problemas, estado derivado en vez de setState en effects, fix de deps de BUNDLES en LuxCoveLED, `useCart` a `hooks/`. Build OK. | 6313f64 |
 | 2026-10-09 | 08:53 | SEO: OG image real, URL absoluta resuelta en build (plugin de Vite), robots/sitemap generados, title/canonical/noindex por ruta con React 19. Build y lint OK, verificado con Chromium en 7 rutas. | 1868fbf |
 | 2026-10-09 | 09:53 | Revisión final: build OK, lint 0, smoke test Chromium mobile en 5 rutas sin errores. PR borrador #1 `nightly/portfolio` → `main` abierto (no mergear). | PR #1 |
+| 2026-10-10 | 03:52 | Logger con niveles (JSON en prod) + access log con request id; console.* del backend migrados sin PII ni links de pago; logs del front solo en dev. Build y lint OK, `node --check` y smoke test HTTP. | e338d1a |
