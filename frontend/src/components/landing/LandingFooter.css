@@ -1,0 +1,112 @@
+/*
+ * Footer compartido de las landings (/lp/*).
+ * Antes vivía copiado en 5 lugares (4 <style> inline + LuxCoveLED.css) con dos
+ * paletas. Como los estilos eran globales, al navegar entre landings la
+ * versión de una "filtraba" a la otra. Ahora hay una sola fuente y la paleta
+ * se elige con un modificador (`--night` | `--wine`) vía custom properties.
+ */
+.lp-footer {
+  --lf-bg: #111827;
+  --lf-pad-y: 32px;
+  --lf-pad-bottom: 90px;
+  --lf-gap: 24px;
+  --lf-logo: 1.5rem;
+  --lf-text: .80rem;
+  --lf-small: .68rem;
+  --lf-tagline: rgba(255, 255, 255, .38);
+  --lf-trust: rgba(255, 255, 255, .65);
+  --lf-faint: rgba(255, 255, 255, .28);
+  --lf-chip: rgba(255, 255, 255, .50);
+  --lf-chip-bg: rgba(255, 255, 255, .07);
+  --lf-chip-border: rgba(255, 255, 255, .11);
+  --lf-rule: rgba(255, 255, 255, .08);
+  --lf-link: rgba(255, 255, 255, .50);
+
+  font-family: inherit;
+}
+
+.lp-footer--wine {
+  --lf-bg: #8B1A4A;
+  --lf-pad-y: 28px;
+  --lf-pad-bottom: 100px;
+  --lf-gap: 20px;
+  --lf-logo: 1.4rem;
+  --lf-text: .78rem;
+  --lf-small: .66rem;
+  --lf-tagline: rgba(255, 255, 255, .45);
+  --lf-trust: rgba(255, 255, 255, .70);
+  --lf-faint: rgba(255, 255, 255, .30);
+  --lf-chip: rgba(255, 255, 255, .55);
+  --lf-chip-bg: rgba(255, 255, 255, .10);
+  --lf-chip-border: rgba(255, 255, 255, .15);
+  --lf-rule: rgba(255, 255, 255, .12);
+  --lf-link: rgba(255, 255, 255, .55);
+
+  background: var(--lf-bg);
+}
+
+.lp-footer-wave { display: block; line-height: 0; }
+.lp-footer-wave svg { display: block; width: 100%; height: 54px; }
+
+.lp-footer-body {
+  background: var(--lf-bg);
+  padding: var(--lf-pad-y) 20px;
+  padding-bottom: max(var(--lf-pad-bottom), calc(env(safe-area-inset-bottom) + var(--lf-pad-bottom)));
+}
+
+.lp-footer-brand { text-align: center; margin-bottom: var(--lf-gap); }
+.lp-footer-logo { font-size: var(--lf-logo); font-weight: 900; color: #fff; letter-spacing: -.02em; line-height: 1; }
+.lp-footer-tagline { font-size: calc(var(--lf-text) - .02rem); color: var(--lf-tagline); margin: 5px 0 0; }
+
+.lp-footer-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin: 0 0 var(--lf-gap);
+  padding: 0;
+  list-style: none;
+}
+.lp-footer-ti { display: flex; align-items: center; gap: 5px; font-size: var(--lf-text); font-weight: 700; color: var(--lf-trust); }
+.lp-footer-ti > span { font-size: calc(var(--lf-text) + .15rem); line-height: 1; }
+
+.lp-footer-pay { text-align: center; margin-bottom: calc(var(--lf-gap) - 2px); }
+.lp-footer-pay-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: calc(var(--lf-small) - .06rem);
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--lf-faint);
+}
+.lp-footer-pay-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.lp-pay-chip {
+  font-size: var(--lf-small);
+  font-weight: 700;
+  color: var(--lf-chip);
+  background: var(--lf-chip-bg);
+  border: 1px solid var(--lf-chip-border);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.lp-footer-bottom {
+  border-top: 1px solid var(--lf-rule);
+  padding-top: calc(var(--lf-gap) * .67);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--lf-gap) * .42);
+  text-align: center;
+}
+.lp-footer-bottom > small { font-size: var(--lf-small); color: var(--lf-faint); }
+.lp-footer-wa {
+  font-size: calc(var(--lf-small) + .08rem);
+  font-weight: 700;
+  color: var(--lf-link);
+  text-decoration: none;
+  transition: color var(--t, 180ms) ease;
+}
+.lp-footer-wa:hover,
+.lp-footer-wa:focus-visible { color: #fff; }

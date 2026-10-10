@@ -4,6 +4,7 @@ import { CheckoutSheet } from './CheckoutSheet';
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
 import mc from '../landings/masajeador-facial-iones-lambo';
+import LandingFooter from '../components/landing/LandingFooter.jsx';
 
 /* ============================================================
    WAVE SEPARATOR
@@ -898,37 +899,7 @@ export default function MasajeadorFacialIonesLanding() {
         </section>
 
         <WaveSeparator from="light" />
-        <footer className="lp-footer">
-          <div className="lp-footer-body">
-            <div className="lp-footer-brand">
-              <div className="lp-footer-logo">Amelor</div>
-              <p className="lp-footer-tagline">Tecnología que mejora tu vida diaria</p>
-            </div>
-            <div className="lp-footer-trust">
-              <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
-              <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
-              <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
-              <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-            </div>
-            <div className="lp-footer-pay">
-              <span className="lp-footer-pay-label">Medios de pago aceptados</span>
-              <div className="lp-footer-pay-row">
-                <span className="lp-pay-chip">MercadoPago</span>
-                <span className="lp-pay-chip">Visa</span>
-                <span className="lp-pay-chip">Mastercard</span>
-                <span className="lp-pay-chip">Amex</span>
-              </div>
-            </div>
-            <div className="lp-footer-bottom">
-              <span>© 2026 Amelor · Todos los derechos reservados</span>
-              {mc.whatsapp?.number && (
-                <a href={`https://wa.me/${mc.whatsapp.number}`} className="lp-footer-wa" target="_blank" rel="noopener noreferrer">
-                  💬 Consultas por WhatsApp
-                </a>
-              )}
-            </div>
-          </div>
-        </footer>
+        <LandingFooter variant="wine" whatsappNumber={mc.whatsapp?.number} />
 
       </div>
 
@@ -1377,22 +1348,6 @@ export default function MasajeadorFacialIonesLanding() {
         .pasos-cta { margin-top:36px; background:#111827; color:#fff; border:none; border-radius:10px; padding:16px 32px; font-size:.95rem; font-weight:900; cursor:pointer; width:100%; letter-spacing:.04em; transition:background .15s; }
         .pasos-cta:hover { background:#374151; }
 
-        .lp-footer { font-family:inherit; background:#8B1A4A; }
-        .lp-footer-body { padding:28px 20px; padding-bottom:max(100px, calc(env(safe-area-inset-bottom) + 100px)); }
-        .lp-footer-brand { text-align:center; margin-bottom:20px; }
-        .lp-footer-logo { font-size:1.4rem; font-weight:900; color:#fff; letter-spacing:-.02em; line-height:1; }
-        .lp-footer-tagline { font-size:.75rem; color:rgba(255,255,255,.45); margin:5px 0 0; }
-        .lp-footer-trust { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 18px; margin-bottom:20px; }
-        .lp-footer-ti { display:flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:rgba(255,255,255,.70); }
-        .lp-footer-ti > span { font-size:.90rem; line-height:1; }
-        .lp-footer-pay { text-align:center; margin-bottom:18px; }
-        .lp-footer-pay-label { font-size:.60rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.30); display:block; margin-bottom:8px; }
-        .lp-footer-pay-row { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
-        .lp-pay-chip { font-size:.66rem; font-weight:700; color:rgba(255,255,255,.55); background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.15); padding:4px 10px; border-radius:6px; }
-        .lp-footer-bottom { border-top:1px solid rgba(255,255,255,.12); padding-top:14px; display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
-        .lp-footer-bottom > span { font-size:.66rem; color:rgba(255,255,255,.32); }
-        .lp-footer-wa { font-size:.74rem; font-weight:700; color:rgba(255,255,255,.55); text-decoration:none; }
-        .lp-footer-wa:hover { color:#fff; }
 
       `}</style>
     </div>

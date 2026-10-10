@@ -11,6 +11,7 @@ import Footer from './components/Footer.jsx';
 // checkout y ProductDetail (5k líneas) no deberían pesar en la primera carga.
 import Home from './pages/home.jsx';
 import RouteFallback from './components/RouteFallback.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { lazyWithRetry, whenIdle } from './utils/lazyWithRetry.js';
 
 import AdminRoute from './components/AdminRoute.jsx';
@@ -151,6 +152,7 @@ export default function App() {
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
       <div className="app-body">
+        <ErrorBoundary resetKey={location.pathname}>
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           {/* ✅ Home público — accesible sin login */}
@@ -201,6 +203,7 @@ export default function App() {
           <Route path="/success-payment" element={<SuccessPayment />} />
         </Routes>
         </Suspense>
+        </ErrorBoundary>
       </div>
 
       {!hideChrome && !hideFooter && <Footer />}

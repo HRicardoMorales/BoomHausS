@@ -4,6 +4,7 @@ import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
 import { CheckoutSheet } from './CheckoutSheet';
 import mc from '../landings/kit-belleza-6en1';
+import LandingFooter from '../components/landing/LandingFooter.jsx';
 
 /* ============================================================
    WAVE SEPARATOR
@@ -758,43 +759,7 @@ export default function KitBelleza6en1Landing() {
       </div>{/* /pd-bands */}
 
       {/* ── FOOTER ── */}
-      <footer className="lp-footer">
-        <div className="lp-footer-wave" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 52" preserveAspectRatio="none" style={{width:'100%',height:'54px',display:'block'}}>
-            <rect width="150" height="52" fill="#fff"/>
-            <path d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v52h-352z" fill="#111827"/>
-          </svg>
-        </div>
-        <div className="lp-footer-body">
-          <div className="lp-footer-brand">
-            <div className="lp-footer-logo">Amelor</div>
-            <p className="lp-footer-tagline">Tecnología que mejora tu vida diaria</p>
-          </div>
-          <div className="lp-footer-trust">
-            <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-          </div>
-          <div className="lp-footer-pay">
-            <span className="lp-footer-pay-label">Medios de pago aceptados</span>
-            <div className="lp-footer-pay-row">
-              <span className="lp-pay-chip">MercadoPago</span>
-              <span className="lp-pay-chip">Visa</span>
-              <span className="lp-pay-chip">Mastercard</span>
-              <span className="lp-pay-chip">Amex</span>
-            </div>
-          </div>
-          <div className="lp-footer-bottom">
-            <span>© 2026 Amelor · Todos los derechos reservados</span>
-            {mc.whatsapp?.number && (
-              <a href={`https://wa.me/${mc.whatsapp.number}`} className="lp-footer-wa" target="_blank" rel="noopener noreferrer">
-                💬 Consultas por WhatsApp
-              </a>
-            )}
-          </div>
-        </div>
-      </footer>
+      <LandingFooter waveFrom="#fff" whatsappNumber={mc.whatsapp?.number} />
 
       {/* ============================================================
           STICKY BAR
@@ -1198,24 +1163,6 @@ export default function KitBelleza6en1Landing() {
         /* ── WhatsApp tab ── */
         .wa-tab { position:fixed; right:16px; bottom:104px; z-index:9998; display:grid; place-items:center; background:#25D366; border-radius:999px; width:36px; height:36px; text-decoration:none; box-shadow:0 4px 14px rgba(37,211,102,.40); }
 
-        /* ── Landing Footer ── */
-        .lp-footer { font-family:inherit; }
-        .lp-footer-wave { line-height:0; display:block; }
-        .lp-footer-body { background:#111827; padding:32px 20px; padding-bottom:max(90px, calc(env(safe-area-inset-bottom) + 90px)); }
-        .lp-footer-brand { text-align:center; margin-bottom:24px; }
-        .lp-footer-logo { font-size:1.5rem; font-weight:900; color:#fff; letter-spacing:-.02em; line-height:1; }
-        .lp-footer-tagline { font-size:.78rem; color:rgba(255,255,255,.38); margin:5px 0 0; }
-        .lp-footer-trust { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 18px; margin-bottom:24px; }
-        .lp-footer-ti { display:flex; align-items:center; gap:5px; font-size:.80rem; font-weight:700; color:rgba(255,255,255,.65); }
-        .lp-footer-ti > span { font-size:.95rem; line-height:1; }
-        .lp-footer-pay { text-align:center; margin-bottom:22px; }
-        .lp-footer-pay-label { font-size:.62rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.28); display:block; margin-bottom:8px; }
-        .lp-footer-pay-row { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
-        .lp-pay-chip { font-size:.68rem; font-weight:700; color:rgba(255,255,255,.50); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.11); padding:4px 10px; border-radius:6px; }
-        .lp-footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:16px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
-        .lp-footer-bottom > span { font-size:.68rem; color:rgba(255,255,255,.28); }
-        .lp-footer-wa { font-size:.76rem; font-weight:700; color:rgba(255,255,255,.50); text-decoration:none; }
-        .lp-footer-wa:hover { color:#fff; }
 
       `}</style>
     </div>

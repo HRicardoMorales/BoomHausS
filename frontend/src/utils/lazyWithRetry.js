@@ -17,14 +17,21 @@ const RELOAD_WINDOW_MS = 10_000;
 export function lazyWithRetry(importer) {
   let promise;
   const load = () => {
-    promise ??= importer().catch((error) => {
-      promise = undefined;
-      if (isChunkLoadError(error) && shouldReload()) {
-        window.location.reload();
-        return new Promise(() => {}); // la página se está recargando
-      }
-      throw error;
-    });
+    promise ??= importer()
+      .then((mod) => {
+        // Defensa extra: un import() "exitoso" sin export default es un chunk
+        // que no cargó bien; lo tratamos como error de chunk para reintentar.
+        if (!mod?.default) throw new Error('Loading chunk failed: módulo sin export default');
+        return mod;
+      })
+      .catch((error) => {
+        promise = undefined;
+        if (isChunkLoadError(error) && shouldReload()) {
+          window.location.reload();
+          return new Promise(() => {}); // la página se está recargando
+        }
+        throw error;
+      });
     return promise;
   };
 

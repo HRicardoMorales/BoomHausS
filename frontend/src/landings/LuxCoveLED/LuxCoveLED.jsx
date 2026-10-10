@@ -6,6 +6,7 @@ import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import mc from '../escultor-led';
 import './LuxCoveLED.css';
+import LandingFooter from '../../components/landing/LandingFooter.jsx';
 
 /* ── Constantes ───────────────────────────────────────────── */
 // Nombre del producto: la fuente de verdad es la BD (product.name).
@@ -1128,32 +1129,7 @@ export default function LuxCoveLED() {
       </div>
 
       {/* ══ FOOTER ══ */}
-      <footer className="lp-footer">
-        <div className="lp-footer-body">
-          <div className="lp-footer-brand">
-            <div className="lp-footer-logo">Amelor</div>
-            <p className="lp-footer-tagline">Resultados de clínica. Desde tu casa.</p>
-          </div>
-          <div className="lp-footer-trust">
-            <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-          </div>
-          <div className="lp-footer-pay">
-            <span className="lp-footer-pay-label">Medios de pago aceptados</span>
-            <div className="lp-footer-pay-row">
-              <span className="lp-pay-chip">MercadoPago</span>
-              <span className="lp-pay-chip">Visa</span>
-              <span className="lp-pay-chip">Mastercard</span>
-              <span className="lp-pay-chip">Amex</span>
-            </div>
-          </div>
-          <div className="lp-footer-bottom">
-            <span>© 2026 Amelor · Todos los derechos reservados</span>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter variant="wine" tagline="Resultados de clínica. Desde tu casa." />
 
       {showCheckout && (
         <CheckoutSheet

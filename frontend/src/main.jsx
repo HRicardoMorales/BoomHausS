@@ -20,10 +20,15 @@ initMetaPixel();
 // import() completo y la ruta queda en blanco. Pasa en la práctica: los CSS de
 // las landings hacen @import de Google Fonts, que bloqueadores de contenido o
 // redes móviles inestables cortan. Seguimos sin ese CSS en vez de romper la
-// página; si lo que falta es el JS, el import() real falla igual y lo maneja
-// `lazyWithRetry` (recarga una vez para traer el index.html del deploy nuevo).
+// página. Ojo: Vite despacha el mismo evento cuando falla el import() del JS,
+// y si se cancela el import() resuelve `undefined` (React rompe con "reading
+// 'default'" y nunca se reintenta). Por eso solo se cancela para CSS; los
+// fallos de JS siguen su curso hasta `lazyWithRetry` (recarga una vez para
+// traer el index.html del deploy nuevo) y, si persisten, al ErrorBoundary.
 window.addEventListener('vite:preloadError', (event) => {
-  event.preventDefault();
+  if (/Unable to preload CSS/i.test(String(event.payload?.message))) {
+    event.preventDefault();
+  }
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
