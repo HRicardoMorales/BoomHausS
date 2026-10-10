@@ -5,6 +5,7 @@ import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
 import mc from '../landings/masajeador-facial-iones-lambo';
 import LandingFooter from '../components/landing/LandingFooter.jsx';
+import StatsCircles from "../components/landing/StatsCircles";
 
 /* ============================================================
    WAVE SEPARATOR
@@ -204,86 +205,6 @@ function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLa
 /* ============================================================
    STATS CIRCLES
 ============================================================ */
-function StatsCircles({ mc }) {
-  const items = mc.statsCircles || [];
-
-  // Los hooks van siempre antes de cualquier return condicional (rules-of-hooks).
-  const circleRefs = useRef([]);
-  const animatedRef = useRef(items.map(() => false));
-  const [values, setValues] = useState(() => items.map(() => 0));
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          if (animatedRef.current[idx]) return;
-          animatedRef.current[idx] = true;
-          const target = items[idx].target;
-          let current = 0;
-          const step = () => {
-            if (current <= target) {
-              setValues(prev => {
-                const next = [...prev];
-                next[idx] = current;
-                return next;
-              });
-              current++;
-              requestAnimationFrame(step);
-            }
-          };
-          step();
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.1 }
-    );
-    circleRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!items.length) return null;
-
-  return (
-    <section className="sc-section anim-el">
-      {mc.statsTitle && <h2 className="sc-title">{mc.statsTitle}</h2>}
-      <div className="sc-list">
-        {items.map((item, i) => (
-          <div key={i} className="sc-row" ref={el => circleRefs.current[i] = el} data-idx={i}>
-            <div className="sc-circle" style={{ "--sc-pct": `${values[i]}%` }}>
-              <span className="sc-pct">{values[i]}%</span>
-            </div>
-            <p className="sc-text" dangerouslySetInnerHTML={{ __html: item.text }} />
-          </div>
-        ))}
-      </div>
-      <div className="sc-footer">
-        <p className="sc-footer-note">{mc.statsFooterNote || "*Basado en compras verificadas"}</p>
-        <div className="sc-footer-stats">
-          {mc.soldCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.soldCount.toLocaleString("es-AR")}</span>
-              <span className="sc-stat-lbl">CLIENTES</span>
-            </div>
-          )}
-          {mc.reviewScore && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">{mc.reviewScore * 20}%</span>
-              <span className="sc-stat-lbl">SATISFACCIÓN</span>
-            </div>
-          )}
-          {mc.reviewCount && (
-            <div className="sc-stat">
-              <span className="sc-stat-val">+{mc.reviewCount}</span>
-              <span className="sc-stat-lbl">RESEÑAS</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ============================================================
    REVIEWS WITH BARS
@@ -868,7 +789,7 @@ export default function MasajeadorFacialIonesLanding() {
 
         <section className="pd-band pd-band--blue">
           <div className="dtx-container dtx-py">
-            <StatsCircles mc={mc} />
+            <StatsCircles mc={mc} tone="wine" />
           </div>
         </section>
 
@@ -1115,36 +1036,6 @@ export default function MasajeadorFacialIonesLanding() {
         .spf-ba-hint { text-align:center; margin-top:14px; font-size:.85rem; color:rgba(255,255,255,.45); font-weight:600; }
         @media (max-width:520px) { .ba-container{border-radius:12px;} .ba-img-after{max-height:280px;} }
 
-        .sc-section { display:flex; flex-direction:column; gap:0; padding:28px 0 16px; width:100%; max-width:500px; margin:0 auto; }
-        .sc-title { font-size:1.45rem; font-weight:1000; color:rgba(11,18,32,.90); text-align:center; margin:0 0 22px; line-height:1.2; letter-spacing:-.01em; }
-        @media (max-width:520px) { .sc-title { font-size:1.18rem; } }
-        .sc-list { display:flex; flex-direction:column; gap:0; }
-        .sc-row { display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid rgba(11,18,32,.06); }
-        .sc-row:last-child { border-bottom:none; }
-        .sc-circle { position:relative; width:58px; height:58px; border-radius:50%; flex-shrink:0; background:conic-gradient(from 0deg,#C2185B 0%,#8B1A4A var(--sc-pct,0%),rgba(11,18,32,.10) 0%); }
-        .sc-circle::after { content:""; position:absolute; top:12%; left:12%; width:76%; height:76%; background:#fff; border-radius:50%; }
-        .sc-pct { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:10px; font-weight:900; color:#8B1A4A; z-index:1; letter-spacing:-.02em; }
-        .sc-text { font-size:.88rem; font-weight:500; color:rgba(11,18,32,.70); line-height:1.5; margin:0; }
-        .sc-text strong { color:rgba(11,18,32,.88); font-weight:800; }
-        .sc-footer { margin-top:22px; padding-top:18px; border-top:1px solid rgba(11,18,32,.08); text-align:center; }
-        .sc-footer-note { font-size:.72rem; color:rgba(11,18,32,.40); margin:0 0 14px; font-style:italic; }
-        .sc-footer-stats { display:flex; justify-content:center; gap:0; }
-        .sc-stat { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:0 8px; border-right:1px solid rgba(11,18,32,.08); }
-        .sc-stat:last-child { border-right:none; }
-        .sc-stat-val { font-size:1.10rem; font-weight:1000; color:#8B1A4A; letter-spacing:-.01em; }
-        .sc-stat-lbl { font-size:.62rem; font-weight:800; color:rgba(11,18,32,.45); letter-spacing:.08em; text-transform:uppercase; }
-        .pd-band--blue .sc-title { color:rgba(255,255,255,.92); }
-        .pd-band--blue .sc-row { border-bottom-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-circle { background:conic-gradient(from 0deg,#C2185B 0%,#F8BBD9 var(--sc-pct,0%),rgba(255,255,255,.10) 0%); }
-        .pd-band--blue .sc-circle::after { background:#8B1A4A; }
-        .pd-band--blue .sc-pct { color:#F8BBD9; }
-        .pd-band--blue .sc-text { color:rgba(226,232,240,.70); }
-        .pd-band--blue .sc-text strong { color:rgba(255,255,255,.90); }
-        .pd-band--blue .sc-footer { border-top-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-footer-note { color:rgba(226,232,240,.40); }
-        .pd-band--blue .sc-stat { border-right-color:rgba(255,255,255,.08); }
-        .pd-band--blue .sc-stat-val { color:#F8BBD9; }
-        .pd-band--blue .sc-stat-lbl { color:rgba(226,232,240,.45); }
 
         .spf-rwb { width:100%; }
         .spf-rwb-score-row { display:flex; flex-direction:column; align-items:center; gap:20px; margin:0 0 8px; }

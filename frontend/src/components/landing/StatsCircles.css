@@ -1,0 +1,148 @@
+/* ── StatsCircles ─────────────────────────────────────────────────────────
+   Donuts animados con conic-gradient. El color sale de custom properties
+   por tono; las bandas oscuras (.pd-band--blue) invierten la paleta.
+   Antes: 5 copias inline (ProductDetail + 4 landings). */
+
+.sc-section {
+  --sc-from: #2F855A;
+  --sc-to: #1B4D3E;
+  --sc-band-to: #4ade80;
+  --sc-band-hole: #1B4D3E;
+  --sc-ink: 11, 18, 32;
+
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 16px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.sc-section--wine {
+  --sc-from: #C2185B;
+  --sc-to: #8B1A4A;
+  --sc-band-to: #F8BBD9;
+  --sc-band-hole: #8B1A4A;
+}
+
+.sc-title {
+  font-size: 1.45rem;
+  font-weight: 1000;
+  color: rgba(var(--sc-ink), .90);
+  text-align: center;
+  margin: 0 0 22px;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+@media (max-width: 520px) {
+  .sc-title { font-size: 1.18rem; }
+}
+
+.sc-list { display: flex; flex-direction: column; }
+.sc-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(var(--sc-ink), .06);
+}
+.sc-row:last-child { border-bottom: none; }
+
+.sc-circle {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(from 0deg, var(--sc-from) 0%, var(--sc-to) var(--sc-pct, 0%), rgba(var(--sc-ink), .10) 0%);
+}
+.sc-circle::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  background: #fff;
+  border-radius: 50%;
+}
+.sc-pct {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-to);
+  z-index: 1;
+  letter-spacing: -.02em;
+}
+.sc-text {
+  font-size: .88rem;
+  font-weight: 500;
+  color: rgba(var(--sc-ink), .70);
+  line-height: 1.5;
+  margin: 0;
+}
+.sc-text strong { color: rgba(var(--sc-ink), .88); font-weight: 800; }
+
+.sc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sc-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(var(--sc-ink), .08);
+  text-align: center;
+}
+.sc-footer-note {
+  font-size: .72rem;
+  color: rgba(var(--sc-ink), .40);
+  margin: 0 0 14px;
+  font-style: italic;
+}
+.sc-footer-stats { display: flex; justify-content: center; margin: 0; }
+.sc-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse; /* <dt> va primero en el DOM, el valor se ve arriba */
+  align-items: center;
+  gap: 3px;
+  padding: 0 8px;
+  border-right: 1px solid rgba(var(--sc-ink), .08);
+}
+.sc-stat:last-child { border-right: none; }
+.sc-stat-val {
+  margin: 0;
+  font-size: 1.10rem;
+  font-weight: 1000;
+  color: var(--sc-to);
+  letter-spacing: -.01em;
+}
+.sc-stat-lbl {
+  font-size: .62rem;
+  font-weight: 800;
+  color: rgba(var(--sc-ink), .45);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* Banda oscura */
+.pd-band--blue .sc-title { color: rgba(255, 255, 255, .92); }
+.pd-band--blue .sc-row { border-bottom-color: rgba(255, 255, 255, .08); }
+.pd-band--blue .sc-circle { background: conic-gradient(from 0deg, var(--sc-from) 0%, var(--sc-band-to) var(--sc-pct, 0%), rgba(255, 255, 255, .10) 0%); }
+.pd-band--blue .sc-circle::after { background: var(--sc-band-hole); }
+.pd-band--blue .sc-pct,
+.pd-band--blue .sc-stat-val { color: var(--sc-band-to); }
+.pd-band--blue .sc-text { color: rgba(226, 232, 240, .70); }
+.pd-band--blue .sc-text strong { color: rgba(255, 255, 255, .90); }
+.pd-band--blue .sc-footer { border-top-color: rgba(255, 255, 255, .08); }
+.pd-band--blue .sc-footer-note { color: rgba(226, 232, 240, .40); }
+.pd-band--blue .sc-stat { border-right-color: rgba(255, 255, 255, .08); }
+.pd-band--blue .sc-stat-lbl { color: rgba(226, 232, 240, .45); }
+
+/* ProductDetail usa un azul noche en el agujero del donut sobre banda oscura */
+.sc-section--navy-hole { --sc-band-hole: #0b172a; }
