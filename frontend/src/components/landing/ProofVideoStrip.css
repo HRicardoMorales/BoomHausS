@@ -1,0 +1,106 @@
+/* ProofVideoStrip — prefijo lp-vs para no chocar con los .vstrip-* inline de
+   ProductDetail (el CSS de chunks lazy queda global). */
+
+.lp-vs {
+  --vs-accent: #1b4d3e;
+  --vs-accent-rgb: 27, 77, 62;
+  margin-bottom: 28px;
+}
+.lp-vs--wine {
+  --vs-accent: #8b1a4a;
+  --vs-accent-rgb: 139, 26, 74;
+}
+
+.lp-vs__header { text-align: center; margin-bottom: 16px; }
+
+.lp-vs__kicker {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 4px 12px;
+  border: 1px solid rgba(var(--vs-accent-rgb), 0.15);
+  border-radius: 999px;
+  background: rgba(var(--vs-accent-rgb), 0.08);
+  color: var(--vs-accent);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lp-vs__title {
+  margin: 0 0 5px;
+  color: rgba(11, 18, 32, 0.88);
+  font-size: 1.18rem;
+  font-weight: 1000;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+@media (min-width: 900px) { .lp-vs__title { font-size: 1.38rem; } }
+
+.lp-vs__sub { margin: 0; color: rgba(11, 18, 32, 0.6); font-size: 0.88rem; font-weight: 600; }
+
+.lp-vs__row {
+  display: grid;
+  grid-template-columns: repeat(var(--vs-cols, 3), minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-vs__item { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+
+.lp-vs__media {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgba(11, 18, 32, 0.05);
+}
+
+.lp-vs__media-el { display: block; width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+/* Los embeds de YouTube/Vimeo son 16:9: se agrandan un poco y se centran para
+   cubrir el 9:16 sin bandas, y no reciben clicks (se usan como GIF). */
+.lp-vs__media-el--iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  transform: translate(-50%, -50%) scale(1.05);
+  pointer-events: none;
+}
+
+.lp-vs__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 1.5px dashed rgba(var(--vs-accent-rgb), 0.2);
+  background: linear-gradient(145deg, rgba(var(--vs-accent-rgb), 0.08), rgba(var(--vs-accent-rgb), 0.04));
+  color: var(--vs-accent);
+  font-size: 2rem;
+}
+.lp-vs__placeholder > span { opacity: 0.35; }
+
+.lp-vs__label {
+  margin: 0;
+  color: rgba(11, 18, 32, 0.62);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.lp-vs__benefit {
+  margin: 0;
+  padding: 0 4px;
+  color: rgba(var(--vs-accent-rgb), 0.9);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}

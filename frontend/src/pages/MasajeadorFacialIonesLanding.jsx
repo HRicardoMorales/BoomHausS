@@ -14,112 +14,11 @@ import WaveSeparator from "../components/landing/WaveSeparator";
 import LandingFaq from "../components/landing/LandingFaq";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import MiniReviewsBar from "../components/landing/MiniReviewsBar";
+import ProofVideoStrip from "../components/landing/ProofVideoStrip";
+import BeforeAfterSlider from "../components/landing/BeforeAfterSlider";
 
 /* Colores de las bandas para los separadores de olas. */
 const WAVE = { dark: "#8B1A4A", light: "#FFF5F8" };
-
-/* ============================================================
-   VIDEO STRIP — resolución automática de URL
-============================================================ */
-function resolveMedia(url) {
-  if (!url) return null;
-  const shorts = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
-  if (shorts) return { type: 'iframe', src: `https://www.youtube.com/embed/${shorts[1]}?autoplay=1&mute=1&loop=1&playlist=${shorts[1]}&controls=0&playsinline=1&rel=0&modestbranding=1` };
-  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-  if (yt) return { type: 'iframe', src: `https://www.youtube.com/embed/${yt[1]}?autoplay=1&mute=1&loop=1&playlist=${yt[1]}&controls=0&playsinline=1&rel=0&modestbranding=1` };
-  const vimeo = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeo) return { type: 'iframe', src: `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&background=1&byline=0&title=0` };
-  if (/\.(mp4|mov|webm|ogg)(\?|$)/i.test(url)) return { type: 'video', src: url };
-  if (/\.gif(\?|$)/i.test(url)) return { type: 'gif', src: url };
-  return { type: 'image', src: url };
-}
-
-function VideoStripSection({ mc }) {
-  const videos = mc.proofVideos;
-  if (!videos?.length) return null;
-  return (
-    <section className="vstrip-section anim-el">
-      <div className="vstrip-header">
-        <div className="vstrip-kicker">{mc.proofVideosKicker || "✦ CLIENTES SATISFECHOS"}</div>
-        {mc.proofVideosTitle && <h2 className="vstrip-title">{mc.proofVideosTitle}</h2>}
-        {mc.proofVideosSubtitle && <div className="vstrip-sub">{mc.proofVideosSubtitle}</div>}
-      </div>
-      <div className="vstrip-row">
-        {videos.map((v, i) => {
-          const resolved = resolveMedia(v.videoUrl || v.imgUrl);
-          return (
-            <div key={i} className="vstrip-item">
-              <div className="vstrip-media">
-                {resolved?.type === 'iframe' ? (
-                  <iframe
-                    className="vstrip-video"
-                    src={resolved.src}
-                    title={v.label}
-                    allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    frameBorder="0"
-                    scrolling="no"
-                  />
-                ) : resolved?.type === 'video' ? (
-                  <video autoPlay muted loop playsInline className="vstrip-video" aria-label={v.label}>
-                    <source src={resolved.src} type="video/mp4" />
-                  </video>
-                ) : v.imgUrl ? (
-                  <img src={v.imgUrl} alt={v.label} className="vstrip-video" loading="lazy" />
-                ) : (
-                  <div className="vstrip-ph" aria-hidden="true">
-                    <span className="vstrip-ph-ico">▶</span>
-                  </div>
-                )}
-              </div>
-              <div className="vstrip-label">{v.label}</div>
-              {v.benefit && <div className="vstrip-benefit">{v.benefit}</div>}
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   BEFORE / AFTER SLIDER
-============================================================ */
-function BeforeAfterSlider({ imgBefore, imgAfter, beforeLabel = 'Antes', afterLabel = 'Después' }) {
-  const containerRef = useRef(null);
-  const handleSlider = (e) => {
-    if (containerRef.current) {
-      containerRef.current.style.setProperty('--position', `${e.target.value}%`);
-    }
-  };
-  return (
-    <div className="ba-wrap">
-      <div className="ba-container" ref={containerRef} style={{ '--position': '50%' }}>
-        <div className="ba-img-wrap">
-          {imgAfter
-            ? <img className="ba-img-after" src={imgAfter} alt={afterLabel} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-            : <div className="ba-img-after ba-img-ph"><span className="ba-img-ph-icon">✨</span><span className="ba-img-ph-text">{afterLabel}</span></div>
-          }
-          <div className="ba-img-before">
-            {imgBefore
-              ? <img src={imgBefore} alt={beforeLabel} style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left center', display:'block' }} />
-              : <div className="ba-img-ph ba-img-ph--alt"><span className="ba-img-ph-icon">👁️</span><span className="ba-img-ph-text">{beforeLabel}</span></div>
-            }
-          </div>
-        </div>
-        <span className="ba-badge ba-badge-before">{beforeLabel}</span>
-        <span className="ba-badge ba-badge-after">{afterLabel}</span>
-        <input type="range" min="0" max="100" defaultValue="50" onInput={handleSlider} className="ba-range" aria-label="Comparar antes y después" />
-        <div className="ba-line" />
-        <div className="ba-handle">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M6 9H12M6 9L4 7M6 9L4 11M12 9L14 7M12 9L14 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ============================================================
    STATS CIRCLES
@@ -600,7 +499,13 @@ export default function MasajeadorFacialIonesLanding() {
             <MiniReviewsBar reviews={mc.miniReviews?.length ? mc.miniReviews : mc.reviews} tone="wine" variant="card" label="Lo que dicen nuestras clientas" />
           </div>
           <div className="dtx-container" style={{ paddingTop: 28 }}>
-            <VideoStripSection mc={mc} />
+            <ProofVideoStrip
+              videos={mc.proofVideos}
+              kicker={mc.proofVideosKicker}
+              title={mc.proofVideosTitle}
+              subtitle={mc.proofVideosSubtitle}
+              tone="wine"
+            />
           </div>
           <div className="dtx-container">
             <CuatroSemanasSection mc={mc} />
@@ -621,8 +526,8 @@ export default function MasajeadorFacialIonesLanding() {
               imgAfter={mc.beforeAfter.afterImg}
               beforeLabel={mc.beforeAfter.beforeLabel}
               afterLabel={mc.beforeAfter.afterLabel}
+              placeholderIcons={{ before: "👁️", after: "✨" }}
             />
-            <p className="spf-ba-hint">← Arrastrá para comparar →</p>
           </div>
           <div className="dtx-container">
             <div className="grt-section">
@@ -815,39 +720,7 @@ export default function MasajeadorFacialIonesLanding() {
         .spf-flow-ph-icon { font-size:3.5rem; }
         .spf-flow-ph-text { font-size:.78rem; font-weight:600; color:rgba(11,18,32,.38); text-align:center; line-height:1.45; }
 
-        .vstrip-section { margin-bottom:28px; }
-        .vstrip-header { text-align:center; margin-bottom:16px; }
-        .vstrip-kicker { display:inline-block; font-size:.68rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#8B1A4A; background:rgba(139,26,74,.08); border:1px solid rgba(139,26,74,.15); padding:4px 12px; border-radius:999px; margin-bottom:10px; }
-        .vstrip-title { font-size:1.18rem; font-weight:1000; letter-spacing:-.01em; color:rgba(11,18,32,.88); margin:0 0 5px; line-height:1.25; }
-        @media (min-width:900px) { .vstrip-title { font-size:1.38rem; } }
-        .vstrip-sub { font-size:.88rem; font-weight:600; color:rgba(11,18,32,.50); margin:0; }
-        .vstrip-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
-        .vstrip-item { display:flex; flex-direction:column; gap:7px; min-width:0; }
-        .vstrip-media { aspect-ratio:9/16; border-radius:20px; overflow:hidden; background:rgba(11,18,32,.05); position:relative; }
-        .vstrip-video { width:100%; height:100%; object-fit:cover; display:block; border:none; }
-        .vstrip-media iframe.vstrip-video { position:absolute; top:50%; left:50%; width:calc(100% + 2px); height:calc(100% + 2px); transform:translate(-50%,-50%) scale(1.05); pointer-events:none; }
-        .vstrip-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,rgba(139,26,74,.08),rgba(139,26,74,.04)); border:1.5px dashed rgba(139,26,74,.20); }
-        .vstrip-ph-ico { font-size:2rem; opacity:.35; color:#8B1A4A; }
-        .vstrip-label { text-align:center; font-size:.75rem; font-weight:800; color:rgba(11,18,32,.55); letter-spacing:.04em; text-transform:uppercase; }
-        .vstrip-benefit { text-align:center; font-size:.68rem; font-weight:700; color:rgba(139,26,74,.80); letter-spacing:.01em; line-height:1.35; padding:0 4px; }
 
-        .ba-wrap { display:flex; justify-content:center; padding:4px 0 8px; }
-        .ba-container { position:relative; overflow:hidden; border-radius:16px; --position:50%; width:100%; max-width:680px; box-shadow:0 16px 48px rgba(0,0,0,.28); }
-        .ba-img-wrap { display:grid; position:relative; user-select:none; min-height:280px; }
-        .ba-img-after { display:block; width:100%; max-height:460px; min-height:280px; grid-area:1/1; object-fit:cover; object-position:center; }
-        .ba-img-before { position:absolute; inset:0; width:100%; height:100%; overflow:hidden; clip-path:inset(0 calc(100% - var(--position)) 0 0); }
-        .ba-img-ph { background:rgba(255,255,255,.07); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
-        .ba-img-ph--alt { background:rgba(0,0,0,.10); }
-        .ba-img-ph-icon { font-size:3rem; }
-        .ba-img-ph-text { font-size:.75rem; font-weight:700; color:rgba(255,255,255,.50); }
-        .ba-badge { position:absolute; bottom:14px; background:rgba(255,255,255,.92); backdrop-filter:blur(6px); color:#0f172a; font-size:.78rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:999px; pointer-events:none; z-index:4; box-shadow:0 2px 8px rgba(0,0,0,.18); }
-        .ba-badge-before { left:14px; }
-        .ba-badge-after  { right:14px; }
-        .ba-range { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:10; margin:0; padding:0; -webkit-appearance:none; }
-        .ba-line { position:absolute; inset:0; left:var(--position); transform:translateX(-50%); width:2px; height:100%; background:rgba(255,255,255,.9); pointer-events:none; z-index:5; }
-        .ba-handle { position:absolute; top:50%; left:var(--position); transform:translate(-50%,-50%); width:40px; height:40px; background:rgba(255,255,255,.92); backdrop-filter:blur(4px); border-radius:999px; display:grid; place-items:center; pointer-events:none; z-index:6; box-shadow:0 2px 12px rgba(0,0,0,.30); color:#1e293b; }
-        .spf-ba-hint { text-align:center; margin-top:14px; font-size:.85rem; color:rgba(255,255,255,.45); font-weight:600; }
-        @media (max-width:520px) { .ba-container{border-radius:12px;} .ba-img-after{max-height:280px;} }
 
 
         .spf-rwb { width:100%; }
