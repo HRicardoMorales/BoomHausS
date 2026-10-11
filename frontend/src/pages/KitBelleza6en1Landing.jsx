@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
@@ -16,6 +16,8 @@ import CountdownTimer from "../components/landing/CountdownTimer";
 import MiniReviewsBar from "../components/landing/MiniReviewsBar";
 import ProofVideoStrip from "../components/landing/ProofVideoStrip";
 import BeforeAfterSlider from "../components/landing/BeforeAfterSlider";
+import ReviewsWithBars from "../components/landing/ReviewsWithBars";
+import GuaranteeNote from "../components/landing/GuaranteeNote";
 
 /* Colores de las bandas para los separadores de olas. */
 const WAVE = { dark: "#1B4D3E", light: "#ffffff" };
@@ -23,83 +25,6 @@ const WAVE = { dark: "#1B4D3E", light: "#ffffff" };
 /* ============================================================
    STATS CIRCLES — idéntico a ProductDetail (lámpara magnética)
 ============================================================ */
-
-/* ============================================================
-   REVIEWS WITH BARS — puntuación + barras + carousel
-============================================================ */
-function ReviewsWithBars({ reviews = [], distribution = [], title, subtitle, score = 4.8, count = 0 }) {
-  const [active, setActive] = useState(0);
-  const rowRef = useRef(null);
-
-  const scrollTo = (i) => {
-    setActive(i);
-    const row = rowRef.current;
-    if (!row) return;
-    const slide = row.children[i];
-    if (slide) slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  };
-
-  return (
-    <div className="spf-rwb">
-      <div className="sec-head">
-        <h2 className="sec-title">{title}</h2>
-        {subtitle && <p className="sec-sub">{subtitle}</p>}
-      </div>
-      <div className="spf-rwb-score-row">
-        <div className="spf-rwb-score-big">
-          <span className="spf-rwb-score-num">{score}</span>
-          <div className="stars-inline spf-rwb-stars">
-            {[1,2,3,4,5].map(s => <span key={s} className={`s${s <= Math.round(score) ? ' on' : ''}`}>★</span>)}
-          </div>
-          <span className="spf-rwb-score-count">+{count} reseñas</span>
-        </div>
-        <div className="spf-rwb-bars">
-          {distribution.map((d, i) => (
-            <div key={i} className="spf-rwb-bar-row">
-              <span className="spf-rwb-bar-label">{d.stars}★</span>
-              <div className="spf-rwb-bar-track">
-                <div className="spf-rwb-bar-fill" style={{ width: `${d.pct}%` }} />
-              </div>
-              <span className="spf-rwb-bar-pct">{d.pct}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="rv-wrap" style={{ marginTop: 28 }}>
-        <button className="rv-nav rv-prev" onClick={() => scrollTo(Math.max(0, active - 1))} aria-label="Anterior">‹</button>
-        <div className="rv-row" ref={rowRef}>
-          {reviews.map((r, i) => (
-            <div className="rv-slide" key={i}>
-              <div className="rv-card">
-                <div className="rv-imgBox">
-                  {r.img
-                    ? <img src={r.img} alt={r.imgAlt || `Reseña de ${r.name}`} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-                    : <div className="spf-rv-ph" aria-label={r.imgAlt || `Foto de ${r.name}`}>✂️</div>
-                  }
-                  <div className="rv-quote">"</div>
-                </div>
-                <div className="rv-body">
-                  <div className="stars-inline">
-                    {[1,2,3,4,5].map(s => <span key={s} className={`s${s <= r.rating ? ' on' : ''}`}>★</span>)}
-                  </div>
-                  <div className="rv-title">{r.title}</div>
-                  <p className="rv-text">{r.text}</p>
-                  <div className="rv-name">— {r.name}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <button className="rv-nav rv-next" onClick={() => scrollTo(Math.min(reviews.length - 1, active + 1))} aria-label="Siguiente">›</button>
-        <div className="rv-dots">
-          {reviews.map((_, i) => (
-            <button key={i} className={`rv-dot${i === active ? ' on' : ''}`} onClick={() => scrollTo(i)} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ============================================================
    MAIN COMPONENT
@@ -337,7 +262,7 @@ export default function KitBelleza6en1Landing() {
                 >
                   {!product ? 'Cargando…' : `${mc.ctaLine1} →`}
                 </button>
-                <p className="pd-cta-guarantee">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
+                <GuaranteeNote />
                 <div className="bnd2-urgency">
                   <span className="bnd2-urgency-dot" />
                   {mc.stockAlertText}
@@ -429,7 +354,7 @@ export default function KitBelleza6en1Landing() {
                 <span className="grt-pill">🚚 Envío gratis</span>
               </div>
               <button className="grt-cta spf-grt-cta" onClick={handleBuy}>{mc.guarantee.cta}</button>
-              <p className="pd-cta-guarantee pd-cta-guarantee--light">🛡️ Garantía 30 días — Si no te convence, te devolvemos el dinero entero</p>
+              <GuaranteeNote light />
             </div>
           </div>
         </section>
@@ -446,6 +371,9 @@ export default function KitBelleza6en1Landing() {
               subtitle={mc.reviewsSubtitle}
               score={mc.reviewScore}
               count={mc.reviewCount}
+              tone="green"
+              placeholder="✂️"
+              quoteColor="#C2185B"
             />
           </div>
         </section>
@@ -590,8 +518,6 @@ export default function KitBelleza6en1Landing() {
         .bnd2-cta.spf-cta:hover { background:linear-gradient(135deg,#880E4F 0%,#C2185B 100%); box-shadow:0 8px 28px rgba(194,24,91,.38); transform:translateY(-1px); }
         .bnd2-cta.spf-cta:active { transform:translateY(0) scale(.98); }
         .bnd2-cta.spf-cta:disabled { opacity:.55; cursor:not-allowed; transform:none; }
-        .pd-cta-guarantee { margin:6px 0 0; padding:0; text-align:center; font-size:12px; font-weight:600; color:rgba(11,18,32,.42); line-height:1.4; background:none; border:none; }
-        .pd-cta-guarantee--light { color:rgba(255,255,255,.55); }
         .bnd2-urgency { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.80rem; font-weight:800; color:rgba(180,30,30,.85); letter-spacing:.02em; }
         .bnd2-urgency-dot { width:8px; height:8px; border-radius:50%; background:#e53e3e; flex-shrink:0; animation:spfPulse 1.4s ease-in-out infinite; }
         @keyframes spfPulse { 0%,100%{box-shadow:0 0 0 0 rgba(229,62,62,.55);} 50%{box-shadow:0 0 0 5px rgba(229,62,62,0);} }
@@ -612,9 +538,6 @@ export default function KitBelleza6en1Landing() {
         /* ── Mini reviews bar ── */
 
         /* ── Stars ── */
-        .stars-inline { display:inline-flex; gap:2px; justify-content:center; }
-        .stars-inline .s { opacity:.25; font-size:14px; }
-        .stars-inline .s.on { opacity:1; color:#D69E2E; }
 
         /* ── Story blocks — pd-flow (idéntico a lámpara magnética) ── */
         .pd-flow { display:flex; flex-direction:column; gap:14px; }
@@ -656,40 +579,8 @@ export default function KitBelleza6en1Landing() {
         .spf-howto-ph-num { font-size:2rem; font-weight:1100; color:rgba(255,255,255,.20); }
 
         /* ── Reviews with bars ── */
-        .spf-rwb { width:100%; }
-        .spf-rwb-score-row { display:flex; flex-direction:column; align-items:center; gap:20px; margin:0 0 8px; }
-        @media (min-width:640px) { .spf-rwb-score-row { flex-direction:row; align-items:flex-start; justify-content:center; gap:40px; } }
-        .spf-rwb-score-big { display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; }
-        .spf-rwb-score-num { font-size:3.5rem; font-weight:1100; color:rgba(11,18,32,.92); line-height:1; letter-spacing:-.04em; }
-        .spf-rwb-stars { gap:4px !important; }
-        .spf-rwb-stars .s { font-size:20px !important; }
-        .spf-rwb-score-count { font-size:.80rem; font-weight:700; color:rgba(11,18,32,.45); }
-        .spf-rwb-bars { display:flex; flex-direction:column; gap:8px; width:100%; max-width:320px; }
-        .spf-rwb-bar-row { display:flex; align-items:center; gap:8px; }
-        .spf-rwb-bar-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.65); white-space:nowrap; min-width:18px; text-align:right; }
-        .spf-rwb-bar-track { flex:1; height:8px; border-radius:999px; background:rgba(11,18,32,.10); overflow:hidden; }
-        .spf-rwb-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#1B4D3E,#2F855A); transition:width .6s cubic-bezier(.4,0,.2,1); }
-        .spf-rwb-bar-pct { font-size:.72rem; font-weight:700; color:rgba(11,18,32,.45); white-space:nowrap; min-width:30px; }
 
         /* ── Reviews carousel ── */
-        .spf-rv-ph { width:100%; height:100%; background:#f0f4f8; display:grid; place-items:center; font-size:3rem; }
-        .rv-wrap { position:relative; margin-top:14px; }
-        .rv-row { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:10px 6px 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-        .rv-row::-webkit-scrollbar { display:none; }
-        .rv-slide { scroll-snap-align:center; flex:0 0 auto; width:min(520px,88vw); }
-        .rv-card { background:#fff; border:1px solid rgba(2,8,23,.10); border-radius:22px; box-shadow:0 22px 70px rgba(10,20,40,.16); overflow:hidden; }
-        .rv-imgBox { position:relative; width:100%; aspect-ratio:4/3; background:#f1f5f9; }
-        .rv-quote { position:absolute; right:14px; bottom:14px; width:46px; height:46px; border-radius:999px; background:#C2185B; color:#fff; display:grid; place-items:center; font-weight:1100; box-shadow:0 16px 40px rgba(194,24,91,.35); font-size:1.5rem; }
-        .rv-body { padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; text-align:center; min-height:160px; }
-        .rv-title { font-weight:1100; text-transform:uppercase; letter-spacing:.05em; color:rgba(11,18,32,.92); font-size:.88rem; }
-        .rv-text { margin:0; color:rgba(11,18,32,.70); line-height:1.6; font-weight:650; font-size:.88rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; }
-        .rv-name { margin-top:4px; font-weight:900; color:rgba(11,18,32,.62); font-size:.85rem; }
-        .rv-nav { position:absolute; top:45%; transform:translateY(-50%); width:44px; height:44px; border-radius:999px; border:1px solid rgba(2,8,23,.10); background:rgba(255,255,255,.95); box-shadow:0 18px 55px rgba(10,20,40,.18); cursor:pointer; display:grid; place-items:center; font-size:24px; z-index:10; }
-        .rv-prev { left:-8px; } .rv-next { right:-8px; }
-        @media (max-width:560px) { .rv-nav { display:none; } }
-        .rv-dots { display:flex; justify-content:center; gap:8px; margin-top:10px; }
-        .rv-dot { width:8px; height:8px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; transition:transform .18s ease,background .18s ease; padding:0; }
-        .rv-dot.on { background:rgba(27,77,62,.95); transform:scale(1.25); }
 
         /* ── Guarantee medal ── */
         .grt-section { text-align:center; padding:56px 20px 52px; display:flex; flex-direction:column; align-items:center; }
