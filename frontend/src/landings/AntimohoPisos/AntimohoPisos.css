@@ -190,6 +190,10 @@
   background: #fff;
 }
 .amp-gallery-main .amp-img-placeholder { min-height: 320px; border-radius: 14px; }
+/* width/height del <img> reservan el espacio (sin CLS); el alto real lo da el aspect ratio. */
+.amp-gallery-main img { width: 100%; height: auto; }
+.amp-thumb img,
+.amp-sticky-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .amp-thumbs {
   display: flex;
   gap: 8px;
