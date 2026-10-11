@@ -149,10 +149,10 @@ export default function SillonPuffLanding() {
                 >
                   <SafeImg
                     src={img.src}
-                    alt={img.alt}
+                    alt=""
                     name={productDisplayName}
-                    sizes="80px"
-                    widths={[160]}
+                    sizes="90px"
+                    widths={[180]}
                     style={{ width:'100%', height:'100%', objectFit:'cover' }}
                   />
                 </button>
@@ -312,7 +312,7 @@ export default function SillonPuffLanding() {
                   <div className="flow-media">
                     <div className="flow-imgBox hover-float">
                       {storyImgs[i]
-                        ? <img src={storyImgs[i]} alt={b.imgAlt} loading="lazy" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                        ? <SafeImg src={storyImgs[i]} alt={b.imgAlt} sizes="(min-width: 960px) 520px, 100vw" referrerPolicy="no-referrer" crossOrigin="anonymous" />
                         : <div className="spf-flow-ph"><span className="spf-flow-ph-icon">🛋️</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
                       }
                     </div>

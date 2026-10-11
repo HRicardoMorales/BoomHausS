@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
+import SafeImg from '../components/SafeImg';
 import api from '../services/api';
 import { CheckoutSheet } from './CheckoutSheet';
 import { useCart } from '../hooks/useCart';
@@ -38,14 +39,14 @@ function CirculacionSection({ mc }) {
       {/* 1. Título principal */}
       <h2 className="circ-title">{d.title}</h2>
       {/* 2. Primera imagen */}
-      {d.img && <img className="circ-img" src={d.img} alt={d.imgAlt || ''} loading="lazy" />}
+      {d.img && <SafeImg className="circ-img" src={d.img} alt={d.imgAlt || ''} sizes="(min-width: 720px) 640px, 100vw" />}
       {/* 3. Quote + párrafo */}
       {d.quote && <p className="circ-quote">{d.quote}</p>}
       {d.textHtml && <p className="circ-text" dangerouslySetInnerHTML={{ __html: d.textHtml }} />}
       {/* 4. Título "La buena noticia" */}
       {d.buenaNoticia && <h2 className="circ-title-buena">{d.buenaNoticia}</h2>}
       {/* 5. Segunda imagen */}
-      {d.img2 && <img className="circ-img" src={d.img2} alt={d.img2Alt || ''} loading="lazy" />}
+      {d.img2 && <SafeImg className="circ-img" src={d.img2} alt={d.img2Alt || ''} sizes="(min-width: 720px) 640px, 100vw" />}
       {/* 6. "Recupera tu Rostro" + badge + bullets + footnote */}
       {d.title2 && <h2 className="circ-title2">{d.title2}</h2>}
       {d.ctaBadge && <div className="circ-badge-pill"><span className="circ-badge-dot" />{d.ctaBadge}</div>}
@@ -85,7 +86,7 @@ function CuatroSemanasSection({ mc }) {
           </div>
         ))}
       </div>
-      {d.img && <img className="semanas-img" src={d.img} alt={d.imgAlt || ''} loading="lazy" />}
+      {d.img && <SafeImg className="semanas-img" src={d.img} alt={d.imgAlt || ''} sizes="(min-width: 720px) 640px, 100vw" />}
     </div>
   );
 }
@@ -106,7 +107,7 @@ function TresPasosSection({ mc, onBuy }) {
           <div key={i} className="paso-item">
             <div className="paso-circle-wrap">
               {s.img
-                ? <img className="paso-circle-img" src={s.img} alt={s.imgAlt || s.title} loading="lazy" />
+                ? <SafeImg className="paso-circle-img" src={s.img} alt={s.imgAlt || s.title} width={120} height={120} sizes="120px" widths={[240]} />
                 : <div className="paso-circle-ph" />
               }
               <span className="paso-num-badge">{s.num}</span>
@@ -214,8 +215,11 @@ export default function MasajeadorFacialIonesLanding() {
             <div className="pd-mediaMain pd-mediaMain--bigger">
               {activeImg.src
                 ? (
-                  <img
+                  <SafeImg
                     key={activeImgIdx}
+                    priority
+                    sizes="(min-width: 960px) 50vw, 100vw"
+                    widths={[480, 720, 960, 1280]}
                     className="pd-mainImg pd-mainImg--anim"
                     src={activeImg.src}
                     alt={activeImg.alt}
@@ -238,7 +242,7 @@ export default function MasajeadorFacialIonesLanding() {
                   aria-label={img.alt}
                 >
                   {img.src
-                    ? <img src={img.src} alt={img.alt} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                    ? <SafeImg src={img.src} alt="" sizes="90px" widths={[180]} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
                     : <div className="spf-thumb-ph">✨</div>
                   }
                 </button>
@@ -343,7 +347,7 @@ export default function MasajeadorFacialIonesLanding() {
                             <div key={idx} className="bnd2-imgs-item">
                               {idx > 0 && <span className="bnd2-imgs-plus">+</span>}
                               <div className="bnd2-thumb">
-                                <img src={src || product?.imageUrl || ''} alt="" loading="lazy" />
+                                <SafeImg src={src || product?.imageUrl || ''} alt="" width={42} height={42} sizes="42px" widths={[84]} />
                               </div>
                             </div>
                           ))}

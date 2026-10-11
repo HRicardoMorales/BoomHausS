@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
+import SafeImg from '../components/SafeImg';
 import api from '../services/api';
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from '../lib/metaPixel';
@@ -124,8 +125,11 @@ export default function KitBelleza6en1Landing() {
             <div className="pd-mediaMain pd-mediaMain--bigger">
               {activeImg.src
                 ? (
-                  <img
+                  <SafeImg
                     key={activeImgIdx}
+                    priority
+                    sizes="(min-width: 960px) 50vw, 100vw"
+                    widths={[480, 720, 960, 1280]}
                     className="pd-mainImg pd-mainImg--anim"
                     src={activeImg.src}
                     alt={activeImg.alt}
@@ -148,7 +152,7 @@ export default function KitBelleza6en1Landing() {
                   aria-label={img.alt}
                 >
                   {img.src
-                    ? <img src={img.src} alt={img.alt} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                    ? <SafeImg src={img.src} alt="" sizes="90px" widths={[180]} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
                     : <div className="spf-thumb-ph">✂️</div>
                   }
                 </button>
@@ -308,7 +312,7 @@ export default function KitBelleza6en1Landing() {
                   <div className="flow-media">
                     <div className="flow-imgBox hover-float">
                       {storyImgs[i]
-                        ? <img src={storyImgs[i]} alt={b.imgAlt} loading="lazy" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                        ? <SafeImg src={storyImgs[i]} alt={b.imgAlt} sizes="(min-width: 960px) 520px, 100vw" referrerPolicy="no-referrer" crossOrigin="anonymous" />
                         : <div className="spf-flow-ph"><span className="spf-flow-ph-icon">✂️</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
                       }
                     </div>

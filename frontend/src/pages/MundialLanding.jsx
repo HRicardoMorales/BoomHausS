@@ -8,6 +8,7 @@
 // ─────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
+import { responsiveImage } from "../utils/imageCdn";
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import { CheckoutSheet } from "./CheckoutSheet";
@@ -404,12 +405,16 @@ function ProductCard({ cfg, productData, onAdd, onBuy }) {
 
       <div className="ml-prod-imgBox">
         <img
-          src={liveImg}
+          {...responsiveImage(liveImg)}
+          sizes="(min-width: 960px) 33vw, 100vw"
           alt={cfg.name}
+          width={600}
+          height={600}
           loading="lazy"
           decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
+            e.currentTarget.removeAttribute("srcset");
             e.currentTarget.src = FALLBACK_IMG;
           }}
         />
@@ -624,12 +629,16 @@ function KitHighlight({ products, onBuyKit, onAddKit }) {
       <div className="ml-kit-grid">
         <div className="ml-kit-media">
           <img
-            src={liveImg}
+            {...responsiveImage(liveImg)}
+            sizes="(min-width: 960px) 50vw, 100vw"
             alt={cfg.name}
+            width={800}
+            height={800}
             loading="lazy"
             decoding="async"
             onError={(e) => {
               e.currentTarget.onerror = null;
+              e.currentTarget.removeAttribute("srcset");
               e.currentTarget.src = FALLBACK_IMG;
             }}
           />

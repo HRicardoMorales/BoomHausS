@@ -7,6 +7,7 @@ import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi, getFbCookies } from "../lib/metaPixel";
+import { imageAtWidth } from '../utils/imageCdn';
 
 const PROVINCES = [
   "Buenos Aires","CABA","Catamarca","Chaco","Chubut","Córdoba","Corrientes",
@@ -85,7 +86,7 @@ function SummaryAccordion({ items, calcItemTotal, totalPrice, finalTotal, saving
             return (
               <div key={i} className="ckfp-sa-item">
                 <div className="ckfp-sa-img-wrap">
-                  {thumb ? <img src={thumb} alt={item.name} className="ckfp-sa-img" /> : <span className="ckfp-sa-ph">📦</span>}
+                  {thumb ? <img src={imageAtWidth(thumb, 96) || thumb} alt={item.name} className="ckfp-sa-img" width={48} height={48} decoding="async" /> : <span className="ckfp-sa-ph">📦</span>}
                   <span className="ckfp-sa-qty">{item.quantity}</span>
                 </div>
                 <span className="ckfp-sa-name">{item.name}</span>
@@ -129,7 +130,7 @@ function SidebarSummary({ items, calcItemTotal, totalPrice, finalTotal, savings,
           return (
             <div key={i} className="ckfp-sb-item">
               <div className="ckfp-sb-img-wrap">
-                {thumb ? <img src={thumb} alt={item.name} className="ckfp-sb-img" /> : <span className="ckfp-sa-ph">📦</span>}
+                {thumb ? <img src={imageAtWidth(thumb, 112) || thumb} alt={item.name} className="ckfp-sb-img" width={56} height={56} decoding="async" /> : <span className="ckfp-sa-ph">📦</span>}
                 <span className="ckfp-sb-qty">{item.quantity}</span>
               </div>
               <span className="ckfp-sb-name">{item.name}</span>
@@ -892,7 +893,7 @@ export default function Checkout() {
                   <div key={i} className="ckfp-sticky-sum-item">
                     <div className="ckfp-sticky-sum-img-wrap">
                       {thumb
-                        ? <img src={thumb} alt={it.name} className="ckfp-sticky-sum-img" />
+                        ? <img src={imageAtWidth(thumb, 76) || thumb} alt={it.name} className="ckfp-sticky-sum-img" width={38} height={38} loading="lazy" decoding="async" />
                         : <span style={{ fontSize: 18 }}>📦</span>}
                       <span className="ckfp-sticky-sum-qty">{it.quantity}</span>
                     </div>
@@ -917,7 +918,7 @@ export default function Checkout() {
           <div className="ckfp-sticky-row1 ckfp-sticky-row1--btn" onClick={() => setStickyOpen(o => !o)}>
             {firstThumb && (
               <div className="ckfp-sticky-thumb-wrap">
-                <img src={firstThumb} alt="" className="ckfp-sticky-thumb" />
+                <img src={imageAtWidth(firstThumb, 96) || firstThumb} alt="" className="ckfp-sticky-thumb" width={48} height={48} decoding="async" />
               </div>
             )}
             <div className="ckfp-sticky-mid">
