@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { responsiveImage } from "../../utils/imageCdn";
 import "./BeforeAfterSlider.css";
 
 const clamp = (n) => Math.min(100, Math.max(0, n));
@@ -111,7 +112,7 @@ function BaLayer({ src, label, icon, className }) {
   return (
     <div className={`lp-ba__layer ${className}`}>
       {src ? (
-        <img src={src} alt={label} loading="lazy" decoding="async" draggable="false" />
+        <img {...responsiveImage(src, { widths: [400, 680, 1020, 1360] })} sizes="min(680px, 100vw)" alt={label} loading="lazy" decoding="async" draggable="false" />
       ) : (
         <div className="lp-ba__placeholder">
           <span className="lp-ba__placeholder-icon" aria-hidden="true">{icon}</span>

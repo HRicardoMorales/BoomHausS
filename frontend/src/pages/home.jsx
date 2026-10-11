@@ -107,8 +107,10 @@ function ProductCard({ product, index = 0 }) {
           src={img}
           name={product.name}
           alt={product.name}
-          loading="lazy"
-          decoding="async"
+          width={480}
+          height={480}
+          sizes="(min-width: 1024px) 300px, (max-width: 500px) 50vw, 33vw"
+          widths={[240, 360, 480, 720]}
         />
         {pct > 0 && <span className="hc-badge-off">-{pct}%</span>}
       </div>

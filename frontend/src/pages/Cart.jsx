@@ -2,6 +2,7 @@
 import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
+import SafeImg from '../components/SafeImg.jsx';
 
 function money(n) {
     const num = Number(n);
@@ -129,11 +130,15 @@ function Cart() {
                                                 }}
                                             >
                                                 {it.imageUrl ? (
-                                                    <img
+                                                    <SafeImg
                                                         src={it.imageUrl}
                                                         alt={it.name}
+                                                        name={it.name}
+                                                        width={80}
+                                                        height={80}
+                                                        sizes="80px"
+                                                        widths={[80, 160]}
                                                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                                                        loading="lazy"
                                                     />
                                                 ) : (
                                                     <div className="muted" style={{ padding: '0.9rem', fontSize: '0.7rem' }}>Sin foto</div>

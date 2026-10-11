@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import StarRating from "./StarRating";
+import { responsiveImage } from "../../utils/imageCdn";
 import "./ReviewsWithBars.css";
 
 const fmt = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 });
@@ -129,7 +130,7 @@ export default function ReviewsWithBars({
                 <div className="lp-rwb__card">
                   <div className="lp-rwb__media">
                     {r.img ? (
-                      <img src={r.img} alt={r.imgAlt || `Foto de la reseña de ${r.name}`} loading="lazy" decoding="async" />
+                      <img {...responsiveImage(r.img, { widths: [360, 520, 780, 1040] })} sizes="min(520px, 88vw)" width={520} height={390} alt={r.imgAlt || `Foto de la reseña de ${r.name}`} loading="lazy" decoding="async" />
                     ) : (
                       <div className="lp-rwb__ph" aria-hidden="true">{placeholder}</div>
                     )}
