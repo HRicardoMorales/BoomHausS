@@ -8,6 +8,7 @@ import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
+import CountdownTimer from "../components/landing/CountdownTimer";
 
 /* ========================================================================
    MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
@@ -197,34 +198,6 @@ function WaTab({ number, message }) {
       <span className="wa-tab-label">¿Dudas? Escribinos</span>
     </a>
   );
-}
-
-/* =========================
-   Countdown
-========================= */
-function CountdownTimer({ storageKey = "pd_countdown", minutes = 18 }) {
-  const [left, setLeft] = useState(0);
-
-  useEffect(() => {
-    const saved = Number(sessionStorage.getItem(storageKey));
-    const target =
-      saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
-
-    sessionStorage.setItem(storageKey, String(target));
-
-    const tick = () => setLeft(Math.max(0, target - Date.now()));
-    tick();
-    const t = setInterval(tick, 1000);
-    return () => clearInterval(t);
-  }, [storageKey, minutes]);
-
-  const totalSec = Math.floor(left / 1000);
-  const hh = Math.floor(totalSec / 3600);
-  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
-  const ss = String(totalSec % 60).padStart(2, "0");
-
-  if (hh > 0) return <span className="cd">{hh}:{mm}:{ss}</span>;
-  return <span className="cd">{mm}:{ss}</span>;
 }
 
 /* =========================
@@ -2203,7 +2176,7 @@ export default function ProductDetail() {
           </div>
           <div className="sticky-count">
             <span className="sticky-countLabel">TERMINA EN</span>
-            <CountdownTimer storageKey={`pd_cd_v2_${id}`} minutes={335} />
+            <CountdownTimer storageKey={`pd_cd_v2_${id}`} minutes={335} className="cd" />
           </div>
         </div>
         <button className="sticky-pro-btn2" onClick={handleBuyNow} type="button">

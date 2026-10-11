@@ -12,80 +12,11 @@ import LandingLoader from "../components/landing/LandingLoader";
 import { useStickyCta } from "../components/landing/useStickyCta";
 import WaveSeparator from "../components/landing/WaveSeparator";
 import LandingFaq from "../components/landing/LandingFaq";
+import CountdownTimer from "../components/landing/CountdownTimer";
+import MiniReviewsBar from "../components/landing/MiniReviewsBar";
 
 /* Colores de las bandas para los separadores de olas. */
 const WAVE = { dark: "#8B1A4A", light: "#FFF5F8" };
-
-/* ============================================================
-   COUNTDOWN TIMER
-============================================================ */
-function CountdownTimer({ storageKey = 'lam_countdown', minutes = 18 }) {
-  const [left, setLeft] = useState(0);
-  useEffect(() => {
-    const saved = Number(sessionStorage.getItem(storageKey));
-    const target = saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
-    sessionStorage.setItem(storageKey, String(target));
-    const tick = () => setLeft(Math.max(0, target - Date.now()));
-    tick();
-    const t = setInterval(tick, 1000);
-    return () => clearInterval(t);
-  }, [storageKey, minutes]);
-  const totalSec = Math.floor(left / 1000);
-  const hh = Math.floor(totalSec / 3600);
-  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-  const ss = String(totalSec % 60).padStart(2, '0');
-  if (hh > 0) return <span className="spf-cd">{hh}:{mm}:{ss}</span>;
-  return <span className="spf-cd">{mm}:{ss}</span>;
-}
-
-/* ============================================================
-   MINI REVIEWS BAR
-============================================================ */
-function MiniReviewsBar({ reviews = [] }) {
-  const [active, setActive] = useState(0);
-  const avatarColors = ['#8B1A4A', '#C2185B', '#A0154E', '#8B1A4A', '#9C1B55'];
-  useEffect(() => {
-    if (!reviews.length) return;
-    const t = setInterval(() => setActive(i => (i + 1) % reviews.length), 5000);
-    return () => clearInterval(t);
-  }, [reviews.length]);
-  if (!reviews.length) return null;
-  const rev = reviews[active];
-  const prev = () => setActive(i => (i - 1 + reviews.length) % reviews.length);
-  const next = () => setActive(i => (i + 1) % reviews.length);
-  const avatarSrc = rev.mrbImg || rev.img;
-  return (
-    <div className="mrb">
-      <div className="mrb-label">LO QUE DICEN NUESTRAS CLIENTAS</div>
-      <div className="mrb-card">
-        <div className="mrb-avatar-wrap">
-          {avatarSrc
-            ? <img className="mrb-avatar-img" src={avatarSrc} alt={rev.name} />
-            : <div className="mrb-avatar-fallback" style={{ background: avatarColors[active % avatarColors.length] }}>
-                {(rev.name || '?').charAt(0).toUpperCase()}
-              </div>
-          }
-        </div>
-        <div className="mrb-content">
-          <p className="mrb-text">{rev.text.slice(0, 120)}{rev.text.length > 120 ? '…' : ''}</p>
-          <div className="mrb-meta">
-            <span className="mrb-name">{rev.name}</span>
-            <span className="mrb-stars">{'★'.repeat(rev.rating)}</span>
-          </div>
-        </div>
-      </div>
-      <div className="mrb-nav">
-        <button className="mrb-arrow" onClick={prev} aria-label="Anterior">‹</button>
-        <div className="mrb-dots">
-          {reviews.map((_, i) => (
-            <button key={i} className={`mrb-dot${i === active ? ' on' : ''}`} onClick={() => setActive(i)} aria-label={`Reseña ${i + 1}`} />
-          ))}
-        </div>
-        <button className="mrb-arrow" onClick={next} aria-label="Siguiente">›</button>
-      </div>
-    </div>
-  );
-}
 
 /* ============================================================
    VIDEO STRIP — resolución automática de URL
@@ -666,7 +597,7 @@ export default function MasajeadorFacialIonesLanding() {
             <CirculacionSection mc={mc} />
           </div>
           <div className="dtx-container">
-            <MiniReviewsBar reviews={mc.miniReviews?.length ? mc.miniReviews : mc.reviews} />
+            <MiniReviewsBar reviews={mc.miniReviews?.length ? mc.miniReviews : mc.reviews} tone="wine" variant="card" label="Lo que dicen nuestras clientas" />
           </div>
           <div className="dtx-container" style={{ paddingTop: 28 }}>
             <VideoStripSection mc={mc} />
@@ -816,7 +747,6 @@ export default function MasajeadorFacialIonesLanding() {
 
         .spf-countdown { display:flex; align-items:center; justify-content:center; gap:6px; margin:10px 0 4px; padding:8px 14px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.82rem; font-weight:800; color:rgba(180,30,30,.85); }
         .spf-countdown-label { color:rgba(11,18,32,.60); font-weight:700; }
-        .spf-cd { font-variant-numeric:tabular-nums; letter-spacing:.04em; font-weight:900; color:rgba(180,30,30,.90); }
 
         .bnd2-wrap { display:flex; flex-direction:column; gap:10px; margin:14px 0 4px; }
         .bnd2-card { position:relative; border-radius:14px; border:1.5px solid rgba(11,18,32,.13); border-left:4px solid rgba(11,18,32,.10); background:#fff; cursor:pointer; transition:border-color .14s,background .14s,box-shadow .14s,border-left-color .14s; user-select:none; overflow:visible; padding:13px 14px 13px 12px; }
@@ -856,23 +786,6 @@ export default function MasajeadorFacialIonesLanding() {
         @media (min-width:900px) { .sec-title { font-size:1.85rem; } }
         .sec-sub { margin-top:8px; color:rgba(11,18,32,.60); font-weight:850; font-size:.95rem; }
 
-        .mrb { background:#fff; border:1px solid rgba(2,8,23,.08); border-radius:16px; padding:14px 20px 14px; box-shadow:0 2px 16px rgba(0,0,0,.07); max-width:640px; margin:14px auto 0; }
-        .mrb-label { font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:rgba(11,18,32,.38); margin-bottom:12px; }
-        .mrb-card { display:flex; gap:16px; align-items:flex-start; }
-        .mrb-avatar-wrap { flex-shrink:0; }
-        .mrb-avatar-img { width:58px; height:58px; border-radius:50%; object-fit:cover; display:block; }
-        .mrb-avatar-fallback { width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.4rem; font-weight:700; flex-shrink:0; }
-        .mrb-content { flex:1; min-width:0; }
-        .mrb-text { margin:0 0 8px; font-size:.93rem; color:#111827; line-height:1.5; }
-        .mrb-meta { display:flex; align-items:center; gap:8px; }
-        .mrb-name { font-size:.80rem; color:#9ca3af; }
-        .mrb-stars { color:#F6A701; font-size:.9rem; letter-spacing:1px; line-height:1; }
-        .mrb-nav { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px; }
-        .mrb-arrow { background:none; border:1px solid #e5e7eb; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.2rem; color:#6b7280; transition:background .15s; line-height:1; padding:0; }
-        .mrb-arrow:hover { background:#f9fafb; }
-        .mrb-dots { display:flex; gap:6px; align-items:center; }
-        .mrb-dot { width:8px; height:8px; border-radius:50%; border:1.5px solid #d1d5db; background:transparent; cursor:pointer; padding:0; transition:all .2s; }
-        .mrb-dot.on { background:#8B1A4A; border-color:#8B1A4A; }
 
         .stars-inline { display:inline-flex; gap:2px; justify-content:center; }
         .stars-inline .s { opacity:.25; font-size:14px; }

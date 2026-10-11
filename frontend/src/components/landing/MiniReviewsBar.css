@@ -1,0 +1,186 @@
+/* MiniReviewsBar — prefijo lp-mrb para no chocar con los .mrb inline de
+   ProductDetail/MundialLanding (el CSS de chunks lazy queda global). */
+
+.lp-mrb {
+  --mrb-accent: rgba(27, 77, 62, 0.8);
+  --mrb-ink: rgba(11, 18, 32, 0.82);
+  --mrb-muted: rgba(11, 18, 32, 0.38);
+  --mrb-star: #d69e2e;
+  margin-top: 14px;
+}
+.lp-mrb--wine { --mrb-accent: rgba(139, 26, 74, 0.8); }
+
+.lp-mrb__label {
+  margin: 0 0 8px;
+  font-family: inherit; /* es un h2: no heredar la serif de los títulos */
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mrb-muted);
+}
+
+.lp-mrb__stars { display: inline-flex; gap: 2px; font-size: 11px; line-height: 1; }
+.lp-mrb__stars > span { opacity: 0.25; }
+.lp-mrb__stars > .is-on { opacity: 1; color: var(--mrb-star); }
+
+.lp-mrb__text { margin: 0; }
+.lp-mrb__name { font-weight: 800; }
+
+/* Puntos: el área táctil es el botón (24 px), el punto visible es ::before. */
+.lp-mrb__dots { display: flex; justify-content: center; align-items: center; }
+.lp-mrb__dot {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.lp-mrb__dot::before {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(2, 8, 23, 0.18);
+  transition: width 0.22s ease, background 0.18s ease;
+}
+.lp-mrb__dot.is-on::before { width: 16px; background: var(--mrb-accent); }
+.lp-mrb__dot.is-on { min-width: 26px; }
+.lp-mrb__dot:focus-visible,
+.lp-mrb__arrow:focus-visible {
+  outline: 2px solid var(--mrb-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── Variante carrusel ── */
+.lp-mrb--carousel { padding-bottom: 18px; }
+.lp-mrb__viewport { overflow: hidden; }
+.lp-mrb__track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+.lp-mrb__slide { flex: 0 0 100%; width: 100%; }
+.lp-mrb--carousel .lp-mrb__card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid rgba(2, 8, 23, 0.09);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(10, 20, 40, 0.07);
+}
+.lp-mrb__head { display: flex; align-items: center; gap: 10px; }
+.lp-mrb__avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.95rem;
+}
+.lp-mrb--carousel .lp-mrb__meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lp-mrb--carousel .lp-mrb__name {
+  font-size: 0.8rem;
+  color: var(--mrb-ink);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lp-mrb--carousel .lp-mrb__text {
+  font-size: 0.84rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(11, 18, 32, 0.65);
+}
+.lp-mrb--carousel .lp-mrb__dots { margin-top: 4px; }
+
+/* ── Variante tarjeta (con foto y flechas) ── */
+.lp-mrb--card {
+  max-width: 640px;
+  margin: 14px auto 0;
+  padding: 14px 20px;
+  background: #fff;
+  border: 1px solid rgba(2, 8, 23, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+.lp-mrb--card .lp-mrb__label { font-size: 0.68rem; letter-spacing: 0.08em; margin-bottom: 12px; }
+.lp-mrb--card .lp-mrb__card {
+  margin: 0;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  animation: lp-mrb-in 0.3s ease both;
+}
+.lp-mrb__photo {
+  flex-shrink: 0;
+  display: block;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.lp-mrb__photo--fallback {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.lp-mrb__content { flex: 1; min-width: 0; }
+.lp-mrb--card .lp-mrb__text { margin-bottom: 8px; font-size: 0.93rem; line-height: 1.5; color: #111827; }
+.lp-mrb--card .lp-mrb__meta { display: flex; align-items: center; gap: 8px; }
+.lp-mrb--card .lp-mrb__name { font-size: 0.8rem; font-weight: 400; color: #6b7280; }
+.lp-mrb--card .lp-mrb__stars { font-size: 0.9rem; --mrb-star: #f6a701; }
+.lp-mrb__nav { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; }
+.lp-mrb__arrow {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  background: none;
+  color: #6b7280;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lp-mrb__arrow:hover { background: #f9fafb; }
+.lp-mrb--card .lp-mrb__dot::before {
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid #d1d5db;
+  background: transparent;
+  box-sizing: border-box;
+}
+.lp-mrb--card .lp-mrb__dot.is-on { min-width: 18px; }
+.lp-mrb--card .lp-mrb__dot.is-on::before { width: 8px; background: #8b1a4a; border-color: #8b1a4a; }
+
+@keyframes lp-mrb-in {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-mrb__track,
+  .lp-mrb__dot::before { transition: none; }
+  .lp-mrb--card .lp-mrb__card { animation: none; }
+}

@@ -12,78 +12,11 @@ import LandingLoader from "../components/landing/LandingLoader";
 import { useStickyCta } from "../components/landing/useStickyCta";
 import WaveSeparator from "../components/landing/WaveSeparator";
 import LandingFaq from "../components/landing/LandingFaq";
+import CountdownTimer from "../components/landing/CountdownTimer";
+import MiniReviewsBar from "../components/landing/MiniReviewsBar";
 
 /* Colores de las bandas para los separadores de olas. */
 const WAVE = { dark: "#8B1A4A", light: "#ffffff" };
-
-/* ============================================================
-   COUNTDOWN TIMER
-============================================================ */
-function CountdownTimer({ storageKey = 'ems_countdown', minutes = 18 }) {
-  const [left, setLeft] = useState(0);
-  useEffect(() => {
-    const saved = Number(sessionStorage.getItem(storageKey));
-    const target = saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
-    sessionStorage.setItem(storageKey, String(target));
-    const tick = () => setLeft(Math.max(0, target - Date.now()));
-    tick();
-    const t = setInterval(tick, 1000);
-    return () => clearInterval(t);
-  }, [storageKey, minutes]);
-  const totalSec = Math.floor(left / 1000);
-  const hh = Math.floor(totalSec / 3600);
-  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-  const ss = String(totalSec % 60).padStart(2, '0');
-  if (hh > 0) return <span className="spf-cd">{hh}:{mm}:{ss}</span>;
-  return <span className="spf-cd">{mm}:{ss}</span>;
-}
-
-/* ============================================================
-   MINI REVIEWS BAR
-============================================================ */
-function MiniReviewsBar({ reviews = [] }) {
-  const [active, setActive] = useState(0);
-  const avatarColors = ['#8B1A4A', '#C2185B', '#A0154E', '#8B1A4A', '#9C1B55', '#C2185B', '#8B1A4A'];
-  useEffect(() => {
-    if (!reviews.length) return;
-    const t = setInterval(() => setActive(i => (i + 1) % reviews.length), 5000);
-    return () => clearInterval(t);
-  }, [reviews.length]);
-  return (
-    <div className="mrb">
-      <div className="mrb-label">LO QUE DICEN NUESTROS CLIENTES</div>
-      <div className="mrb-viewport">
-        <div className="mrb-track" style={{ transform: `translateX(-${active * 100}%)` }}>
-          {reviews.map((rev, i) => (
-            <div className="mrb-slide" key={i}>
-              <div className="mrb-card">
-                <div className="mrb-card-header">
-                  <div className="mrb-card-avatar" style={{ background: avatarColors[i % avatarColors.length] }}>
-                    {(rev.name || '?').charAt(0).toUpperCase()}
-                  </div>
-                  <div className="mrb-card-meta">
-                    <div className="mrb-card-name">{rev.name}</div>
-                    <div className="mrb-card-stars">
-                      <div className="stars-inline">
-                        {[1,2,3,4,5].map(s => <span key={s} className={`s${s <= rev.rating ? ' on' : ''}`}>★</span>)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <p className="mrb-card-text">"{rev.text.slice(0, 110)}{rev.text.length > 110 ? '…' : ''}"</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mrb-dots">
-        {reviews.map((_, i) => (
-          <button key={i} className={`mrb-dot${i === active ? ' on' : ''}`} onClick={() => setActive(i)} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* ============================================================
    VIDEO STRIP — resolución automática de URL
@@ -578,7 +511,7 @@ export default function MasajeadorEmsEyesLanding() {
 
         <section className="pd-band pd-band--light">
           <div className="dtx-container">
-            <MiniReviewsBar reviews={mc.reviews} />
+            <MiniReviewsBar reviews={mc.reviews} tone="wine" />
           </div>
           <div className="dtx-container" style={{ paddingTop: 28 }}>
             <VideoStripSection mc={mc} />
@@ -775,7 +708,6 @@ export default function MasajeadorEmsEyesLanding() {
 
         .spf-countdown { display:flex; align-items:center; justify-content:center; gap:6px; margin:10px 0 4px; padding:8px 14px; border-radius:999px; background:rgba(229,62,62,.08); border:1px solid rgba(229,62,62,.15); font-size:.82rem; font-weight:800; color:rgba(180,30,30,.85); }
         .spf-countdown-label { color:rgba(11,18,32,.60); font-weight:700; }
-        .spf-cd { font-variant-numeric:tabular-nums; letter-spacing:.04em; font-weight:900; color:rgba(180,30,30,.90); }
 
         .emoji-bullets { display:flex; flex-direction:column; gap:8px; margin:10px 0 4px; width:100%; }
         .emoji-bullet { font-size:.90rem; font-weight:700; color:rgba(11,18,32,.82); line-height:1.35; }
@@ -829,21 +761,6 @@ export default function MasajeadorEmsEyesLanding() {
         @media (min-width:900px) { .sec-title { font-size:1.85rem; } }
         .sec-sub { margin-top:8px; color:rgba(11,18,32,.60); font-weight:850; font-size:.95rem; }
 
-        .mrb { margin-top:14px; background:transparent; padding-bottom:28px; }
-        .mrb-label { font-size:.70rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:rgba(11,18,32,.38); margin-bottom:8px; }
-        .mrb-viewport { overflow:hidden; }
-        .mrb-track { display:flex; width:100%; transition:transform .35s cubic-bezier(.4,0,.2,1); will-change:transform; }
-        .mrb-slide { flex:0 0 100%; width:100%; }
-        .mrb-card { background:#fff; border:1px solid rgba(2,8,23,.09); border-radius:14px; padding:12px 14px; box-shadow:0 2px 12px rgba(10,20,40,.07); display:flex; flex-direction:column; gap:8px; }
-        .mrb-card-header { display:flex; align-items:center; gap:10px; }
-        .mrb-card-avatar { width:34px; height:34px; border-radius:50%; color:#fff; font-weight:900; font-size:.95rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .mrb-card-meta { display:flex; flex-direction:column; gap:2px; min-width:0; }
-        .mrb-card-name { font-size:.80rem; font-weight:800; color:rgba(11,18,32,.82); line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .mrb-card-stars .stars-inline .s { font-size:11px; }
-        .mrb-card-text { margin:0; font-size:.84rem; font-style:italic; color:rgba(11,18,32,.65); font-weight:500; line-height:1.5; }
-        .mrb-dots { display:flex; justify-content:center; gap:5px; margin-top:10px; }
-        .mrb-dot { width:5px; height:5px; border-radius:999px; border:none; background:rgba(2,8,23,.18); cursor:pointer; padding:0; transition:width .22s ease,background .18s ease; }
-        .mrb-dot.on { background:rgba(139,26,74,.80); width:16px; }
 
         .stars-inline { display:inline-flex; gap:2px; justify-content:center; }
         .stars-inline .s { opacity:.25; font-size:14px; }
