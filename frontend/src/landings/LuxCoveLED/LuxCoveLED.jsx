@@ -9,6 +9,8 @@ import './LuxCoveLED.css';
 import LandingFooter from '../../components/landing/LandingFooter.jsx';
 import SafeImg from '../../components/SafeImg';
 import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS } from '../../components/landing/imageSizes';
+import useNearViewport from '../../hooks/useNearViewport';
+import { preloadImage } from '../../utils/preloadImage';
 
 /* ── Constantes ───────────────────────────────────────────── */
 // Nombre del producto: la fuente de verdad es la BD (product.name).
@@ -242,12 +244,9 @@ const beforeAfterData = [
   },
 ];
 
-/* GIFs de secciones de features — precargados al montar */
-const FEAT_GIFS = [
-  '//www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=750',
-  '//www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=750',
-  '//www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=750',
-];
+/* `sizes` del antes/después: lo comparten <SafeImg> y la precarga para que
+   ambos elijan el mismo candidato del srcset. */
+const BA_SIZES = 'min(760px, 100vw)';
 
 /* Videos — "Inspírate": pegá la URL del video en cada src */
 const VSTRIP_VIDEOS = [
@@ -442,21 +441,19 @@ export default function LuxCoveLED() {
     });
   }, []);
 
-  /* Precarga imágenes del before/after para que estén listas al instante */
+  /* Antes/después: antes se precargaban las 6 fotos originales al montar
+     (PNG a tamaño completo, que además no coincidían con la URL del srcset
+     de <SafeImg> → se bajaban dos veces). Ahora, al acercarse a la sección,
+     se precarga solo la foto visible y la siguiente, con el mismo candidato
+     del srcset. Los GIFs de features ya son lazy nativos: sin precarga. */
+  const baSectionRef = useRef(null);
+  const baNear = useNearViewport(baSectionRef);
   useEffect(() => {
-    beforeAfterData.forEach(item => {
-      const img = new window.Image();
-      img.src = item.src.startsWith('//') ? `https:${item.src}` : item.src;
+    if (!baNear) return;
+    [baIdx, baIdx + 1].forEach((i) => {
+      if (beforeAfterData[i]) preloadImage(beforeAfterData[i].src, { sizes: BA_SIZES });
     });
-  }, []);
-
-  /* Precarga GIFs de features para evitar el blanco mientras cargan */
-  useEffect(() => {
-    FEAT_GIFS.forEach(src => {
-      const img = new window.Image();
-      img.src = src.startsWith('//') ? `https:${src}` : src;
-    });
-  }, []);
+  }, [baNear, baIdx]);
 
   /* Slides per view */
   useEffect(() => {
@@ -980,7 +977,7 @@ export default function LuxCoveLED() {
         </div>
 
         {/* ══ S11 — ANTES & DESPUÉS CAROUSEL ══ */}
-        <div className="led-section led-section--pink">
+        <div className="led-section led-section--pink" ref={baSectionRef}>
           <div className="led-container">
             <h2 className="led-section-title">Clientes reales, resultados reales</h2>
             <div className="led-ba-carousel">
@@ -989,7 +986,7 @@ export default function LuxCoveLED() {
                   <SafeImg
                     src={beforeAfterData[baIdx].src}
                     alt={beforeAfterData[baIdx].name}
-                    sizes="min(760px, 100vw)"
+                    sizes={BA_SIZES}
                     style={{ width: '100%', aspectRatio: '4/3', minHeight: 220, objectFit: 'cover', borderRadius: 0 }}
                   />
                   <div className="led-ba-day-labels">
