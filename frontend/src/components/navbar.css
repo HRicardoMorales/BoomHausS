@@ -6,6 +6,10 @@
   z-index: var(--z-header);
   background: var(--surface-card);
   border-bottom: 1px solid var(--border-soft);
+  /* Antes venía de un `header {}` global que además le ponía fondo
+     "glass", borde y sombra a cualquier <header> (secciones de landings,
+     checkout). Ahora la sombra es solo del navbar. */
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Desktop ─────────────────────────────────────────────── */

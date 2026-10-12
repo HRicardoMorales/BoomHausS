@@ -35,7 +35,7 @@ export default function Footer() {
         {/* ── Brand + tagline ── */}
         <div className="ft__head">
           <div className="ft__brand">
-            <img src="/logo.webp" alt={storeName} width={54} height={36} loading="lazy" decoding="async" className="ft__logo" />
+            <img src="/logo-footer.webp" alt={storeName} width={109} height={32} loading="lazy" decoding="async" className="ft__logo" />
           </div>
           <p className="ft__tagline">
             Pagá con <strong>Mercado Pago</strong> — débito, crédito o dinero en cuenta

@@ -147,6 +147,7 @@
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-xl: 24px;
+  --radius-control: 14px; /* botones e inputs globales */
   --radius-pill: 999px;
 
   /* Sombras: tintadas con la tinta de marca, no negro puro */
@@ -155,6 +156,7 @@
   --shadow-md: 0 18px 54px rgba(74, 58, 55, .12);
   --shadow-lg: 0 24px 70px rgba(10, 20, 40, .18);
   --shadow-menu: 0 10px 40px rgba(0, 0, 0, .10);
+  --shadow-brand: 0 18px 44px rgb(182 125 118 / .28); /* CTA primario */
 
   /* Capas: una sola escala para no escalar a z-index: 99999 */
   --z-base: 1;

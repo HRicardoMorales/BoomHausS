@@ -21,10 +21,10 @@
   margin-bottom: var(--space-2);
 }
 .ft__logo {
-  height: 36px;
+  /* Asset recortado y ya en blanco (antes 54×36 con ~70 % de padding
+     transparente y un filter para invertirlo: el wordmark medía ~12 px). */
+  height: 32px;
   width: auto;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 .ft__tagline {
   margin: 0;
