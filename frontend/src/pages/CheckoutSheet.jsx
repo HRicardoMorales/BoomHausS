@@ -610,9 +610,6 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   return (
     <>
       <style>{`
-        ${fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');` : ''}
-      `}</style>
-      <style>{`
         @keyframes csSlideUp {
           from { transform: translateY(100%); opacity: 0; }
           to   { transform: translateY(0);    opacity: 1; }

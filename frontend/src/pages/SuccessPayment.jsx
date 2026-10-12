@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import api from '../services/api';
 import { trackPurchase } from '../lib/metaPixel';
+import '../styles/fonts-montserrat.css';
 
 const S = {
   page: {
@@ -12,7 +13,7 @@ const S = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px 16px',
-    fontFamily: "'Montserrat', 'Inter', sans-serif",
+    fontFamily: "'Montserrat', 'Montserrat Fallback', 'Inter', sans-serif",
   },
   card: {
     background: '#fff',
@@ -271,7 +272,6 @@ export default function SuccessPayment() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
         @keyframes sp-spin { to { transform: rotate(360deg) } }
         .sp-spinner { animation: sp-spin 0.7s linear infinite; }
       `}</style>

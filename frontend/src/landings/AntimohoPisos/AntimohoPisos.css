@@ -7,10 +7,10 @@
      navy #0E2747 · rojo CTA #CE2A35 · verde #157A42 · gris #F4F6F8
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "../../styles/fonts-bricolage.css"; /* Inter: global (src/styles/fonts.css). */
 
 .amp-wrap :is(h1, h2, h3, h4, h5, h6) {
-  font-family: 'Bricolage Grotesque', 'Arial Black', system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', 'Arial Black', system-ui, sans-serif;
   margin: 0;
 }
 
@@ -26,7 +26,7 @@
   --amp-white:     #FFFFFF;
   --amp-border:    #E3E7EB;
 
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--amp-text);
   background: var(--amp-white);
   overflow-x: hidden;

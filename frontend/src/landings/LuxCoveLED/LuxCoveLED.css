@@ -5,14 +5,14 @@
    Mobile-first · Breakpoint: 768px
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+@import "../../styles/fonts-montserrat.css";
 
 /* Sobrescribe la regla global de index.css que aplica "Cormorant Garamond"
    (serif elegante) a todos los h1-h6 del proyecto. Dentro de esta landing
    queremos sans-serif (Montserrat) para que los títulos no se vean
    estilizados. */
 .led-wrap :is(h1, h2, h3, h4, h5, h6) {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
 }
 
 /* ── Variables ─────────────────────────────────────────────── */
@@ -27,7 +27,7 @@
   --led-green:      #22C55E;
   --led-red:        #EF4444;
 
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
   color: var(--led-text);
   background: var(--led-white);
   overflow-x: hidden;

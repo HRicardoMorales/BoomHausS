@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import seoPlugin from "./build/seo-plugin.js";
+import fontPreloadPlugin from "./build/font-preload-plugin.js";
 
 // ✅ En local: /api y /uploads van a tu backend local
 export default defineConfig({
-  plugins: [react(), seoPlugin()],
+  plugins: [react(), seoPlugin(), fontPreloadPlugin()],
   build: {
     rollupOptions: {
       output: {
