@@ -88,6 +88,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 
 ## Skills recomendadas
 
+- Setup: la sesión arranca con el repo ya clonado en HEAD detached; `git checkout nightly/portfolio` alcanza. `gh` no está disponible: el PR se actualiza con las tools MCP de GitHub (`update_pull_request`).
 - Remote nuevo: GitHub avisa que el repo se movió a `https://github.com/HRicardoMorales/BoomHausS.git` (el push funciona igual por redirect); conviene actualizar el `origin` en el setup.
 
 - `design:accessibility-review` — para la tarea de Fase 5 (auditoría WCAG AA con checklist de contraste/teclado).
@@ -142,3 +143,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-12 | 06:53 | Design system parte 1: `tokens.css` (primitivos/semánticos/escalas, tipografía fluida, z-index único), variables viejas como alias, navbar y footer a CSS con tokens + a11y (aria-expanded, Escape, 44 px, contraste AA). Build y lint OK, Playwright mobile/desktop. | efe03a3 |
 | 2026-10-12 | 07:53 | Design system parte 2a: −1.219 líneas de CSS muerto en `index.css` (280 reglas, 7 keyframes), base a tokens, CTA primario sin restos verdes, fuga del `header {}` global corregida, h2 AA, logo del footer recortado y legible. Build y lint OK, Playwright mobile en 6 rutas. | 03292e3 |
 | 2026-10-12 | 08:54 | Design system parte 2b-1: CSS exclusivo de ProductDetail a su chunk con tokens (CSS inicial 26,4 → 21,0 KB), restos verdes a marca, toast AA, bloque Auth acotado (arregla input doble en login/registro y botones deshabilitados grises en todo el sitio). Build y lint OK, diff de estilos computados en 9 rutas. | 78bfab8 |
+| 2026-10-12 | 09:53 | Revisión final: build OK, lint 0, `node --check` backend OK, Playwright mobile DPR 2 en 16 rutas (API mockeada) sin errores de runtime; solo `gentle-wave-ml` duplicado en MundialLanding (ya en backlog). Descripción del PR borrador #1 actualizada con lo de la noche. | PR #1 |
