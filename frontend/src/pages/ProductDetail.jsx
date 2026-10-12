@@ -1,5 +1,5 @@
 ﻿// frontend/src/pages/ProductDetail.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import { useCart } from '../hooks/useCart';
@@ -9,6 +9,10 @@ import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
 import CountdownTimer from "../components/landing/CountdownTimer";
+import SafeImg from "../components/SafeImg";
+import {
+  HERO_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS,
+} from "../components/landing/imageSizes";
 
 /* ========================================================================
    MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
@@ -150,7 +154,7 @@ function UnavailableProductPage({ isNetworkError, onRetry }) {
                 return (
                   <Link key={p._id} className="upx-sugg-card" to={href}>
                     <div className="upx-sugg-img">
-                      {img && <img src={img} alt={p.name} loading="lazy" />}
+                      {img && <SafeImg src={img} alt="" name={p.name} widths={[240, 360]} sizes="120px" width={120} height={120} />}
                     </div>
                     <div className="upx-sugg-name">{p.name}</div>
                     <div className="upx-sugg-price">{money(p.price)}</div>
@@ -303,16 +307,12 @@ function HowToSteps({ mc = MARKETING_CONTENT }) {
       <SectionHeader title={howTo.title} />
 
       <div className="how-imgWrap hover-float anim-el">
-        <img
+        <SafeImg
           src={howTo.image?.url}
           alt={howTo.image?.alt || howTo.title}
-          loading="lazy"
+          name={howTo.title}
+          sizes={FEATURE_SIZES}
           referrerPolicy="no-referrer"
-          crossOrigin="anonymous"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = FALLBACK_IMG;
-          }}
         />
       </div>
     </section>
@@ -348,18 +348,20 @@ function BeforeAfterSlider({ mc = MARKETING_CONTENT }) {
         >
           <div className="ba-img-wrap">
             {/* AFTER (base, full width) */}
-            <img
+            <SafeImg
               className="ba-img-after"
               src={ba.afterImg}
               alt={ba.afterLabel || "Después"}
-              loading="lazy"
+              sizes={FEATURE_SIZES}
+              draggable={false}
             />
             {/* BEFORE (clipped to --position width) */}
-            <img
+            <SafeImg
               className="ba-img-before"
               src={ba.beforeImg}
               alt={ba.beforeLabel || "Antes"}
-              loading="lazy"
+              sizes={FEATURE_SIZES}
+              draggable={false}
             />
             {/* Badges */}
             <span className="ba-badge ba-badge-before">{ba.beforeLabel || "Antes"}</span>
@@ -415,14 +417,12 @@ function AuthorityCard({ mc = MARKETING_CONTENT }) {
       />
       <div className="auth3">
         <div className="auth3-photo-col">
-          <img
+          <SafeImg
             className="auth3-photo"
             src={photo}
             alt={name}
-            loading="lazy"
+            sizes="(min-width: 768px) 280px, 100vw"
             referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
-            onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         </div>
 
@@ -561,11 +561,11 @@ function VideoStripSection({ mc = MARKETING_CONTENT }) {
                   <source src={v.videoUrl} type="video/mp4" />
                 </video>
               ) : v.imgUrl ? (
-                <img
+                <SafeImg
                   src={v.imgUrl}
                   alt={v.label}
                   className="vstrip-video"
-                  loading="lazy"
+                  sizes="(min-width: 768px) 240px, 45vw"
                 />
               ) : (
                 <div className="vstrip-ph" aria-hidden="true">
@@ -615,20 +615,19 @@ function StoryBlocks({ mc = MARKETING_CONTENT }) {
                 />
               ) : b.gifUrl ? (
                 // GIF animado (alternativa al video)
-                <img
+                <SafeImg
                   src={b.gifUrl}
                   alt={b.title}
-                  loading="lazy"
+                  sizes={FEATURE_SIZES}
                   style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 />
               ) : (
                 // Fallback imagen estática
-                <img
+                <SafeImg
                   src={b.img}
                   alt={b.title}
-                  loading="lazy"
+                  sizes={FEATURE_SIZES}
                   referrerPolicy="no-referrer"
-                  crossOrigin="anonymous"
                 />
               )}
             </div>
@@ -734,16 +733,14 @@ function ReviewsCarouselPro({ productImg, mc = MARKETING_CONTENT }) {
               <article key={i} className="rv-slide">
                 <div className="rv-card">
                   <div className="rv-imgBox">
-                    <img
+                    <SafeImg
                       src={img}
                       alt={r.title}
-                      loading="lazy"
+                      widths={REVIEW_WIDTHS}
+                      sizes="(min-width: 768px) 360px, 85vw"
+                      width={400}
+                      height={300}
                       referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = FALLBACK_IMG;
-                      }}
                     />
                     <div className="rv-quote">❞</div>
                   </div>
@@ -800,13 +797,12 @@ function AboutSection({ mc = MARKETING_CONTENT }) {
       </div>
 
       <div className="about2-hero">
-        <img
+        <SafeImg
           className="about2-img"
           src={about.img}
           alt="Amelor equipo"
-          loading="lazy"
+          sizes="(min-width: 768px) 1100px, 100vw"
           referrerPolicy="no-referrer"
-          crossOrigin="anonymous"
         />
         <div className="about2-overlay">
           <p className="about2-quote">{about.text}</p>
@@ -940,9 +936,9 @@ function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfirm }) {
               return (
                 <div key={idx} className={`ups-row${isSel ? " ups-row--on" : ""}`}
                   onClick={() => done && handleToggle(idx)}>
-                  <img src={aImg} alt={item.name} className="ups-row-img"
-                    referrerPolicy="no-referrer" crossOrigin="anonymous"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; }} />
+                  <SafeImg src={aImg} alt="" name={item.name} className="ups-row-img"
+                    widths={THUMB_WIDTHS} sizes="64px" width={64} height={64}
+                    referrerPolicy="no-referrer" />
                   <div className="ups-row-info">
                     {item.badge && <span className="ups-row-badge">{item.badge}</span>}
                     <p className="ups-row-name">{item.name}</p>
@@ -1054,7 +1050,7 @@ function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
                     c.reply ? (
                       <div key={j} className="fbsc-reply">
                         <div className="fbsc-comment">
-                          <img className="fbsc-avatar fbsc-avatar--sm" src={c.avatar} alt={c.name} loading="lazy" />
+                          <SafeImg className="fbsc-avatar fbsc-avatar--sm" src={c.avatar} alt="" name={c.name} widths={ICON_WIDTHS} sizes="36px" width={36} height={36} />
                           <div className="fbsc-bubble">
                             <div className="fbsc-name">{c.name}</div>
                             <div className="fbsc-text">{c.text}</div>
@@ -1064,7 +1060,7 @@ function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
                       </div>
                     ) : (
                       <div key={j} className="fbsc-comment">
-                        <img className="fbsc-avatar" src={c.avatar} alt={c.name} loading="lazy" />
+                        <SafeImg className="fbsc-avatar" src={c.avatar} alt="" name={c.name} widths={ICON_WIDTHS} sizes="42px" width={42} height={42} />
                         <div className="fbsc-bubble">
                           <div className="fbsc-name">{c.name}</div>
                           <div className="fbsc-text">{c.text}</div>
@@ -1078,7 +1074,7 @@ function SocialCommentsSection({ mc = MARKETING_CONTENT }) {
             }
             return (
               <div key={i} className="fbsc-comment">
-                <img className="fbsc-avatar" src={item.avatar} alt={item.name} loading="lazy" />
+                <SafeImg className="fbsc-avatar" src={item.avatar} alt="" name={item.name} widths={ICON_WIDTHS} sizes="42px" width={42} height={42} />
                 <div className="fbsc-bubble">
                   <div className="fbsc-name">{item.name}</div>
                   <div className="fbsc-text">{item.text}</div>
@@ -1153,6 +1149,8 @@ function WaveSeparator({ from = "light" }) {
   const isDark = from === "blue";
   const topColor    = isDark ? "#0b172a" : "#ffffff";
   const bottomColor = isDark ? "#ffffff" : "#0b172a";
+  // id único por instancia: la página monta varias olas y antes repetían "gentle-wave".
+  const waveId = `gentle-wave-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return (
     <div
       className="wave-divider"
@@ -1164,19 +1162,19 @@ function WaveSeparator({ from = "light" }) {
            xmlnsXlink="http://www.w3.org/1999/xlink"
            viewBox="0 24 150 28" preserveAspectRatio="none">
         <defs>
-          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
+          <path id={waveId} d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
         </defs>
         <g className="parallax1">
-          <use xlinkHref="#gentle-wave" x="50" y="3" fill="var(--wave-bottom-color)" />
+          <use href={`#${waveId}`} x="50" y="3" fill="var(--wave-bottom-color)" />
         </g>
         <g className="parallax2">
-          <use xlinkHref="#gentle-wave" x="50" y="0" fill="var(--wave-bottom-color)" />
+          <use href={`#${waveId}`} x="50" y="0" fill="var(--wave-bottom-color)" />
         </g>
         <g className="parallax3">
-          <use xlinkHref="#gentle-wave" x="50" y="9" fill="var(--wave-bottom-color)" />
+          <use href={`#${waveId}`} x="50" y="9" fill="var(--wave-bottom-color)" />
         </g>
         <g className="parallax4">
-          <use xlinkHref="#gentle-wave" x="50" y="6" fill="var(--wave-bottom-color)" />
+          <use href={`#${waveId}`} x="50" y="6" fill="var(--wave-bottom-color)" />
         </g>
       </svg>
     </div>
@@ -1593,20 +1591,18 @@ export default function ProductDetail() {
               onTouchEnd={onTouchEnd}
             >
               {images.length > 0 ? (
-                <img
+                <SafeImg
                   key={`v${selectedVariantIdx}-${activeImgIndex}`}
                   className="pd-mainImg pd-mainImg--force pd-mainImg--anim"
                   src={images[activeImgIndex]}
                   alt={product?.name || MC.checkoutName || "Producto"}
+                  sizes={HERO_SIZES}
+                  width={1000}
+                  height={1000}
                   referrerPolicy="no-referrer"
-                  crossOrigin="anonymous"
-                  loading={activeImgIndex === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  onDragStart={(e) => e.preventDefault()}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = FALLBACK_IMG;
-                  }}
+                  priority={activeImgIndex === 0}
+                  loading="eager"
+                  draggable={false}
                 />
               ) : (
                 <div className="pd-empty">Sin imagen</div>
@@ -1640,16 +1636,14 @@ export default function ProductDetail() {
                     onClick={() => setActiveImgIndex(idx)}
                     aria-label={`Miniatura ${idx + 1}`}
                   >
-                    <img
+                    <SafeImg
                       src={img}
-                      alt="thumb"
-                      loading="lazy"
+                      alt=""
+                      widths={THUMB_WIDTHS}
+                      sizes="90px"
+                      width={90}
+                      height={68}
                       referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = FALLBACK_IMG;
-                      }}
                     />
                   </button>
                 ))}
@@ -1668,9 +1662,9 @@ export default function ProductDetail() {
               {/* Avatars + reseñas */}
               <div className="reviews-container">
                 <div className="avatars">
-                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="Cliente 1" className="avatar" />
-                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="Cliente 2" className="avatar" />
-                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="Cliente 3" className="avatar" />
+                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="" className="avatar" width={28} height={28} decoding="async" />
+                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="" className="avatar" width={28} height={28} decoding="async" />
+                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="" className="avatar" width={28} height={28} decoding="async" />
                 </div>
                 <span className="text-grey">
                   Calificado <strong>4.5/5</strong> basado en <strong>+650 reseñas</strong>
@@ -1719,7 +1713,7 @@ export default function ProductDetail() {
                         >
                           <div className="vsel2-img-wrap">
                             {img
-                              ? <img src={img} alt={v.name} className="vsel2-img" />
+                              ? <SafeImg src={img} alt="" name={v.name} className="vsel2-img" widths={THUMB_WIDTHS} sizes="72px" width={72} height={72} />
                               : <div className="vsel2-img-ph" />
                             }
                             {v.badge && <span className="vsel2-badge">{v.badge}</span>}
@@ -1751,7 +1745,7 @@ export default function ProductDetail() {
                             >
                               <div className="vsel2-img-wrap">
                                 {img
-                                  ? <img src={img} alt={cv.name} className="vsel2-img" />
+                                  ? <SafeImg src={img} alt="" name={cv.name} className="vsel2-img" widths={THUMB_WIDTHS} sizes="56px" width={56} height={56} />
                                   : <div className="vsel2-img-ph" />
                                 }
                               </div>
@@ -2139,12 +2133,16 @@ export default function ProductDetail() {
         <div className="pd-toast-wrapper">
           <div className="pd-toast-content">
             <div className="pd-toast-main">
-              <img
-                src={images[0] || FALLBACK_IMG}
+              <SafeImg
+                src={images[0]}
                 alt=""
+                name={effectiveProduct?.name || MC.checkoutName}
                 className="pd-toast-img"
+                widths={THUMB_WIDTHS}
+                sizes="52px"
+                width={52}
+                height={52}
                 referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
               />
               <div className="pd-toast-info">
                 <span className="pd-toast-status">✓ ¡Agregado!</span>
