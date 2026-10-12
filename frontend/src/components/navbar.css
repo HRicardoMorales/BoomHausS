@@ -1,0 +1,178 @@
+/* Navbar — consume tokens de styles/tokens.css. */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* ── Desktop ─────────────────────────────────────────────── */
+.nav-desktop-container { display: block; padding: .85rem 0; }
+
+.nav-desktop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.nav-brand { display: flex; align-items: center; text-decoration: none; }
+.nav-brand__logo { height: 74px; width: auto; object-fit: contain; }
+
+.nav-desktop { display: flex; align-items: center; gap: var(--space-2); }
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-ui-text);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-snug);
+  text-decoration: none;
+  transition:
+    background-color var(--dur-base) ease,
+    color var(--dur-base) ease,
+    border-color var(--dur-base) ease;
+}
+.nav-link:hover { background: var(--surface-hover); color: var(--color-ui-text-strong); }
+.nav-link:focus-visible,
+.mn-btn:focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+.nav-link--active {
+  background: var(--surface-active);
+  color: var(--color-ui-text-strong);
+  font-weight: var(--weight-heavy);
+}
+
+/* Carrito con productos: resaltado de marca. El texto usa el rosa
+   oscuro (AA 7:1); el rosa de marca sobre blanco no llega a 3:1. */
+.nav-link.cart-highlight {
+  background: var(--color-brand-tint);
+  color: var(--color-brand-text);
+  border-color: var(--border-brand);
+}
+
+.nav-pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+  font-size: .82rem;
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 26px;
+  margin: 0 .35rem;
+  background: var(--border-default);
+}
+
+.nav-cta { padding: var(--space-2) var(--space-4); font-size: .9rem; }
+
+.nav-user { display: flex; align-items: center; gap: .55rem; }
+.nav-user__name {
+  color: var(--color-ui-text);
+  font-size: .9rem;
+  font-weight: var(--weight-black);
+}
+.nav-logout { color: var(--color-danger); }
+
+/* ── Mobile ──────────────────────────────────────────────── */
+.mobile-nav-container { display: none; }
+
+.mobile-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-card);
+  border-bottom: 1px solid #eee;
+  box-shadow: var(--shadow-xs);
+}
+.mn-left { flex: 1; display: flex; align-items: center; }
+.mn-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+.mn-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mn-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.mn-brand__logo { display: block; height: 58px; width: auto; max-width: 180px; object-fit: contain; }
+
+/* Área táctil de 44 px (antes 32 px) sin cambiar el tamaño del ícono. */
+.mn-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  color: #333;
+  cursor: pointer;
+}
+.mn-cart-btn { color: var(--black); }
+
+.mn-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+  font-size: .65rem;
+  font-weight: var(--weight-bold);
+  transform: translate(25%, -25%);
+}
+
+.mobile-menu-dropdown {
+  margin: 0;
+  padding: var(--space-4);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-menu);
+}
+.mobile-menu__list { display: grid; gap: var(--space-2); }
+.mobile-menu__sep { height: 1px; margin: var(--space-2) 0; background: #eee; }
+.mobile-menu__sep--tight { margin: var(--space-1) 0; }
+.mobile-menu__cta { justify-content: center; }
+.mobile-menu__logout { justify-content: flex-start; color: var(--color-danger); }
+
+@media (max-width: 980px) {
+  .nav-desktop-container { display: none !important; }
+  .mobile-nav-container { display: block; }
+  .nav-link { width: 100%; }
+}

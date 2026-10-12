@@ -1,0 +1,148 @@
+/* Footer — consume tokens de styles/tokens.css.
+   Los niveles de texto usan --on-night-*: los antiguos .32/.35/.42 de
+   opacidad no pasaban AA sobre el fondo noche (2,6–3,5:1). */
+
+.ft {
+  margin-top: 0;
+  background: var(--surface-night);
+}
+.ft__inner {
+  max-width: var(--container-narrow);
+  margin: 0 auto;
+  padding: 44px var(--space-6) 28px;
+}
+
+/* ── Head ── */
+.ft__head { margin-bottom: var(--space-8); }
+.ft__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-2);
+}
+.ft__logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.ft__tagline {
+  margin: 0;
+  color: var(--on-night-faint);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+.ft__tagline strong { color: var(--on-night); font-weight: var(--weight-semibold); }
+
+/* ── Grid ── */
+.ft__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8) var(--space-6);
+  margin-bottom: var(--space-8);
+}
+@media (max-width: 680px) {
+  .ft__grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .ft__grid { grid-template-columns: 1fr; gap: var(--space-6); }
+}
+
+/* ── Columns ── */
+.ft__col { display: flex; flex-direction: column; gap: 10px; }
+.ft__col-label {
+  margin-bottom: 2px;
+  color: var(--on-night-faint);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+/* ── Links ── */
+.ft__nav { display: flex; flex-direction: column; gap: 7px; }
+.ft__link {
+  color: var(--on-night);
+  font-size: .86rem;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: color var(--dur-fast) ease;
+}
+.ft__link:hover { color: var(--on-night-strong); }
+.ft__link:focus-visible,
+.ft__wa-btn:focus-visible {
+  outline: 2px solid var(--on-night-strong);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+.ft__link--muted { color: var(--on-night-faint); cursor: default; }
+
+/* ── Contact ── */
+.ft__contact-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.ft__wa-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-whatsapp);
+  color: var(--white);
+  font-size: .84rem;
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  transition: filter var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.ft__wa-btn:hover { filter: brightness(.9); transform: translateY(-1px); }
+.ft__wa-icon { flex-shrink: 0; }
+
+/* ── Payments ── */
+.ft__pay-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ft__pay-badge {
+  padding: 5px 11px;
+  border: 1px solid var(--on-night-line);
+  border-radius: 6px;
+  font-size: .78rem;
+  font-weight: var(--weight-bold);
+}
+.ft__pay-badge--mp {
+  color: rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(255, 255, 255, .12);
+}
+.ft__pay-methods { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.ft__pay-chip {
+  padding: 3px var(--space-2);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: var(--radius-xs);
+  background: rgba(255, 255, 255, .03);
+  color: var(--on-night-faint);
+  font-size: .72rem;
+}
+
+/* ── Divider ── */
+.ft__divider { height: 1px; margin-bottom: var(--space-5); background: var(--on-night-line); }
+
+/* ── Bottom bar ── */
+.ft__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.ft__copy { color: var(--on-night-faint); font-size: .74rem; }
+.ft__trust { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-3); }
+.ft__trust-badge { color: var(--on-night-faint); font-size: .72rem; white-space: nowrap; }
+
+@media (max-width: 560px) {
+  .ft__inner { padding: 36px 18px 24px; }
+  .ft__bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ft__trust { justify-content: flex-start; }
+  .ft__trust-badge:not(:first-child) { display: none; }
+}
+
+/* Espacio para que la barra de compra fija no tape los links del footer. */
+@media (max-width: 768px) {
+  .ft__inner { padding-bottom: 104px; }
+}
