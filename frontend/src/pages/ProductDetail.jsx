@@ -10,6 +10,7 @@ import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import SafeImg from "../components/SafeImg";
+import "./ProductDetail.css";
 import {
   HERO_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS,
 } from "../components/landing/imageSizes";

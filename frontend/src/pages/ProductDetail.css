@@ -1,0 +1,356 @@
+/* frontend/src/pages/ProductDetail.css
+   Estilos exclusivos de ProductDetail. Antes vivían en index.css y se
+   bajaban en la carga inicial de cualquier ruta; ahora viajan en el chunk
+   lazy de la página. Valores a tokens (styles/tokens.css).
+
+   Los restos verdes de un tema anterior (rgba(27,77,62), #1B4D3E, #153D31)
+   y el fondo azul del bundle seleccionado (#eff6ff) pasan a la marca:
+   el CTA principal se volvía verde oscuro al hacer hover.
+
+   Lo que comparten las landings (.pd-container, .pd-mediaMain, .pd-thumb,
+   .pd-mainImg, .pd-band, .hero-title…) sigue en index.css.
+*/
+
+/* =========================
+   Layout
+========================= */
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 50px;
+  align-items: flex-start;
+  max-width: 100%;
+}
+
+@media (max-width: 990px) {
+  .pd-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+.pd-media-sticky {
+  padding: 0;
+  border: none;
+  max-width: 100%;
+}
+@media (min-width: 991px) {
+  .pd-media-sticky { position: sticky; top: 20px; z-index: var(--z-sticky); }
+}
+
+.pd-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--slate-400);
+  font-weight: var(--weight-black);
+}
+
+.pd-dots-container {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  z-index: var(--z-raised);
+}
+
+.hero-reviews-link { text-decoration: underline; cursor: pointer; }
+
+.pd-divider--mt { margin-top: var(--space-6); }
+
+/* =========================
+   CTAs
+========================= */
+.pd-ctaBlock { margin-top: 10px; }
+.pd-addToCartWrap { text-align: center; margin-top: 15px; }
+
+@keyframes pd-pulse {
+  0%   { box-shadow: 0 0 0 0 rgb(200 146 139 / .7); transform: scale(1); }
+  70%  { box-shadow: 0 0 0 15px rgb(200 146 139 / 0); transform: scale(1.02); }
+  100% { box-shadow: 0 0 0 0 rgb(200 146 139 / 0); transform: scale(1); }
+}
+.btn-breathing-intense { animation: pd-pulse 2s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-breathing-intense { animation: none; }
+}
+
+.pd-ctaSecondary {
+  width: 100%;
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+  border: none;
+  padding: 18px;
+  border-radius: var(--radius-control);
+  font-weight: var(--weight-black);
+  font-size: 1.2rem;
+  cursor: pointer;
+  letter-spacing: .5px;
+  box-shadow: var(--shadow-brand);
+}
+.pd-ctaSecondary:hover {
+  background: var(--color-brand-hover);
+  transform: translateY(-2px);
+}
+.pd-ctaSecondary:focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 3px;
+}
+
+.pd-ctaPrimary-outline {
+  background: none;
+  border: 2px solid var(--border-default);
+  padding: 12px 25px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--weight-bold);
+  color: var(--slate-500);
+  cursor: pointer;
+  font-size: .9rem;
+}
+.pd-ctaPrimary-outline:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand-text);
+}
+
+/* =========================
+   Acordeón (el <style> de la página lo refina)
+========================= */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+  padding-bottom: 0;
+  color: #475569;
+  font-size: .82rem;
+  line-height: 1.6;
+}
+.accordion-content.open {
+  max-height: 420px;
+  padding-bottom: 25px;
+}
+
+/* =========================
+   Antes / después
+========================= */
+.ba-handle {
+  position: absolute; top: 0; bottom: 0;
+  width: var(--tap-target); margin-left: -22px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: var(--z-raised); pointer-events: none;
+}
+.ba-line {
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 3px; background: var(--white);
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(0, 0, 0, .3);
+}
+
+.sticky-pro-left { display: flex; flex-direction: column; gap: 2px; }
+
+/* =========================
+   Toast "agregado al carrito"
+========================= */
+.pd-toast-wrapper {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-overlay);
+}
+.pd-toast-content {
+  background: rgb(255 255 255 / .92);
+  border: 1px solid var(--border-brand);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  backdrop-filter: blur(8px);
+}
+.pd-toast-main { display: flex; align-items: center; gap: 10px; }
+.pd-toast-img {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid var(--border-brand);
+}
+.pd-toast-info { display: flex; flex-direction: column; gap: 2px; }
+.pd-toast-status { font-weight: var(--weight-black); color: #047857; } /* 5,5:1 (antes #10b981, 2,5:1) */
+.pd-toast-name { font-weight: var(--weight-black); color: var(--color-text); max-width: 220px; }
+.pd-toast-close {
+  margin-left: auto;
+  min-width: var(--tap-target); min-height: var(--tap-target);
+  border: none; background: transparent; cursor: pointer;
+  font-weight: var(--weight-black); color: var(--color-text-muted);
+}
+.pd-toast-actions { display: flex; gap: 10px; margin-top: 10px; }
+.pd-toast-btn-secondary,
+.pd-toast-btn-primary {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-black);
+  cursor: pointer;
+}
+.pd-toast-btn-secondary { background: rgb(255 255 255 / .92); border: 1px solid var(--border-brand); color: var(--color-text); }
+.pd-toast-btn-primary { background: var(--color-brand-ink); border: 1px solid transparent; color: var(--color-on-brand); } /* 4,9:1 */
+:is(.pd-toast-close, .pd-toast-btn-secondary, .pd-toast-btn-primary):focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* =========================
+   Bundles (mobile-first)
+========================= */
+.pd-bundles-pro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.pd-bundleCard {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-default);
+  background: var(--surface-card);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    background var(--dur-fast) ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .04);
+}
+
+/* Radio nativo oculto (iOS safe), pero el foco de teclado se ve en la card */
+.pd-bundleCard input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.pd-bundleCard:has(input:focus-visible) {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.pd-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  border: 2px solid #cbd5e1;
+  background: var(--white);
+  box-shadow: inset 0 0 0 5px var(--white);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--dur-fast) ease;
+}
+
+.pd-bundleContent { flex: 1; min-width: 0; }
+
+.pd-bundleTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.pd-bundleTitle {
+  font-weight: var(--weight-black);
+  color: var(--color-ui-text-strong);
+  line-height: 1.2;
+  font-size: 1.05rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pd-tag {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-black);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--slate-200);
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+.pd-tag.hot {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.pd-bundlePrice {
+  text-align: right;
+  font-weight: var(--weight-black);
+  color: var(--color-ui-text-strong);
+  font-size: 1.15rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.pd-bundleCompare {
+  margin-top: 6px;
+  font-size: .9rem;
+  font-weight: var(--weight-black);
+  color: var(--slate-500); /* 4,8:1 (antes #94a3b8, 2,6:1) */
+  text-decoration: line-through;
+}
+
+.pd-bundleSub {
+  margin-top: 10px;
+  color: #475569;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.pd-bundleBottom {
+  margin-top: 10px;
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.pd-miniBenefit {
+  font-size: .78rem;
+  font-weight: var(--weight-black);
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-default);
+  background: var(--slate-50);
+  color: var(--slate-700);
+}
+
+.pd-bundleCard.is-selected {
+  border-color: var(--color-brand-ink);
+  background: var(--color-brand-tint);
+  box-shadow: var(--shadow-brand);
+  transform: translateY(-1px);
+}
+.pd-bundleCard.is-selected .pd-radio {
+  border-color: var(--color-brand-ink);
+  box-shadow: inset 0 0 0 6px var(--white), 0 0 0 4px var(--focus-ring);
+  background: var(--color-brand-ink);
+}
+
+@media (hover: hover) {
+  .pd-bundleCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, .08);
+  }
+}
+
+/* iPhone SE / pantallas chicas: precio abajo */
+@media (max-width: 420px) {
+  .pd-bundleTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pd-bundlePrice { text-align: left; white-space: normal; }
+}
