@@ -7,8 +7,8 @@ import { useCatalog } from "../hooks/useCatalog.js";
 import { discountPct } from "../utils/pricing.js";
 import HomeHero from "../components/home/HomeHero.jsx";
 import CountdownBar from "../components/home/CountdownBar.jsx";
-import TrustStrip from "../components/home/TrustStrip.jsx";
-import ProductCarousel from "../components/home/ProductCarousel.jsx";
+import SeenInStrip from "../components/home/SeenInStrip.jsx";
+import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
 import CategoryTabs from "../components/home/CategoryTabs.jsx";
 import CatalogGrid from "../components/home/CatalogGrid.jsx";
 import { useHomeReveal } from "../components/home/useHomeReveal.js";
@@ -19,6 +19,7 @@ import {
   productCategory,
 } from "../components/home/catalogCategories.js";
 import "../components/home/home.css";
+import "../components/home/home-hero.css";
 
 const FEATURED_MAX = 8;
 const FEATURED_MIN_DISCOUNT = 5;
@@ -64,13 +65,23 @@ export default function Home() {
 
   return (
     <main className="section hc-page">
-      <HomeHero storeName={storeName} maxDiscount={maxDiscount} onExplore={scrollToCatalog} />
+      <HomeHero
+        storeName={storeName}
+        maxDiscount={maxDiscount}
+        products={featured}
+        loading={loading}
+        onExplore={scrollToCatalog}
+      />
+      <SeenInStrip />
       <CountdownBar />
-      <TrustStrip />
 
       <div className="hc-wrap">
         {!loading && featured.length >= 2 && (
-          <ProductCarousel title="Ofertas destacadas" pill="🔥 Mayor descuento" products={featured} />
+          <BestsellerCarousel
+            eyebrow="Selección de la semana"
+            title="Las ofertas que más rinden"
+            products={featured}
+          />
         )}
 
         <div className="hc-sec-head hc-anim" ref={catalogRef}>

@@ -19,9 +19,6 @@ export function useHomeReveal(enabled, key) {
         else belowFold.push(el);
       });
 
-      document.querySelectorAll(".hc-trust-item.reveal:not(.is-visible)")
-        .forEach((el) => el.classList.add("is-visible"));
-
       document.querySelectorAll(".hc-anim:not(.in-view)").forEach((el) => {
         if (el.getBoundingClientRect().top < vh) {
           el.classList.add("in-view");
