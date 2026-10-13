@@ -67,6 +67,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 
 ### Fase 5 — Accesibilidad y estados
 - [ ] Accesibilidad: 18 `onClick` en `<div>/<span>/<img>` (sin teclado/rol), 12 `outline: none` sin reemplazo de foco, ~50 `<img>` sin `alt`. Agregar `:focus-visible` global, botones reales, `alt`, skip-link. Contraste del rosa sobre blanco a verificar (AA).
+- [ ] Página 404 real: hoy `<Route path="*">` en `App.jsx` hace `Navigate` a `/public` (una URL rota muestra la home sin aviso). Crear `NotFound` con `noindex` y links a catálogo.
 - [ ] Estados de UI: skeletons consistentes (home ya tiene `SkeletonCard`), vacíos y errores en products/cart/myOrders; error boundary global.
 
 ### Fase 6 — Backend y calidad
@@ -115,6 +116,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - Playwright: para saber qué elemento dispara la descarga de una fuente, filtrar `body *` por `getComputedStyle(el).fontFamily` con nodo de texto propio (así se encontró que Cormorant la pedía el fallback de `SafeImg`).
 - Home: verificar el hero sin backend mockeando `/api/products` y `/api/products/slugs` (regex `/\/api\/products$/`); el catálogo suma productos virtuales de landings, así que el primer destacado puede no ser del mock.
 - Playwright: para verificar carga diferida de video, contar requests a `/video/upload/` antes de hacer scroll (debe ser 0) y después de cada `scrollIntoViewIfNeeded`; `reducedMotion: 'reduce'` en el contexto prueba el modo quieto.
+- Setup: cambiar el `origin` con `git remote set-url` lo bloquea el clasificador de permisos; no hace falta, el push funciona por redirect.
 - Lighthouse CLI (`npx lighthouse` con el Chromium preinstalado vía Playwright) para medir antes/después de la Fase 2.
 
 - Script de CSS muerto (postcss, ~30 líneas): parsear el CSS, juntar las clases de cada selector y buscarlas como palabra en `src/**/*.{js,jsx}` + `index.html`, tratando `` `prefijo-${…}` `` como dinámico. Sirve para los `<style>` inline de landings y ProductDetail. Correr `npm ci` antes (postcss viene con Vite).
@@ -160,3 +162,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-13 | 06:53 | Home parte 2: hero editorial con promesa concreta y collage de destacados reales, franja "Lo viste en" (sin logos inventados), carrusel de destacados con Embla (flechas, progreso, ranking, `useSyncExternalStore`); TrustStrip/ProductCarousel fuera. Build y lint OK, Playwright mobile/desktop + reduced motion. | d7134fe |
 | 2026-10-13 | 07:52 | Home parte 3: opiniones reales de las landings intercaladas por producto (carrusel snap / masonry), grilla de videos de uso Cloudinary transcodificados con poster y carga diferida, beneficios con íconos SVG; `Testimonials.jsx` sin uso borrado. Build y lint OK, Playwright mobile/desktop + reduced motion. | 799900b |
 | 2026-10-13 | 08:53 | Home parte 4: antes/después con stats animadas (datos de las landings, tabs ARIA, `useCountUp`), garantía 30 días con sello SVG y newsletter accesible sobre un servicio mock. Build y lint OK, Playwright mobile/desktop + reduced motion. | ee4a20e |
+| 2026-10-13 | 09:53 | Revisión final: build OK, lint 0, `node --check` backend OK, Playwright iPhone 13 en 16 rutas (API mockeada) sin errores ni scroll horizontal; solo `gentle-wave-ml` duplicado en Mundial. Ruta `*` sin 404 real → backlog. Descripción del PR borrador #1 actualizada con la home premium. | PR #1 |
