@@ -12,6 +12,27 @@
 */
 
 /* =========================
+   Tema de acento (verde bosque)
+   El <style> inline de ProductDetail.jsx (upsell, bundles, CTA "LO QUIERO",
+   badges, FAQ, reviews) usa solo estas variables: cambiar el tema de la
+   página es tocar este bloque, no ~100 colores sueltos.
+   Para pasar a la marca, por ejemplo:
+     --pd-accent: var(--rose-700); --pd-accent-rgb: 138 106 99;
+     --pd-accent-strong/-deep: var(--rose-800) / var(--ink-900);
+     --pd-accent-mid/-soft: var(--rose-600) / var(--rose-500);
+   Va en :root porque el sheet de upsell y la barra sticky son fixed y
+   pueden quedar fuera del contenedor de la página.
+========================= */
+:root {
+  --pd-accent: var(--forest-700);
+  --pd-accent-rgb: var(--forest-700-rgb);
+  --pd-accent-strong: var(--forest-800);
+  --pd-accent-deep: var(--forest-900);
+  --pd-accent-mid: var(--forest-600);
+  --pd-accent-soft: var(--forest-500);
+}
+
+/* =========================
    Layout
 ========================= */
 .pd-grid {
