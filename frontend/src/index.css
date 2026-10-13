@@ -228,14 +228,6 @@ input:focus, textarea:focus, select:focus {
   .hero-title { font-size: 1.8rem; line-height: 1.2; overflow-wrap: break-word; }
 }
 
-/* Anillo de progreso (SVG) */
-.circle {
-  fill: none;
-  stroke-width: 3.2;
-  stroke-linecap: round;
-  stroke: var(--color-brand);
-}
-
 .reviews-section { background: var(--slate-50); padding: 80px 0; }
 
 /* =========================
@@ -275,11 +267,14 @@ h2 { color: var(--color-brand-ink); font-weight: 800; letter-spacing: -0.5px; }
 
 /* =========================
    MARQUEE (mobile + desktop)
+   Fondo por custom property: una landing con tema propio la pisa
+   (`.marquee { --marquee-bg: … }`) sin redefinir la barra.
 ========================= */
 .marquee {
+  --marquee-bg: var(--surface-announce);
   width: 100%;
-  background: #1B4D3E;
-  color: #fff;
+  background: var(--marquee-bg);
+  color: var(--white);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -316,6 +311,7 @@ h2 { color: var(--color-brand-ink); font-weight: 800; letter-spacing: -0.5px; }
   color: rgba(255,255,255,.85);
   font-size: 15px;
 }
+.marquee__copy { display: contents; }
 
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -346,14 +342,16 @@ h2 { color: var(--color-brand-ink); font-weight: 800; letter-spacing: -0.5px; }
   padding: 64px 0;
 }
 
+/* Defaults de marca: ProductDetail, Mundial y las landings pisan el fondo
+   con su propio tema (Kit/Sillón en verde a propósito). */
 .pd-band--light{
-  background: #F7FBF9;
+  background: var(--surface-card);
   color: var(--text);
 }
 
 .pd-band--blue{
-  background: radial-gradient(circle at 70% 30%, #1B4D3E 0%, #0F2D24 100%);
-  color: #fff;
+  background: radial-gradient(circle at 70% 30%, var(--ink-800) 0%, var(--ink-900) 100%);
+  color: var(--white);
 }
 
 @media (max-width: 520px){

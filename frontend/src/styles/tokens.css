@@ -27,6 +27,7 @@
   --rose-800: #6e524c; /* texto rosa sobre blanco que pasa AA (7,0:1) */
 
   /* Tinta cálida (texto de marca) */
+  --ink-800: #5e4a46;
   --ink-900: #4a3a37;
 
   /* Neutros fríos (UI: navbar, admin, formularios) */
@@ -72,6 +73,7 @@
   --surface-hover: var(--slate-100);
   --surface-active: var(--slate-200);
   --surface-night: var(--night-900);
+  --surface-announce: var(--ink-900); /* barra de anuncios (marquee): blanco 11:1 */
 
   --border-soft: var(--slate-100);
   --border-default: var(--slate-200);

@@ -1,4 +1,4 @@
-// frontend/src/components/Marquee.jsx
+// frontend/src/components/marquee.jsx
 import { useEffect, useState } from "react";
 
 function useCountdown(storageKey, minutes) {
@@ -35,20 +35,23 @@ export default function Marquee({
     { text: "🚚 Envío gratis a todo el país" },
   ];
 
-  const loop = [...items, ...items];
+  // La pista se duplica para el loop infinito (translateX -50%); la copia
+  // va con aria-hidden para que los lectores lean los avisos una sola vez.
+  // El contador no es aria-live: se anunciaría cada segundo.
+  const renderItems = () =>
+    items.map((item, i) => (
+      <span key={i} className={`marquee__item${item.highlight ? " marquee__item--flash" : ""}`}>
+        {item.text}
+        {item.suffix && <span className="marquee__cd-time">{item.suffix}</span>}
+      </span>
+    ));
 
   return (
-    <div className="marquee" aria-label="Oferta y beneficios">
+    <aside className="marquee" aria-label="Oferta y beneficios">
       <div className="marquee__track">
-        {loop.map((item, i) => (
-          <span key={i} className={`marquee__item${item.highlight ? " marquee__item--flash" : ""}`}>
-            {item.text}
-            {item.suffix && (
-              <span className="marquee__cd-time" aria-live="polite">{item.suffix}</span>
-            )}
-          </span>
-        ))}
+        {renderItems()}
+        <span className="marquee__copy" aria-hidden="true">{renderItems()}</span>
       </div>
-    </div>
+    </aside>
   );
 }

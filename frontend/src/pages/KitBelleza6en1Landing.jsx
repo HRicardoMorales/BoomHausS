@@ -531,6 +531,8 @@ export default function KitBelleza6en1Landing() {
         .pd-bands > section:first-child { padding-top:28px; }
         .pd-band--light { background:#ffffff; }
         .pd-band--blue  { background:#1B4D3E; }
+        /* Tema verde de esta landing: también la barra de anuncios global */
+        .marquee { --marquee-bg:#1B4D3E; }
 
         /* ── Sec head ── */
         .sec-head { text-align:center; margin:0 0 20px; }
