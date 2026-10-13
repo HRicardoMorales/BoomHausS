@@ -1,26 +1,5 @@
 // frontend/src/components/marquee.jsx
-import { useEffect, useState } from "react";
-
-function useCountdown(storageKey, minutes) {
-  const [left, setLeft] = useState(0);
-
-  useEffect(() => {
-    const saved = Number(sessionStorage.getItem(storageKey));
-    const target =
-      saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
-    sessionStorage.setItem(storageKey, String(target));
-
-    const tick = () => setLeft(Math.max(0, target - Date.now()));
-    tick();
-    const t = setInterval(tick, 1000);
-    return () => clearInterval(t);
-  }, [storageKey, minutes]);
-
-  const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
-  const ss = String(totalSec % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
-}
+import { useCountdown } from "../hooks/useCountdown.js";
 
 export default function Marquee({
   countdownKey = "pd_countdown",
