@@ -12,6 +12,9 @@ import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
 import HomeReviews from "../components/home/HomeReviews.jsx";
 import ProofVideoGrid from "../components/home/ProofVideoGrid.jsx";
 import HomeBenefits from "../components/home/HomeBenefits.jsx";
+import HomeTransformations from "../components/home/HomeTransformations.jsx";
+import HomeGuarantee from "../components/home/HomeGuarantee.jsx";
+import HomeNewsletter from "../components/home/HomeNewsletter.jsx";
 import CategoryTabs from "../components/home/CategoryTabs.jsx";
 import CatalogGrid from "../components/home/CatalogGrid.jsx";
 import { useHomeReveal } from "../components/home/useHomeReveal.js";
@@ -24,6 +27,7 @@ import {
 import "../components/home/home.css";
 import "../components/home/home-hero.css";
 import "../components/home/home-proof.css";
+import "../components/home/home-closing.css";
 
 const FEATURED_MAX = 8;
 const FEATURED_MIN_DISCOUNT = 5;
@@ -127,6 +131,9 @@ export default function Home() {
 
       <ProofVideoGrid />
       <HomeBenefits waLink={waLink} />
+      <HomeTransformations />
+      <HomeGuarantee waLink={waLink} />
+      <HomeNewsletter />
 
       {!loading && (
         <div className="hc-wrap hc-bottom-nav">
