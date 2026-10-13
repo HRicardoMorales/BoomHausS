@@ -9,6 +9,9 @@ import HomeHero from "../components/home/HomeHero.jsx";
 import CountdownBar from "../components/home/CountdownBar.jsx";
 import SeenInStrip from "../components/home/SeenInStrip.jsx";
 import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
+import HomeReviews from "../components/home/HomeReviews.jsx";
+import ProofVideoGrid from "../components/home/ProofVideoGrid.jsx";
+import HomeBenefits from "../components/home/HomeBenefits.jsx";
 import CategoryTabs from "../components/home/CategoryTabs.jsx";
 import CatalogGrid from "../components/home/CatalogGrid.jsx";
 import { useHomeReveal } from "../components/home/useHomeReveal.js";
@@ -20,6 +23,7 @@ import {
 } from "../components/home/catalogCategories.js";
 import "../components/home/home.css";
 import "../components/home/home-hero.css";
+import "../components/home/home-proof.css";
 
 const FEATURED_MAX = 8;
 const FEATURED_MIN_DISCOUNT = 5;
@@ -83,7 +87,11 @@ export default function Home() {
             products={featured}
           />
         )}
+      </div>
 
+      <HomeReviews />
+
+      <div className="hc-wrap">
         <div className="hc-sec-head hc-anim" ref={catalogRef}>
           <h2 className="hc-sec-title">Catálogo</h2>
           {!loading && !fetchError && (
@@ -115,13 +123,17 @@ export default function Home() {
           waLink={waLink}
         />
 
-        {!loading && (
-          <div className="hc-bottom-nav">
-            <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
-            <Link className="btn btn-ghost" to="/cart">Ver carrito</Link>
-          </div>
-        )}
       </div>
+
+      <ProofVideoGrid />
+      <HomeBenefits waLink={waLink} />
+
+      {!loading && (
+        <div className="hc-wrap hc-bottom-nav">
+          <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
+          <Link className="btn btn-ghost" to="/cart">Ver carrito</Link>
+        </div>
+      )}
       {/* WhatsApp: botón global <WhatsAppButton /> desde App.jsx. */}
     </main>
   );
