@@ -1,21 +1,10 @@
-import { useSyncExternalStore } from "react";
+import { useMediaQuery } from "./useMediaQuery.js";
 
 /*
- * `prefers-reduced-motion` reactivo sin Framer Motion: la home vive en el
- * chunk inicial y Framer ahí sumaría ~35 KB gzip por un matchMedia.
+ * `prefers-reduced-motion` reactivo para componentes que animan con CSS o
+ * con APIs del DOM (videos, contadores). Los que usan `m.*` de Framer ya
+ * respetan la preferencia vía `<MotionConfig reducedMotion="user">`.
  */
-const QUERY = "(prefers-reduced-motion: reduce)";
-
-function subscribe(onChange) {
-  if (typeof window === "undefined" || !window.matchMedia) return () => {};
-  const mql = window.matchMedia(QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
-
-const getSnapshot = () =>
-  typeof window !== "undefined" && !!window.matchMedia && window.matchMedia(QUERY).matches;
-
 export function usePrefersReducedMotion() {
-  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+  return useMediaQuery("(prefers-reduced-motion: reduce)");
 }
