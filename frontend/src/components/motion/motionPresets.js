@@ -20,3 +20,10 @@ export const revealVariants = {
 /* Se revela una sola vez, apenas asoma (margen inferior negativo para que no
    se dispare con 1 px visible). */
 export const REVEAL_VIEWPORT = { once: true, amount: 0.15, margin: "0px 0px -40px 0px" };
+
+/* Resorte de elementos que "persiguen" a otro (píldora de pestañas): rápido,
+   con un sobrepaso mínimo para que se sienta físico sin rebotar. */
+export const PILL_SPRING = { type: "spring", stiffness: 420, damping: 36, mass: 0.9 };
+
+/* Feedback táctil de botones circulares (flechas). */
+export const TAP_PRESS = { scale: 0.88 };
