@@ -1,14 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
+import { m, useReducedMotion } from "framer-motion";
 import SafeImg from "../SafeImg.jsx";
 import { moneyARS, discountPct } from "../../utils/pricing.js";
 import { productHref } from "../../landings/catalog.js";
 
-/* Stagger de entrada para las primeras 8 cards; el resto está bajo el pliegue. */
-const STAGGER_MS = 70;
-const STAGGER_MAX = 7;
+import { REVEAL_VIEWPORT, revealVariants } from "../motion/motionPresets.js";
 
-export default function ProductCard({ product, index = 0 }) {
+const MotionArticle = m.article;
+
+/* Hover: la card se levanta con un resorte (no una curva fija), así si el
+   mouse entra y sale rápido la animación se interrumpe sin saltos. */
+const HOVER = { y: -6, transition: { type: "spring", stiffness: 380, damping: 26 } };
+const TAP = { scale: 0.985 };
+
+/**
+ * `index` escalona la entrada (la grilla pasa la columna, así cada fila entra
+ * en diagonal). `reveal={false}` en el carrusel: ahí las cards se ven al
+ * deslizar y un fundido por slide se sentiría lento.
+ */
+export default function ProductCard({ product, index = 0, reveal = true }) {
   const navigate = useNavigate();
+  const reduce = useReducedMotion();
 
   // Defensa en profundidad: `buildCatalog` ya filtra precio > 0, pero si algo
   // se cuela mejor que la card no exista a que muestre "$ 0" + "Ver oferta".
@@ -19,9 +31,16 @@ export default function ProductCard({ product, index = 0 }) {
   const href = productHref(product);
 
   return (
-    <article
-      className="hc-card reveal"
-      style={{ transitionDelay: `${Math.min(index, STAGGER_MAX) * STAGGER_MS}ms` }}
+    <MotionArticle
+      className="hc-card"
+      initial={reveal && !reduce ? "hidden" : false}
+      whileInView="shown"
+      viewport={REVEAL_VIEWPORT}
+      variants={revealVariants}
+      custom={index}
+      data-reveal=""
+      whileHover={HOVER}
+      whileTap={TAP}
       onClick={() => navigate(href)}
     >
       <div className="hc-card-img">
@@ -53,6 +72,6 @@ export default function ProductCard({ product, index = 0 }) {
           Ver oferta →
         </Link>
       </div>
-    </article>
+    </MotionArticle>
   );
 }

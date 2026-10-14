@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import { subscribe } from "../../services/newsletter.js";
+import Reveal from "../motion/Reveal.jsx";
 
 /*
  * Newsletter: formulario accesible (label real, error asociado con
@@ -29,7 +30,7 @@ export default function HomeNewsletter() {
   return (
     <section className="hn" aria-labelledby={`${id}-title`}>
       <div className="hp-inner">
-        <div className="hn-card hc-anim">
+        <Reveal as="div" className="hn-card">
           <div className="hn-copy">
             <p className="hp-eyebrow hp-eyebrow--ink">Lista de ofertas</p>
             <h2 className="hp-title hp-title--ink hn-title" id={`${id}-title`}>
@@ -72,7 +73,7 @@ export default function HomeNewsletter() {
               {state.message}
             </p>
           </form>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -258,7 +258,7 @@
 .hc-best-slide { position: relative; flex: 0 0 68%; min-width: 0; }
 @media (min-width: 560px) { .hc-best-slide { flex-basis: 40%; } }
 @media (min-width: 900px) { .hc-best-slide { flex-basis: calc((100% - 3 * 14px) / 4); } }
-.hc-best-slide .hc-card { height: 100%; transition-delay: 0ms !important; }
+.hc-best-slide .hc-card { height: 100%; }
 .hc-best-rank {
   position: absolute; top: -24px; right: 10px; z-index: 2;
   font-family: var(--font-serif); font-style: italic; font-weight: 600;

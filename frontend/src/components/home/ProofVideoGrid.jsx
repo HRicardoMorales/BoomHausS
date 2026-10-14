@@ -4,6 +4,7 @@ import useNearViewport from "../../hooks/useNearViewport.js";
 import InViewVideo from "../media/InViewVideo.jsx";
 import { collectProofVideos } from "../../landings/homeProof.js";
 import { cloudinaryPoster, cloudinaryVideo } from "../../utils/videoCdn.js";
+import Reveal from "../motion/Reveal.jsx";
 
 /*
  * Grilla de videos de uso (los `proofVideos` de las landings, solo Cloudinary).
@@ -24,7 +25,7 @@ export default function ProofVideoGrid({ videos = VIDEOS }) {
   return (
     <section className="hp-videos" aria-labelledby="hp-videos-title" ref={sectionRef}>
       <div className="hp-inner">
-        <header className="hp-head hp-head--split hc-anim">
+        <Reveal as="header" className="hp-head hp-head--split">
           <div>
             <p className="hp-eyebrow hp-eyebrow--ink">En uso, sin filtro</p>
             <h2 className="hp-title hp-title--ink" id="hp-videos-title">
@@ -34,7 +35,7 @@ export default function ProofVideoGrid({ videos = VIDEOS }) {
           <p className="hp-lede hp-lede--ink">
             Videos cortos de los productos funcionando. Tocá uno para ir a su página.
           </p>
-        </header>
+        </Reveal>
 
         <ul className="hp-video-strip">
           {videos.map((v, i) => (

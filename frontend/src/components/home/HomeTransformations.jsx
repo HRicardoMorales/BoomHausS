@@ -5,6 +5,7 @@ import useNearViewport from "../../hooks/useNearViewport.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion.js";
 import { collectTransformations } from "../../landings/homeProof.js";
+import Reveal from "../motion/Reveal.jsx";
 
 /*
  * Antes/después + estadísticas. Todo sale de las landings (`beforeAfter` y
@@ -40,7 +41,7 @@ export default function HomeTransformations() {
   return (
     <section className="ht" aria-labelledby={`${baseId}-title`} ref={sectionRef}>
       <div className="hp-inner">
-        <header className="hp-head hp-head--split hc-anim">
+        <Reveal as="header" className="hp-head hp-head--split">
           <div>
             <p className="hp-eyebrow hp-eyebrow--ink">Resultados</p>
             <h2 className="hp-title hp-title--ink" id={`${baseId}-title`}>
@@ -51,10 +52,10 @@ export default function HomeTransformations() {
             Fotos de antes y después y lo que cuentan quienes ya lo usan. Elegí un producto y
             arrastrá la línea.
           </p>
-        </header>
+        </Reveal>
 
         {items.length > 1 && (
-          <div className="ht-tabs hc-anim" role="tablist" aria-label="Producto" onKeyDown={onTabKey}>
+          <Reveal as="div" className="ht-tabs" role="tablist" aria-label="Producto" onKeyDown={onTabKey}>
             {items.map((t, i) => {
               const selected = i === index;
               return (
@@ -74,7 +75,7 @@ export default function HomeTransformations() {
                 </button>
               );
             })}
-          </div>
+          </Reveal>
         )}
 
         <div

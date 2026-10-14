@@ -442,3 +442,8 @@ h2 { color: var(--color-brand-ink); font-weight: 800; letter-spacing: -0.5px; }
   background: var(--bg2); border-radius: 12px;
 }
 @media (prefers-reduced-motion: reduce) { .error-fallback { animation: none; } }
+
+/* Respaldo de MotionProvider: si el chunk de Framer Motion no cargó, los
+   elementos con reveal quedan en su estado final (el inline style gana
+   salvo contra !important). */
+html[data-motion="off"] [data-reveal] { opacity: 1 !important; transform: none !important; }

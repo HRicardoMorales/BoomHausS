@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { collectReviews } from "../../landings/homeProof.js";
+import Reveal from "../motion/Reveal.jsx";
 
 /*
  * Opiniones: las mismas que publica cada landing, intercaladas por producto y
@@ -29,7 +30,7 @@ export default function HomeReviews({ reviews = REVIEWS }) {
     <section className="hp-reviews" aria-labelledby="hp-reviews-title">
       <div className="hp-grain" aria-hidden="true" />
       <div className="hp-inner">
-        <header className="hp-head hc-anim">
+        <Reveal as="header" className="hp-head">
           <p className="hp-eyebrow">Opiniones · {products} productos</p>
           <h2 className="hp-title" id="hp-reviews-title">
             Lo dicen ellos, <em>no nosotros.</em>
@@ -37,7 +38,7 @@ export default function HomeReviews({ reviews = REVIEWS }) {
           <p className="hp-lede">
             Una opinión de cada producto, tal como aparece en su página. Tocá el nombre para verlo.
           </p>
-        </header>
+        </Reveal>
 
         <ul className="hp-review-list" aria-label="Opiniones de clientes">
           {reviews.map((r) => (

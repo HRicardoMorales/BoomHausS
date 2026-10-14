@@ -3,6 +3,9 @@ import SkeletonCard from "./SkeletonCard.jsx";
 import { ALL_CATEGORIES } from "./catalogCategories.js";
 
 const SKELETON_COUNT = 8;
+/* Columnas de la grilla en desktop: el stagger va por columna, no por índice,
+   así las filas que entran al scrollear no esperan medio segundo. */
+const STAGGER_COLS = 4;
 const pillBtn = { padding: "10px 22px", borderRadius: 999 };
 
 function FetchErrorState({ onRetry, waLink }) {
@@ -63,7 +66,13 @@ export default function CatalogGrid({ products, loading, fetchError, activeCat, 
   } else if (products.length === 0) {
     content = <EmptyState filtered={activeCat !== ALL_CATEGORIES} onShowAll={onShowAll} />;
   } else {
-    content = products.map((p, i) => <ProductCard key={p._id} product={p} index={i} />);
+    content = products.map((p, i) => <ProductCard key={p._id} product={p} index={i % STAGGER_COLS} />);
   }
-  return <div className="hc-grid" aria-busy={loading || undefined}>{content}</div>;
+  // `key` por categoría: al filtrar, la grilla se vuelve a montar y las cards
+  // entran de nuevo en cascada en vez de reacomodarse de golpe.
+  return (
+    <div className="hc-grid" key={activeCat} aria-busy={loading || undefined}>
+      {content}
+    </div>
+  );
 }

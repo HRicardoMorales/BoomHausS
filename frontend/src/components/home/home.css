@@ -75,12 +75,7 @@
   font-size: .82rem; font-weight: 700; color: #9B8B7A;
 }
 
-.hc-anim { opacity: 1; transform: none; }
-.hc-hidden {
-  opacity: 0; transform: translateY(20px);
-  transition: opacity .7s ease, transform .7s ease;
-}
-.hc-hidden.in-view { opacity: 1; transform: translateY(0); }
+/* Reveal on scroll: `components/motion/Reveal.jsx` (Framer Motion). */
 
 /* === CATEGORY TABS === */
 .hc-tabs { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
@@ -115,17 +110,14 @@
   box-shadow: 0 2px 8px rgba(0,0,0,.05);
   overflow: hidden; cursor: pointer;
   display: flex; flex-direction: column;
-  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, opacity .55s ease;
+  /* Entrada y elevación las anima Framer (inline transform): acá solo sombra y borde. */
+  transition: box-shadow .22s ease, border-color .22s ease;
 }
 .hc-card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 24px 52px rgba(0,0,0,.12);
   border-color: #C4B9AC;
 }
 .hc-card:hover .hc-card-img img { transform: scale(1.06); }
-.hc-card.reveal:not(.is-visible) { opacity: 0; transform: translateY(20px); }
-.hc-card.reveal.is-visible { opacity: 1; transform: translateY(0); }
-.hc-card.reveal.is-visible:hover { transform: translateY(-5px); }
 
 .hc-card-img {
   position: relative; aspect-ratio: 1 / 1;

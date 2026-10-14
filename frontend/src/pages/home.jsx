@@ -17,7 +17,7 @@ import HomeGuarantee from "../components/home/HomeGuarantee.jsx";
 import HomeNewsletter from "../components/home/HomeNewsletter.jsx";
 import CategoryTabs from "../components/home/CategoryTabs.jsx";
 import CatalogGrid from "../components/home/CatalogGrid.jsx";
-import { useHomeReveal } from "../components/home/useHomeReveal.js";
+import Reveal from "../components/motion/Reveal.jsx";
 import {
   ALL_CATEGORIES,
   categoriesOf,
@@ -66,8 +66,6 @@ export default function Home() {
     [products, activeCat]
   );
 
-  useHomeReveal(!loading, activeCat);
-
   const scrollToCatalog = () =>
     catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -96,7 +94,7 @@ export default function Home() {
       <HomeReviews />
 
       <div className="hc-wrap">
-        <div className="hc-sec-head hc-anim" ref={catalogRef}>
+        <Reveal className="hc-sec-head" ref={catalogRef}>
           <h2 className="hc-sec-title">Catálogo</h2>
           {!loading && !fetchError && (
             <span className="hc-sec-count">
@@ -104,7 +102,7 @@ export default function Home() {
               {activeCat !== ALL_CATEGORIES ? ` en "${categoryLabel(activeCat)}"` : ""}
             </span>
           )}
-        </div>
+        </Reveal>
 
         {categories.length > 0 && (
           <CategoryTabs categories={categories} active={activeCat} onChange={setActiveCat} />

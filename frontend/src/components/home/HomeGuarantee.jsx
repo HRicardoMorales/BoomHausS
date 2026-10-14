@@ -1,4 +1,6 @@
 import { useId } from "react";
+import Reveal from "../motion/Reveal.jsx";
+import { EASE_OUT } from "../motion/motionPresets.js";
 
 /*
  * Garantía. Los 30 días son la promesa que repiten todas las landings
@@ -14,13 +16,25 @@ const STEPS = [
   { t: "Te devolvemos el dinero", d: "Coordinamos la devolución y listo. Sin vueltas." },
 ];
 
+/* El sello entra "estampado": gira y se asienta con un resorte corto. */
+const SEAL_VARIANTS = {
+  hidden: { opacity: 0, scale: 0.82, rotate: -24 },
+  shown: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    transition: { type: "spring", stiffness: 140, damping: 14, mass: 0.9 },
+  },
+};
+const CTA_HOVER = { y: -2, transition: { duration: 0.18, ease: EASE_OUT } };
+
 export default function HomeGuarantee({ waLink }) {
   const ringId = `${useId()}-ring`;
   return (
     <section className="hg" aria-labelledby="hg-title">
       <span className="hp-grain" aria-hidden="true" />
       <div className="hp-inner hg-grid">
-        <div className="hg-seal hc-anim" aria-hidden="true">
+        <Reveal as="div" className="hg-seal" variants={SEAL_VARIANTS} aria-hidden="true">
           <svg viewBox="0 0 200 200" className="hg-seal-ring">
             <defs>
               <path id={ringId} d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
@@ -33,29 +47,38 @@ export default function HomeGuarantee({ waLink }) {
             <strong>30</strong>
             <small>días</small>
           </span>
-        </div>
+        </Reveal>
 
         <div className="hg-copy">
-          <p className="hp-eyebrow hc-anim">Garantía</p>
-          <h2 className="hp-title hc-anim" id="hg-title">
+          <Reveal as="p" className="hp-eyebrow">Garantía</Reveal>
+          <Reveal as="h2" className="hp-title" id="hg-title">
             Probalo 30 días. <em>Si no te convence, te devolvemos la plata.</em>
-          </h2>
+          </Reveal>
           <ol className="hg-steps">
             {STEPS.map((s, i) => (
-              <li key={s.t} className="hg-step hc-anim" style={{ transitionDelay: `${i * 80}ms` }}>
+              <Reveal as="li" index={i} key={s.t} className="hg-step">
                 <span className="hg-step-num" aria-hidden="true">{i + 1}</span>
                 <div>
                   <h3>{s.t}</h3>
                   <p>{s.d}</p>
                 </div>
-              </li>
+              </Reveal>
             ))}
           </ol>
           {waLink && (
-            <a className="hg-cta hc-anim" href={waLink} target="_blank" rel="noopener noreferrer">
+            <Reveal
+              as="a"
+              index={STEPS.length}
+              whileHover={CTA_HOVER}
+              whileTap={{ scale: 0.97 }}
+              className="hg-cta"
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Consultar por WhatsApp
               <span className="sr-only"> (se abre en otra pestaña)</span>
-            </a>
+            </Reveal>
           )}
         </div>
       </div>

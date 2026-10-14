@@ -75,7 +75,7 @@ export default function BestsellerCarousel({ title, eyebrow, products }) {
               <span className="hc-best-rank" aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <ProductCard product={p} index={0} />
+              <ProductCard product={p} reveal={false} />
             </li>
           ))}
         </ol>

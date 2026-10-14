@@ -11,6 +11,7 @@ import './index.css';
 
 // ✅ Provider del carrito (persistente)
 import { CartProvider } from './context/CartContext.jsx';
+import MotionProvider from './components/motion/MotionProvider.jsx';
 
 // Meta Pixel — snippet base condicional a VITE_META_PIXEL_ID.
 // Debe correr antes del primer render para que fbq esté listo cuando
@@ -37,7 +38,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <CartProvider>
-        <App />
+        <MotionProvider>
+          <App />
+        </MotionProvider>
       </CartProvider>
     </BrowserRouter>
   </React.StrictMode>
