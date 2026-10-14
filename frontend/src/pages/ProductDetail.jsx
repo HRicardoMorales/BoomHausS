@@ -11,9 +11,7 @@ import StatsCircles from "../components/landing/StatsCircles";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import SafeImg from "../components/SafeImg";
 import "./ProductDetail.css";
-import {
-  HERO_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS,
-} from "../components/landing/imageSizes";
+import { THUMB_WIDTHS } from "../components/landing/imageSizes";
 import { formatARS, moneyARS, clampPct, FALLBACK_IMG } from "../components/product/format";
 import UnavailableProductPage from "../components/product/UnavailableProductPage";
 import WaTab from "../components/product/WaTab";
@@ -30,6 +28,7 @@ import UpsellSheet from "../components/product/UpsellSheet";
 import SocialCommentsSection from "../components/product/SocialCommentsSection";
 import GuaranteeSection from "../components/product/GuaranteeSection";
 import { WaveSeparator, Band } from "../components/product/Bands";
+import ProductGallery from "../components/product/ProductGallery";
 
 /* ========================================================================
    MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
@@ -109,9 +108,6 @@ export default function ProductDetail() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [showUpsellSheet, setShowUpsellSheet] = useState(false);
 
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 40;
   const lastViewedRef = useRef(null);
   // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
   const hasLoadedOnce = useRef(false);
@@ -190,25 +186,6 @@ export default function ProductDetail() {
     }
     return arr;
   }, [product, activeVariant, activeColorVariant]);
-
-  const nextImage = () => {
-    if (images.length > 0) setActiveImgIndex((prev) => (prev + 1) % images.length);
-  };
-  const prevImage = () => {
-    if (images.length > 0) setActiveImgIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > minSwipeDistance) nextImage();
-    if (distance < -minSwipeDistance) prevImage();
-  };
 
   const price = Number(product?.price) || 0;
 
@@ -432,75 +409,13 @@ export default function ProductDetail() {
       {/* HERO ROW: en desktop ≥980px se convierte en 2 columnas (imagen izq, controles der) */}
       <div className="pd-hero-row">
       {/* MEDIA — fuera del container para ancho completo */}
-      <section className="pd-media-fullwidth">
-          <section className="card pd-media pd-media-sticky">
-            <div
-              className="pd-mediaMain pd-mediaMain--bigger"
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-            >
-              {images.length > 0 ? (
-                <SafeImg
-                  key={`v${selectedVariantIdx}-${activeImgIndex}`}
-                  className="pd-mainImg pd-mainImg--force pd-mainImg--anim"
-                  src={images[activeImgIndex]}
-                  alt={product?.name || MC.checkoutName || "Producto"}
-                  sizes={HERO_SIZES}
-                  width={1000}
-                  height={1000}
-                  referrerPolicy="no-referrer"
-                  priority={activeImgIndex === 0}
-                  loading="eager"
-                  draggable={false}
-                />
-              ) : (
-                <div className="pd-empty">Sin imagen</div>
-              )}
-
-              {images.length > 1 && (
-                <div className="">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={` ${idx === activeImgIndex ? "" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImgIndex(idx);
-                      }}
-                      aria-label={`Ver imagen ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {images.length > 1 && (
-              <div className="pd-thumbs-row">
-                {images.map((img, idx) => (
-                  <button
-                    key={`${img}-${idx}`}
-                    type="button"
-                    className={`pd-thumb ${idx === activeImgIndex ? "is-active" : ""}`}
-                    onClick={() => setActiveImgIndex(idx)}
-                    aria-label={`Miniatura ${idx + 1}`}
-                  >
-                    <SafeImg
-                      src={img}
-                      alt=""
-                      widths={THUMB_WIDTHS}
-                      sizes="90px"
-                      width={90}
-                      height={68}
-                      referrerPolicy="no-referrer"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
-      </section>
+      <ProductGallery
+        images={images}
+        activeIndex={activeImgIndex}
+        onIndexChange={setActiveImgIndex}
+        alt={product?.name || MC.checkoutName || "Producto"}
+        variantKey={selectedVariantIdx}
+      />
 
       <div className="container pd-container">
           {/* INFO */}
