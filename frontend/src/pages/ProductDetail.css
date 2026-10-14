@@ -172,54 +172,6 @@
 .sticky-pro-left { display: flex; flex-direction: column; gap: 2px; }
 
 /* =========================
-   Toast "agregado al carrito"
-========================= */
-.pd-toast-wrapper {
-  position: fixed;
-  right: 18px;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-  z-index: var(--z-overlay);
-}
-.pd-toast-content {
-  background: rgb(255 255 255 / .92);
-  border: 1px solid var(--border-brand);
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  backdrop-filter: blur(8px);
-}
-.pd-toast-main { display: flex; align-items: center; gap: 10px; }
-.pd-toast-img {
-  width: 52px; height: 52px;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  border: 1px solid var(--border-brand);
-}
-.pd-toast-info { display: flex; flex-direction: column; gap: 2px; }
-.pd-toast-status { font-weight: var(--weight-black); color: #047857; } /* 5,5:1 (antes #10b981, 2,5:1) */
-.pd-toast-name { font-weight: var(--weight-black); color: var(--color-text); max-width: 220px; }
-.pd-toast-close {
-  margin-left: auto;
-  min-width: var(--tap-target); min-height: var(--tap-target);
-  border: none; background: transparent; cursor: pointer;
-  font-weight: var(--weight-black); color: var(--color-text-muted);
-}
-.pd-toast-actions { display: flex; gap: 10px; margin-top: 10px; }
-.pd-toast-btn-secondary,
-.pd-toast-btn-primary {
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  font-weight: var(--weight-black);
-  cursor: pointer;
-}
-.pd-toast-btn-secondary { background: rgb(255 255 255 / .92); border: 1px solid var(--border-brand); color: var(--color-text); }
-.pd-toast-btn-primary { background: var(--color-brand-ink); border: 1px solid transparent; color: var(--color-on-brand); } /* 4,9:1 */
-:is(.pd-toast-close, .pd-toast-btn-secondary, .pd-toast-btn-primary):focus-visible {
-  outline: 2px solid var(--focus-outline);
-  outline-offset: 2px;
-}
-
-/* =========================
    Bundles (mobile-first)
 ========================= */
 .pd-bundles-pro {

@@ -1,7 +1,6 @@
 ﻿// frontend/src/pages/ProductDetail.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import api from "../services/api";
+import { useParams } from "react-router-dom";
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import Marquee from "../components/marquee.jsx";
@@ -9,9 +8,7 @@ import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
 import CountdownTimer from "../components/landing/CountdownTimer";
-import SafeImg from "../components/SafeImg";
 import "./ProductDetail.css";
-import { THUMB_WIDTHS } from "../components/landing/imageSizes";
 import { formatARS, moneyARS, clampPct, FALLBACK_IMG } from "../components/product/format";
 import UnavailableProductPage from "../components/product/UnavailableProductPage";
 import WaTab from "../components/product/WaTab";
@@ -31,6 +28,15 @@ import ProductGallery from "../components/product/ProductGallery";
 import VariantSelector from "../components/product/VariantSelector";
 import PaymentIcons from "../components/product/PaymentIcons";
 import BundlePicker from "../components/product/BundlePicker";
+import {
+  resolveLandingConfig,
+  resolveGalleryImages,
+  variantFallbackProduct,
+  cartItemName,
+  mainItemOptions,
+} from "../components/product/landingConfig";
+import { useProduct } from "../hooks/product/useProduct";
+import { useLandingVariants } from "../hooks/product/useLandingVariants";
 // Último import a propósito: estas reglas venían de un <style> inline al final
 // del árbol y tienen que seguir ganando el empate de orden.
 import "./ProductDetail.page.css";
@@ -46,180 +52,63 @@ const MARKETING_CONTENT = LANDING_CONFIGS["porta-cepillos"] || {};
 /* =========================
    Main
 ========================= */
-export default function ProductDetail() {
+export default function ProductDetailRoute() {
   const { id, slug } = useParams();
-  const navigate = useNavigate();
+  // `key` por producto: al pasar de /lp/a a /lp/b (misma ruta, otro slug) React
+  // reutilizaba la instancia y la nueva landing arrancaba con la variante, el
+  // pack y la foto elegidos en la anterior.
+  return <ProductDetail key={slug ? `lp:${slug}` : `id:${id}`} id={id} slug={slug} />;
+}
+
+function ProductDetail({ id, slug }) {
   const { addItem } = useCart();
 
-  // ✅ Config dinámica: si viene de /lp/:slug usa esa config, si no usa la de porta-cepillos
+  // Config de la landing: /lp/:slug usa la suya; /products/:id la genérica.
   const MCRaw = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
 
-  // ── Soporte de variantes ────────────────────────────────────────────────────
-  const [selectedVariantIdx, setSelectedVariantIdx] = useState(() => MCRaw.defaultVariantIdx ?? 0);
-  const [selectedColorIdx, setSelectedColorIdx] = useState(() => MCRaw.defaultColorIdx ?? 0);
-  const activeVariant = useMemo(
-    () => (MCRaw.variants ? MCRaw.variants[selectedVariantIdx] || null : null),
-    [MCRaw, selectedVariantIdx]
-  );
-  const activeColorVariant = useMemo(
-    () => activeVariant?.colorVariants?.[selectedColorIdx] || null,
-    [activeVariant, selectedColorIdx]
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [product, setProduct] = useState(null);
+  const {
+    variantIdx: selectedVariantIdx,
+    colorIdx: selectedColorIdx,
+    bundleIdx: selectedBundleIdx,
+    activeVariant,
+    activeColorVariant,
+    selectVariant,
+    selectColor,
+    selectBundle,
+  } = useLandingVariants(MCRaw);
 
-  // MC efectivo: cuando hay variante activa sobreescribe bundles/bullets/descripción;
-  // si el producto del DB tiene bundles guardados, sus precios sobreescriben los del config.
-  const MC = useMemo(() => {
-    let base;
-    if (!activeVariant) {
-      base = MCRaw;
-    } else {
-      const kitBullets = activeVariant.kitBullets || [];
-      const sharedBenefits = MCRaw.sharedBenefits || [];
-      const mergedBullets = [...kitBullets, ...sharedBenefits];
-      base = {
-        ...MCRaw,
-        bundles: activeVariant.bundles || MCRaw.bundles,
-        trustBullets: mergedBullets.length ? mergedBullets : MCRaw.trustBullets,
-        miniDescription: activeVariant.miniDescription || MCRaw.miniDescription,
-      };
-    }
-    // Aplicar precios del DB (editados desde el admin) si existen
-    if (product?.bundles?.length && base.bundles?.length) {
-      const merged = base.bundles.map(cb => {
-        const dbB = product.bundles.find(b => b.qty === cb.qty);
-        if (!dbB) return cb;
-        return { ...cb, price: dbB.price, compareAt: dbB.compareAt ?? cb.compareAt };
-      });
-      return { ...base, bundles: merged };
-    }
-    return base;
-  }, [MCRaw, activeVariant, product]);
-  // ── Fin soporte variantes ───────────────────────────────────────────────────
-  const [showToast, setShowToast] = useState(false);
+  // Si la variante tiene su propio producto en la base, se trae ese.
+  const fetchSlug = slug ? activeVariant?.productSlug || MCRaw.productSlug || slug : null;
+  const { product, error, loading, hasLoaded, retry } = useProduct({ id, slug: fetchSlug });
+
+  const MC = useMemo(
+    () => resolveLandingConfig(MCRaw, activeVariant, product),
+    [MCRaw, activeVariant, product]
+  );
+
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-  // TODO(refactor ProductDetail): qty/bundle quedaron fijos; el selector real es selectedBundleIdx
-  const [qty] = useState(1);
-  const [bundle] = useState(1);
-  const [selectedBundleIdx, setSelectedBundleIdx] = useState(() => {
-    if (MCRaw.defaultBundleIdx !== undefined) return MCRaw.defaultBundleIdx;
-    const bundles = activeVariant?.bundles || MCRaw.bundles;
-    if (!bundles) return 1;
-    const pop = bundles.findIndex(b => b.popular);
-    return pop >= 0 ? pop : 1;
-  });
   const [showCheckout, setShowCheckout] = useState(false);
   const [showUpsellSheet, setShowUpsellSheet] = useState(false);
 
-  const lastViewedRef = useRef(null);
-  // Evita mostrar la pantalla de carga completa cuando solo cambia la variante
-  const hasLoadedOnce = useRef(false);
-
-  useEffect(() => {
-    async function fetchOne() {
-      try {
-        setLoading(true);
-        setError("");
-        // Cuando hay variante activa con su propio productSlug, se fetchea por esa variante.
-        // Fallback: MC.productSlug del config general, o el slug de la URL.
-        const fetchSlug = slug
-          ? (activeVariant?.productSlug || MC.productSlug || slug)
-          : null;
-        const res = fetchSlug
-          ? await api.get(`/products/slug/${fetchSlug}`)
-          : await api.get(`/products/${id}`);
-        if (res.data?.ok) setProduct(res.data.data);
-        else setError(slug
-          ? `Producto no encontrado. Asegurate de que el producto tenga el slug "${fetchSlug}" en el panel de administración (Admin → Productos → Editar → campo Slug).`
-          : "No se pudo cargar el producto.");
-      } catch (err) {
-        const is404 = err?.response?.status === 404;
-        // Si la variante tiene imágenes de fallback en el config, mostramos la landing sin error
-        if (is404 && activeVariant?.images?.length) {
-          setProduct(null);
-          setError("");
-        } else {
-          setError(slug && is404
-            ? `Producto no encontrado con slug "${activeVariant?.productSlug || slug}". Abrí Admin → Productos, editá el producto y setéalo como slug.`
-            : err?.response?.data?.message || "Error al cargar el producto.");
-        }
-      } finally {
-        hasLoadedOnce.current = true;
-        setLoading(false);
-      }
-    }
-    fetchOne();
-  // MC/activeVariant son config estática por slug: la clave real del fetch es productSlug.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, slug, activeVariant?.productSlug]);
-
-  // Al cambiar variante: resetear imagen activa, color e índice de bundle
-  useEffect(() => {
+  const handleSelectVariant = (idx) => {
+    if (idx === selectedVariantIdx) return;
+    selectVariant(idx);
     setActiveImgIndex(0);
-    setSelectedColorIdx(0);
-    if (activeVariant?.bundles) {
-      if (MCRaw.defaultBundleIdx !== undefined) {
-        setSelectedBundleIdx(MCRaw.defaultBundleIdx);
-      } else {
-        const pop = activeVariant.bundles.findIndex(b => b.popular);
-        setSelectedBundleIdx(pop >= 0 ? pop : 1);
-      }
-    }
-  // Reset intencional solo al cambiar de variante (no al re-render del config).
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVariantIdx]);
+  };
 
-  const images = useMemo(() => {
-    // Prioridad 1: color variant images (cuando hay selector de color activo)
-    if (activeColorVariant?.images?.length) {
-      return activeColorVariant.images.filter(Boolean);
-    }
-    // Prioridad 2: imágenes del producto fetched desde admin
-    const arr = [];
-    if (product?.imageUrl) arr.push(product.imageUrl);
-    if (Array.isArray(product?.images)) {
-      product?.images.forEach((x) => {
-        if (x && typeof x === "string" && !arr.includes(x)) arr.push(x);
-      });
-    }
-    if (arr.length) return arr;
-    // Prioridad 3: fallback de imágenes del config de la variante (cuando el producto no está en admin)
-    if (activeVariant?.images?.length) {
-      return activeVariant.images.filter(Boolean);
-    }
-    return arr;
-  }, [product, activeVariant, activeColorVariant]);
+  const images = useMemo(
+    () => resolveGalleryImages(product, activeVariant, activeColorVariant),
+    [product, activeVariant, activeColorVariant]
+  );
 
   const price = Number(product?.price) || 0;
+  const compareAt = Number(product?.originalPrice) || Number(product?.compareAtPrice) || 0;
 
-  const compareAt =
-    Number(product?.originalPrice) ||
-    Number(product?.compareAtPrice) ||
-    0;
-
-
-  const pack2Discount = 10;
-  const unitPrice = price;
-
-  // Cuando la landing tiene bundles configurados, selectedBundleIdx conduce todo
+  // Con packs configurados, el pack elegido manda en cantidad y totales.
   const activeBundleData = MC.bundles ? MC.bundles[selectedBundleIdx] : null;
-
-  const promoOn = bundle === 2;
-  const totalQty = activeBundleData
-    ? activeBundleData.qty
-    : (promoOn ? Math.max(2, qty) : 1);
-
-  const displayTotal = activeBundleData
-    ? activeBundleData.price
-    : (promoOn
-        ? Math.round(Math.max(2, qty) * unitPrice * (1 - pack2Discount / 100))
-        : Math.round(unitPrice));
-
-  const oldTotal = activeBundleData
-    ? activeBundleData.compareAt
-    : Math.round(compareAt * totalQty);
+  const totalQty = activeBundleData ? activeBundleData.qty : 1;
+  const displayTotal = activeBundleData ? activeBundleData.price : Math.round(price);
+  const oldTotal = activeBundleData ? activeBundleData.compareAt : Math.round(compareAt * totalQty);
 
   const contentId = useMemo(
     () =>
@@ -232,6 +121,7 @@ export default function ProductDetail() {
     [product, id]
   );
 
+  const lastViewedRef = useRef(null);
   useEffect(() => {
     if (!product) return;
     if (lastViewedRef.current === contentId) return;
@@ -303,71 +193,47 @@ export default function ProductDetail() {
     return () => { clearTimeout(timer); io?.disconnect(); };
   }, [product, activeVariant]);
 
-  // En modo fallback (variante con imágenes de config pero sin producto en admin),
-  // creamos un producto sintético para que el carrito funcione igual.
-  // IMPORTANTE: esta variable debe definirse ANTES de los early returns.
-  const hasVariantFallback = !product && (activeVariant?.images?.length ?? 0) > 0;
-  const effectiveProduct = product || (hasVariantFallback ? {
-    _id: activeVariant.productSlug || slug || "variant-fallback",
-    name: MC.checkoutName || activeVariant?.name || "Producto",
-    price: activeVariant?.bundles?.[selectedBundleIdx]?.price || 0,
-    images: activeVariant?.images || [],
-    imageUrl: activeVariant?.images?.[0] || "",
-  } : null);
+  // Producto sintético cuando la variante trae imágenes en el config pero no
+  // está cargada en la base (404): el carrito funciona igual.
+  const fallbackProduct = product
+    ? null
+    : variantFallbackProduct({ config: MC, activeVariant, bundleIdx: selectedBundleIdx, slug });
+  const hasVariantFallback = !!fallbackProduct;
+  const effectiveProduct = product || fallbackProduct;
+  const blockingError = error && !(error.status === 404 && hasVariantFallback) ? error : null;
 
-  // Nombre del item en carrito: enriquecido con variante + color + qty cuando aplica
-  const cartItemName = useMemo(() => {
-    const base = MC.checkoutName || effectiveProduct?.name;
-    if (!base || !activeVariant) return base;
-    const label = activeVariant.cartLabel;
-    const colorName = activeColorVariant?.name || '';
-    const qty = activeBundleData?.qty ?? totalQty ?? 1;
-    const qtyStr = qty > 1 ? ` x${qty} unidades` : ` x1`;
-    if (label) return `${base} ${label}${colorName ? ` — ${colorName}` : ''}${qtyStr}`;
-    return `${base}${colorName ? ` ${colorName}` : ''}${qtyStr}`;
-  }, [MC.checkoutName, effectiveProduct?.name, activeVariant, activeColorVariant, activeBundleData, totalQty]);
-
-  // Producto con nombre adaptado a la landing (se muestra así en el resumen del checkout)
   const cartProduct = effectiveProduct
-    ? { ...effectiveProduct, name: cartItemName || MC.checkoutName || effectiveProduct.name }
+    ? {
+        ...effectiveProduct,
+        name:
+          cartItemName({
+            baseName: MC.checkoutName || effectiveProduct.name,
+            activeVariant,
+            activeColorVariant,
+            qty: totalQty,
+          }) ||
+          MC.checkoutName ||
+          effectiveProduct.name,
+      }
     : null;
+
+  const addMainItem = () =>
+    addItem(cartProduct, totalQty, mainItemOptions(activeBundleData, { price, compareAt }));
 
   const handleBuyNow = () => {
     if (!effectiveProduct) return;
-    // Si hay config de upsell, mostrar el sheet de upsell primero
+    // Con upsell configurado, primero se ofrecen los accesorios.
     if (MC.upsell) {
       setShowUpsellSheet(true);
       return;
     }
-    // Sin upsell: ir directo al checkout
-    const mainOpts = {};
-    if (activeBundleData) {
-      // Bundle con precio fijo — bypassea el cálculo porcentual
-      mainOpts.bundleTotal = activeBundleData.price;
-      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
-    } else {
-      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-      if (promo) mainOpts.promo = promo;
-      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
-    }
-    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
+    addMainItem();
     setShowCheckout(true);
   };
 
   const handleUpsellConfirm = (bundle) => {
     setShowUpsellSheet(false);
-    // Agregar producto principal
-    const mainOpts = {};
-    if (activeBundleData) {
-      mainOpts.bundleTotal = activeBundleData.price;
-      if (activeBundleData.compareAt) mainOpts.compareAtPrice = activeBundleData.compareAt;
-    } else {
-      const promo = promoOn ? { type: "bundle2", discountPct: pack2Discount } : null;
-      if (promo) mainOpts.promo = promo;
-      if (compareAt > unitPrice) mainOpts.compareAtPrice = compareAt;
-    }
-    addItem(cartProduct, totalQty, Object.keys(mainOpts).length ? mainOpts : undefined);
-    // Si eligió accesorios, agregarlos también
+    addMainItem();
     if (bundle?.bundles) {
       bundle.bundles.forEach(b => {
         // Si el API falló usamos los datos de fallback del config como producto sintético
@@ -382,7 +248,7 @@ export default function ProductDetail() {
     setShowCheckout(true);
   };
 
-  if (loading && !hasLoadedOnce.current)
+  if (loading && !hasLoaded)
     return (
       <main className="section">
         <div className="container">
@@ -391,21 +257,17 @@ export default function ProductDetail() {
       </main>
     );
 
-  if (error || (!product && !hasVariantFallback)) {
-    // Distinguimos "no encontrado" (404 real, producto inactivo/inexistente)
-    // de error de red. Los mensajes de error de arriba usan la palabra
-    // "encontrado" o "slug" cuando es 404; cualquier otra cosa es red.
-    const isNetworkError = !!error && !/encontrado|slug/i.test(error);
+  if (blockingError || !effectiveProduct) {
     return (
       <UnavailableProductPage
-        isNetworkError={isNetworkError}
-        onRetry={() => window.location.reload()}
+        isNetworkError={blockingError?.kind === "network"}
+        onRetry={retry}
       />
     );
   }
 
   // ✅ para el nuevo hero (como la captura)
-  const discountPct = clampPct(Math.round((1 - unitPrice / compareAt) * 100));
+  const discountPct = clampPct(Math.round((1 - price / compareAt) * 100));
 
   return (
     <main className="section main-wrapper pd-page pd-detail">
@@ -469,10 +331,10 @@ export default function ProductDetail() {
               <VariantSelector
                 variants={MCRaw.variants}
                 selectedIdx={selectedVariantIdx}
-                onSelect={setSelectedVariantIdx}
+                onSelect={handleSelectVariant}
                 activeVariant={activeVariant}
                 selectedColorIdx={selectedColorIdx}
-                onSelectColor={setSelectedColorIdx}
+                onSelectColor={selectColor}
               />
 
               {/* Trust badges estilo Calmora — antes del bundle picker */}
@@ -500,7 +362,7 @@ export default function ProductDetail() {
               <BundlePicker
                 bundles={MC.bundles}
                 selectedIdx={selectedBundleIdx}
-                onSelect={setSelectedBundleIdx}
+                onSelect={selectBundle}
                 onBuyNow={handleBuyNow}
                 accordions={MC.heroAccordions}
               />
@@ -527,7 +389,7 @@ export default function ProductDetail() {
               {!MC.bundles && (
                 <div className="hero-priceRow">
                   <span className="hero-was">{moneyARS(compareAt)}</span>
-                  <span className="hero-now">{moneyARS(unitPrice)}</span>
+                  <span className="hero-now">{moneyARS(price)}</span>
                   <span className="hero-off">Descuento {discountPct}%</span>
                 </div>
               )}
@@ -591,70 +453,8 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* <div className="pd-divider pd-divider--mt">Elegí tu pack</div>
-
-            <div className="pd-deliveryNotice">
-              <div className="pd-deliveryIcon" aria-hidden="true">⚡</div>
-
-              <div className="pd-deliveryText">
-                <div className="pd-deliveryTop">
-                  <span className="pd-deliveryTitle">FULL</span>
-                  <span className="pd-deliveryMsg">Llega Mañana!</span>
-                </div>
-                <div className="pd-deliverySub">Comprando dentro de las próximas 2 horas</div>
-              </div>
-            </div>
-
-            <div className="pd-bundles pd-bundles-pro">
-              <label className={`pd-bundleCard ${bundle === 1 ? "is-selected" : ""}`}>
-                <input
-                  type="radio"
-                  name="bundle"
-                  checked={bundle === 1}
-                  onChange={() => { setBundle(1); setQty(1); }}
-                />
-                <span className="pd-radio" aria-hidden="true" />
-                <div className="pd-bundleContent">
-                  <div className="pd-bundleTop">
-                    <div className="pd-bundleTitle">
-                      1 unidad <span className="pd-tag">Pack básico</span>
-                    </div>
-
-                    <div className="pd-bundlePrice">
-                      {moneyARS(unitPrice)}
-                      <div className="pd-bundleCompare">{moneyARS(compareAt)}</div>
-                      <div className="pd-bundleSave">
-                        Ahorrás {clampPct(Math.round((1 - unitPrice / compareAt) * 100))}%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pd-bundleSub">
-                    Precio final con envío gratis.
-                  </div>
-
-                  <div className="pd-bundleBottom">
-                    <span className="pd-miniBenefit">🚚 Envío gratis</span>
-                    <span className="pd-miniBenefit">🧲 facil instalacion</span>
-                    <span className="pd-miniBenefit">🔌 Recargable</span>
-                  </div>
-                </div>
-              </label>
-            </div> */}
-
-            {/* ✅ CTA BLOCK: lo dejamos, pero lo compactamos visualmente (solo CSS) */}
-            <div className="pd-ctaBlock">
-              {/* <button
-                className="pd-ctaSecondary btn-breathing-intense"
-                type="button"
-                onClick={handleBuyNow}
-                >
-                COMPRAR AHORA
-              </button> */}
-
-
-              {/* Botones de carrito e instalación eliminados */}
-            </div>
+            {/* Espaciador (margen en ProductDetail.css) */}
+            <div className="pd-ctaBlock" />
 
           </aside>
 
@@ -735,42 +535,6 @@ export default function ProductDetail() {
 
         <WaveSeparator from="light" />
       </div>
-
-      {showToast && (
-        <div className="pd-toast-wrapper">
-          <div className="pd-toast-content">
-            <div className="pd-toast-main">
-              <SafeImg
-                src={images[0]}
-                alt=""
-                name={effectiveProduct?.name || MC.checkoutName}
-                className="pd-toast-img"
-                widths={THUMB_WIDTHS}
-                sizes="52px"
-                width={52}
-                height={52}
-                referrerPolicy="no-referrer"
-              />
-              <div className="pd-toast-info">
-                <span className="pd-toast-status">✓ ¡Agregado!</span>
-                <span className="pd-toast-name">{effectiveProduct?.name || MC.checkoutName}</span>
-              </div>
-              <button className="pd-toast-close" onClick={() => setShowToast(false)} type="button">
-                ✕
-              </button>
-            </div>
-
-            <div className="pd-toast-actions">
-              <button className="pd-toast-btn-secondary" onClick={() => navigate("/cart")} type="button">
-                IR AL CARRITO
-              </button>
-              <button className="pd-toast-btn-primary" onClick={() => { setShowToast(false); setShowCheckout(true); }} type="button">
-                FINALIZAR COMPRA
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="sticky-pro">
         <div className="sticky-pro-left">
