@@ -9,12 +9,8 @@ import HomeHero from "../components/home/HomeHero.jsx";
 import CountdownBar from "../components/home/CountdownBar.jsx";
 import SeenInStrip from "../components/home/SeenInStrip.jsx";
 import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
-import HomeReviews from "../components/home/HomeReviews.jsx";
-import ProofVideoGrid from "../components/home/ProofVideoGrid.jsx";
-import HomeBenefits from "../components/home/HomeBenefits.jsx";
-import HomeTransformations from "../components/home/HomeTransformations.jsx";
-import HomeGuarantee from "../components/home/HomeGuarantee.jsx";
-import HomeNewsletter from "../components/home/HomeNewsletter.jsx";
+import LazySection from "../components/home/LazySection.jsx";
+import { lazyWithRetry } from "../utils/lazyWithRetry.js";
 import CategoryTabs from "../components/home/CategoryTabs.jsx";
 import CatalogGrid from "../components/home/CatalogGrid.jsx";
 import Reveal from "../components/motion/Reveal.jsx";
@@ -26,8 +22,11 @@ import {
 } from "../components/home/catalogCategories.js";
 import "../components/home/home.css";
 import "../components/home/home-hero.css";
-import "../components/home/home-proof.css";
-import "../components/home/home-closing.css";
+
+/* Bajo el pliegue: chunks aparte (ver LazySection). Opiniones va sola porque
+   queda entre el carrusel y el catálogo; el resto es el cierre de la página. */
+const HomeReviews = lazyWithRetry(() => import("../components/home/HomeReviews.jsx"));
+const HomeClosing = lazyWithRetry(() => import("../components/home/HomeClosing.jsx"));
 
 const FEATURED_MAX = 8;
 const FEATURED_MIN_DISCOUNT = 5;
@@ -91,7 +90,7 @@ export default function Home() {
         )}
       </div>
 
-      <HomeReviews />
+      <LazySection component={HomeReviews} minHeight={560} />
 
       <div className="hc-wrap">
         <Reveal className="hc-sec-head" ref={catalogRef}>
@@ -127,11 +126,7 @@ export default function Home() {
 
       </div>
 
-      <ProofVideoGrid />
-      <HomeBenefits waLink={waLink} />
-      <HomeTransformations />
-      <HomeGuarantee waLink={waLink} />
-      <HomeNewsletter />
+      <LazySection component={HomeClosing} minHeight={1600} waLink={waLink} />
 
       {!loading && (
         <div className="hc-wrap hc-bottom-nav">

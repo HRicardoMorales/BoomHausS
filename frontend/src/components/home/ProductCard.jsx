@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { m, useReducedMotion } from "framer-motion";
 import SafeImg from "../SafeImg.jsx";
 import { moneyARS, discountPct } from "../../utils/pricing.js";
-import { productHref } from "../../landings/catalog.js";
 
 import { REVEAL_VIEWPORT, revealVariants } from "../motion/motionPresets.js";
 
@@ -28,7 +27,8 @@ export default function ProductCard({ product, index = 0, reveal = true }) {
 
   const img = product.images?.[0] || product.imageUrl || "";
   const pct = discountPct(product.price, product.compareAtPrice);
-  const href = productHref(product);
+  // `href` lo calcula `buildCatalog` (landing o ficha genérica).
+  const href = product.href || `/products/${product._id}`;
 
   return (
     <MotionArticle

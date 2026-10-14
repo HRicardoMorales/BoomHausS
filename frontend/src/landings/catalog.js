@@ -101,5 +101,9 @@ export function buildCatalog(apiProducts, dbSlugs = [], virtuals = LANDING_VIRTU
     return true;
   });
 
-  return [...extras, ...fromDb].filter((p) => Number(p.price) > 0);
+  // `href` precalculado: así la card no necesita los configs de landing y
+  // este módulo puede vivir fuera del chunk inicial (ver `useCatalog`).
+  return [...extras, ...fromDb]
+    .filter((p) => Number(p.price) > 0)
+    .map((p) => ({ ...p, href: productHref(p) }));
 }

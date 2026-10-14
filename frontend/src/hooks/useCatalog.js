@@ -1,12 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
-import { buildCatalog } from "../landings/catalog.js";
 import { logger } from "../utils/logger.js";
 
 /* Esperas entre intentos: cubren el cold start de Render (~30-60 s) sin
    castigar si la API vuelve rápido. Peor caso ~10 s antes del error. */
 const RETRY_DELAYS = [0, 1000, 3000, 6000];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* `landings/catalog.js` arrastra los configs de las 14 landings (~170 KB sin
+   comprimir, casi la mitad del chunk inicial). Se pide en paralelo con la API,
+   que es lo lento (cold start), así que no suma latencia. Si el import falla
+   se olvida la promesa para que el siguiente intento lo vuelva a pedir. */
+let catalogModule;
+const loadCatalogModule = () => {
+  catalogModule ??= import("../landings/catalog.js").catch((e) => {
+    catalogModule = undefined;
+    throw e;
+  });
+  return catalogModule;
+};
 
 /**
  * Catálogo de la home con reintentos. Si todos fallan devuelve
@@ -32,7 +44,8 @@ export function useCatalog() {
       }
       if (isCancelled()) return;
       try {
-        const [productsRes, slugsRes] = await Promise.all([
+        const [{ buildCatalog }, productsRes, slugsRes] = await Promise.all([
+          loadCatalogModule(),
           api.get("/products"),
           api.get("/products/slugs").catch(() => ({ data: { data: [] } })),
         ]);

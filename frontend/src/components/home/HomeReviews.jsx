@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { collectReviews } from "../../landings/homeProof.js";
 import Reveal from "../motion/Reveal.jsx";
+import "./home-proof.css";
 
 /*
  * Opiniones: las mismas que publica cada landing, intercaladas por producto y
