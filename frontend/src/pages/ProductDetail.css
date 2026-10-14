@@ -13,7 +13,7 @@
 
 /* =========================
    Tema de acento (verde bosque)
-   El <style> inline de ProductDetail.jsx (upsell, bundles, CTA "LO QUIERO",
+   ProductDetail.page.css (upsell, bundles, CTA "LO QUIERO",
    badges, FAQ, reviews) usa solo estas variables: cambiar el tema de la
    página es tocar este bloque, no ~100 colores sueltos.
    Para pasar a la marca, por ejemplo:
