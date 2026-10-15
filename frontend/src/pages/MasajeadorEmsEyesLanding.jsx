@@ -20,9 +20,14 @@ import BeforeAfterSlider from "../components/landing/BeforeAfterSlider";
 import ReviewsWithBars from "../components/landing/ReviewsWithBars";
 import GuaranteeNote from "../components/landing/GuaranteeNote";
 import TrustPills from "../components/landing/TrustPills";
-import { resolveMedia } from "../utils/resolveMedia";
+import StoryFlow from "../components/landing/StoryFlow";
+import { CirculacionSection, CuatroSemanasSection, TresPasosSection } from "../components/landing/wine/WineStorySections";
 
 /* Colores de las bandas para los separadores de olas. */
+/* Estilo inline de las fotos de historia: también aplica al fallback de SafeImg
+   cuando la imagen no carga (sin esto el fallback queda en flex). */
+const STORY_IMG_PROPS = { style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } };
+
 const WAVE = { dark: "#8B1A4A", light: "#ffffff" };
 
 /* ============================================================
@@ -309,54 +314,10 @@ export default function MasajeadorEmsEyesLanding() {
             />
           </div>
           <div className="dtx-container">
-            <section className="pd-flow">
-              {mc.storyBlocks.map((b, i) => (
-                <div key={i} className="flow-row">
-                  <div className={`flow-text${b.textHtml ? ' flow-text--rich' : ''}`}>
-                    {b.badge && <div className="flow-badge">{b.badge}</div>}
-                    <h3 className="flow-title">{b.title}</h3>
-                    {b.textHtml
-                      ? <p className="flow-p flow-p--rich" dangerouslySetInnerHTML={{ __html: b.textHtml }} />
-                      : <p className="flow-p">{b.text}</p>
-                    }
-                  </div>
-                  <div className="flow-media">
-                    {(() => {
-                      const mediaUrl = b.img || b.videoUrl || '';
-                      const resolved = resolveMedia(mediaUrl);
-                      if (resolved?.type === 'iframe') return (
-                        <div className="flow-imgBox flow-imgBox--video">
-                          <iframe
-                            src={resolved.src}
-                            title={b.imgAlt}
-                            allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen frameBorder="0" scrolling="no"
-                            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
-                          />
-                        </div>
-                      );
-                      if (resolved?.type === 'video') return (
-                        <div className="flow-imgBox hover-float">
-                          <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} aria-label={b.imgAlt}>
-                            <source src={resolved.src} type="video/mp4" />
-                          </video>
-                        </div>
-                      );
-                      if (resolved?.type === 'gif' || resolved?.type === 'image') return (
-                        <div className="flow-imgBox hover-float">
-                          <SafeImg src={resolved.src} alt={b.imgAlt} sizes="(min-width: 960px) 520px, 100vw" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
-                        </div>
-                      );
-                      return (
-                        <div className="flow-imgBox hover-float">
-                          <div className="spf-flow-ph"><span className="spf-flow-ph-icon">💡</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              ))}
-            </section>
+            <CirculacionSection data={mc.circulacion} />
+            <StoryFlow blocks={mc.storyBlocks} imgProps={STORY_IMG_PROPS} />
+            <CuatroSemanasSection data={mc.cuatroSemanas} />
+            <TresPasosSection data={mc.tresPasos} onBuy={handleBuy} />
           </div>
         </section>
 

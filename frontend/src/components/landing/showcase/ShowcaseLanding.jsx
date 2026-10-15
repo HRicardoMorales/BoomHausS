@@ -41,8 +41,12 @@ import ProofVideoStrip from "../ProofVideoStrip";
 import BeforeAfterSlider from "../BeforeAfterSlider";
 import ReviewsWithBars from "../ReviewsWithBars";
 import GuaranteeNote from "../GuaranteeNote";
+import StoryFlow from "../StoryFlow";
 
 import './ShowcaseLanding.css';
+
+// Las fotos de las historias pueden venir de CDNs externos.
+const STORY_IMG_PROPS = { referrerPolicy: 'no-referrer', crossOrigin: 'anonymous' };
 
 /* Colores de las bandas para los separadores de olas. */
 const WAVE = { dark: "#1B4D3E", light: "#ffffff" };
@@ -122,7 +126,6 @@ export default function ShowcaseLanding({ config: mc, theme }) {
   }, [product, mc, productName]);
 
   // FIX: story images from config only — never pulled from product.images API array
-  const storyImgs = mc.storyBlocks.map(b => b.img || '');
 
   const handleBuy = () => {
     if (!product || selectedBundle.soldOut) return;
@@ -324,28 +327,12 @@ export default function ShowcaseLanding({ config: mc, theme }) {
             />
           </div>
           <div className="dtx-container">
-            <section className="pd-flow">
-              {mc.storyBlocks.map((b, i) => (
-                <div key={i} className="flow-row">
-                  <div className={`flow-text${b.textHtml ? ' flow-text--rich' : ''}`}>
-                    {b.badge && <div className="flow-badge">{b.badge}</div>}
-                    <h3 className="flow-title">{b.title}</h3>
-                    {b.textHtml
-                      ? <p className="flow-p flow-p--rich" dangerouslySetInnerHTML={{ __html: b.textHtml }} />
-                      : <p className="flow-p">{b.text}</p>
-                    }
-                  </div>
-                  <div className="flow-media">
-                    <div className="flow-imgBox hover-float">
-                      {storyImgs[i]
-                        ? <SafeImg src={storyImgs[i]} alt={b.imgAlt} sizes="(min-width: 960px) 520px, 100vw" referrerPolicy="no-referrer" crossOrigin="anonymous" />
-                        : <div className="spf-flow-ph"><span className="spf-flow-ph-icon" aria-hidden="true">{theme.icon}</span><span className="spf-flow-ph-text">{b.imgAlt}</span></div>
-                      }
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </section>
+            <StoryFlow
+              blocks={mc.storyBlocks}
+              getMedia={(b) => b.img}
+              imgProps={STORY_IMG_PROPS}
+              placeholderIcon={theme.icon}
+            />
           </div>
         </section>
 
