@@ -1,4 +1,5 @@
 import SafeImg from "../SafeImg";
+import Reveal from "../motion/Reveal";
 
 /* =========================
    Video strip — tres videos verticales estilo Calmora
@@ -7,7 +8,7 @@ export default function VideoStripSection({ mc = {} }) {
   const videos = mc.proofVideos;
   if (!videos?.length) return null;
   return (
-    <section className="vstrip-section anim-el">
+    <Reveal as="section" className="vstrip-section">
       {/* Header: kicker + title + subtitle ARRIBA de los videos */}
       <div className="vstrip-header">
         <div className="vstrip-kicker">{mc.proofVideosKicker || "✦ CLIENTES SATISFECHOS"}</div>
@@ -52,6 +53,6 @@ export default function VideoStripSection({ mc = {} }) {
           </div>
         ))}
       </div>
-    </section>
+    </Reveal>
   );
 }

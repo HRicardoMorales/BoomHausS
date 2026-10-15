@@ -23,7 +23,9 @@ import AboutSection from "../components/product/AboutSection";
 import UpsellSheet from "../components/product/UpsellSheet";
 import SocialCommentsSection from "../components/product/SocialCommentsSection";
 import GuaranteeSection from "../components/product/GuaranteeSection";
-import { WaveSeparator, Band } from "../components/product/Bands";
+import { Band } from "../components/product/Bands";
+import WaveSeparator from "../components/landing/WaveSeparator";
+import Reveal from "../components/motion/Reveal";
 import ProductGallery from "../components/product/ProductGallery";
 import VariantSelector from "../components/product/VariantSelector";
 import PaymentIcons from "../components/product/PaymentIcons";
@@ -48,6 +50,9 @@ import "./ProductDetail.page.css";
    editá los textos y registralo en src/landings/index.js
    ======================================================================== */
 const MARKETING_CONTENT = LANDING_CONFIGS["porta-cepillos"] || {};
+
+// Azul de las bandas oscuras (.pd-band--blue): color de las olas entre bandas.
+const NAVY = "#0b172a";
 
 /* =========================
    Main
@@ -136,62 +141,6 @@ function ProductDetail({ id, slug }) {
       currency:     "ARS",
     });
   }, [product, contentId, price]);
-
-  // Scroll-reveal: animar solo los elementos debajo del fold
-  useEffect(() => {
-    if (!product && !activeVariant) return;
-    let io = null;
-
-    const timer = setTimeout(() => {
-      const all = Array.from(document.querySelectorAll('.anim-el'));
-      if (!all.length) return;
-
-      // 1. Ocultar solo los que están completamente fuera del viewport inicial
-      const vh = window.innerHeight;
-      const belowFold = all.filter(el => {
-        const rect = el.getBoundingClientRect();
-        return rect.top > vh + 40; // +40px de margen
-      });
-      belowFold.forEach(el => el.classList.add('anim-hidden'));
-
-      if (!belowFold.length) return;
-
-      // 2. Fallback: en 3s mostrar todo (por si IO falla)
-      const fallback = setTimeout(() => {
-        belowFold.forEach(el => el.classList.add('in-view'));
-      }, 3000);
-
-      if (!('IntersectionObserver' in window)) {
-        clearTimeout(fallback);
-        belowFold.forEach(el => el.classList.add('in-view'));
-        return;
-      }
-
-      // Medir la altura real del sticky para no tapar la animación
-      const stickyEl = document.querySelector('.sticky-pro');
-      const stickyH = (stickyEl && stickyEl.offsetHeight > 0)
-        ? stickyEl.offsetHeight + 24
-        : 24;
-
-      io = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            // NO quitar anim-hidden — la transición vive ahí.
-            // Solo agregar in-view que override opacity/transform.
-            e.target.classList.add('in-view');
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.04, rootMargin: `0px 0px -${stickyH}px 0px` });
-
-      belowFold.forEach(el => io.observe(el));
-
-      // cleanup del fallback cuando el IO termina su trabajo
-      return () => { clearTimeout(fallback); io?.disconnect(); };
-    }, 200);
-
-    return () => { clearTimeout(timer); io?.disconnect(); };
-  }, [product, activeVariant]);
 
   // Producto sintético cuando la variante trae imágenes en el config pero no
   // está cargada en la base (404): el carrito funciona igual.
@@ -429,7 +378,6 @@ function ProductDetail({ id, slug }) {
                 </div>
               )}
 
-
               {/* Trust lines */}
               {MC.trustLines && (
                 <div className="pd-trustLines">
@@ -470,7 +418,7 @@ function ProductDetail({ id, slug }) {
         {MC.problemSection && (
           <Band variant="light">
             <div className="pd-sections-new">
-              <section className="pd-problem anim-el">
+              <Reveal as="section" className="pd-problem">
                 <h2 className="section-title-pro">{MC.problemSection.title}</h2>
                 <p className="pd-problem-text">{MC.problemSection.text}</p>
                 <ul className="pd-problem-steps">
@@ -479,7 +427,7 @@ function ProductDetail({ id, slug }) {
                   ))}
                 </ul>
                 <p className="pd-problem-footer">{MC.problemSection.footer}</p>
-              </section>
+              </Reveal>
             </div>
           </Band>
         )}
@@ -488,7 +436,7 @@ function ProductDetail({ id, slug }) {
         {MC.howToBuy && (
           <Band variant="blue">
             <div className="pd-sections-new">
-              <section className="pd-howToBuy anim-el">
+              <Reveal as="section" className="pd-howToBuy">
                 <h2 className="section-title-pro" style={{color:"#fff"}}>{MC.howToBuy.title}</h2>
                 <div className="pd-htb-grid">
                   {MC.howToBuy.steps.map((step, i) => (
@@ -499,7 +447,7 @@ function ProductDetail({ id, slug }) {
                     </div>
                   ))}
                 </div>
-              </section>
+              </Reveal>
             </div>
           </Band>
         )}
@@ -511,7 +459,7 @@ function ProductDetail({ id, slug }) {
           </div>
         </Band>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" dark={NAVY} />
 
         <Band variant="blue">
           <div className="pd-sections-new">
@@ -523,7 +471,7 @@ function ProductDetail({ id, slug }) {
           </div>
         </Band>
 
-        <WaveSeparator from="blue" />
+        <WaveSeparator from="dark" dark={NAVY} />
 
         <Band variant="light">
           <div className="pd-sections-new">
@@ -533,7 +481,7 @@ function ProductDetail({ id, slug }) {
           </div>
         </Band>
 
-        <WaveSeparator from="light" />
+        <WaveSeparator from="light" dark={NAVY} />
       </div>
 
       <div className="sticky-pro">

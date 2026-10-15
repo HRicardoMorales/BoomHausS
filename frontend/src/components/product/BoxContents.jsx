@@ -1,9 +1,10 @@
+import Reveal from "../motion/Reveal";
 export default function BoxContents({ mc = {} }) {
   const items = mc.boxItems || [];
   if (!items.length) return null;
 
   return (
-    <section className="boxc anim-el">
+    <Reveal as="section" className="boxc">
       <div className="boxc-header">
         <span className="boxc-header-icon">📦</span>
         <div>
@@ -27,6 +28,6 @@ export default function BoxContents({ mc = {} }) {
           </div>
         ))}
       </div>
-    </section>
+    </Reveal>
   );
 }

@@ -17,9 +17,12 @@ export const revealVariants = {
   }),
 };
 
-/* Se revela una sola vez, apenas asoma (margen inferior negativo para que no
-   se dispare con 1 px visible). */
-export const REVEAL_VIEWPORT = { once: true, amount: 0.15, margin: "0px 0px -40px 0px" };
+/* Se revela una sola vez, cuando su borde superior pasa el 10 % inferior del
+   viewport. Umbral por posición ("some" + margen) y no por proporción visible:
+   con `amount: 0.15` una sección más alta que ~6,5 pantallas (los comentarios
+   de la ficha miden ~5.800 px en mobile) nunca llegaba al 15 % y quedaba
+   invisible para siempre. */
+export const REVEAL_VIEWPORT = { once: true, amount: "some", margin: "0px 0px -10% 0px" };
 
 /* Resorte de elementos que "persiguen" a otro (píldora de pestañas): rápido,
    con un sobrepaso mínimo para que se sienta físico sin rebotar. */

@@ -1,4 +1,5 @@
 import SafeImg from "../SafeImg";
+import Reveal from "../motion/Reveal";
 
 export default function AboutSection({ mc = {} }) {
   const { about, soldCount, reviewScore, reviewCount } = mc;
@@ -10,7 +11,7 @@ export default function AboutSection({ mc = {} }) {
   ];
 
   return (
-    <section className="about2 anim-el" id="about">
+    <Reveal as="section" className="about2" id="about">
       <div className="about2-top">
         <div className="about2-brand">
           <span className="about2-live-dot" aria-hidden="true" />
@@ -46,6 +47,6 @@ export default function AboutSection({ mc = {} }) {
           <div key={i} className="about2-pill">{b}</div>
         ))}
       </div>
-    </section>
+    </Reveal>
   );
 }

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import SafeImg from "../SafeImg";
 import { ICON_WIDTHS } from "../landing/imageSizes";
+import Reveal from "../motion/Reveal";
 
 /* =========================
    Social Comments — estilo Facebook con paginación
@@ -23,7 +24,7 @@ export default function SocialCommentsSection({ mc = {} }) {
   const items = data.pages[page] || [];
 
   return (
-    <section className="fbsc-wrap anim-el" ref={sectionRef}>
+    <Reveal as="section" className="fbsc-wrap" ref={sectionRef}>
       <div className="fbsc-card">
         <h3 className="fbsc-title">{data.title || "Comentarios recientes"}</h3>
 
@@ -90,6 +91,6 @@ export default function SocialCommentsSection({ mc = {} }) {
           )}
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }

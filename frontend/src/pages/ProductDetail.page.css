@@ -10,8 +10,9 @@
    - no se filtra a otras páginas aunque el chunk siga cargado;
    - `:where()` no suma especificidad, así que la cascada dentro de la ficha
      es la misma que con el <style> inline.
-   `body` → `body:where(:has(.pd-detail))` y los keyframes wMoveN → pdWaveN
-   (Mundial define otros wMoveN con distinto recorrido) por el mismo motivo.
+   `body` → `body:where(:has(.pd-detail))` por el mismo motivo. Las olas
+   entre bandas y el reveal on scroll ya no viven acá: son
+   `components/landing/WaveSeparator` y `components/motion/Reveal`.
 
    Generado con postcss a partir del bloque original; ver NIGHTLY.md. */
 
@@ -2091,56 +2092,6 @@
 :where(.pd-detail) .pd-band--blue .flow-title{ color: rgba(255,255,255,.90); }
 :where(.pd-detail) .pd-band--blue .flow-p{ color: rgba(255,255,255,.65); }
 
-/* ===== WAVE DIVIDER (Shopify gentle-wave) ===== */
-:where(.pd-detail) .wave-divider {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background: var(--wave-top-color);
-  line-height: 0;
-  pointer-events: none;
-  margin-top: -1px;
-  margin-bottom: -1px;
-}
-:where(.pd-detail) .waves-anim {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 3rem;
-  margin: 0;
-}
-@media (min-width: 1000px) {
-  :where(.pd-detail) .waves-anim { max-height: 6rem; }
-}
-:where(.pd-detail) .parallax1 > use { animation: pdWave1 10s linear infinite; animation-delay: -2s; }
-:where(.pd-detail) .parallax2 > use { animation: pdWave2 8s linear infinite; opacity: 0.4; animation-delay: -2s; }
-:where(.pd-detail) .parallax3 > use { animation: pdWave3 6s linear infinite; opacity: 0.3; animation-delay: -2s; }
-:where(.pd-detail) .parallax4 > use { animation: pdWave4 4s linear infinite; opacity: 0.2; animation-delay: -2s; }
-@keyframes pdWave1 { 0%{transform:translate(85px,0)} 100%{transform:translate(-90px,0)} }
-@keyframes pdWave2 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)} }
-@keyframes pdWave3 { 0%{transform:translate(85px,0)} 100%{transform:translate(-90px,0)} }
-@keyframes pdWave4 { 0%{transform:translate(-90px,0)} 100%{transform:translate(85px,0)} }
-@media (prefers-reduced-motion: reduce) {
-  :where(.pd-detail) .parallax1 > use, :where(.pd-detail) .parallax2 > use, :where(.pd-detail) .parallax3 > use, :where(.pd-detail) .parallax4 > use { animation: none !important; }
-}
-
-/* ===== SCROLL ANIMATIONS (IntersectionObserver) ===== */
-/* Elementos visibles por defecto; JS añade anim-hidden solo a los de abajo del fold */
-:where(.pd-detail) .anim-el.anim-hidden{
-  opacity: 0;
-  transform: translateY(22px);
-  /* La transición vive AQUÍ — cuando in-view se agrega arriba, el browser anima */
-  transition: opacity .60s cubic-bezier(.22,1,.36,1),
-              transform .60s cubic-bezier(.22,1,.36,1);
-}
-/* in-view viene después en el CSS → gana el empate de especificidad → anima */
-:where(.pd-detail) .anim-el.in-view{
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-/* stagger sutil para bloques de historia */
-:where(.pd-detail) .pd-flow .anim-el.anim-hidden:nth-child(2){ transition-delay:.10s; }
-:where(.pd-detail) .pd-flow .anim-el.anim-hidden:nth-child(3){ transition-delay:.18s; }
 /* sticky siempre encima */
 :where(.pd-detail) .sticky-pro{ z-index:9000 !important; }
 

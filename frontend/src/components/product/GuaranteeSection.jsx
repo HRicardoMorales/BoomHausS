@@ -1,3 +1,4 @@
+import Reveal from "../motion/Reveal";
 /* =========================
    Guarantee Section — 30 días sin riesgo
 ========================= */
@@ -13,7 +14,7 @@ export default function GuaranteeSection({ mc = {} }) {
   if (g.hide) return null;
 
   return (
-    <section className="grt-section anim-el" id="guarantee">
+    <Reveal as="section" className="grt-section" id="guarantee">
       {/* Medalla CSS — círculo dorado con efecto de sello */}
       <div className="grt-medal" aria-hidden="true">
         <div className="grt-medal-face">
@@ -35,6 +36,6 @@ export default function GuaranteeSection({ mc = {} }) {
       <button type="button" className="grt-cta" onClick={handleCTA}>
         {g.cta || "QUIERO PROBARLO →"}
       </button>
-    </section>
+    </Reveal>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Reveal from "../motion/Reveal";
 
 function StarsInline({ rating = 5 }) {
   return (
@@ -26,7 +27,7 @@ export default function MiniReviewsBar({ mc = {} }) {
   const avatarColors = ["#1B4D3E","#2F855A","#f59e0b","#8b5cf6","#E53E3E","#06b6d4"];
 
   return (
-    <div className="mrb anim-el">
+    <Reveal className="mrb">
       <div className="mrb-label">Lo que dicen nuestros clientes</div>
       <div className="mrb-viewport">
         <div className="mrb-track" style={{ transform: `translateX(-${active * 100}%)` }}>
@@ -54,6 +55,6 @@ export default function MiniReviewsBar({ mc = {} }) {
             onClick={() => setActive(i)} aria-label={`Reseña ${i + 1}`} />
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }

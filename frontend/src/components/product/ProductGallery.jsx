@@ -62,23 +62,6 @@ export default function ProductGallery({ images, activeIndex, onIndexChange, alt
           ) : (
             <div className="pd-empty">Sin imagen</div>
           )}
-
-          {count > 1 && (
-            <div className="">
-              {images.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className=" "
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onIndexChange(idx);
-                  }}
-                  aria-label={`Ver imagen ${idx + 1}`}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {count > 1 && (

@@ -1,12 +1,13 @@
 import SafeImg from "../SafeImg";
 import { FEATURE_SIZES } from "../landing/imageSizes";
+import Reveal from "../motion/Reveal";
 
 export default function StoryBlocks({ mc = {} }) {
   const blocks = mc.storyBlocks;
   return (
     <section className="pd-flow">
       {blocks.map((b, i) => (
-        <div key={i} className="flow-row anim-el">
+        <Reveal key={i} index={i} className="flow-row">
           <div className={`flow-text${b.textHtml ? " flow-text--rich" : ""}`}>
             {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
@@ -52,7 +53,7 @@ export default function StoryBlocks({ mc = {} }) {
               )}
             </div>
           </div>
-        </div>
+        </Reveal>
       ))}
     </section>
   );

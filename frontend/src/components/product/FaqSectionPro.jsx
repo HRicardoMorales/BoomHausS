@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Reveal from "../motion/Reveal";
 
 export default function FaqSectionPro({ mc = {} }) {
   const [openIndex, setOpenIndex] = useState(null);
@@ -7,7 +8,7 @@ export default function FaqSectionPro({ mc = {} }) {
   return (
     <section className="faq-acc-wrap" id="faq-section">
       {faqTitle && <h2 className="faq-acc-title">{faqTitle}</h2>}
-      <div className="faq-acc anim-el">
+      <Reveal className="faq-acc">
         {faq.map((item, i) => {
           const isOpen = openIndex === i;
           return (
@@ -29,7 +30,7 @@ export default function FaqSectionPro({ mc = {} }) {
             </div>
           );
         })}
-      </div>
+      </Reveal>
     </section>
   );
 }
