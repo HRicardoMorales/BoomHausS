@@ -141,6 +141,21 @@
   margin-left: -7px;
   object-fit: cover;
 }
+/* Iniciales de quienes opinaron (sin fotos de stock): tonos del acento */
+:where(.pd-detail) .avatar--initials{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1;
+  color: #fff;
+  background: var(--pd-accent);
+}
+:where(.pd-detail) .avatar--initials:nth-child(2){ background: var(--pd-accent-soft); }
+:where(.pd-detail) .avatar--initials:nth-child(3){ background: #2e2f3c; }
 :where(.pd-detail) .text-grey{
   font-weight: normal;
   font-size: 12px;
@@ -654,8 +669,15 @@
   letter-spacing: .04em;
   margin-bottom: 2px;
 }
-/* Card */
+/* Grupo de radios: mismo ritmo vertical que el resto del picker */
+:where(.pd-detail) .bnd2-options{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Card (<label> con radio nativo adentro) */
 :where(.pd-detail) .bnd2-card{
+  display: block;
   position: relative;
   border-radius: 14px;
   border: 1.5px solid rgba(11,18,32,.13);
@@ -677,6 +699,10 @@
   border-left: 4px solid var(--pd-accent) !important;
   background: rgb(var(--pd-accent-rgb) / .04) !important;
   box-shadow: 0 4px 18px rgb(var(--pd-accent-rgb) / .10);
+}
+:where(.pd-detail) .bnd2-card:has(.bnd2-radio:focus-visible){
+  outline: 2px solid var(--pd-accent);
+  outline-offset: 3px;
 }
 :where(.pd-detail) .bnd2-card--pop{
   border-color: rgb(var(--pd-accent-rgb) / .25);
@@ -800,6 +826,7 @@
 }
 /* Benefit row — siempre visible en cada card */
 :where(.pd-detail) .bnd2-benefit{
+  display: block;
   margin-top: 8px;
   padding: 8px 10px;
   border-radius: 8px;

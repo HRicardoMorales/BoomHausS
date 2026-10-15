@@ -87,7 +87,7 @@ export default function StatsCircles({ mc, tone = "green", className = "" }) {
   ].filter(Boolean);
 
   return (
-    <section className={`sc-section sc-section--${tone} anim-el ${className}`.trim()}>
+    <section className={`sc-section sc-section--${tone} ${className}`.trim()}>
       {mc.statsTitle && <h2 className="sc-title">{mc.statsTitle}</h2>}
       <div className="sc-list">
         {items.map((item, i) => (

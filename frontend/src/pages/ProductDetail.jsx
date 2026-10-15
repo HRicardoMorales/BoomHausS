@@ -7,6 +7,7 @@ import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
+import RatingSummary from "../components/product/RatingSummary";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import "./ProductDetail.css";
 import { formatARS, moneyARS, clampPct } from "../components/product/format";
@@ -242,17 +243,8 @@ function ProductDetail({ id, slug }) {
             <div className="hero-top hero-top--compact">
               {/* (mini carrusel: ya lo tenés en MEDIA) */}
 
-              {/* Avatars + reseñas */}
-              <div className="reviews-container">
-                <div className="avatars">
-                  <img src="https://img.freepik.com/free-photo/stylish-african-american-woman-smiling_23-2148770405.jpg" alt="" className="avatar" width={28} height={28} decoding="async" />
-                  <img src="https://thumbs.dreamstime.com/b/beautiful-african-american-woman-relaxing-outside-happy-middle-aged-smiling-46298787.jpg" alt="" className="avatar" width={28} height={28} decoding="async" />
-                  <img src="https://media.istockphoto.com/id/1320651997/photo/young-woman-close-up-isolated-studio-portrait.jpg?s=612x612&w=0&k=20&c=lV6pxz-DknISGT2jjiSvUmSaw0hpMDf-dBpT8HTSAUI=" alt="" className="avatar" width={28} height={28} decoding="async" />
-                </div>
-                <span className="text-grey">
-                  Calificado <strong>4.5/5</strong> basado en <strong>+650 reseñas</strong>
-                </span>
-              </div>
+              {/* Calificación + iniciales: números y nombres del config */}
+              <RatingSummary mc={MC} />
 
               <h1 className="hero-title hero-title--compact">{MC.heroTitle || product?.name || MC.checkoutName}</h1>
 

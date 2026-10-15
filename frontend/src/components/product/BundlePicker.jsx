@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { moneyARS } from "./format";
 import PaymentIcons from "./PaymentIcons";
 import HeroAccordions from "./HeroAccordions";
@@ -9,58 +10,71 @@ import HeroAccordions from "./HeroAccordions";
  * la orden. Un pack `soldOut` queda visible pero no seleccionable.
  */
 export default function BundlePicker({ bundles, selectedIdx, onSelect, onBuyNow, accordions }) {
+  const titleId = useId();
+  const groupName = `pd-bundle-${titleId}`;
   if (!bundles) return null;
   return (
     <div className="bnd2-wrap">
-      {/* Título de sección */}
-      <div className="bnd2-section-title">✨ Ofertas por Tiempo Limitado ✨</div>
+      {/* Título de sección: también nombra el grupo de radios */}
+      <div className="bnd2-section-title" id={titleId}>✨ Ofertas por Tiempo Limitado ✨</div>
 
-      {bundles.map((opt, i) => (
-        <div
-          key={i}
-          className={`bnd2-card${selectedIdx === i && !opt.soldOut ? " bnd2-card--on" : ""}${opt.popular ? " bnd2-card--pop" : ""}${opt.soldOut ? " bnd2-card--sold-out" : ""}`}
-          onClick={() => !opt.soldOut && onSelect(i)}
-          role="button"
-          tabIndex={opt.soldOut ? -1 : 0}
-          aria-disabled={opt.soldOut || undefined}
-          onKeyDown={e => !opt.soldOut && e.key === "Enter" && onSelect(i)}
-        >
-          {opt.popular && (
-            <span className="bnd2-float-badge">{opt.badge || "Más Elegido"}</span>
-          )}
-          {opt.soldOut && (
-            <div className="bnd2-sold-out-overlay">
-              <span className="bnd2-sold-out-text">AGOTADO</span>
-            </div>
-          )}
-          <div className="bnd2-row">
-            <input
-              type="radio"
-              name="pd-bundle"
-              className="bnd2-radio"
-              checked={selectedIdx === i && !opt.soldOut}
-              onChange={() => !opt.soldOut && onSelect(i)}
-              disabled={opt.soldOut}
-              aria-label={opt.label}
-            />
-            <div className="bnd2-center">
-              <span className="bnd2-name">{opt.label}</span>
-              {opt.badge && !opt.popular && (
-                <span className="bnd2-badge">{opt.badge}</span>
+      {/* Cada pack es un <label> con su radio nativo: click en toda la tarjeta,
+          flechas para moverse entre packs y los agotados quedan fuera del
+          recorrido (radio `disabled`), sin manejar teclado a mano. */}
+      <div className="bnd2-options" role="radiogroup" aria-labelledby={titleId}>
+        {bundles.map((opt, i) => {
+          const on = selectedIdx === i && !opt.soldOut;
+          return (
+            <label
+              key={i}
+              className={`bnd2-card${on ? " bnd2-card--on" : ""}${opt.popular ? " bnd2-card--pop" : ""}${opt.soldOut ? " bnd2-card--sold-out" : ""}`}
+            >
+              {opt.soldOut && (
+                <span className="bnd2-sold-out-overlay" aria-hidden="true">
+                  <span className="bnd2-sold-out-text">AGOTADO</span>
+                </span>
               )}
-            </div>
-            {!opt.soldOut && (
-              <div className="bnd2-prices">
-                {opt.compareAt > 0 && <span className="bnd2-was">{moneyARS(opt.compareAt)}</span>}
-                <span className="bnd2-now">{moneyARS(opt.price)}</span>
-              </div>
-            )}
-          </div>
-          {opt.benefit && !opt.soldOut && (
-            <div className="bnd2-benefit">{opt.benefit}</div>
-          )}
-        </div>
-      ))}
+              <span className="bnd2-row">
+                <input
+                  type="radio"
+                  name={groupName}
+                  value={i}
+                  className="bnd2-radio"
+                  checked={on}
+                  onChange={() => onSelect(i)}
+                  disabled={opt.soldOut}
+                />
+                <span className="bnd2-center">
+                  <span className="bnd2-name">{opt.label}</span>
+                  {opt.soldOut && <span className="sr-only">(agotado)</span>}
+                  {opt.badge && !opt.popular && (
+                    <span className="bnd2-badge">{opt.badge}</span>
+                  )}
+                </span>
+                {!opt.soldOut && (
+                  <span className="bnd2-prices">
+                    {opt.compareAt > 0 && (
+                      <span className="bnd2-was">
+                        <span className="sr-only">Antes </span>{moneyARS(opt.compareAt)}
+                      </span>
+                    )}
+                    <span className="bnd2-now">
+                      {opt.compareAt > 0 && <span className="sr-only">, ahora </span>}{moneyARS(opt.price)}
+                    </span>
+                  </span>
+                )}
+              </span>
+              {opt.benefit && !opt.soldOut && (
+                <span className="bnd2-benefit">{opt.benefit}</span>
+              )}
+              {/* Va al final para que el lector de pantalla diga primero el pack */}
+              {opt.popular && (
+                <span className="bnd2-float-badge">{opt.badge || "Más Elegido"}</span>
+              )}
+            </label>
+          );
+        })}
+      </div>
 
       {/* CTA */}
       <button
