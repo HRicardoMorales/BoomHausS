@@ -9,6 +9,7 @@
   margin-top: 14px;
 }
 .lp-mrb--wine { --mrb-accent: rgba(139, 26, 74, 0.8); }
+.lp-mrb--accent { --mrb-accent: rgb(var(--pd-accent-rgb, 27 77 62) / 0.8); }
 
 .lp-mrb__label {
   margin: 0 0 8px;

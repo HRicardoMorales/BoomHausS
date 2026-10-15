@@ -15,9 +15,42 @@
   transform: translateY(0);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* `a:hover` global (index.css) pinta los links con el color de marca. */
+.lp-wa:hover { color: #fff; }
 .lp-wa--raised { transform: translateY(-82px); }
+@media (max-width: 990px) {
+  .lp-wa--raised-mobile { transform: translateY(-82px); }
+}
+
+/* Con etiqueta: la píldora crece hacia la izquierda (anclada a `right`). */
+.lp-wa--labelled {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  width: auto;
+  min-width: 44px;
+  padding: 0 12px;
+  gap: 0;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), gap 0.3s ease;
+}
+.lp-wa__label {
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 800;
+  transition: max-width 0.3s ease, opacity 0.25s ease 0.05s;
+}
+.lp-wa--labelled.is-open { gap: 8px; }
+.lp-wa--labelled.is-open .lp-wa__label { max-width: 200px; opacity: 1; }
+@media (hover: hover) {
+  .lp-wa--labelled:hover { gap: 8px; }
+  .lp-wa--labelled:hover .lp-wa__label { max-width: 200px; opacity: 1; }
+}
 .lp-wa:focus-visible { outline: 3px solid #0b1220; outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-wa { transition: none; }
+  .lp-wa,
+  .lp-wa__label { transition: none; }
 }

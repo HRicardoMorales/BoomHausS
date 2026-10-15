@@ -100,3 +100,12 @@ export function mainItemOptions(bundle, { price, compareAt }) {
   }
   return compareAt > price ? { compareAtPrice: compareAt } : undefined;
 }
+
+/**
+ * Reseñas cortas para el carrusel bajo el hero: `miniReviews` (o el carrusel
+ * general) con el texto corto (`short`) si existe. Máximo 6.
+ */
+export function pickMiniReviews(mc) {
+  const source = mc?.miniReviews?.length ? mc.miniReviews : mc?.reviewsCarousel || [];
+  return source.slice(0, 6).map((r) => ({ ...r, text: r.short || r.text }));
+}

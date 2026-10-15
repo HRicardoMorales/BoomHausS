@@ -8,6 +8,8 @@ const SWIPE_PX = 40;
 const AVATAR_COLORS = {
   green: ["#1B4D3E", "#2F855A", "#276749", "#1B4D3E", "#2D6A4F", "#2F855A", "#1B4D3E"],
   wine: ["#8B1A4A", "#C2185B", "#A0154E", "#8B1A4A", "#9C1B55", "#C2185B", "#8B1A4A"],
+  // Ficha de producto: el acento sale de --pd-accent-rgb (tema por producto).
+  accent: ["#1B4D3E", "#2F855A", "#f59e0b", "#8b5cf6", "#E53E3E", "#06b6d4"],
 };
 
 const truncate = (text = "", max) => (text.length > max ? `${text.slice(0, max)}…` : text);
@@ -28,6 +30,8 @@ function Stars({ rating = 5 }) {
  *
  * - `variant="carousel"`: tarjetas que se deslizan (Sillón, Kit, EMS).
  * - `variant="card"`: una tarjeta con foto y flechas (Facial).
+ * - `maxChars`: largo máximo del texto en el carrusel (se corta con “…”).
+ * - `tone`: `green` | `wine` | `accent` (ficha de producto, toma `--pd-accent-rgb`).
  *
  * Patrón de carrusel accesible (WAI-ARIA APG): región con `aria-roledescription`,
  * slides como grupos "N de M", las ocultas con `inert`, puntos con `aria-label`
@@ -39,6 +43,7 @@ export default function MiniReviewsBar({
   variant = "carousel",
   tone = "green",
   label = "Lo que dicen nuestros clientes",
+  maxChars = 110,
 }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -128,7 +133,7 @@ export default function MiniReviewsBar({
                       <Stars rating={rev.rating} />
                     </span>
                   </figcaption>
-                  <blockquote className="lp-mrb__text">“{truncate(rev.text, 110)}”</blockquote>
+                  <blockquote className="lp-mrb__text">“{truncate(rev.text, maxChars)}”</blockquote>
                 </figure>
               </div>
             ))}

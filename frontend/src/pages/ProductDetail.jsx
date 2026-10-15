@@ -9,16 +9,16 @@ import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import "./ProductDetail.css";
-import { formatARS, moneyARS, clampPct, FALLBACK_IMG } from "../components/product/format";
+import { formatARS, moneyARS, clampPct } from "../components/product/format";
 import UnavailableProductPage from "../components/product/UnavailableProductPage";
-import WaTab from "../components/product/WaTab";
+import WhatsAppTab from "../components/landing/WhatsAppTab";
 import BoxContents from "../components/product/BoxContents";
 import HowToSteps from "../components/product/HowToSteps";
 import AuthorityCard from "../components/product/AuthorityCard";
 import FaqSectionPro from "../components/product/FaqSectionPro";
 import VideoStripSection from "../components/product/VideoStripSection";
 import StoryBlocks from "../components/product/StoryBlocks";
-import MiniReviewsBar from "../components/product/MiniReviewsBar";
+import MiniReviewsBar from "../components/landing/MiniReviewsBar";
 import AboutSection from "../components/product/AboutSection";
 import UpsellSheet from "../components/product/UpsellSheet";
 import SocialCommentsSection from "../components/product/SocialCommentsSection";
@@ -36,6 +36,7 @@ import {
   variantFallbackProduct,
   cartItemName,
   mainItemOptions,
+  pickMiniReviews,
 } from "../components/product/landingConfig";
 import { useProduct } from "../hooks/product/useProduct";
 import { useLandingVariants } from "../hooks/product/useLandingVariants";
@@ -90,6 +91,7 @@ function ProductDetail({ id, slug }) {
     () => resolveLandingConfig(MCRaw, activeVariant, product),
     [MCRaw, activeVariant, product]
   );
+  const miniReviews = useMemo(() => pickMiniReviews(MC), [MC]);
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -407,7 +409,7 @@ function ProductDetail({ id, slug }) {
           </aside>
 
         {!MC.hideMiniReviews && (
-          <MiniReviewsBar productImg={images?.[0] || FALLBACK_IMG} mc={MC} />
+          <MiniReviewsBar reviews={miniReviews} tone="accent" maxChars={180} />
         )}
       </div>
       </div>{/* /pd-hero-row */}
@@ -502,9 +504,11 @@ function ProductDetail({ id, slug }) {
       </div>
 
       {/* WhatsApp tab lateral */}
-      {MC.whatsapp?.show && (
-        <WaTab number={MC.whatsapp.number} message={MC.whatsapp.message} />
-      )}
+      <WhatsAppTab
+        wa={MC.whatsapp && { ...MC.whatsapp, message: MC.whatsapp.message || "Hola!" }}
+        raised="mobile"
+        label="¿Dudas? Escribinos"
+      />
 
       {/* Upsell sheet — aparece antes del checkout cuando hay config de upsell */}
       {showUpsellSheet && MC.upsell && (
