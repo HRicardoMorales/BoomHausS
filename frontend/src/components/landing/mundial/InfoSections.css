@@ -1,0 +1,372 @@
+/* Cómo funciona, comparativa de mercado, FAQ numerado y "sobre nosotros". Scopeado bajo :where(.ml-page). */
+/* === HOW IT WORKS === */
+:where(.ml-page) .ml-htw-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 10px;
+}
+@media (max-width: 900px) { :where(.ml-page) .ml-htw-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { :where(.ml-page) .ml-htw-grid { grid-template-columns: 1fr; } }
+
+:where(.ml-page) .ml-htw-step {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 24px 20px;
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+:where(.ml-page) .ml-htw-num {
+  font-size: .72rem;
+  font-weight: 1100;
+  letter-spacing: .14em;
+  color: #5EEAD4;
+  margin-bottom: 14px;
+}
+:where(.ml-page) .ml-htw-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+:where(.ml-page) .ml-htw-stepTitle {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 1000;
+  color: #fff;
+  line-height: 1.2;
+}
+:where(.ml-page) .ml-htw-stepText {
+  margin: 0;
+  font-size: .88rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.72);
+  line-height: 1.55;
+}
+
+/* === MARKET COMPARE (mayorista vs competencia) === */
+:where(.ml-page) .ml-compare-wrap {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px dashed rgba(27,77,62,.18);
+}
+:where(.ml-page) .ml-compare {
+  max-width: 860px;
+  margin: 20px auto 0;
+}
+:where(.ml-page) .ml-compare-table {
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid rgba(27,77,62,.14);
+  box-shadow: 0 24px 60px rgba(2,8,23,.10);
+  overflow: hidden;
+}
+:where(.ml-page) .ml-compare-head {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  background: linear-gradient(180deg, #F4F9F7 0%, #ECF5F0 100%);
+  border-bottom: 1.5px solid rgba(27,77,62,.14);
+}
+:where(.ml-page) .ml-compare-head-feat,
+:where(.ml-page) .ml-compare-head-them,
+:where(.ml-page) .ml-compare-head-us {
+  padding: 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+:where(.ml-page) .ml-compare-head-them { border-left: 1px solid rgba(27,77,62,.10); }
+:where(.ml-page) .ml-compare-head-us {
+  background: linear-gradient(180deg, rgba(94,234,212,.18) 0%, rgba(45,212,191,.14) 100%);
+  border-left: 1.5px solid rgba(27,77,62,.18);
+  position: relative;
+}
+:where(.ml-page) .ml-compare-head-lbl {
+  font-size: .72rem;
+  font-weight: 1100;
+  letter-spacing: .08em;
+  color: rgba(11,18,32,.62);
+  text-transform: uppercase;
+}
+:where(.ml-page) .ml-compare-head-us .ml-compare-head-lbl { color: #0F2D24; }
+:where(.ml-page) .ml-compare-head-pill {
+  display: inline-block;
+  font-size: .56rem;
+  font-weight: 1100;
+  letter-spacing: .1em;
+  background: linear-gradient(135deg, #1B4D3E 0%, #047857 100%);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(4,120,87,.35);
+  text-transform: uppercase;
+}
+:where(.ml-page) .ml-compare-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  border-top: 1px solid rgba(27,77,62,.08);
+  align-items: stretch;
+}
+:where(.ml-page) .ml-compare-row:first-child { border-top: none; }
+:where(.ml-page) .ml-compare-feat,
+:where(.ml-page) .ml-compare-them,
+:where(.ml-page) .ml-compare-us {
+  padding: 16px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .88rem;
+  line-height: 1.35;
+}
+:where(.ml-page) .ml-compare-feat {
+  font-weight: 1000;
+  color: rgba(11,18,32,.88);
+  background: #FAFCFB;
+}
+:where(.ml-page) .ml-compare-them {
+  border-left: 1px solid rgba(27,77,62,.08);
+  color: rgba(11,18,32,.60);
+  font-weight: 700;
+  justify-content: center;
+  text-align: center;
+}
+:where(.ml-page) .ml-compare-us {
+  border-left: 1.5px solid rgba(27,77,62,.12);
+  background: linear-gradient(180deg, rgba(94,234,212,.08) 0%, rgba(45,212,191,.06) 100%);
+  color: rgba(11,18,32,.92);
+  font-weight: 900;
+  justify-content: center;
+  text-align: center;
+}
+:where(.ml-page) .ml-compare-ico {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 1100;
+  line-height: 1;
+}
+:where(.ml-page) .ml-compare-ico--x {
+  background: rgba(220,38,38,.12);
+  color: #DC2626;
+  border: 1px solid rgba(220,38,38,.30);
+}
+:where(.ml-page) .ml-compare-ico--ok {
+  background: rgba(16,185,129,.15);
+  color: #047857;
+  border: 1px solid rgba(16,185,129,.35);
+}
+:where(.ml-page) .ml-compare-txt { flex: 1; }
+@media (max-width: 640px) {
+  :where(.ml-page) .ml-compare-head,
+  :where(.ml-page) .ml-compare-row { grid-template-columns: 1fr 1fr; }
+  :where(.ml-page) .ml-compare-head-feat { display: none; }
+  :where(.ml-page) .ml-compare-feat {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #1B4D3E 0%, #0F2D24 100%);
+    color: #fff;
+    font-size: .78rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    justify-content: center;
+  }
+  :where(.ml-page) .ml-compare-them,
+  :where(.ml-page) .ml-compare-us {
+    font-size: .8rem;
+    padding: 14px 10px;
+    flex-direction: column;
+    gap: 6px;
+  }
+  :where(.ml-page) .ml-compare-head-lbl { font-size: .62rem; }
+  :where(.ml-page) .ml-compare-head-pill { font-size: .5rem; padding: 2px 6px; }
+}
+
+/* === FAQ custom (numerado, acordeón limpio) === */
+:where(.ml-page) .ml-faq-section { margin-bottom: 12px; }
+:where(.ml-page) .ml-faq-list {
+  max-width: 820px;
+  margin: 22px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+:where(.ml-page) .ml-faq-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color .25s ease, background .25s ease, transform .25s ease;
+}
+:where(.ml-page) .ml-faq-item:hover {
+  border-color: rgba(94,234,212,.35);
+  background: rgba(255,255,255,0.06);
+}
+:where(.ml-page) .ml-faq-item.open {
+  background: rgba(94,234,212,.08);
+  border-color: rgba(94,234,212,.55);
+  box-shadow: 0 14px 40px rgba(0,0,0,.22);
+}
+:where(.ml-page) .ml-faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 1.02rem;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.35;
+}
+:where(.ml-page) .ml-faq-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%);
+  color: #0F2D24;
+  font-size: .82rem;
+  font-weight: 1100;
+  letter-spacing: .02em;
+  box-shadow: 0 6px 16px rgba(94,234,212,.25);
+}
+:where(.ml-page) .ml-faq-q-text { flex: 1; min-width: 0; }
+:where(.ml-page) .ml-faq-chev {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  color: #5EEAD4;
+  transition: transform .3s ease, background .25s ease;
+}
+:where(.ml-page) .ml-faq-item.open .ml-faq-chev {
+  transform: rotate(180deg);
+  background: rgba(94,234,212,.18);
+}
+:where(.ml-page) .ml-faq-a {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .32s ease;
+}
+:where(.ml-page) .ml-faq-item.open .ml-faq-a { grid-template-rows: 1fr; }
+:where(.ml-page) .ml-faq-a-inner {
+  overflow: hidden;
+  padding: 0 20px 0 74px;
+}
+:where(.ml-page) .ml-faq-item.open .ml-faq-a-inner { padding-bottom: 18px; }
+:where(.ml-page) .ml-faq-a p {
+  margin: 0;
+  color: rgba(255,255,255,.80);
+  font-weight: 600;
+  font-size: .95rem;
+  line-height: 1.65;
+}
+@media (max-width: 560px) {
+  :where(.ml-page) .ml-faq-q { padding: 14px 16px; font-size: .95rem; gap: 12px; }
+  :where(.ml-page) .ml-faq-num { width: 34px; height: 34px; font-size: .76rem; }
+  :where(.ml-page) .ml-faq-a-inner { padding: 0 16px 0 62px; }
+}
+
+/* === ABOUT final — clean, centered, pro === */
+:where(.ml-page) .ml-about-final {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 12px 0 4px;
+}
+:where(.ml-page) .ml-about-kicker-wrap { margin-bottom: 14px; }
+:where(.ml-page) .ml-about-kicker {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 1000;
+  letter-spacing: .16em;
+  color: #1B4D3E;
+  background: rgba(94,234,212,.22);
+  border: 1px solid rgba(27,77,62,.22);
+  padding: 7px 16px;
+  border-radius: 999px;
+}
+:where(.ml-page) .ml-about-title {
+  margin: 0 0 16px;
+  font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+  font-weight: 1100;
+  color: rgba(11,18,32,.92);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+:where(.ml-page) .ml-about-text {
+  margin: 0 auto 24px;
+  max-width: 620px;
+  color: rgba(11,18,32,.68);
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+:where(.ml-page) .ml-about-bullets {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+:where(.ml-page) .ml-about-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid rgba(27,77,62,.18);
+  color: rgba(11,18,32,.82);
+  font-size: .84rem;
+  font-weight: 850;
+  padding: 9px 16px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(15,45,36,.06);
+}
+:where(.ml-page) .ml-about-pill-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1B4D3E;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 1100;
+}
+:where(.ml-page) .ml-about-signoff {
+  margin-top: 10px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(27,77,62,.12);
+}
+:where(.ml-page) .ml-about-signoff-logo {
+  font-size: 1.35rem;
+  font-weight: 1100;
+  letter-spacing: -0.01em;
+  color: #0F2D24;
+}
+:where(.ml-page) .ml-about-signoff-tag {
+  margin-top: 4px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(11,18,32,.5);
+}

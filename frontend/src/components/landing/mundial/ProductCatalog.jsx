@@ -3,6 +3,7 @@ import MC from "../../../landings/mundial-revendedores.js";
 import { responsiveImage } from "../../../utils/imageCdn";
 import { SectionHeader } from "./LandingChrome";
 import { FALLBACK_IMG, getStockFor, moneyARS } from "./utils";
+import "./ProductCatalog.css";
 
 /* =========================
    PRODUCT CARD

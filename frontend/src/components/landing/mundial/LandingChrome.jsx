@@ -1,4 +1,5 @@
 import WaveSeparator from "../WaveSeparator";
+import "./LandingChrome.css";
 
 /* =========================
    Band + olas (igual que ProductDetail)

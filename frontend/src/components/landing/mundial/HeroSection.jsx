@@ -1,5 +1,6 @@
 import MC from "../../../landings/mundial-revendedores.js";
 import { dayOfYear } from "./utils";
+import "./HeroSection.css";
 
 /* =========================
    HERO

@@ -1,0 +1,136 @@
+/* Carrusel de reseñas de revendedores. Scopeado bajo :where(.ml-page). */
+/* === REVIEWS CAROUSEL (idéntico a ProductDetail rv-) === */
+:where(.ml-page) .rv-stars { display: flex; gap: 2px; font-size: 1rem; line-height: 1; }
+:where(.ml-page) .rv-wrap { position: relative; margin-top: 14px; }
+:where(.ml-page) .rv-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 6px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+:where(.ml-page) .rv-slide { scroll-snap-align: center; flex: 0 0 auto; width: min(520px, 88vw); }
+:where(.ml-page) .rv-card {
+  background: #fff;
+  border: 1px solid rgba(2,8,23,.10);
+  border-radius: 22px;
+  box-shadow: 0 22px 70px rgba(10,20,40,.16);
+  overflow: hidden;
+}
+/* Review header con avatar de iniciales + Verificado */
+:where(.ml-page) .rv-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(2,8,23,.08);
+}
+:where(.ml-page) .rv-avatar {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 1100;
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+  box-shadow: 0 10px 24px rgba(2,8,23,.22);
+  border: 2px solid rgba(255,255,255,.85);
+}
+:where(.ml-page) .rv-head-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+:where(.ml-page) .rv-name {
+  font-weight: 1100;
+  color: rgba(11,18,32,.92);
+  font-size: .98rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+:where(.ml-page) .rv-city {
+  font-size: .76rem;
+  font-weight: 750;
+  color: rgba(11,18,32,.55);
+  line-height: 1.2;
+}
+:where(.ml-page) .rv-head .rv-stars { margin-top: 2px; font-size: .9rem; }
+:where(.ml-page) .rv-verified {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  background: rgba(16,185,129,.10);
+  border: 1px solid rgba(16,185,129,.30);
+  color: #065F46;
+  font-size: .68rem;
+  font-weight: 1000;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+:where(.ml-page) .rv-verified svg { display: block; }
+
+:where(.ml-page) .rv-body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 8px; min-height: 160px; }
+:where(.ml-page) .rv-title {
+  font-weight: 1100;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: rgba(11,18,32,.92);
+  font-size: .88rem;
+}
+:where(.ml-page) .rv-text {
+  margin: 0;
+  color: rgba(11,18,32,.70);
+  line-height: 1.6;
+  font-weight: 650;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+@media (max-width: 560px) {
+  :where(.ml-page) .rv-head { padding: 14px 14px 12px; gap: 11px; }
+  :where(.ml-page) .rv-avatar { width: 48px; height: 48px; font-size: .95rem; }
+  :where(.ml-page) .rv-verified { padding: 4px 8px 4px 6px; font-size: .62rem; }
+  :where(.ml-page) .rv-verified svg { width: 13px; height: 13px; }
+  :where(.ml-page) .rv-body { padding: 14px 16px 18px; }
+}
+
+:where(.ml-page) .rv-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(2,8,23,.10);
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 18px 55px rgba(10,20,40,.18);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  z-index: 10;
+}
+:where(.ml-page) .rv-prev { left: -8px; }
+:where(.ml-page) .rv-next { right: -8px; }
+@media (max-width: 560px) { :where(.ml-page) .rv-nav { display: none; } }
+
+:where(.ml-page) .rv-dots { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+:where(.ml-page) .rv-dot {
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(2,8,23,.18);
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease;
+}
+:where(.ml-page) .rv-dot.on { background: rgba(27,77,62,.95); transform: scale(1.25); }

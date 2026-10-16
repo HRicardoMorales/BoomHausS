@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
 import { moneyARS } from "./utils";
+import "./ProfitCalculator.css";
 
 /* =========================
    PROFIT CALCULATOR — el corazón

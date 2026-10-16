@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
 import { SectionHeader } from "./LandingChrome";
+import "./InfoSections.css";
 
 /* =========================
    HOW IT WORKS

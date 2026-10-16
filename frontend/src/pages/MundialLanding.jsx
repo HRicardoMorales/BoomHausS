@@ -3,8 +3,8 @@
 // Landing B2B para revendedores de productos del Mundial Argentina.
 // URL: /lp/mundial-revendedores
 // Esta página solo orquesta datos (productos, carrito, checkout, contexto
-// de WhatsApp); las secciones viven en components/landing/mundial/ y los
-// estilos en MundialLanding.css, scopeados bajo :where(.ml-page).
+// de WhatsApp); las secciones viven en components/landing/mundial/, cada
+// una con su CSS al lado, scopeado bajo :where(.ml-page).
 // El corazón del pitch B2B es la CALCULADORA DE GANANCIA.
 // ─────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from "react";
@@ -22,8 +22,8 @@ import { KitHighlight, ProductCarousel } from "../components/landing/mundial/Pro
 import { MundialMiniReviews, ResellerReviews } from "../components/landing/mundial/ResellerReviews";
 import { AboutB2B, HowItWorks, ResellerFaq } from "../components/landing/mundial/InfoSections";
 import { StickyBarMundial } from "../components/landing/mundial/StickyBarMundial";
-// Último import: el CSS de la landing va después del de CheckoutSheet,
-// como antes iba el <style> inline al final de la página.
+// Último import: la base de la landing (bandas, botones, toast, reveal) va
+// después del CSS de CheckoutSheet y del de cada sección.
 import "../components/landing/mundial/MundialLanding.css";
 
 /* =========================

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { moneyARS } from "./utils";
+import "./StickyBarMundial.css";
 
 /* =========================
    STICKY BAR + Final CTA

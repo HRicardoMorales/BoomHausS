@@ -3,6 +3,7 @@ import MC from "../../../landings/mundial-revendedores.js";
 import MiniReviewsBar from "../MiniReviewsBar";
 import { SectionHeader } from "./LandingChrome";
 import { getAvatarColors, getInitials } from "./utils";
+import "./ResellerReviews.css";
 
 /* =========================
    MINI REVIEWS — el carrusel compartido de las landings (APG, swipe,
