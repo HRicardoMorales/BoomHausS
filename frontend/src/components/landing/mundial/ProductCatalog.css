@@ -217,13 +217,6 @@
   color: rgba(11,18,32,.92);
   line-height: 1.25;
 }
-:where(.ml-page) .ml-prod-desc {
-  margin: 0;
-  font-size: .85rem;
-  font-weight: 650;
-  color: rgba(11,18,32,.58);
-  line-height: 1.5;
-}
 :where(.ml-page) .ml-prod-priceRow {
   display: flex;
   align-items: baseline;

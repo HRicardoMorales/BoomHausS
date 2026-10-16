@@ -285,69 +285,7 @@
   padding: 0 6px;
 }
 
-/* Summary table */
-:where(.ml-page) .ml-calc-summary {
-  display: flex;
-  flex-direction: column;
-  background: #F7FBF9;
-  border: 1px solid rgba(27,77,62,.10);
-  border-radius: 14px;
-  overflow: hidden;
-}
-:where(.ml-page) .ml-calc-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(27,77,62,.08);
-}
-:where(.ml-page) .ml-calc-row:last-child { border-bottom: none; }
-:where(.ml-page) .ml-calc-row-lbl {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: .92rem;
-  font-weight: 850;
-  color: rgba(11,18,32,.68);
-}
-:where(.ml-page) .ml-calc-row-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-:where(.ml-page) .ml-calc-row-dot--cost { background: #F97316; }
-:where(.ml-page) .ml-calc-row-dot--rev  { background: #F59E0B; }
-:where(.ml-page) .ml-calc-row-dot--profit { background: #10B981; }
-:where(.ml-page) .ml-calc-row-val {
-  font-size: 1rem;
-  font-weight: 1000;
-  color: #0F2D24;
-  letter-spacing: -0.01em;
-  text-align: right;
-}
-:where(.ml-page) .ml-calc-row--profit {
-  background: linear-gradient(135deg, #1B4D3E 0%, #0F2D24 100%);
-  color: #fff;
-  padding: 16px 16px;
-}
-:where(.ml-page) .ml-calc-row--profit .ml-calc-row-lbl { color: rgba(255,255,255,.72); }
-:where(.ml-page) .ml-calc-row--profit .ml-calc-row-dot--profit { background: #5EEAD4; box-shadow: 0 0 0 3px rgba(94,234,212,.25); }
-:where(.ml-page) .ml-calc-row-val-wrap { text-align: right; }
-:where(.ml-page) .ml-calc-row-val--big {
-  color: #5EEAD4;
-  font-size: clamp(1.3rem, 2.8vw, 1.7rem);
-  line-height: 1.1;
-}
-:where(.ml-page) .ml-calc-row-margin {
-  margin-top: 4px;
-  font-size: .72rem;
-  font-weight: 900;
-  color: rgba(255,255,255,.70);
-  letter-spacing: .02em;
-}
-
+/* CTA final: comprar los packs calculados */
 :where(.ml-page) .ml-calc-go {
   display: flex;
   align-items: center;
