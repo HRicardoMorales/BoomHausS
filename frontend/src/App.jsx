@@ -69,7 +69,7 @@ export default function App() {
   // ✅ Marquee oculto además en landings con header o cinta propia
   const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos' || location.pathname === '/lp/masajeador-ems-eyes' || location.pathname === '/lp/masajeador-facial-iones-lambo';
   // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
+  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/masajeador-ems-eyes' || location.pathname === '/lp/sillon-puff-inflable' || location.pathname === '/lp/kit-belleza-6en1' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
   // ✅ WhatsApp global oculto donde la pagina renderiza su propio boton
   //    (evita duplicar). Alcance:
   //    - landings (/lp/*): todas tienen su <WaTab> propio con estilo custom

@@ -28,6 +28,7 @@ import { trackWithCapi } from '../../../lib/metaPixel';
 import { CheckoutSheet } from '../../../pages/CheckoutSheet';
 import SafeImg from '../../SafeImg.jsx';
 import LandingFooter from '../LandingFooter.jsx';
+import BundleOptions from '../BundleOptions.jsx';
 import StatsCircles from "../StatsCircles";
 import StickyBuyBar from "../StickyBuyBar";
 import WhatsAppTab from "../WhatsAppTab";
@@ -242,50 +243,12 @@ export default function ShowcaseLanding({ config: mc, theme }) {
               </div>
 
               <div className="bnd2-wrap">
-                <div className="bnd2-section-title">✨ Elegí Tu Kit ✨</div>
-
-                {displayBundles.map((b) => (
-                  <div
-                    key={b.id}
-                    className={`bnd2-card${!b.soldOut && selectedBundle.id === b.id ? ' bnd2-card--on' : ''}${b.popular ? ' bnd2-card--pop' : ''}${b.soldOut ? ' spf-card--sold' : ''}`}
-                    onClick={() => !b.soldOut && setSelectedBundleId(b.id)}
-                    role="button"
-                    tabIndex={b.soldOut ? -1 : 0}
-                    aria-disabled={b.soldOut}
-                    onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundleId(b.id)}
-                  >
-                    {b.popular && !b.soldOut && <div className="bnd2-float-badge">⭐ MÁS POPULAR</div>}
-                    {b.soldOut && <div className="bnd2-float-badge spf-sold-badge">AGOTADO</div>}
-                    <div className="bnd2-row">
-                      <input
-                        type="radio"
-                        className="bnd2-radio"
-                        readOnly
-                        checked={!b.soldOut && selectedBundle.id === b.id}
-                        disabled={b.soldOut}
-                        aria-label={b.label}
-                      />
-                      <div className="bnd2-center">
-                        <span className="bnd2-name">{b.label}</span>
-                        {!b.soldOut && b.badge && (
-                          <span className={`bnd2-badge${b.popular ? ' bnd2-badge--pop' : ''}`}>{b.badge}</span>
-                        )}
-                      </div>
-                      <div className="bnd2-prices">
-                        {b.soldOut
-                          ? <span className="spf-soldout-label">Sin stock</span>
-                          : (
-                            <>
-                              <span className="bnd2-was">{fmt(b.compareAt)}</span>
-                              <span className="bnd2-now">{fmt(b.price)}</span>
-                            </>
-                          )
-                        }
-                      </div>
-                    </div>
-                    {!b.soldOut && b.benefit && <div className="bnd2-benefit">{b.benefit}</div>}
-                  </div>
-                ))}
+                <BundleOptions
+                  bundles={displayBundles}
+                  selectedId={selectedBundle.id}
+                  onSelect={setSelectedBundleId}
+                  formatPrice={fmt}
+                />
 
                 <button
                   className="bnd2-cta spf-cta"

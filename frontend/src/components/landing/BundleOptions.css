@@ -1,0 +1,24 @@
+/* Estructura de BundleOptions. Los colores y medidas de las tarjetas siguen
+   en el CSS de cada plantilla (`.bnd2-*` bajo su raíz). Acá solo lo que cambia
+   por pasar de <div> a <label>/<span> (contenido de frase válido) y el foco. */
+
+/* El grupo se interpone entre `.bnd2-wrap` (flex con gap) y las tarjetas:
+   repite el mismo ritmo vertical para que no cambie el espaciado. */
+.lp-bnd-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lp-bnd-group .bnd2-card,
+.lp-bnd-group .bnd2-benefit,
+.lp-bnd-group .bnd2-thumb {
+  display: block;
+}
+
+/* El radio nativo muestra su anillo, pero en 18 px se pierde: se marca toda
+   la tarjeta solo cuando el foco llega por teclado. */
+.lp-bnd-group .bnd2-card:has(.bnd2-radio:focus-visible) {
+  outline: 2px solid var(--lp-bnd-focus, #0b1220);
+  outline-offset: 3px;
+}

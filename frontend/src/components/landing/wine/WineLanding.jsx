@@ -36,6 +36,7 @@ import { trackWithCapi } from '../../../lib/metaPixel';
 import { CheckoutSheet } from '../../../pages/CheckoutSheet';
 import SafeImg from '../../SafeImg.jsx';
 import LandingFooter from '../LandingFooter.jsx';
+import BundleOptions from '../BundleOptions.jsx';
 import StatsCircles from '../StatsCircles';
 import StickyBuyBar from '../StickyBuyBar';
 import WhatsAppTab from '../WhatsAppTab';
@@ -111,6 +112,26 @@ export default function WineLanding({ config: mc, theme }) {
   // El bundle seleccionado se deriva del id + datos del producto (no se
   // sincroniza con un useEffect): siempre refleja label/precio actualizados.
   const selectedBundle = displayBundles.find(b => b.id === selectedBundleId) ?? displayBundles[0];
+
+  // Miniaturas "producto + regalo" debajo de cada pack (decorativas: el
+  // nombre del pack ya dice qué incluye).
+  const renderBundleThumbs = (b) => {
+    const fallback = product?.imageUrl || '';
+    const imgs = b.imgs?.length > 0 ? b.imgs : (b.img || fallback) ? [b.img || fallback] : [];
+    if (imgs.length === 0) return null;
+    return (
+      <span className="bnd2-imgs" aria-hidden="true">
+        {imgs.map((src, idx) => (
+          <span key={idx} className="bnd2-imgs-item">
+            {idx > 0 && <span className="bnd2-imgs-plus">+</span>}
+            <span className="bnd2-thumb">
+              <SafeImg src={src || fallback} alt="" width={42} height={42} sizes="42px" widths={[84]} />
+            </span>
+          </span>
+        ))}
+      </span>
+    );
+  };
 
   const { fallbackTitle } = theme;
   const heroImgs = useMemo(() => {
@@ -255,65 +276,13 @@ export default function WineLanding({ config: mc, theme }) {
               )}
 
               <div className="bnd2-wrap">
-                <div className="bnd2-section-title">✨ Elegí Tu Kit ✨</div>
-
-                {displayBundles.map((b) => {
-                  const imgs = b.imgs?.length > 0 ? b.imgs : (b.img || product?.imageUrl) ? [b.img || product?.imageUrl] : [];
-                  return (
-                    <div
-                      key={b.id}
-                      className={`bnd2-card${!b.soldOut && selectedBundle.id === b.id ? ' bnd2-card--on' : ''}${b.popular ? ' bnd2-card--pop' : ''}${b.soldOut ? ' spf-card--sold' : ''}`}
-                      onClick={() => !b.soldOut && setSelectedBundleId(b.id)}
-                      role="button"
-                      tabIndex={b.soldOut ? -1 : 0}
-                      aria-disabled={b.soldOut}
-                      onKeyDown={e => e.key === 'Enter' && !b.soldOut && setSelectedBundleId(b.id)}
-                    >
-                      {b.popular && !b.soldOut && <div className="bnd2-float-badge">⭐ MÁS POPULAR</div>}
-                      {b.soldOut && <div className="bnd2-float-badge spf-sold-badge">AGOTADO</div>}
-                      <div className="bnd2-row">
-                        <input
-                          type="radio"
-                          className="bnd2-radio"
-                          readOnly
-                          checked={!b.soldOut && selectedBundle.id === b.id}
-                          disabled={b.soldOut}
-                          aria-label={b.label}
-                        />
-                        <div className="bnd2-center">
-                          <span className="bnd2-name">{b.label}</span>
-                          {!b.soldOut && b.badge && (
-                            <span className={`bnd2-badge${b.popular ? ' bnd2-badge--pop' : ''}`}>{b.badge}</span>
-                          )}
-                        </div>
-                        <div className="bnd2-prices">
-                          {b.soldOut
-                            ? <span className="spf-soldout-label">Sin stock</span>
-                            : (
-                              <>
-                                <span className="bnd2-was">{fmt(b.compareAt)}</span>
-                                <span className="bnd2-now">{fmt(b.price)}</span>
-                              </>
-                            )
-                          }
-                        </div>
-                      </div>
-                      {imgs.length > 0 && (
-                        <div className="bnd2-imgs">
-                          {imgs.map((src, idx) => (
-                            <div key={idx} className="bnd2-imgs-item">
-                              {idx > 0 && <span className="bnd2-imgs-plus">+</span>}
-                              <div className="bnd2-thumb">
-                                <SafeImg src={src || product?.imageUrl || ''} alt="" width={42} height={42} sizes="42px" widths={[84]} />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {!b.soldOut && b.benefit && <div className="bnd2-benefit">{b.benefit}</div>}
-                    </div>
-                  );
-                })}
+                <BundleOptions
+                  bundles={displayBundles}
+                  selectedId={selectedBundle.id}
+                  onSelect={setSelectedBundleId}
+                  formatPrice={fmt}
+                  renderMedia={renderBundleThumbs}
+                />
 
                 <button
                   className="bnd2-cta spf-cta"
