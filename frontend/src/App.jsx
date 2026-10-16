@@ -66,8 +66,8 @@ export default function App() {
 
   // ✅ Navbar/marquee ocultos en checkout y landing B2B
   const hideChrome = location.pathname === '/checkout' || location.pathname === '/lp/antimoho-pisos';
-  // ✅ Marquee oculto además en landings con header propio
-  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
+  // ✅ Marquee oculto además en landings con header o cinta propia
+  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos' || location.pathname === '/lp/masajeador-ems-eyes' || location.pathname === '/lp/masajeador-facial-iones-lambo';
   // ✅ Footer oculto en checkout y landing B2B mundial
   const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
   // ✅ WhatsApp global oculto donde la pagina renderiza su propio boton

@@ -1,13 +1,21 @@
 ﻿// src/landings/masajeador-ems-eyes.js
 // URL resultante: /lp/masajeador-ems-eyes
 // Producto en admin → slug: masajeador-ems-eyes
-// Renderizado por: src/pages/MasajeadorEmsEyesLanding.jsx
+// Renderizado por: src/pages/MasajeadorEmsEyesLanding.jsx (plantilla components/landing/wine/WineLanding)
 
 const masajeadorEmsEyesConfig = {
   productSlug: "masajeador-ems-eyes",
 
   pageTitle: "Masajeador Facial EMS EYES | Luz Roja + EMS + Calor 42°C | Amelor",
   checkoutName: "Masajeador Facial EMS EYES",
+
+  // Frases de la cinta superior (se duplican para el scroll infinito).
+  marquee: [
+    "💕 +500 compradoras felices",
+    "✨ Tecnología del consultorio desde tu casa",
+    "🛡️ 30 días de garantía total",
+    "🚚 Envío gratis a todo el país",
+  ],
 
   heroHeadline: "Cara descansada en 10 minutos — sin bótox, sin turnos, sin salir de casa",
   heroSubtitle: "La tecnología del consultorio estético, al precio que tiene sentido.",
