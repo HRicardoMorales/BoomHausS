@@ -15,7 +15,7 @@ function saveTarget(storageKey, target) {
 }
 
 /**
- * Cuenta regresiva "mm:ss" persistida en sessionStorage. Componentes con la
+ * Cuenta regresiva "mm:ss" (o "h:mm:ss" si pasa la hora) persistida en sessionStorage. Componentes con la
  * misma `storageKey` (marquee y home usan "pd_countdown") muestran el mismo
  * tiempo aunque se monten en momentos distintos.
  */
@@ -34,7 +34,8 @@ export function useCountdown(storageKey, minutes) {
   }, [storageKey, minutes]);
 
   const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const hh = Math.floor(totalSec / 3600);
+  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
   const ss = String(totalSec % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
+  return hh > 0 ? `${hh}:${mm}:${ss}` : `${mm}:${ss}`;
 }
