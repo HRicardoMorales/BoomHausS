@@ -1,67 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
+import MiniReviewsBar from "../MiniReviewsBar";
 import { SectionHeader } from "./LandingChrome";
 import { getAvatarColors, getInitials } from "./utils";
 
 /* =========================
-   MINI REVIEWS BAR — rotating compact review card
+   MINI REVIEWS — el carrusel compartido de las landings (APG, swipe,
+   pausa con hover/foco y reduced motion) con las reseñas de revendedores.
 ========================= */
-export function MiniReviewsBar() {
-  const data = MC.reviews.slice(0, 6);
-  const [active, setActive] = useState(0);
+const MINI_REVIEWS = MC.reviews.slice(0, 6).map((r) => ({
+  name: r.city ? `${r.name} — ${r.city}` : r.name,
+  text: r.short || r.text,
+  rating: r.stars || 5,
+}));
 
-  useEffect(() => {
-    if (!data.length) return;
-    const t = setInterval(() => setActive((i) => (i + 1) % data.length), 4500);
-    return () => clearInterval(t);
-  }, [data.length]);
-
-  if (!data.length) return null;
-
-  const avatarColors = ["#1B4D3E", "#2F855A", "#f59e0b", "#8b5cf6", "#E53E3E", "#06b6d4"];
-
+export function MundialMiniReviews() {
   return (
-    <div className="mrb anim-el">
-      <div className="mrb-label">LO QUE DICEN NUESTROS REVENDEDORES</div>
-      <div className="mrb-viewport">
-        <div className="mrb-track" style={{ transform: `translateX(-${active * 100}%)` }}>
-          {data.map((r, i) => (
-            <div className="mrb-slide" key={i}>
-              <div className="mrb-card">
-                <div className="mrb-card-header">
-                  <div
-                    className="mrb-card-avatar"
-                    style={{ background: avatarColors[i % avatarColors.length] }}
-                  >
-                    {(r.name || "?").charAt(0).toUpperCase()}
-                  </div>
-                  <div className="mrb-card-meta">
-                    <div className="mrb-card-name">{r.name} — {r.city}</div>
-                    <div className="mrb-card-stars">
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <span key={j} style={{ color: j < (r.stars || 5) ? "#FBBF24" : "#D1D5DB" }}>★</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <p className="mrb-card-text">"{r.short || r.text}"</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mrb-dots">
-        {data.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            className={`mrb-dot ${i === active ? "on" : ""}`}
-            onClick={() => setActive(i)}
-            aria-label={`Reseña ${i + 1}`}
-          />
-        ))}
-      </div>
-    </div>
+    <MiniReviewsBar
+      reviews={MINI_REVIEWS}
+      tone="accent"
+      label="Lo que dicen nuestros revendedores"
+      maxChars={180}
+    />
   );
 }
 

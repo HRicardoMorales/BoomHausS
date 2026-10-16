@@ -10,10 +10,14 @@
 @media (max-width: 520px) {
   .ml-page .pd-band:first-of-type { padding: 14px 0 20px; }
 }
-.ml-page .wave-divider { height: 60px; }
-@media (min-width: 1000px) { .ml-page .wave-divider { height: 72px; } }
-.ml-page .wave-divider .waves-anim { max-height: 2.2rem; }
-@media (min-width: 1000px) { .ml-page .wave-divider .waves-anim { max-height: 3.2rem; } }
+/* Olas compartidas (components/landing/WaveSeparator) más bajas acá:
+   caja fija y la ola apoyada abajo, como la copia local que reemplazan. */
+.ml-page .lwave { height: 60px; }
+.ml-page .lwave-svg { position: absolute; bottom: 0; left: 0; max-height: 2.2rem; }
+@media (min-width: 1000px) {
+  .ml-page .lwave { height: 72px; }
+  .ml-page .lwave-svg { max-height: 3.2rem; }
+}
 
 /* Section headers: menos margen inferior */
 .ml-page .ml-sec-head { margin: 2px auto 18px; }
@@ -727,80 +731,6 @@
 :where(.ml-page) .pc-dot.on { background: #1B4D3E; width: 22px; }
 .ml-page .pd-band--blue .pc-dot { background: rgba(255,255,255,.30); }
 .ml-page .pd-band--blue .pc-dot.on { background: #5EEAD4; }
-
-/* === MINI REVIEWS BAR (mrb-) — compacto debajo del kit === */
-:where(.ml-page) .mrb {
-  margin: 28px auto 0;
-  max-width: 640px;
-}
-:where(.ml-page) .mrb-label {
-  font-size: .68rem;
-  font-weight: 1000;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: rgba(11,18,32,.42);
-  margin-bottom: 10px;
-  text-align: center;
-}
-:where(.ml-page) .mrb-viewport { overflow: hidden; border-radius: 16px; }
-:where(.ml-page) .mrb-track {
-  display: flex;
-  width: 100%;
-  transition: transform .45s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
-}
-:where(.ml-page) .mrb-slide { flex: 0 0 100%; width: 100%; }
-:where(.ml-page) .mrb-card {
-  background: #fff;
-  border: 1px solid rgba(2,8,23,.09);
-  border-radius: 16px;
-  padding: 16px 18px;
-  box-shadow: 0 8px 28px rgba(10,20,40,.08);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 120px;
-}
-:where(.ml-page) .mrb-card-header { display: flex; align-items: center; gap: 12px; }
-:where(.ml-page) .mrb-card-avatar {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  color: #fff;
-  font-weight: 1000;
-  font-size: 1.05rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.12);
-}
-:where(.ml-page) .mrb-card-meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-:where(.ml-page) .mrb-card-name {
-  font-size: .85rem;
-  font-weight: 1000;
-  color: rgba(11,18,32,.88);
-  line-height: 1;
-}
-:where(.ml-page) .mrb-card-stars { font-size: .85rem; line-height: 1; }
-:where(.ml-page) .mrb-card-text {
-  margin: 0;
-  font-size: .92rem;
-  font-style: italic;
-  color: rgba(11,18,32,.70);
-  font-weight: 600;
-  line-height: 1.55;
-}
-:where(.ml-page) .mrb-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
-:where(.ml-page) .mrb-dot {
-  width: 6px; height: 6px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(2,8,23,.18);
-  cursor: pointer;
-  padding: 0;
-  transition: width .22s ease, background .2s ease;
-}
-:where(.ml-page) .mrb-dot.on { background: #1B4D3E; width: 18px; }
 
 :where(.ml-page) .ml-prod {
   position: relative;
@@ -2111,62 +2041,3 @@
 :where(.ml-page) .anim-el { opacity: 1; transform: none; }
 :where(.ml-page) .anim-hidden { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
 :where(.ml-page) .anim-hidden.in-view { opacity: 1; transform: translateY(0); }
-
-/* === wave-divider (colores verdes matching pd-band) === */
-.ml-page .wave-divider {
-  position: relative;
-  width: 100%;
-  height: 100px;
-  margin: -1px 0;
-  overflow: hidden;
-  background: var(--wave-top-color);
-  line-height: 0;
-  pointer-events: none;
-}
-.ml-page .waves-anim {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 3rem;
-  margin: 0;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-@media (min-width: 1000px) {
-  .ml-page .waves-anim { max-height: 6rem; }
-}
-.ml-page .parallax1 > use { animation: wMove1 10s linear infinite; animation-delay: -2s; }
-.ml-page .parallax2 > use { animation: wMove2 8s linear infinite; opacity: 0.4; animation-delay: -2s; }
-.ml-page .parallax3 > use { animation: wMove3 6s linear infinite; opacity: 0.3; animation-delay: -2s; }
-.ml-page .parallax4 > use { animation: wMove4 4s linear infinite; opacity: 0.2; animation-delay: -2s; }
-@keyframes wMove1 { 0% { transform: translate3d(-90px,0,0) } 100% { transform: translate3d(85px,0,0) } }
-@keyframes wMove2 { 0% { transform: translate3d(-90px,0,0) } 100% { transform: translate3d(85px,0,0) } }
-@keyframes wMove3 { 0% { transform: translate3d(-90px,0,0) } 100% { transform: translate3d(85px,0,0) } }
-@keyframes wMove4 { 0% { transform: translate3d(-90px,0,0) } 100% { transform: translate3d(85px,0,0) } }
-
-/* === wa-tab (override mínimo si hace falta) === */
-:where(.ml-page) .wa-tab {
-  position: fixed;
-  right: -160px;
-  bottom: 90px;
-  z-index: 80;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #25D366;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 999px 0 0 999px;
-  box-shadow: 0 10px 30px rgba(37,211,102,.40);
-  font-weight: 1000;
-  text-decoration: none;
-  transition: right .25s ease;
-  font-size: .88rem;
-}
-:where(.ml-page) .wa-tab--open { right: 0; }
-:where(.ml-page) .wa-tab-icon { display: block; }
-:where(.ml-page) .wa-tab-label { white-space: nowrap; }
-@media (min-width: 1100px) {
-  :where(.ml-page) .wa-tab { right: 0; }
-}

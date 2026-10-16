@@ -14,11 +14,12 @@ import { trackWithCapi } from "../lib/metaPixel";
 import { CheckoutSheet } from "./CheckoutSheet";
 import MC from "../landings/mundial-revendedores.js";
 import { moneyARS } from "../components/landing/mundial/utils";
-import { Band, SectionHeader, WaTab, WaveSeparator } from "../components/landing/mundial/LandingChrome";
+import { Band, MundialWave, SectionHeader } from "../components/landing/mundial/LandingChrome";
+import WhatsAppTab from "../components/landing/WhatsAppTab";
 import { HeroSection, SocialProofBar, TrustStrip } from "../components/landing/mundial/HeroSection";
 import { ProfitCalculator } from "../components/landing/mundial/ProfitCalculator";
 import { KitHighlight, ProductCarousel } from "../components/landing/mundial/ProductCatalog";
-import { MiniReviewsBar, ResellerReviews } from "../components/landing/mundial/ResellerReviews";
+import { MundialMiniReviews, ResellerReviews } from "../components/landing/mundial/ResellerReviews";
 import { AboutB2B, HowItWorks, ResellerFaq } from "../components/landing/mundial/InfoSections";
 import { StickyBarMundial } from "../components/landing/mundial/StickyBarMundial";
 // Último import: el CSS de la landing va después del de CheckoutSheet,
@@ -283,7 +284,7 @@ export default function MundialLanding() {
         <TrustStrip />
       </Band>
 
-      <WaveSeparator from="blue" />
+      <MundialWave from="dark" />
 
       {/* 2. KIT HIGHLIGHT light — subido al principio, con énfasis en regalos */}
       <Band variant="light" innerRef={catalogRef} waCtx="kit">
@@ -298,10 +299,10 @@ export default function MundialLanding() {
           onAddKit={handleAddKit}
         />
         {/* Mini reviews rotativo — prueba social inmediatamente después del kit */}
-        <MiniReviewsBar />
+        <MundialMiniReviews />
       </Band>
 
-      <WaveSeparator from="light" />
+      <MundialWave from="light" />
 
       {/* 3. CALCULADORA blue — ahora debajo del kit */}
       <Band variant="blue" innerRef={calcRef} waCtx="calc">
@@ -312,7 +313,7 @@ export default function MundialLanding() {
         />
       </Band>
 
-      <WaveSeparator from="blue" />
+      <MundialWave from="dark" />
 
       {/* 4. Carousel 1 — Cabeza (light) */}
       <Band variant="light" waCtx="catalog">
@@ -325,7 +326,7 @@ export default function MundialLanding() {
         />
       </Band>
 
-      <WaveSeparator from="light" />
+      <MundialWave from="light" />
 
       {/* 5. Carousel 2 — Accesorios (blue) */}
       <Band variant="blue" waCtx="catalog">
@@ -337,7 +338,7 @@ export default function MundialLanding() {
         />
       </Band>
 
-      <WaveSeparator from="blue" />
+      <MundialWave from="dark" />
 
       {/* 6. Carousel 3 — Ruido (light) */}
       <Band variant="light" waCtx="catalog">
@@ -350,28 +351,28 @@ export default function MundialLanding() {
         />
       </Band>
 
-      <WaveSeparator from="light" />
+      <MundialWave from="light" />
 
       {/* 7. HOW IT WORKS blue */}
       <Band variant="blue" waCtx="general">
         <HowItWorks />
       </Band>
 
-      <WaveSeparator from="blue" />
+      <MundialWave from="dark" />
 
       {/* 8. REVIEWS carousel grande (light) */}
       <Band variant="light" waCtx="reviews">
         <ResellerReviews />
       </Band>
 
-      <WaveSeparator from="light" />
+      <MundialWave from="light" />
 
       {/* 9. FAQ blue */}
       <Band variant="blue" waCtx="faq">
         <ResellerFaq />
       </Band>
 
-      <WaveSeparator from="blue" />
+      <MundialWave from="dark" />
 
       {/* 10. ABOUT final section (light) — cierre limpio y profesional */}
       <Band variant="light" waCtx="general">
@@ -404,9 +405,12 @@ export default function MundialLanding() {
         </div>
       )}
 
-      {MC.whatsapp?.show && (
-        <WaTab number={MC.whatsapp.number} message={getWaMessage} />
-      )}
+      {/* Subido (`raised`) para no quedar debajo de la barra de compra fija. */}
+      <WhatsAppTab
+        wa={{ ...MC.whatsapp, message: getWaMessage() }}
+        raised
+        label="¿Dudas? Escribinos"
+      />
 
       {showCheckout && <CheckoutSheet onClose={() => setShowCheckout(false)} />}
 

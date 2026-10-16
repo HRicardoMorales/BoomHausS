@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
 import { SectionHeader } from "./LandingChrome";
 
@@ -30,10 +30,14 @@ export function HowItWorks() {
 }
 
 /* =========================
-   FAQ — custom look (numerado, acento verde, acordeón suave)
+   FAQ — custom look (numerado, sobre la banda oscura, acordeón suave).
+   No usa components/landing/LandingFaq a propósito: ese es para bandas
+   claras y sin números. Sí comparte su semántica: aria-controls, panel
+   como región y cerrado `inert` (no se lee ni se enfoca).
 ========================= */
 export function ResellerFaq() {
   const [openIndex, setOpenIndex] = useState(0);
+  const baseId = useId();
   return (
     <section className="ml-faq-section">
       <SectionHeader
@@ -46,15 +50,19 @@ export function ResellerFaq() {
         {MC.faq.map((item, i) => {
           const isOpen = openIndex === i;
           const num = String(i + 1).padStart(2, "0");
+          const btnId = `${baseId}-q${i}`;
+          const panelId = `${baseId}-a${i}`;
           return (
             <div key={i} className={`ml-faq-item ${isOpen ? "open" : ""}`}>
               <button
                 type="button"
+                id={btnId}
                 className="ml-faq-q"
+                aria-controls={panelId}
                 onClick={() => setOpenIndex(isOpen ? null : i)}
                 aria-expanded={isOpen}
               >
-                <span className="ml-faq-num">{num}</span>
+                <span className="ml-faq-num" aria-hidden="true">{num}</span>
                 <span className="ml-faq-q-text">{item.q}</span>
                 <span className="ml-faq-chev" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -62,7 +70,13 @@ export function ResellerFaq() {
                   </svg>
                 </span>
               </button>
-              <div className="ml-faq-a">
+              <div
+                id={panelId}
+                role="region"
+                aria-labelledby={btnId}
+                className="ml-faq-a"
+                inert={!isOpen}
+              >
                 <div className="ml-faq-a-inner">
                   <p>{item.a}</p>
                 </div>
