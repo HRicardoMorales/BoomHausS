@@ -13,6 +13,8 @@ import { CheckoutField } from "../components/checkout/CheckoutField";
 import { ShippingMethods } from "../components/checkout/ShippingMethods";
 import { shippingPrice, isDeliveryUnlocked } from "../components/checkout/shipping";
 import { MpRedirectOverlay } from "../components/checkout/MpRedirectOverlay";
+import { PaymentMethods } from "../components/checkout/PaymentMethods";
+import { BillingAddress } from "../components/checkout/BillingAddress";
 import "./checkout.page.css";
 
 // Meta cookies/eventId helpers viven en lib/metaPixel.js.
@@ -25,7 +27,6 @@ const INITIAL_FORM = {
 };
 
 function onlyDigits(s) { return String(s || "").replace(/[^\d]/g, ""); }
-function sanitizePhone(p) { return String(p || "").replace(/[^\d+]/g, ""); }
 function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || "").trim()); }
 
 function getOrCreateClientOrderId() {
@@ -56,7 +57,6 @@ export default function Checkout() {
   const isCartEmpty = !Array.isArray(items) || items.length === 0;
 
   const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
-  const whatsapp  = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
   // ── Formulario ────────────────────────────────────────────────────────────
   const [form, setForm] = useState(() => {
@@ -96,9 +96,7 @@ export default function Checkout() {
   const [shippingMethod, setShippingMethod] = useState("sucursal");
 
   // ── Pago ──────────────────────────────────────────────────────────────────
-  const [payExpanded, setPayExpanded] = useState(true); // MP abierto por defecto
   const [onlinePayMethod, setOnlinePayMethod] = useState("mercadopago");
-  const [cardPaymentDone] = useState(false);
   const [sameAddr, setSameAddr] = useState(true); // dirección de facturación
 
   // ── Cupón ─────────────────────────────────────────────────────────────────
@@ -118,7 +116,6 @@ export default function Checkout() {
   const [redirecting,   setRedirecting]   = useState(false);
   const [error,         setError]         = useState("");
   const [subscribeEmail, setSubscribeEmail] = useState(false);
-  const [orderData] = useState(null);
   const errorRef = useRef(null);
 
   function showError(msg) {
@@ -296,45 +293,6 @@ export default function Checkout() {
     } catch (err) {
       showError(err.response?.data?.message || err.response?.data?.error || "Error al procesar el pedido.");
     } finally { setLoading(false); }
-  }
-
-  // ── WA url ────────────────────────────────────────────────────────────────
-  const waUrl = useMemo(() => {
-    if (!whatsapp) return null;
-    const orderId = orderData?._id || orderData?.orderId || "";
-    const msg = orderId
-      ? `Hola! 👋 Confirmo la entrega del pedido #${orderId}.`
-      : `Hola! 👋 Confirmo mi entrega con ${storeName}.`;
-    return `https://wa.me/${sanitizePhone(whatsapp)}?text=${encodeURIComponent(msg)}`;
-  }, [whatsapp, orderData, storeName]);
-
-  // ── Pantalla de éxito ─────────────────────────────────────────────────────
-  if (cardPaymentDone || orderData) {
-    return (
-      <div className="ckfp-shell">
-        <header className="ckfp-header">
-          <Link to="/" className="ckfp-logo">{storeName}</Link>
-        </header>
-        <main className="ckfp-success">
-          <div className="ckfp-success-card">
-            <div className="ckfp-success-icon">🎉</div>
-            <h1 className="ckfp-success-title">{cardPaymentDone ? "¡Pago aprobado!" : "¡Gracias por tu pedido!"}</h1>
-            <div className="ckfp-success-body">
-              <p>Tu pedido está confirmado y en preparación.</p>
-              <div className="ckfp-success-box">
-                ✅ Recibirás el seguimiento por <strong>WhatsApp</strong> o email.<br />
-                🚚 Tu pedido llega en <strong>1 a 3 días hábiles</strong>.
-              </div>
-            </div>
-            <div className="ckfp-success-actions">
-              {waUrl && <a className="ckfp-btn-pay" href={waUrl} target="_blank" rel="noreferrer">Contactar por WhatsApp →</a>}
-              <Link to="/my-orders" className="ckfp-link">Ver mis pedidos</Link>
-              <Link to="/" className="ckfp-link muted">Seguir comprando</Link>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
   }
 
   // ── Carrito vacío ─────────────────────────────────────────────────────────
@@ -522,65 +480,12 @@ export default function Checkout() {
             />
           </div>
 
-          {/* ── SECCIÓN: Pago ── */}
-          <div className="ckfp-section">
-            <h2 className="ckfp-section-title">Pago</h2>
-            <p className="ckfp-pay-safe">Todas las transacciones son seguras y están encriptadas.</p>
+          <PaymentMethods value={onlinePayMethod} onChange={setOnlinePayMethod} />
 
-            {/* Mercado Pago accordion */}
-            <div className={`ckfp-pay-card${onlinePayMethod === "mercadopago" ? " selected" : ""}`}>
-              <div
-                className="ckfp-pay-card-hdr"
-                onClick={() => { setOnlinePayMethod("mercadopago"); setPayExpanded(o => onlinePayMethod !== "mercadopago" ? true : !o); }}
-              >
-                <input type="radio" name="payment" checked={onlinePayMethod === "mercadopago"} onChange={() => { setOnlinePayMethod("mercadopago"); setPayExpanded(true); }} />
-                <div className="ckfp-pay-card-logos">
-                  <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1/assets/mercadopago.BK20nVmQ.svg" alt="Mercado Pago" width="38" height="24" className="ckfp-logo-img" />
-                  <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1/assets/visa.sxIq5Dot.svg" alt="Visa" width="38" height="24" className="ckfp-logo-img" />
-                  <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1/assets/master.CzeoQWmc.svg" alt="Mastercard" width="38" height="24" className="ckfp-logo-img" />
-                  <span className="ckfp-pay-more">+3</span>
-                </div>
-                <svg className={`ckfp-pay-chev${payExpanded && onlinePayMethod === "mercadopago" ? " open" : ""}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
-              </div>
-              {payExpanded && onlinePayMethod === "mercadopago" && (
-                <div className="ckfp-pay-card-body">
-                  <div className="ckfp-mp-trust">
-                    <div className="ckfp-mp-trust-cuotas">
-                      Pagá en <strong>3 cuotas sin interés</strong> con tu tarjeta en Mercado Pago
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-          </div>
-
-          {/* ── SECCIÓN: Dirección de facturación ── */}
-          <div className="ckfp-section" style={{ marginTop: 48 }}>
-            <h2 className="ckfp-section-title">Dirección de facturación</h2>
-            <div className="ckfp-ship-group">
-              <label className={`ckfp-ship-opt${sameAddr ? " selected" : ""}`}>
-                <input type="radio" name="billing" checked={sameAddr} onChange={() => setSameAddr(true)} />
-                <span className="ckfp-ship-title">La misma dirección de envío</span>
-              </label>
-              <label className={`ckfp-ship-opt${!sameAddr ? " selected" : ""}`}>
-                <input type="radio" name="billing" checked={!sameAddr} onChange={() => setSameAddr(false)} />
-                <span className="ckfp-ship-title">Usar una dirección de facturación distinta</span>
-              </label>
-            </div>
-            {!sameAddr && (
-              <div className="ckfp-field" style={{ marginTop: 12 }}>
-                <input
-                  type="email"
-                  className="ckfp-input"
-                  placeholder="Email de facturación"
-                  value={form.billingEmail}
-                  onChange={e => setF("billingEmail", e.target.value)}
-                  autoComplete="email"
-                />
-              </div>
-            )}
-          </div>
+          <BillingAddress
+            sameAddr={sameAddr} onSameAddrChange={setSameAddr}
+            billingEmail={form.billingEmail} onBillingEmailChange={v => setF("billingEmail", v)}
+          />
 
           {/* Spacer para sticky footer */}
           <div style={{ height: 48 }} />

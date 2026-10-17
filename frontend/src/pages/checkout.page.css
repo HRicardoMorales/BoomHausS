@@ -207,7 +207,6 @@ select.ckfp-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
 .ckfp-pay-card { border: 1.5px solid #d1d5db; border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #fff; transition: border-color .15s; }
 .ckfp-pay-card.selected { border-color: #111827; }
 .ckfp-pay-card-hdr { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
-.ckfp-pay-card-hdr input[type="radio"] { width: 17px; height: 17px; accent-color: #111827; flex-shrink: 0; cursor: pointer; margin: 0; }
 .ckfp-pay-card-logos { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: wrap; }
 .ckfp-logo-img { display: block; border-radius: 4px; object-fit: contain; }
 .ckfp-pay-card-lbl { font-size: 13.5px; font-weight: 600; color: #111827; margin-right: 4px; }
@@ -310,18 +309,7 @@ select.ckfp-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
 .ckfp-mp-trust-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .ckfp-mp-trust-badge { font-size: 12px; font-weight: 600; color: #374151; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; padding: 5px 10px; }
 .ckfp-mp-trust-cuotas { font-size: 13px; color: #374151; }
-.ckfp-mp-trust-cuotas strong { color: #009ee3; }
-
-/* ── Success ── */
-.ckfp-success { display: flex; justify-content: center; padding: 40px 20px; }
-.ckfp-success-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px 24px; max-width: 460px; width: 100%; text-align: center; }
-.ckfp-success-icon { font-size: 52px; margin-bottom: 12px; }
-.ckfp-success-title { font-size: 24px; font-weight: 900; color: #111827; margin: 0 0 14px; }
-.ckfp-success-body { font-size: 14px; color: #374151; line-height: 1.7; margin-bottom: 20px; }
-.ckfp-success-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-top: 12px; text-align: left; font-weight: 600; }
-.ckfp-success-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
-.ckfp-link { font-size: 13px; font-weight: 700; color: #111827; text-decoration: underline; }
-.ckfp-link.muted { color: #9ca3af; }
+.ckfp-mp-trust-cuotas strong { color: #0072b5; } /* #009ee3 daba 2,9:1; este 5,3:1 */
 
 /* ── Empty ── */
 .ckfp-empty { text-align: center; padding: 60px 20px; }
@@ -336,3 +324,18 @@ select.ckfp-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
 .ckfp-mp-bar-track { width: 100%; height: 4px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
 .ckfp-mp-bar { height: 100%; background: #009ee3; border-radius: 99px; animation: ckfpMpBar 2.5s ease forwards; }
 .ckfp-mp-note { font-size: 12px; font-weight: 600; color: #94a3b8; margin: 0; }
+
+/* ── Pago / facturación (components/checkout/PaymentMethods, BillingAddress) ── */
+.ckfp-pay-pick { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; cursor: pointer; }
+.ckfp-pay-pick input[type="radio"] { width: 17px; height: 17px; accent-color: #111827; flex-shrink: 0; cursor: pointer; margin: 0; }
+.ckfp-pay-pick:has(:focus-visible) { outline: 2px solid #111827; outline-offset: 4px; border-radius: 6px; }
+/* 44×44 táctiles sin cambiar la caja visual de la cabecera (el ícono mide 14 px). */
+.ckfp-pay-toggle {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 44px; height: 44px; margin: -15px -15px -15px -15px; padding: 0;
+  background: none; border: 0; border-radius: 8px; cursor: pointer; color: inherit;
+}
+.ckfp-pay-toggle:focus-visible { outline: 2px solid #111827; outline-offset: -6px; }
+.ckfp-pay-card-body[hidden] { display: none; }
+.ckfp-billing { margin-top: 48px; }
+.ckfp-billing-email { margin-top: 12px; }
