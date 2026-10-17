@@ -101,17 +101,6 @@ const statsData = [
   { pct: 96, text: <>Lo <strong>recomendarían a una amiga</strong> sin dudarlo.</> },
 ];
 
-/* 4 Features */
-const FEATURES = [
-  { icon: '⚡', title: 'Resultados desde la sesión 3', desc: 'Notarás reducción visible del vello en tan solo 3 semanas. Sin esperar meses para ver cambios.' },
-  { icon: '🏠', title: 'En casa, cuando quieras', desc: 'Sin turnos, sin traslados, sin agenda. Usá el dispositivo en tu hogar a cualquier hora.' },
-  { icon: '💰', title: 'Pagás una sola vez', desc: 'Terminá con el gasto mensual recurrente en cera, hilo y centro estético. Una inversión única.' },
-  { icon: '🛡️', title: 'Probalo sin riesgo 90 días', desc: 'Garantía de devolución total si no quedás completamente satisfecha/o. Sin preguntas.' },
-];
-
-/* Imagen placeholder compartida */
-const PLACEHOLDER = 'https://acdn-us.mitiendanube.com/stores/006/731/084/products/6428cf2f-d00e-4db4-a9b6-44635b9c302e-f1709437539a2f618417603729146590-1024-1024.webp';
-
 /* Comparativa con tabs */
 const COMP_PRODUCT_IMG = "https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-5eb0c882-6441-4c5f-be58-70233fe427a6.webp?v=1741388066&width=600"; // reemplazá con imagen real de la depiladora IPL
 const COMP_TABS = [
@@ -196,23 +185,6 @@ const ZONE_TABS = [
     beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Abdomen_antes_v4_800x.png?v=1762967695",
     afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Abdomen_despues_v4_800x.png?v=1762967695",
   },
-];
-
-/* ── NUEVO: Timeline de resultados ─────────────────────── */
-const TIMELINE = [
-  { stage: 'Semanas 1–3',  icon: '🌱', title: 'Primeras señales',   desc: 'El vello crece más lento y más fino. Empezás a notar que tardás más días en volver a afeitarte.', pct: '~25%' },
-  { stage: 'Semanas 4–8',  icon: '📉', title: 'Reducción visible',  desc: 'Más del 50% de reducción en las zonas tratadas. Podés pasar semanas enteras sin necesitar nada.', pct: '~55%' },
-  { stage: 'Semanas 8–12', icon: '✨', title: 'Piel prácticamente libre', desc: 'Piel lisa y sin vello. Solo mantenimiento mensual para mantener los resultados permanentes.', pct: '~85%' },
-];
-
-/* ── NUEVO: Beneficios adicionales del IPL ─────────────── */
-const EXTRA_BENEFITS = [
-  { icon: '🌟', title: 'Elimina manchas del sol', desc: 'La luz IPL reduce la hiperpigmentación y las manchas causadas por la exposición solar.' },
-  { icon: '🧬', title: 'Estimula el colágeno', desc: 'Los pulsos de luz activan la producción de colágeno, mejorando la textura general de la piel.' },
-  { icon: '🚫', title: 'Adiós pelos encarnados', desc: 'Al actuar sobre la raíz, los pelos encarnados desaparecen progresivamente para siempre.' },
-  { icon: '✨', title: 'Piel más luminosa', desc: 'Sin vello, la piel refleja más luz y luce más uniforme y radiante.' },
-  { icon: '🩹', title: 'Sin irritación ni rojeces', desc: 'Sin cera, sin tirones, sin enrojecimientos. La piel queda perfectamente lisa.' },
-  { icon: '💆', title: 'Poros más cerrados', desc: 'Mejora la textura rugosa de la piel y reduce los poros dilatados en las zonas tratadas.' },
 ];
 
 /* Pasos */

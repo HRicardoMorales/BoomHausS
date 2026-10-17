@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
-import Marquee from "../components/marquee.jsx";
 import { LANDING_CONFIGS } from "../landings/index.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";

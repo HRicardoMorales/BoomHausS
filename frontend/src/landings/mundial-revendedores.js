@@ -5,7 +5,6 @@
 // Cada producto tiene su propio slug en el admin (ver "products" abajo).
 // ─────────────────────────────────────────────────────────────
 
-const MUNDIAL_BLUE = "https://placehold.co/600x600/1B4D7E/FFFFFF/png?text=";
 
 const mundialRevendedoresConfig = {
   // ── SEO ──────────────────────────────────────────────────────
