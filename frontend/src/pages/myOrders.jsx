@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import SafeImg from '../components/SafeImg.jsx';
 
 function money(n) {
     const num = Number(n);
@@ -68,7 +69,6 @@ export default function MyOrders() {
 
     useEffect(() => {
         fetchMyOrders();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const totalOrders = orders.length;
@@ -394,7 +394,7 @@ export default function MyOrders() {
                                                                 {/* Imagen */}
                                                                 {it.imageUrl && (
                                                                     <div style={{ width: 52, height: 52, borderRadius: 9, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
-                                                                        <img src={it.imageUrl} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                                                        <SafeImg src={it.imageUrl} alt={it.name} name={it.name} width={52} height={52} sizes="52px" widths={[52, 104]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                                                                     </div>
                                                                 )}
                                                                 {/* Info */}

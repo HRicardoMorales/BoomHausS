@@ -1,6 +1,8 @@
 // backend/src/services/emailService.js
 const { Resend } = require('resend');
 const nodemailer = require('nodemailer');
+const logger = require('../utils/logger').child('email');
+const { maskEmail } = require('../utils/logger');
 
 // Primario: Resend. Fallback: SMTP (Gmail u otro).
 const resend = process.env.RESEND_API_KEY
@@ -20,7 +22,7 @@ async function sendEmail({ from, to, subject, html }) {
     if (resend) {
         const result = await resend.emails.send({ from, to, subject, html });
         if (result.error) throw new Error(JSON.stringify(result.error));
-        console.log('✅ Email enviado via Resend. ID:', result.data?.id);
+        logger.info('Email enviado vía Resend', { id: result.data?.id });
         return;
     }
     if (smtpTransport) {
@@ -30,7 +32,7 @@ async function sendEmail({ from, to, subject, html }) {
             subject,
             html,
         });
-        console.log('✅ Email enviado via SMTP. ID:', info.messageId);
+        logger.info('Email enviado vía SMTP', { id: info.messageId });
         return;
     }
     throw new Error('Sin proveedor de email: configurá RESEND_API_KEY o SMTP_HOST/USER/PASS en .env');
@@ -38,7 +40,7 @@ async function sendEmail({ from, to, subject, html }) {
 
 async function sendOrderConfirmationEmail(order, opts = {}) {
     if (!resend && !smtpTransport) {
-        console.error("⚠️ Sin proveedor de email. Configurá RESEND_API_KEY o SMTP_* en .env");
+        logger.error("Sin proveedor de email. Configurá RESEND_API_KEY o SMTP_* en el entorno");
         return false;
     }
 
@@ -169,7 +171,7 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
         return true;
 
     } catch (err) {
-        console.error('❌ Error enviando con Resend:', err);
+        logger.error('Error enviando con Resend', err);
         return false;
     }
 }
@@ -211,7 +213,7 @@ async function sendPasswordResetEmail(email, resetUrl) {
         });
         return true;
     } catch (error) {
-        console.error("Error enviando email password:", error);
+        logger.error("Error enviando email de contraseña", error);
         return false;
     }
 }
@@ -272,10 +274,10 @@ async function sendAbandonedCartEmail(cart) {
       subject: `🛒 ¿Olvidaste algo? Tu carrito te espera — ${storeName}`,
       html: htmlContent,
     });
-    console.log('✅ Email abandoned cart enviado a:', cart.email);
+    logger.info('Email de carrito abandonado enviado', { to: maskEmail(cart.email) });
     return true;
   } catch (err) {
-    console.error('❌ Error sendAbandonedCartEmail:', err);
+    logger.error('Error en sendAbandonedCartEmail', err);
     return false;
   }
 }

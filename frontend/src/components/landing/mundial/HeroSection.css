@@ -1,0 +1,206 @@
+/* Hero, franja de confianza y barra de prueba social. Scopeado bajo :where(.ml-page). */
+/* === HERO (compacto) === */
+:where(.ml-page) .ml-hero {
+  text-align: center;
+  padding: 4px 0 2px;
+  position: relative;
+  z-index: 2;
+}
+/* Glow radial sutil detrás del hero — agrega profundidad sin ocupar espacio */
+:where(.ml-page) .ml-hero::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, 90vw);
+  height: 280px;
+  background: radial-gradient(ellipse at center, rgba(94,234,212,.18) 0%, rgba(94,234,212,.05) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+:where(.ml-page) .ml-hero-badge {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 1000;
+  letter-spacing: .15em;
+  color: #5EEAD4;
+  background: rgba(94,234,212,.12);
+  border: 1px solid rgba(94,234,212,.30);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+:where(.ml-page) .ml-hero-title {
+  margin: 0 auto 8px;
+  font-size: clamp(1.85rem, 4.4vw, 3.2rem);
+  font-weight: 1100;
+  letter-spacing: -0.035em;
+  line-height: 1.03;
+  color: #fff;
+  max-width: 820px;
+  text-transform: uppercase;
+}
+:where(.ml-page) .ml-hero-accent {
+  background: linear-gradient(135deg, #5EEAD4 0%, #75F8E1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+:where(.ml-page) .ml-hero-sub {
+  margin: 0 auto 14px;
+  font-size: .95rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.78);
+  line-height: 1.45;
+  max-width: 580px;
+}
+:where(.ml-page) .ml-hero-ctas {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+/* Stats inline: pills horizontales en lugar de cards grandes */
+:where(.ml-page) .ml-hero-stats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+:where(.ml-page) .ml-hero-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(6px);
+  padding: 7px 13px;
+  border-radius: 999px;
+  text-align: left;
+}
+:where(.ml-page) .ml-hero-stat-val {
+  font-size: .95rem;
+  font-weight: 1100;
+  color: #5EEAD4;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0;
+}
+:where(.ml-page) .ml-hero-stat-lbl {
+  font-size: .68rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.78);
+  line-height: 1.2;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+@media (max-width: 560px) {
+  :where(.ml-page) .ml-hero { padding: 2px 0 0; }
+  :where(.ml-page) .ml-hero-title { font-size: 1.65rem; line-height: 1.06; }
+  :where(.ml-page) .ml-hero-sub { font-size: .88rem; margin-bottom: 12px; }
+  :where(.ml-page) .ml-hero-ctas { margin-bottom: 12px; gap: 8px; }
+  :where(.ml-page) .ml-hero-stat { padding: 6px 11px; gap: 6px; }
+  :where(.ml-page) .ml-hero-stat-val { font-size: .88rem; }
+  :where(.ml-page) .ml-hero-stat-lbl { font-size: .62rem; }
+}
+
+/* === TRUST STRIP === */
+:where(.ml-page) .ml-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 20px auto 0;
+  max-width: 820px;
+}
+:where(.ml-page) .ml-trust-item {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+:where(.ml-page) .ml-trust-icon { font-size: 1.5rem; line-height: 1; }
+:where(.ml-page) .ml-trust-meta { display: flex; flex-direction: column; min-width: 0; }
+:where(.ml-page) .ml-trust-label { font-size: .68rem; font-weight: 800; letter-spacing: .08em; color: rgba(255,255,255,.55); text-transform: uppercase; }
+:where(.ml-page) .ml-trust-value { font-size: .92rem; font-weight: 1000; color: #fff; line-height: 1.2; }
+@media (max-width: 720px) {
+  :where(.ml-page) .ml-trust-strip { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* === SOCIAL PROOF BAR (debajo del hero) === */
+:where(.ml-page) .ml-social-proof {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 14px;
+  margin: 18px auto 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.22);
+}
+:where(.ml-page) .ml-social-proof-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .82rem;
+  color: rgba(255,255,255,.92);
+  font-weight: 800;
+  white-space: nowrap;
+}
+:where(.ml-page) .ml-social-proof-num {
+  font-weight: 1100;
+  font-size: .95rem;
+  color: #5EEAD4;
+  letter-spacing: -0.01em;
+}
+:where(.ml-page) .ml-social-proof-txt {
+  font-weight: 700;
+  color: rgba(255,255,255,.82);
+}
+:where(.ml-page) .ml-social-proof-pulse {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #10B981;
+  box-shadow: 0 0 0 0 rgba(16,185,129,.6);
+  animation: ml-social-pulse 1.8s ease-out infinite;
+}
+@keyframes ml-social-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(16,185,129,.60); }
+  70%  { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+:where(.ml-page) .ml-social-proof-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,.22);
+}
+:where(.ml-page) .ml-social-proof-fire {
+  font-size: .95rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(251,146,60,.4));
+}
+@media (max-width: 560px) {
+  :where(.ml-page) .ml-social-proof {
+    gap: 10px;
+    padding: 9px 14px;
+    margin-top: 14px;
+  }
+  :where(.ml-page) .ml-social-proof-item { font-size: .74rem; gap: 6px; }
+  :where(.ml-page) .ml-social-proof-num { font-size: .85rem; }
+  :where(.ml-page) .ml-social-proof-sep { height: 16px; }
+}

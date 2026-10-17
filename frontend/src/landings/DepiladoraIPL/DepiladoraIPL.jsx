@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './DepiladoraIPL.css';
+import SafeImg from '../../components/SafeImg';
+import { HERO_SIZES, HALF_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, HALF_WIDTHS, COMP_WIDTHS, REVIEW_WIDTHS, STEP_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes ───────────────────────────────────────────── */
 const PRODUCT_SLUG   = 'Depiladora Permanente IPL En casa';
@@ -99,26 +101,6 @@ const statsData = [
   { pct: 96, text: <>Lo <strong>recomendarían a una amiga</strong> sin dudarlo.</> },
 ];
 
-/* 4 Features */
-const FEATURES = [
-  { icon: '⚡', title: 'Resultados desde la sesión 3', desc: 'Notarás reducción visible del vello en tan solo 3 semanas. Sin esperar meses para ver cambios.' },
-  { icon: '🏠', title: 'En casa, cuando quieras', desc: 'Sin turnos, sin traslados, sin agenda. Usá el dispositivo en tu hogar a cualquier hora.' },
-  { icon: '💰', title: 'Pagás una sola vez', desc: 'Terminá con el gasto mensual recurrente en cera, hilo y centro estético. Una inversión única.' },
-  { icon: '🛡️', title: 'Probalo sin riesgo 90 días', desc: 'Garantía de devolución total si no quedás completamente satisfecha/o. Sin preguntas.' },
-];
-
-/* Testimonios carrusel */
-const reviewsData = [
-  { title: '¡Sin dolor y sin vello!', name: 'Analía R.', avatar: '//www.luxcove.co/cdn/shop/files/2_227e3980-11a4-4119-9ed4-d0963676a467.png?v=1741425800', stars: 5, text: 'Tenía muchos pelos encarnados de la cera. Con la IPL eso desapareció completamente. Mi piel está lisa y sin irritación. ¡La mejor compra del año!' },
-  { title: 'Me ahorré un dineral', name: 'Natalia B.', avatar: '//www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640', stars: 5, text: 'Antes gastaba en depilación cada mes. Con la IPL ya no necesito ir al centro estético. En 2 meses recuperé lo que pagué y sigo ahorrando.' },
-  { title: 'Perfecta para el verano', name: 'Karina F.', avatar: '//www.luxcove.co/cdn/shop/files/6_1bb22647-f558-4396-a07f-58716d687ff7.png?v=1741425681', stars: 5, text: 'Compré en noviembre para estar lista en verano. ¡Fue la mejor decisión! A los 45 días ya tenía las piernas y axilas lisísimas. Voy a la pileta sin preocupación.' },
-  { title: 'Resultados increíbles', name: 'Mariana P.', avatar: '//www.luxcove.co/cdn/shop/files/5_4674e838-6296-4ca1-9a34-6cc05243b642.png?v=1741425662', stars: 5, text: 'Me sorprendió porque nunca había probado IPL. El nivel 4 funciona perfecto para mi piel clara. Muy recomendable y fácil de usar.' },
-  { title: 'Chau cera para siempre', name: 'Romina S.', avatar: '//www.luxcove.co/cdn/shop/files/8_3ecc94a3-ae31-49c0-a516-7c5b88caef34.png?v=1741425718', stars: 5, text: 'Llevo 8 semanas usándola y el vello redujo un montón. Antes me depilaba cada 15 días, ahora casi no tengo pelo. La uso mientras veo la tele, súper cómodo.' },
-];
-
-/* Imagen placeholder compartida */
-const PLACEHOLDER = 'https://acdn-us.mitiendanube.com/stores/006/731/084/products/6428cf2f-d00e-4db4-a9b6-44635b9c302e-f1709437539a2f618417603729146590-1024-1024.webp';
-
 /* Comparativa con tabs */
 const COMP_PRODUCT_IMG = "https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-5eb0c882-6441-4c5f-be58-70233fe427a6.webp?v=1741388066&width=600"; // reemplazá con imagen real de la depiladora IPL
 const COMP_TABS = [
@@ -203,23 +185,6 @@ const ZONE_TABS = [
     beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Abdomen_antes_v4_800x.png?v=1762967695",
     afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Abdomen_despues_v4_800x.png?v=1762967695",
   },
-];
-
-/* ── NUEVO: Timeline de resultados ─────────────────────── */
-const TIMELINE = [
-  { stage: 'Semanas 1–3',  icon: '🌱', title: 'Primeras señales',   desc: 'El vello crece más lento y más fino. Empezás a notar que tardás más días en volver a afeitarte.', pct: '~25%' },
-  { stage: 'Semanas 4–8',  icon: '📉', title: 'Reducción visible',  desc: 'Más del 50% de reducción en las zonas tratadas. Podés pasar semanas enteras sin necesitar nada.', pct: '~55%' },
-  { stage: 'Semanas 8–12', icon: '✨', title: 'Piel prácticamente libre', desc: 'Piel lisa y sin vello. Solo mantenimiento mensual para mantener los resultados permanentes.', pct: '~85%' },
-];
-
-/* ── NUEVO: Beneficios adicionales del IPL ─────────────── */
-const EXTRA_BENEFITS = [
-  { icon: '🌟', title: 'Elimina manchas del sol', desc: 'La luz IPL reduce la hiperpigmentación y las manchas causadas por la exposición solar.' },
-  { icon: '🧬', title: 'Estimula el colágeno', desc: 'Los pulsos de luz activan la producción de colágeno, mejorando la textura general de la piel.' },
-  { icon: '🚫', title: 'Adiós pelos encarnados', desc: 'Al actuar sobre la raíz, los pelos encarnados desaparecen progresivamente para siempre.' },
-  { icon: '✨', title: 'Piel más luminosa', desc: 'Sin vello, la piel refleja más luz y luce más uniforme y radiante.' },
-  { icon: '🩹', title: 'Sin irritación ni rojeces', desc: 'Sin cera, sin tirones, sin enrojecimientos. La piel queda perfectamente lisa.' },
-  { icon: '💆', title: 'Poros más cerrados', desc: 'Mejora la textura rugosa de la piel y reduce los poros dilatados en las zonas tratadas.' },
 ];
 
 /* Pasos */
@@ -345,8 +310,6 @@ export default function DepiladoraIPL() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [annIdx, setAnnIdx]             = useState(0);
   const [annVisible, setAnnVisible]     = useState(true);
-  const [testIdx, setTestIdx]           = useState(0);
-  const [slidesPerView, setSlidesPerView] = useState(1);
   const [stickyVisible, setStickyVisible] = useState(false);
   const [hrIdx, setHrIdx]               = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(0);
@@ -374,14 +337,6 @@ export default function DepiladoraIPL() {
     });
   }, []);
 
-
-  /* Slides per view */
-  useEffect(() => {
-    const update = () => setSlidesPerView(window.innerWidth >= 768 ? 3 : 1);
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
 
   /* Announcement rotation */
   useEffect(() => {
@@ -457,9 +412,6 @@ export default function DepiladoraIPL() {
     setShowCheckout(true);
   };
 
-  const maxTestIdx = Math.max(0, reviewsData.length - slidesPerView);
-  const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
-  const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
 
 
   const FALLBACK_IMAGES = [
@@ -502,11 +454,13 @@ export default function DepiladoraIPL() {
             {/* Galería */}
             <div className="ipl-gallery">
               <div className="ipl-gallery-main">
-                <img
+                <SafeImg
                   src={productImages[activeImg].src}
                   alt={productImages[activeImg].alt}
-                  loading="eager"
-                  decoding="async"
+                  width={800}
+                  height={800}
+                  sizes={HERO_SIZES}
+                  priority
                 />
               </div>
               <div className="ipl-thumbs">
@@ -519,7 +473,7 @@ export default function DepiladoraIPL() {
                     onKeyDown={e => e.key === 'Enter' && setActiveImg(i)}
                     aria-label={`Imagen ${i + 1}`}
                   >
-                    <img src={img.src} alt={img.alt} />
+                    <SafeImg src={img.src} alt="" width={60} height={60} sizes="60px" widths={THUMB_WIDTHS} />
                   </div>
                 ))}
               </div>
@@ -552,12 +506,11 @@ export default function DepiladoraIPL() {
               </ul>
 
               {/* Bundle selector */}
-              <div className="ipl-bundles">
+              <div className="ipl-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {BUNDLES.map((b, i) => (
                   <label
                     key={b.id}
                     className={`ipl-bundle-opt${selectedBundle === i ? ' selected' : ''}`}
-                    onClick={() => setSelectedBundle(i)}
                   >
                     <input type="radio" name="ipl-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="ipl-bundle-body">
@@ -581,7 +534,7 @@ export default function DepiladoraIPL() {
                             {/* Producto principal */}
                             <div className="ipl-bundle-item">
                               <div className="ipl-bundle-thumb">
-                                <img src={BUNDLE_PRODUCT_IMG} alt={b.productThumbName} />
+                                <SafeImg src={BUNDLE_PRODUCT_IMG} alt={b.productThumbName} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
                               </div>
                               <span className="ipl-bundle-item-name">{b.productThumbName}</span>
                             </div>
@@ -589,7 +542,7 @@ export default function DepiladoraIPL() {
                             {/* Extra 1 */}
                             <div className="ipl-bundle-item">
                               <div className="ipl-bundle-thumb">
-                                <img src={b.extras[0].img} alt={b.extras[0].label} />
+                                <SafeImg src={b.extras[0].img} alt={b.extras[0].label} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
                                 <span className="ipl-bundle-sticker">GRATIS</span>
                               </div>
                               <span className="ipl-bundle-item-name">{b.extras[0].label}</span>
@@ -598,7 +551,7 @@ export default function DepiladoraIPL() {
                             {/* Extra 2 */}
                             <div className="ipl-bundle-item">
                               <div className="ipl-bundle-thumb ipl-bundle-thumb--ebook">
-                                <img src={b.extras[1].img} alt={b.extras[1].label} />
+                                <SafeImg src={b.extras[1].img} alt={b.extras[1].label} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
                                 <span className="ipl-bundle-sticker">GRATIS</span>
                               </div>
                               <span className="ipl-bundle-item-name">{b.extras[1].label}</span>
@@ -624,11 +577,11 @@ export default function DepiladoraIPL() {
               {/* Trust badges */}
               <div className="ipl-trust-badges">
                 <div className="ipl-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="Garantía" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, borderRadius: 8 }} />
                   <span>Garantía devolución<br />90 días</span>
                 </div>
                 <div className="ipl-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" alt="Envío" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, borderRadius: 8 }} />
                   <span>Envío gratis<br />en todos los pedidos</span>
                 </div>
                 <div className="ipl-trust-item">
@@ -640,7 +593,7 @@ export default function DepiladoraIPL() {
               {/* Medios de pago */}
               <div className="ipl-payment-block">
                 <div className="ipl-payment-grid">
-                  <img className="ipl-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/3840px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} />
+                  <img className="ipl-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/250px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} loading="lazy" decoding="async" />
                   <svg className="ipl-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 38 24" width="38" height="24" aria-label="Visa"><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"/></svg>
                   <svg className="ipl-pay-chip" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" role="img" width="38" height="24" aria-label="Mastercard"><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><circle fill="#EB001B" cx="15" cy="12" r="7"/><circle fill="#F79E1B" cx="23" cy="12" r="7"/><path fill="#FF5F00" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"/></svg>
                   <svg className="ipl-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-amex-ipl" viewBox="0 0 38 24" width="38" height="24"><title id="pi-amex-ipl">American Express</title><path fill="#000" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3Z" opacity=".07"/><path fill="#006FCF" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32Z"/><path fill="#FFF" d="M22.012 19.936v-8.421L37 11.528v2.326l-1.732 1.852L37 17.573v2.375h-2.766l-1.47-1.622-1.46 1.628-9.292-.02Z"/><path fill="#006FCF" d="M23.013 19.012v-6.57h5.572v1.513h-3.768v1.028h3.678v1.488h-3.678v1.01h3.768v1.531h-5.572Z"/><path fill="#006FCF" d="m28.557 19.012 3.083-3.289-3.083-3.282h2.386l1.884 2.083 1.89-2.082H37v.051l-3.017 3.23L37 18.92v.093h-2.307l-1.917-2.103-1.898 2.104h-2.321Z"/><path fill="#FFF" d="M22.71 4.04h3.614l1.269 2.881V4.04h4.46l.77 2.159.771-2.159H37v8.421H19l3.71-8.421Z"/><path fill="#006FCF" d="m23.395 4.955-2.916 6.566h2l.55-1.315h2.98l.55 1.315h2.05l-2.904-6.566h-2.31Zm.25 3.777.875-2.09.873 2.09h-1.748Z"/><path fill="#006FCF" d="M28.581 11.52V4.953l2.811.01L32.84 9l1.456-4.046H37v6.565l-1.74.016v-4.51l-1.644 4.494h-1.59L30.35 7.01v4.51h-1.768Z"/></svg>
@@ -651,7 +604,7 @@ export default function DepiladoraIPL() {
               {/* Review inline hero */}
               <div className="ipl-hero-review">
                 <div className="ipl-hr-avatar">
-                  <img src={heroReviews[hrIdx].avatar} alt={heroReviews[hrIdx].name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  <SafeImg src={heroReviews[hrIdx].avatar} alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 </div>
                 <div className="ipl-hr-content">
                   <div className="ipl-hr-top">
@@ -709,18 +662,20 @@ export default function DepiladoraIPL() {
             </div>
             <div className="ipl-wkprog-grid">
               <div className="ipl-wkprog-item">
-                <img
+                <SafeImg
                   src={ZONE_TABS[activeZone].beforeSrc}
                   alt={`Antes ${ZONE_TABS[activeZone].label}`}
-                  loading="lazy"
+                  sizes={HALF_SIZES}
+                  widths={HALF_WIDTHS}
                 />
                 <div className="ipl-wkprog-chip ipl-wkprog-chip--before">Antes</div>
               </div>
               <div className="ipl-wkprog-item">
-                <img
+                <SafeImg
                   src={ZONE_TABS[activeZone].afterSrc}
                   alt={`Después ${ZONE_TABS[activeZone].label}`}
-                  loading="lazy"
+                  sizes={HALF_SIZES}
+                  widths={HALF_WIDTHS}
                 />
                 <div className="ipl-wkprog-chip ipl-wkprog-chip--after">Después</div>
               </div>
@@ -765,10 +720,12 @@ export default function DepiladoraIPL() {
         <div className="ipl-feat-section" style={{ background: '#fff' }}>
           <div className="ipl-feat-inner">
             <div className="ipl-feat-img">
-              <img
+              <SafeImg
                 src="https://pbs.twimg.com/media/HKf3n8RWQAQx12B?format=jpg&name=small"
                 alt="Depiladora IPL en uso"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -785,10 +742,12 @@ export default function DepiladoraIPL() {
         <div className="ipl-feat-section" style={{ background: 'var(--ipl-section-rose)' }}>
           <div className="ipl-feat-inner">
             <div className="ipl-feat-img">
-              <img
+              <SafeImg
                 src="https://cld.accentuate.io/7054457438389/1658770290456/ROSE-SKIN_326.jpg?v=1764772816782&options=w_512"
                 alt="Depiladora IPL sin dolor"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -805,10 +764,12 @@ export default function DepiladoraIPL() {
         <div className="ipl-feat-section" style={{ background: '#fff' }}>
           <div className="ipl-feat-inner">
             <div className="ipl-feat-img">
-              <img
+              <SafeImg
                 src="https://pbs.twimg.com/media/HKf5PG4XEAAF_95?format=jpg&name=small"
                 alt="Depiladora IPL para todo el cuerpo"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -843,11 +804,11 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
               <div key={tab.id} className="ipl-ctab-content">
                 <div className="ipl-ctab-images">
                   <div className="ipl-ctab-img-wrap">
-                    <img src={COMP_PRODUCT_IMG} alt="Depiladora IPL" loading="lazy" />
+                    <SafeImg src={COMP_PRODUCT_IMG} alt="Depiladora IPL" width={170} height={227} sizes="170px" widths={COMP_WIDTHS} />
                   </div>
                   <div className="ipl-ctab-img-wrap">
                     {tab.competitorImg
-                      ? <img src={tab.competitorImg} alt={tab.label} loading="lazy" />
+                      ? <SafeImg src={tab.competitorImg} alt={tab.label} width={170} height={227} sizes="170px" widths={COMP_WIDTHS} />
                       : <div className="ipl-ctab-img-ph">🖼</div>
                     }
                   </div>
@@ -892,7 +853,7 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
               <div className="ipl-rev-card">
                 <div className="ipl-review-img-wrap">
                   {REVIEWS[reviewIdx].reviewImg
-                    ? <img src={REVIEWS[reviewIdx].reviewImg} alt={`Reseña de ${REVIEWS[reviewIdx].name}`} loading="lazy" />
+                    ? <SafeImg src={REVIEWS[reviewIdx].reviewImg} alt={`Foto de la reseña de ${REVIEWS[reviewIdx].name}`} sizes="min(520px, 88vw)" widths={REVIEW_WIDTHS} />
                     : <div className="ipl-review-img-ph">📷</div>
                   }
                 </div>
@@ -927,7 +888,7 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
                 <div key={i} className="ipl-step-item">
                   <div className="ipl-step-img-wrap">
                     {step.img
-                      ? <img src={step.img} alt={step.title} />
+                      ? <SafeImg src={step.img} alt="" width={90} height={90} sizes="90px" widths={STEP_WIDTHS} />
                       : <span className="ipl-step-img-ph">{step.num}</span>
                     }
                   </div>
@@ -947,10 +908,11 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
           <div className="ipl-container">
             <div className="ipl-guarantee">
               <div className="ipl-guarantee-icon">
-                <img
+                <SafeImg
                   src="https://http2.mlstatic.com/D_NQ_NP_2X_762827-MLB111243573748_052026-F.webp"
                   alt="Garantía 90 días"
-                  loading="lazy"
+                  width={160}
+                  height={160}
                   style={{ width: 160, height: 160, objectFit: 'contain' }}
                 />
               </div>

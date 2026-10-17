@@ -55,8 +55,10 @@ export default function ResetPassword() {
                 {!message && ( // Ocultamos el formulario si ya hubo éxito
                     <form onSubmit={handleSubmit}>
                         <div style={{ marginBottom: "15px", textAlign: "left" }}>
-                            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Nueva Contraseña</label>
+                            <label htmlFor="rp-password" style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Nueva Contraseña</label>
                             <input
+                                id="rp-password"
+                                autoComplete="new-password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -67,8 +69,10 @@ export default function ResetPassword() {
                         </div>
 
                         <div style={{ marginBottom: "20px", textAlign: "left" }}>
-                            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Confirmar Contraseña</label>
+                            <label htmlFor="rp-confirm" style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Confirmar Contraseña</label>
                             <input
+                                id="rp-confirm"
+                                autoComplete="new-password"
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}

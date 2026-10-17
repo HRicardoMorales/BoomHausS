@@ -83,13 +83,14 @@ export default function AdminHome() {
   const { user } = getStoredAuth();
   const [range, setRange]   = useState('7d');
   const [data, setData]     = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError]   = useState(null);
+  // Rango cuya request ya terminó (ok o error). "loading" se deriva de acá
+  // en vez de setearlo sincrónicamente dentro del useEffect.
+  const [settledRange, setSettledRange] = useState(null);
+  const loading = settledRange !== range;
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
     Promise.all([
       api.get(`/metrics/kpis?range=${range}`),
       api.get(`/metrics/chart?range=${range}`),
@@ -101,12 +102,13 @@ export default function AdminHome() {
           chart:    cRes.data,
           payments: pRes.data.payments || [],
         });
-        setLoading(false);
+        setError(null);
+        setSettledRange(range);
       }
     }).catch(() => {
       if (!cancelled) {
         setError('No se pudieron cargar las métricas.');
-        setLoading(false);
+        setSettledRange(range);
       }
     });
     return () => { cancelled = true; };
@@ -149,7 +151,7 @@ export default function AdminHome() {
         ))}
       </div>
 
-      {error && <div className="adm-error-bar">{error}</div>}
+      {!loading && error && <div className="adm-error-bar">{error}</div>}
 
       {/* ── KPI cards ── */}
       <div className="adm-grid-4" style={{ marginTop: 14 }}>

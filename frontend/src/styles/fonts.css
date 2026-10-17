@@ -1,0 +1,70 @@
+/*
+ * Fuentes self-hosted (variables, solo latin + latin-ext).
+ *
+ * Antes: <link> bloqueante a Google Fonts con 8 archivos estáticos (4 pesos
+ * por familia), 2 orígenes extra (DNS + TLS) y sin control de caché. Ahora:
+ * un woff2 variable por familia servido desde el mismo dominio con hash
+ * (cache inmutable), todos los pesos 100–900 reales (antes 800/900 eran
+ * negrita sintetizada) y el de Inter precargado (build/font-preload-plugin.js).
+ *
+ * Mismo nombre de familia que antes ("Inter", no "Inter Variable") para no
+ * tocar los ~50 font-family existentes.
+ *
+ * "X Fallback": fuente local con métricas ajustadas (size-adjust y overrides)
+ * para que el texto ocupe lo mismo antes y después del swap → sin salto de
+ * layout (CLS). Valores calculados con fontTools sobre los woff2 contra
+ * Liberation Sans/Serif (métricas idénticas a Arial/Times New Roman), con
+ * un texto de muestra en español.
+ */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url("@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url("@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica");
+  size-adjust: 106.07%;
+  ascent-override: 91.33%;
+  descent-override: 22.74%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond Fallback";
+  src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"), local("Times");
+  size-adjust: 96.57%;
+  ascent-override: 95.68%;
+  descent-override: 29.72%;
+  line-gap-override: 0%;
+}

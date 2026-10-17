@@ -1,0 +1,55 @@
+/* Secciones narrativas de las landings "wine" (masajeadores).
+   Se movieron desde el <style> inline de MasajeadorFacialIonesLanding.
+   Cada regla va anidada bajo la raíz de su sección: además de acotar el
+   alcance, le gana en especificidad a `.safeimg-fallback` sin depender del
+   orden en que el bundler inyecta los CSS (antes lo resolvía el <style> inline,
+   que siempre quedaba último). */
+/* ── Circulación Facial ─────────────────────────── */
+.circ-section { padding:32px 0 24px; display:flex; flex-direction:column; gap:20px; }
+.circ-section .circ-title { font-size:1.75rem; font-weight:800; color:rgba(11,18,32,.92); line-height:1.2; margin:0; text-align:center; }
+.circ-section .circ-title-buena { font-size:2.2rem; font-weight:900; color:#8B1A4A; line-height:1.15; margin:12px 0 0; text-align:center; }
+.circ-section .circ-title2 { font-size:1.55rem; font-weight:800; color:rgba(11,18,32,.92); line-height:1.2; margin:0; text-align:center; }
+@media (max-width:520px) { .circ-section .circ-title { font-size:1.5rem; } .circ-section .circ-title-buena { font-size:1.75rem; } .circ-section .circ-title2 { font-size:1.3rem; } }
+.circ-section .circ-img { width:100%; border-radius:14px; display:block; object-fit:cover; max-height:360px; }
+.circ-section .circ-quote { font-style:italic; font-size:1.0rem; font-weight:600; color:rgba(11,18,32,.75); line-height:1.55; margin:0; }
+.circ-section .circ-text { font-size:1.0rem; color:rgba(11,18,32,.82); line-height:1.7; margin:0; }
+.circ-section .circ-text strong { color:#8B1A4A; font-weight:800; }
+.circ-section .circ-badge-pill { display:inline-flex; align-items:center; gap:7px; background:#8B1A4A; color:#fff; font-size:.70rem; font-weight:800; letter-spacing:.05em; padding:6px 14px; border-radius:999px; margin:0; }
+.circ-section .circ-badge-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.70); flex-shrink:0; }
+.circ-section .circ-bullets { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+.circ-section .circ-bullets li { display:flex; align-items:flex-start; gap:9px; font-size:1.0rem; color:rgba(11,18,32,.88); font-weight:600; line-height:1.45; }
+.circ-section .circ-bullets li::before { content:"✓"; color:#8B1A4A; font-weight:900; flex-shrink:0; line-height:1.3; }
+.circ-section .circ-footnote { font-size:.82rem; color:rgba(11,18,32,.42); font-style:italic; margin:0; }
+
+/* ── 4 Semanas Timeline ─────────────────────────── */
+.semanas-section { padding:40px 0 32px; }
+.semanas-section .semanas-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 10px; text-align:center; }
+.semanas-section .semanas-accent { color:#8B1A4A; }
+@media (max-width:520px) { .semanas-section .semanas-title { font-size:1.75rem; } }
+.semanas-section .semanas-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 20px; text-align:center; }
+.semanas-section .semanas-img { width:100%; border-radius:14px; display:block; object-fit:cover; max-height:320px; margin:0 0 32px; }
+.semanas-section .semanas-list { display:flex; flex-direction:column; }
+.semanas-section .semana-row { display:grid; grid-template-columns:84px 1fr; gap:16px; align-items:flex-start; }
+.semanas-section .semana-left { display:flex; flex-direction:column; align-items:center; }
+.semanas-section .semana-badge { background:#8B1A4A; color:#fff; border-radius:999px; padding:6px 0; font-size:.68rem; font-weight:800; text-align:center; width:100%; box-sizing:border-box; white-space:nowrap; }
+.semanas-section .semana-line { width:2px; border-left:2px dashed rgba(139,26,74,.30); min-height:44px; margin-top:5px; flex:1; }
+.semanas-section .semana-content { padding:0 0 28px; }
+.semanas-section .semana-content-title { font-weight:900; font-size:1.05rem; color:rgba(11,18,32,.92); margin:2px 0 6px; line-height:1.25; }
+.semanas-section .semana-content-desc { font-size:.95rem; color:rgba(11,18,32,.78); line-height:1.6; margin:0; }
+
+/* ── 3 Pasos ────────────────────────────────────── */
+.pasos-section { padding:40px 0 32px; text-align:center; }
+.pasos-section .pasos-kicker { font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#8B1A4A; margin-bottom:10px; }
+.pasos-section .pasos-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 12px; }
+@media (max-width:520px) { .pasos-section .pasos-title { font-size:1.75rem; } }
+.pasos-section .pasos-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 32px; }
+.pasos-section .pasos-list { display:flex; flex-direction:column; gap:36px; }
+.pasos-section .paso-item { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.pasos-section .paso-circle-wrap { position:relative; display:inline-block; }
+.pasos-section .paso-circle-img { width:120px; height:120px; border-radius:50%; object-fit:cover; display:block; }
+.pasos-section .paso-circle-ph { width:120px; height:120px; border-radius:50%; background:rgba(139,26,74,.10); }
+.pasos-section .paso-num-badge { position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); background:#8B1A4A; color:#fff; font-size:.72rem; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #FFF5F8; }
+.pasos-section .paso-title { font-size:1.05rem; font-weight:900; color:rgba(11,18,32,.90); margin:4px 0 0; line-height:1.2; }
+.pasos-section .paso-desc { font-size:.97rem; color:rgba(11,18,32,.78); line-height:1.6; margin:0; max-width:300px; }
+.pasos-section .pasos-cta { margin-top:36px; background:#111827; color:#fff; border:none; border-radius:10px; padding:16px 32px; font-size:.95rem; font-weight:900; cursor:pointer; width:100%; letter-spacing:.04em; transition:background .15s; }
+.pasos-section .pasos-cta:hover { background:#374151; }

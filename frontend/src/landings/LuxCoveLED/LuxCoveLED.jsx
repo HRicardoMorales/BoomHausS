@@ -1,11 +1,16 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import mc from '../escultor-led';
 import './LuxCoveLED.css';
+import LandingFooter from '../../components/landing/LandingFooter.jsx';
+import SafeImg from '../../components/SafeImg';
+import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS } from '../../components/landing/imageSizes';
+import useNearViewport from '../../hooks/useNearViewport';
+import { preloadImage } from '../../utils/preloadImage';
 
 /* ── Constantes ───────────────────────────────────────────── */
 // Nombre del producto: la fuente de verdad es la BD (product.name).
@@ -239,12 +244,9 @@ const beforeAfterData = [
   },
 ];
 
-/* GIFs de secciones de features — precargados al montar */
-const FEAT_GIFS = [
-  '//www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=750',
-  '//www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=750',
-  '//www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=750',
-];
+/* `sizes` del antes/después: lo comparten <SafeImg> y la precarga para que
+   ambos elijan el mismo candidato del srcset. */
+const BA_SIZES = 'min(760px, 100vw)';
 
 /* Videos — "Inspírate": pegá la URL del video en cada src */
 const VSTRIP_VIDEOS = [
@@ -358,7 +360,6 @@ function LedStatsCircles({ items }) {
   );
 }
 
-
 /* ── Componente principal ─────────────────────────────────── */
 export default function LuxCoveLED() {
   const [searchParams] = useSearchParams();
@@ -367,10 +368,18 @@ export default function LuxCoveLED() {
   const giftConfig = GIFT_CONFIGS[giftKey] || Object.values(GIFT_CONFIGS)[0];
   const REGALO_IMG         = giftConfig.img;
   const BUNDLE_REGALO_NAME = giftConfig.name;
+  const heroImg            = giftConfig.heroImg;
 
   const [product, setProduct] = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  // Resetea la imagen activa cuando cambia la campaña (?regalo=). Ajuste de
+  // estado durante el render en vez de useEffect: sin render intermedio.
+  const [prevGiftKey, setPrevGiftKey] = useState(giftKey);
+  if (prevGiftKey !== giftKey) {
+    setPrevGiftKey(giftKey);
+    setActiveImg(0);
+  }
   const [openTab, setOpenTab] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -432,24 +441,19 @@ export default function LuxCoveLED() {
     });
   }, []);
 
-  /* Precarga imágenes del before/after para que estén listas al instante */
+  /* Antes/después: antes se precargaban las 6 fotos originales al montar
+     (PNG a tamaño completo, que además no coincidían con la URL del srcset
+     de <SafeImg> → se bajaban dos veces). Ahora, al acercarse a la sección,
+     se precarga solo la foto visible y la siguiente, con el mismo candidato
+     del srcset. Los GIFs de features ya son lazy nativos: sin precarga. */
+  const baSectionRef = useRef(null);
+  const baNear = useNearViewport(baSectionRef);
   useEffect(() => {
-    beforeAfterData.forEach(item => {
-      const img = new window.Image();
-      img.src = item.src.startsWith('//') ? `https:${item.src}` : item.src;
+    if (!baNear) return;
+    [baIdx, baIdx + 1].forEach((i) => {
+      if (beforeAfterData[i]) preloadImage(beforeAfterData[i].src, { sizes: BA_SIZES });
     });
-  }, []);
-
-  /* Precarga GIFs de features para evitar el blanco mientras cargan */
-  useEffect(() => {
-    FEAT_GIFS.forEach(src => {
-      const img = new window.Image();
-      img.src = src.startsWith('//') ? `https:${src}` : src;
-    });
-  }, []);
-
-  /* Resetea la imagen activa cuando cambia la campaña */
-  useEffect(() => { setActiveImg(0); }, [giftKey]);
+  }, [baNear, baIdx]);
 
   /* Slides per view */
   useEffect(() => {
@@ -497,6 +501,18 @@ export default function LuxCoveLED() {
   const fmt = (n) =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
+  const productImages = useMemo(() => [
+    { src: heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles' },
+    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: `${displayName} — Vista principal` },
+    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
+    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles' },
+  ], [heroImg, displayName]);
+
   const BUNDLES = useMemo(() => [
     {
       id: 0,
@@ -511,7 +527,7 @@ export default function LuxCoveLED() {
         { id: "ebook",  label: BUNDLE_EBOOK_NAME,  img: EBOOK_IMG  },
       ],
     },
-  ], [price, compareAt]);
+  ], [price, compareAt, BUNDLE_REGALO_NAME, REGALO_IMG]);
 
   const handleBuy = () => {
     if (soldOut) return;
@@ -533,18 +549,6 @@ export default function LuxCoveLED() {
   const maxTestIdx = Math.max(0, reviewsData.length - slidesPerView);
   const testPrev = () => setTestIdx(i => Math.max(0, i - 1));
   const testNext = () => setTestIdx(i => Math.min(maxTestIdx, i + 1));
-
-  const productImages = useMemo(() => [
-    { src: giftConfig.heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA1hrNXQAAVdG0?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1jJVXYAA_oLr?format=jpg&name=large", alt: 'Resultados visibles' },
-    { src: "https://pbs.twimg.com/media/HKA1kgxWgAAhXD1?format=jpg&name=large", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA1sUIWkAAKS81?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1uGXX0AAffQ0?format=jpg&name=large", alt: 'Resultados visibles' },
-    { src: "https://pbs.twimg.com/media/HKA1vV5XcAA5yDM?format=jpg&name=large", alt: `${displayName} — Vista principal` },
-    { src: "https://pbs.twimg.com/media/HKA14M6XkAATjmH?format=jpg&name=large", alt: 'Beneficios del dispositivo' },
-    { src: "https://pbs.twimg.com/media/HKA1_2IXYAEiKWs?format=jpg&name=large", alt: 'Resultados visibles' },
-  ], [giftConfig.heroImg, displayName]);
 
   if (!productReady) {
     return (
@@ -573,7 +577,7 @@ export default function LuxCoveLED() {
             <div className="led-gallery">
               <div className="led-gallery-main">
                 {productImages[activeImg]?.src
-                  ? <img src={productImages[activeImg].src} alt={productImages[activeImg].alt} />
+                  ? <SafeImg src={productImages[activeImg].src} alt={productImages[activeImg].alt} width={800} height={800} sizes={HERO_SIZES} priority />
                   : <ImgPlaceholder label={productImages[activeImg]?.alt} style={{ minHeight: 280 }} />
                 }
               </div>
@@ -588,7 +592,7 @@ export default function LuxCoveLED() {
                     aria-label={`Imagen ${i + 1}`}
                   >
                     {img.src
-                      ? <img src={img.src} alt={img.alt} />
+                      ? <SafeImg src={img.src} alt="" width={70} height={70} sizes="70px" widths={THUMB_WIDTHS} />
                       : <div className="led-img-placeholder" style={{ fontSize: 10, minHeight: 'unset', height: '100%' }}>{i + 1}</div>
                     }
                   </div>
@@ -623,9 +627,9 @@ export default function LuxCoveLED() {
               </div>
 
               {/* Bundle selector */}
-              <div className="led-bundles">
+              <div className="led-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {BUNDLES.map((b, i) => (
-                  <label key={b.id} className={`led-bundle-opt${selectedBundle === i ? ' selected' : ''}`} onClick={() => setSelectedBundle(i)}>
+                  <label key={b.id} className={`led-bundle-opt${selectedBundle === i ? ' selected' : ''}`}>
                     <input type="radio" name="led-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="led-bundle-body">
                       <div className="led-bundle-top">
@@ -648,7 +652,7 @@ export default function LuxCoveLED() {
                             <div className="led-bundle-item">
                               <div className="led-bundle-thumb">
                                 {(BUNDLE_PRODUCT_IMG || productImages[0]?.src)
-                                  ? <img src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt={displayName} />
+                                  ? <SafeImg src={BUNDLE_PRODUCT_IMG || productImages[0].src} alt={displayName} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
                                   : <span>💡</span>}
                               </div>
                               <span className="led-bundle-item-name">{b.productThumbName}</span>
@@ -656,7 +660,7 @@ export default function LuxCoveLED() {
                             <span className="led-bundle-plus">+</span>
                             <div className="led-bundle-item">
                               <div className="led-bundle-thumb">
-                                {REGALO_IMG ? <img src={REGALO_IMG} alt={b.extras[0].label} /> : <span>🎁</span>}
+                                {REGALO_IMG ? <SafeImg src={REGALO_IMG} alt={b.extras[0].label} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} /> : <span>🎁</span>}
                                 <span className="led-bundle-sticker">GRATIS</span>
                               </div>
                               <span className="led-bundle-item-name">{b.extras[0].label}</span>
@@ -664,7 +668,7 @@ export default function LuxCoveLED() {
                             <span className="led-bundle-plus">+</span>
                             <div className="led-bundle-item">
                               <div className="led-bundle-thumb led-bundle-thumb--ebook">
-                                {EBOOK_IMG ? <img src={EBOOK_IMG} alt={b.extras[1].label} /> : <span>📖</span>}
+                                {EBOOK_IMG ? <SafeImg src={EBOOK_IMG} alt={b.extras[1].label} width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} /> : <span>📖</span>}
                                 <span className="led-bundle-sticker">GRATIS</span>
                               </div>
                               <span className="led-bundle-item-name">{b.extras[1].label}</span>
@@ -690,15 +694,19 @@ export default function LuxCoveLED() {
               {/* C2 — Trust badges (reemplazá con tus PNGs) */}
               <div className="led-trust-badges">
                 <div className="led-trust-item">
-                  <img
+                  <SafeImg
                     src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489"
-                    alt="Garantía"
+                    alt=""
+                    width={44}
+                    height={44}
+                    sizes="44px"
+                    widths={ICON_WIDTHS}
                     style={{ width: 44, height: 44, borderRadius: 8 }}
                   />
                   <span>Garantía devolución<br />90 días</span>
                 </div>
                 <div className="led-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" style={{ width: 44, height: 44, minHeight: 'unset', borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, minHeight: 'unset', borderRadius: 8 }} />
                   <span>Envío gratis<br />en todos los pedidos</span>
                 </div>
                 <div className="led-trust-item">
@@ -710,7 +718,7 @@ export default function LuxCoveLED() {
               {/* C3 — Medios de pago */}
               <div className="led-payment-block">
                 <div className="led-payment-grid">
-                  <img className="led-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/3840px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} />
+                  <img className="led-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/250px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} loading="lazy" decoding="async" />
                   <svg className="led-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-visa-h" viewBox="0 0 38 24" width="38" height="24"><title id="pi-visa-h">Visa</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"/></svg>
                   <svg className="led-pay-chip" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" role="img" width="38" height="24" aria-labelledby="pi-master-h"><title id="pi-master-h">Mastercard</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><circle fill="#EB001B" cx="15" cy="12" r="7"/><circle fill="#F79E1B" cx="23" cy="12" r="7"/><path fill="#FF5F00" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"/></svg>
                   <svg className="led-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-amex-h" viewBox="0 0 38 24" width="38" height="24"><title id="pi-amex-h">American Express</title><path fill="#000" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3Z" opacity=".07"/><path fill="#006FCF" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32Z"/><path fill="#FFF" d="M22.012 19.936v-8.421L37 11.528v2.326l-1.732 1.852L37 17.573v2.375h-2.766l-1.47-1.622-1.46 1.628-9.292-.02Z"/><path fill="#006FCF" d="M23.013 19.012v-6.57h5.572v1.513h-3.768v1.028h3.678v1.488h-3.678v1.01h3.768v1.531h-5.572Z"/><path fill="#006FCF" d="m28.557 19.012 3.083-3.289-3.083-3.282h2.386l1.884 2.083 1.89-2.082H37v.051l-3.017 3.23L37 18.92v.093h-2.307l-1.917-2.103-1.898 2.104h-2.321Z"/><path fill="#FFF" d="M22.71 4.04h3.614l1.269 2.881V4.04h4.46l.77 2.159.771-2.159H37v8.421H19l3.71-8.421Z"/><path fill="#006FCF" d="m23.395 4.955-2.916 6.566h2l.55-1.315h2.98l.55 1.315h2.05l-2.904-6.566h-2.31Zm.25 3.777.875-2.09.873 2.09h-1.748Z"/><path fill="#006FCF" d="M28.581 11.52V4.953l2.811.01L32.84 9l1.456-4.046H37v6.565l-1.74.016v-4.51l-1.644 4.494h-1.59L30.35 7.01v4.51h-1.768Z"/></svg>
@@ -721,7 +729,7 @@ export default function LuxCoveLED() {
               {/* C5 — Review inline hero */}
               <div className="led-hero-review">
                 <div className="led-hr-avatar">
-                  <img src={heroReviews[hrIdx].avatar} alt={heroReviews[hrIdx].name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  <SafeImg src={heroReviews[hrIdx].avatar} alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 </div>
                 <div className="led-hr-content">
                   <div className="led-hr-top">
@@ -773,7 +781,7 @@ export default function LuxCoveLED() {
                   <div key={i} className="led-test-slide">
                     <div className="led-test-card">
                       <div className="led-review-avatar">
-                        <img src={t.avatar} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                        <SafeImg src={t.avatar} alt="" width={42} height={42} sizes="42px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                       </div>
                       <div className="led-review-stars">{'★'.repeat(t.stars)}</div>
                       <p className="led-test-text">"{t.text}"</p>
@@ -829,7 +837,7 @@ export default function LuxCoveLED() {
             <h2 className="led-section-title">Vea resultados visibles en solo 30 días.</h2>
             <p className="led-section-sub">Así es como nuestro Escultor Facial LED está transformando vidas, una tez radiante a la vez.</p>
             <div className="led-stats-image">
-              <img src="//www.luxcove.co/cdn/shop/files/US_VS_THEM_FACELIFT_SURGERY.png?v=1773769643" alt="Resultados del producto" style={{ width: '100%', aspectRatio: '4/3', minHeight: 180, objectFit: 'cover', borderRadius: 12 }} />
+              <SafeImg src="//www.luxcove.co/cdn/shop/files/US_VS_THEM_FACELIFT_SURGERY.png?v=1773769643" alt="Resultados del producto" sizes="min(1100px, calc(100vw - 32px))" style={{ width: '100%', aspectRatio: '4/3', minHeight: 180, objectFit: 'cover', borderRadius: 12 }} />
             </div>
             <LedStatsCircles items={statsData} />
           </div>
@@ -841,9 +849,13 @@ export default function LuxCoveLED() {
             <div className="led-features-grid">
               {FEATURES.map((f, i) => (
                 <div key={i} className="led-feature-item">
-                  <img
+                  <SafeImg
                     src={f.src}
-                    alt={f.title}
+                    alt=""
+                    width={56}
+                    height={56}
+                    sizes="56px"
+                    widths={THUMB_WIDTHS}
                     style={{
                       width: 56,
                       height: 56,
@@ -874,6 +886,8 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=360 360w, //www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=535 535w, //www.luxcove.co/cdn/shop/files/GIF1-LFS-ezgif.com-video-to-gif-converter.gif?v=1753723012&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Modo EMS"
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -894,6 +908,8 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=360 360w, //www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=535 535w, //www.luxcove.co/cdn/shop/files/LFS-GIF31-ezgif.com-video-to-gif-converter.gif?v=1753723174&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Luz roja"
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -913,6 +929,8 @@ export default function LuxCoveLED() {
                 srcSet="//www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=360 360w, //www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=535 535w, //www.luxcove.co/cdn/shop/files/LFS-GIF3-ezgif.com-video-to-gif-converter.gif?v=1753723244&width=750 750w"
                 sizes="(min-width: 750px) 50vw, 100vw"
                 alt="Luz verde"
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', minHeight: 240, objectFit: 'cover' }}
               />
             </div>
@@ -934,9 +952,13 @@ export default function LuxCoveLED() {
                     className="led-lights-img-wrap"
                     style={{ borderColor: light.border ? '#bbb' : light.color }}
                   >
-                    <img
+                    <SafeImg
                       src={light.src}
-                      alt={light.name}
+                      alt=""
+                      width={120}
+                      height={120}
+                      sizes="120px"
+                      widths={[240, 360]}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                     />
                   </div>
@@ -955,17 +977,16 @@ export default function LuxCoveLED() {
         </div>
 
         {/* ══ S11 — ANTES & DESPUÉS CAROUSEL ══ */}
-        <div className="led-section led-section--pink">
+        <div className="led-section led-section--pink" ref={baSectionRef}>
           <div className="led-container">
             <h2 className="led-section-title">Clientes reales, resultados reales</h2>
             <div className="led-ba-carousel">
               <div className="led-ba-card">
                 <div className="led-ba-img">
-                  <img
+                  <SafeImg
                     src={beforeAfterData[baIdx].src}
                     alt={beforeAfterData[baIdx].name}
-                    loading="eager"
-                    decoding="async"
+                    sizes={BA_SIZES}
                     style={{ width: '100%', aspectRatio: '4/3', minHeight: 220, objectFit: 'cover', borderRadius: 0 }}
                   />
                   <div className="led-ba-day-labels">
@@ -1066,7 +1087,7 @@ export default function LuxCoveLED() {
               <div className="led-pr-track" style={{ transform: `translateX(-${prIdx * (100 / photoReviews.length)}%)` }}>
                 {photoReviews.map((r, i) => (
                   <div key={i} className="led-pr-card">
-                    <img src={r.img} alt={r.name} className="led-pr-img" />
+                    <SafeImg src={r.img} alt={`Foto de la reseña de ${r.name}`} className="led-pr-img" sizes="min(480px, 88vw)" widths={REVIEW_WIDTHS} />
                     <div className="led-pr-body">
                       <span className="led-pr-stars">{'★'.repeat(r.stars)}</span>
                       <p className="led-pr-text">{r.text}</p>
@@ -1124,32 +1145,7 @@ export default function LuxCoveLED() {
       </div>
 
       {/* ══ FOOTER ══ */}
-      <footer className="lp-footer">
-        <div className="lp-footer-body">
-          <div className="lp-footer-brand">
-            <div className="lp-footer-logo">Amelor</div>
-            <p className="lp-footer-tagline">Resultados de clínica. Desde tu casa.</p>
-          </div>
-          <div className="lp-footer-trust">
-            <div className="lp-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="lp-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="lp-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="lp-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-          </div>
-          <div className="lp-footer-pay">
-            <span className="lp-footer-pay-label">Medios de pago aceptados</span>
-            <div className="lp-footer-pay-row">
-              <span className="lp-pay-chip">MercadoPago</span>
-              <span className="lp-pay-chip">Visa</span>
-              <span className="lp-pay-chip">Mastercard</span>
-              <span className="lp-pay-chip">Amex</span>
-            </div>
-          </div>
-          <div className="lp-footer-bottom">
-            <span>© 2026 Amelor · Todos los derechos reservados</span>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter variant="wine" tagline="Resultados de clínica. Desde tu casa." />
 
       {showCheckout && (
         <CheckoutSheet

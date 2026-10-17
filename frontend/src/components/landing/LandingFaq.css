@@ -1,0 +1,125 @@
+/* ── LandingFaq ────────────────────────────────────────────────────────────
+   Antes: 4 copias inline de .faq-acc-* (2 estilos casi iguales).
+   Tono por custom properties, igual que StatsCircles. */
+
+.lfaq {
+  --lfaq-accent: #1B4D3E;
+  --lfaq-ink: 11, 18, 32;
+
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 0 8px;
+}
+.lfaq--wine { --lfaq-accent: #8B1A4A; }
+
+.lfaq-title {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: rgba(var(--lfaq-ink), .90);
+  text-align: center;
+  margin: 0 0 24px;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.lfaq-title:has(+ .lfaq-subtitle) { margin-bottom: 6px; }
+.lfaq-subtitle {
+  text-align: center;
+  font-size: .92rem;
+  color: rgba(var(--lfaq-ink), .58);
+  font-weight: 600;
+  margin: 0 0 28px;
+}
+@media (max-width: 520px) {
+  .lfaq-title { font-size: 1.25rem; }
+  .lfaq-subtitle { font-size: .86rem; }
+}
+
+.lfaq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(var(--lfaq-ink), .10);
+}
+.lfaq-item { border-bottom: 1px solid rgba(var(--lfaq-ink), .10); }
+
+.lfaq-q { margin: 0; font: inherit; }
+
+.lfaq-btn {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 16px 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgba(var(--lfaq-ink), .88);
+  transition: color .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.lfaq-btn:hover,
+.lfaq-item.is-open .lfaq-btn { color: var(--lfaq-accent); }
+.lfaq-btn:focus-visible {
+  outline: 2px solid var(--lfaq-accent);
+  outline-offset: -2px; /* dentro del botón: es de ancho completo */
+  border-radius: 6px;
+}
+
+/* Ícono dibujado con CSS: chevron que gira o "+" que se vuelve "−". */
+.lfaq-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--lfaq-accent);
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1);
+}
+.lfaq--chevron .lfaq-icon::before {
+  content: "";
+  position: absolute;
+  inset: 3px 4px 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.lfaq--chevron .is-open .lfaq-icon { transform: rotate(180deg); }
+
+.lfaq--plus .lfaq-icon::before,
+.lfaq--plus .lfaq-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  right: 2px;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1);
+}
+.lfaq--plus .lfaq-icon::after { transform: rotate(90deg); }
+.lfaq--plus .is-open .lfaq-icon::after { transform: rotate(0deg); }
+
+.lfaq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .35s cubic-bezier(.2, .7, .3, 1);
+}
+.lfaq-item.is-open .lfaq-panel { grid-template-rows: 1fr; }
+.lfaq-panel-inner { overflow: hidden; padding: 0 4px; }
+.lfaq-panel-inner p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: rgba(var(--lfaq-ink), .66);
+  line-height: 1.65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lfaq-panel, .lfaq-icon, .lfaq-icon::after { transition: none; }
+}

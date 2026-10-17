@@ -1,0 +1,35 @@
+/* ── WaveSeparator ─────────────────────────────────────────────────────────
+   Antes: 4 copias inline (.wave-divider / .parallaxN / @keyframes wMoveN). */
+
+.lwave {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--lwave-top);
+  line-height: 0;
+  pointer-events: none;
+  margin-block: -1px;
+}
+
+.lwave-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 3rem;
+}
+@media (min-width: 1000px) {
+  .lwave-svg { max-height: 6rem; }
+}
+
+.lwave-layer > use { animation: lwave-ltr linear infinite; animation-delay: -2s; }
+.lwave-layer--1 > use { animation-name: lwave-rtl; animation-duration: 10s; }
+.lwave-layer--2 > use { animation-duration: 8s; opacity: .4; }
+.lwave-layer--3 > use { animation-name: lwave-rtl; animation-duration: 6s; opacity: .3; }
+.lwave-layer--4 > use { animation-duration: 4s; opacity: .2; }
+
+@keyframes lwave-rtl { from { transform: translateX(85px); } to { transform: translateX(-90px); } }
+@keyframes lwave-ltr { from { transform: translateX(-90px); } to { transform: translateX(85px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lwave-layer > use { animation: none; }
+}

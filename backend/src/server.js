@@ -18,12 +18,13 @@
 
 const mongoose = require('mongoose');
 const app = require('./app');
+const logger = require('./utils/logger').child('server');
 
 const PORT = process.env.PORT || 4000;
 const SHUTDOWN_TIMEOUT_MS = 10_000; // 10s para drenar requests en vuelo
 
 const server = app.listen(PORT, () => {
-    console.log(`🚀 API escuchando en http://localhost:${PORT}`);
+    logger.info(`API escuchando en el puerto ${PORT}`, { env: process.env.NODE_ENV || 'development' });
 });
 
 let shuttingDown = false;
@@ -34,11 +35,11 @@ let shuttingDown = false;
 async function shutdown(signal, exitCode = 0) {
     if (shuttingDown) return;
     shuttingDown = true;
-    console.log(`\n🛑 ${signal} recibido. Iniciando graceful shutdown (exit=${exitCode})...`);
+    logger.warn(`${signal} recibido. Iniciando graceful shutdown`, { exitCode });
 
     // Force exit si algo se cuelga (mongo drainage, http keep-alive largo, etc)
     const forceExit = setTimeout(() => {
-        console.error(`⏱️ Shutdown timeout (${SHUTDOWN_TIMEOUT_MS}ms). Force exit.`);
+        logger.error(`Shutdown timeout (${SHUTDOWN_TIMEOUT_MS}ms). Force exit.`);
         process.exit(exitCode || 1);
     }, SHUTDOWN_TIMEOUT_MS);
     // Evita que este timer bloquee el exit natural cuando todo termine bien.
@@ -46,15 +47,15 @@ async function shutdown(signal, exitCode = 0) {
 
     server.close(async (err) => {
         if (err) {
-            console.error('❌ Error cerrando HTTP server:', err.message);
+            logger.error('Error cerrando HTTP server', err);
         } else {
-            console.log('✅ HTTP server cerrado — no acepta conexiones nuevas');
+            logger.info('HTTP server cerrado — no acepta conexiones nuevas');
         }
         try {
             await mongoose.connection.close(false); // false = no force
-            console.log('✅ MongoDB desconectado ordenadamente');
+            logger.info('MongoDB desconectado ordenadamente');
         } catch (e) {
-            console.error('❌ Error cerrando MongoDB:', e?.message || e);
+            logger.error('Error cerrando MongoDB', e);
         }
         clearTimeout(forceExit);
         process.exit(exitCode);
@@ -72,7 +73,7 @@ process.on('SIGINT', () => shutdown('SIGINT', 0));
 // del server sigue sano. Loggeamos con stack (si viene) para diagnostico
 // y seguimos atendiendo requests.
 process.on('unhandledRejection', (reason) => {
-    console.error('⚠️ unhandledRejection:', reason?.stack || reason);
+    logger.error('unhandledRejection', reason instanceof Error ? reason : { reason: String(reason) });
 });
 
 // ── uncaughtException: loguear stack completo, SHUTDOWN ORDENADO ────────
@@ -91,7 +92,6 @@ process.on('unhandledRejection', (reason) => {
 //     camino seguro es shutdown ordenado + salida con exit 1. Render
 //     levanta instancia limpia inmediatamente.
 process.on('uncaughtException', (err) => {
-    console.error('💥 uncaughtException — proceso en estado inconsistente:');
-    console.error(err?.stack || err?.message || err);
+    logger.error('uncaughtException — proceso en estado inconsistente', err instanceof Error ? err : { detail: String(err) });
     shutdown('uncaughtException', 1);
 });

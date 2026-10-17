@@ -11,3 +11,6 @@ frontend/.env
 dist
 .vite
 frontend/.env.production
+
+# Claude local settings (pueden contener secretos)
+.claude/

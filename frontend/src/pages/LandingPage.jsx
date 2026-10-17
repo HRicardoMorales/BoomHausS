@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../services/api';
-import { useCart } from '../context/CartContext.jsx';
+import SafeImg from '../components/SafeImg';
+import { useCart } from '../hooks/useCart';
 import MarqueeBar from '../components/marquee.jsx';
 import CheckoutDrawer from '../components/CheckoutDrawer.jsx';
 
@@ -156,7 +157,7 @@ export default function LandingPage() {
               <aside className="card" style={{ padding: '1.1rem', borderRadius: 22 }}>
                 <div className="lpMedia">
                   {heroImg ? (
-                    <img src={heroImg} alt={product?.title} />
+                    <SafeImg src={heroImg} alt={product?.title} name={product?.title} priority sizes="(min-width: 960px) 40vw, 100vw" />
                   ) : (
                     <div style={{ height: 320, display: 'grid', placeItems: 'center', fontWeight: 1000 }}>📦</div>
                   )}

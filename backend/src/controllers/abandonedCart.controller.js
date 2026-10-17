@@ -1,6 +1,7 @@
 // backend/src/controllers/abandonedCart.controller.js
 const AbandonedCart = require('../models/AbandonedCart');
 const { sendAbandonedCartEmail } = require('../services/emailService');
+const logger = require('../utils/logger').child('abandoned-cart');
 
 async function saveAbandonedCart(req, res) {
   try {
@@ -38,7 +39,7 @@ async function saveAbandonedCart(req, res) {
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error('❌ Error abandoned cart:', err);
+    logger.error('Error guardando carrito abandonado', err, { reqId: req.id });
     return res.status(500).json({ ok: false });
   }
 }

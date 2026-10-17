@@ -1,0 +1,72 @@
+/* TrustPills — prefijo lp-tp. */
+.lp-tp {
+  --tp-accent: #8b1a4a;
+  --tp-tint: #fff5f8;
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(11, 18, 32, 0.1);
+  border-radius: 14px;
+  background: #fff;
+}
+.lp-tp--green { --tp-accent: #1b4d3e; --tp-tint: #f0f7f4; }
+
+.lp-tp__item { border-bottom: 1px solid rgba(11, 18, 32, 0.08); transition: background 0.12s; }
+.lp-tp__item:last-child { border-bottom: none; }
+.lp-tp__item.is-open,
+.lp-tp__item:hover { background: var(--tp-tint); }
+
+.lp-tp__heading { margin: 0; font: inherit; }
+
+.lp-tp__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.lp-tp__btn:focus-visible { outline: 2px solid var(--tp-accent); outline-offset: -2px; border-radius: 12px; }
+
+.lp-tp__ico { flex-shrink: 0; font-size: 1rem; }
+.lp-tp__title { flex: 1; font-size: 0.84rem; font-weight: 800; color: rgba(11, 18, 32, 0.85); }
+
+/* Signo +/− dibujado con CSS (antes texto que se leía como "más"/"menos"). */
+.lp-tp__sign { position: relative; flex-shrink: 0; width: 20px; height: 20px; }
+.lp-tp__sign::before,
+.lp-tp__sign::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tp-accent);
+  transform: translate(-50%, -50%);
+  transition: transform 0.18s ease;
+}
+.lp-tp__sign::after { transform: translate(-50%, -50%) rotate(90deg); }
+.lp-tp__btn[aria-expanded="true"] .lp-tp__sign::after { transform: translate(-50%, -50%) rotate(0deg); }
+
+.lp-tp__panel {
+  padding: 0 14px 12px 38px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-line;
+  color: var(--tp-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-tp__item,
+  .lp-tp__sign::before,
+  .lp-tp__sign::after { transition: none; }
+}

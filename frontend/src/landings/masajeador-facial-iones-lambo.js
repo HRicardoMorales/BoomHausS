@@ -1,13 +1,21 @@
 ﻿// src/landings/masajeador-facial-iones-lambo.js
 // URL resultante: /lp/masajeador-facial-iones-lambo
 // Producto en admin → slug: masajeador-facial-iones-lambo
-// Renderizado por: src/pages/MasajeadorFacialIonesLanding.jsx
+// Renderizado por: src/pages/MasajeadorFacialIonesLanding.jsx (plantilla components/landing/wine/WineLanding)
 
 const masajeadorFacialIonesConfig = {
   productSlug: "masajeador-facial-iones-lambo",
 
   pageTitle: "Masajeador Facial 5 en 1 | Fototerapia LED + EMS + Iones | Amelor",
   checkoutName: "Masajeador Facial Skincare 5 en 1 Lambo Lady",
+
+  // Frases de la cinta superior (se duplican para el scroll infinito).
+  marquee: [
+    "💕 +280 compradoras felices",
+    "✨ 5 tecnologías profesionales en un solo dispositivo",
+    "🛡️ 30 días de garantía total",
+    "🚚 Envío gratis a todo el país",
+  ],
 
   heroHeadline: "¿Ojeras, arrugas, acné o piel sin firmeza? Este dispositivo las resuelve en casa.",
   heroSubtitle: "",

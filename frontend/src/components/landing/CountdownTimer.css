@@ -1,0 +1,6 @@
+.lp-countdown {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+  color: rgba(180, 30, 30, 0.9);
+}

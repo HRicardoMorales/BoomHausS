@@ -1,0 +1,11 @@
+/* StarRating — prefijo lp-stars (ProductDetail tiene su .stars-inline inline). */
+.lp-stars {
+  display: inline-flex;
+  justify-content: center;
+  gap: 2px;
+  font-size: 14px;
+  line-height: 1;
+}
+.lp-stars > span { opacity: 0.25; }
+.lp-stars > .is-on { opacity: 1; color: #d69e2e; }
+.lp-stars--lg { gap: 4px; font-size: 20px; }
