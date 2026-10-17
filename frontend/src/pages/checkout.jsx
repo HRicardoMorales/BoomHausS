@@ -1,7 +1,6 @@
 // src/pages/checkout.jsx
 // Checkout fullpage — página única, sin pasos, estilo TiendaNube/Shopify
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import api, { warmUpApi } from "../services/api";
 import { getStoredAuth } from "../utils/auth";
@@ -10,6 +9,10 @@ import { trackWithCapi, getFbCookies } from "../lib/metaPixel";
 import { PROVINCES, money } from "../components/checkout/checkoutFormat";
 import { SummaryAccordion, SidebarSummary, CouponBox } from "../components/checkout/CheckoutSummary";
 import { CheckoutStickyBar } from "../components/checkout/CheckoutStickyBar";
+import { CheckoutField } from "../components/checkout/CheckoutField";
+import { ShippingMethods } from "../components/checkout/ShippingMethods";
+import { shippingPrice, isDeliveryUnlocked } from "../components/checkout/shipping";
+import { MpRedirectOverlay } from "../components/checkout/MpRedirectOverlay";
 import "./checkout.page.css";
 
 // Meta cookies/eventId helpers viven en lib/metaPixel.js.
@@ -136,14 +139,7 @@ export default function Checkout() {
     const pct = Number(appliedCoupon.pct ?? appliedCoupon.value ?? 0);
     return Math.round(totalPrice * pct / 100);
   }, [appliedCoupon, totalPrice]);
-  const shippingCost = useMemo(() => {
-    const opt = [
-      { value: "sucursal",    price: 0    },
-      { value: "domicilio",   price: 2980 },
-      { value: "prioritario", price: 4890 },
-    ].find(o => o.value === shippingMethod);
-    return opt ? opt.price : 0;
-  }, [shippingMethod]);
+  const shippingCost = shippingPrice(shippingMethod);
   const finalTotal = Math.max(0, totalPrice - couponDiscount + shippingCost);
 
   const shippingAddress = useMemo(() => [
@@ -312,8 +308,6 @@ export default function Checkout() {
     return `https://wa.me/${sanitizePhone(whatsapp)}?text=${encodeURIComponent(msg)}`;
   }, [whatsapp, orderData, storeName]);
 
-  // ── Primer item thumbnail ─────────────────────────────────────────────────
-
   // ── Pantalla de éxito ─────────────────────────────────────────────────────
   if (cardPaymentDone || orderData) {
     return (
@@ -339,7 +333,6 @@ export default function Checkout() {
             </div>
           </div>
         </main>
-        <Styles />
       </div>
     );
   }
@@ -354,46 +347,14 @@ export default function Checkout() {
           <h2>Tu carrito está vacío</h2>
           <Link to="/products" className="ckfp-btn-pay" style={{ display: "inline-block", marginTop: 16 }}>Ver productos →</Link>
         </main>
-        <Styles />
       </div>
     );
   }
 
-  // ── Overlay MP ────────────────────────────────────────────────────────────
-  // Rendered via portal on document.body to escape .ckfp-shell's animation
-  // stacking context, which would break position:fixed on mobile Safari/WebView.
-  const mpOverlay = redirecting
-    ? createPortal(
-        <div className="ckfp-mp-overlay">
-          <div className="ckfp-mp-card">
-            <div className="ckfp-mp-logo-wrap">
-              <svg viewBox="0 0 40 40" width="52" height="52" fill="none">
-                <rect width="40" height="40" rx="12" fill="#009ee3"/>
-                <path d="M10.5 20.8c0-3.4 2.2-6.2 5.2-6.2 1.6 0 2.7.7 3.3 1.5.6-.8 1.7-1.5 3.3-1.5 3 0 5.2 2.8 5.2 6.2 0 4.8-5 9.2-8.5 11.2-3.5-2-8.5-6.4-8.5-11.2z" fill="#fff"/>
-              </svg>
-            </div>
-            <h2 className="ckfp-mp-title">Conectando con Mercado Pago</h2>
-            <p className="ckfp-mp-sub">Estamos generando tu link de pago seguro</p>
-            <div className="ckfp-mp-bar-track"><div className="ckfp-mp-bar" /></div>
-            <p className="ckfp-mp-note">No cerrés esta pantalla — serás redirigido en segundos</p>
-          </div>
-        </div>,
-        document.body
-      )
-    : null;
-
-  // ── Shipping options ──────────────────────────────────────────────────────
-  const SHIP_OPTS = [
-    { value: "sucursal",        title: "Envío a sucursal",                           sub: "2 a 4 días hábiles",  price: 0,    was: null   },
-    { value: "domicilio",       title: "Envío a domicilio + código de seguimiento",  sub: "1 a 3 días hábiles",  price: 2980, was: 9814   },
-    { value: "prioritario",     title: "Envío a domicilio prioritario + código de seguimiento",  sub: "1 a 2 días hábiles",  price: 4890, was: 12326  },
-  ];
-
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="ckfp-shell">
-      {/* mpOverlay is portaled to document.body — see above */}
-      {mpOverlay}
+      <MpRedirectOverlay open={redirecting} />
 
       {/* ── HEADER ── */}
       <header className="ckfp-header">
@@ -434,17 +395,14 @@ export default function Checkout() {
               <h2 className="ckfp-section-title">Contacto</h2>
               {!isLogged && <a href="/login" className="ckfp-login-link">Iniciar sesión</a>}
             </div>
-            <div className="ckfp-field">
-              <input
-                type="email" autoComplete="email" placeholder="Correo electrónico"
-                value={form.email}
-                onChange={e => setF("email", e.target.value)}
-                onBlur={() => { touch("email"); captureAbandoned(); }}
-                className={`ckfp-input${fieldError("email") ? " err" : ""}${fieldOk("email") ? " ok" : ""}`}
-                disabled={isLogged}
-              />
-              {fieldError("email") && <span className="ckfp-field-err">{fieldError("email")}</span>}
-            </div>
+            <CheckoutField
+              label="Correo electrónico" type="email" autoComplete="email"
+              value={form.email}
+              onChange={e => setF("email", e.target.value)}
+              onBlur={() => { touch("email"); captureAbandoned(); }}
+              error={fieldError("email")} ok={fieldOk("email")}
+              disabled={isLogged}
+            />
             <label className="ckfp-subscribe-label">
               <input
                 type="checkbox"
@@ -465,162 +423,92 @@ export default function Checkout() {
               <div className="ckfp-fake-select">
                 <span>País / Región</span>
                 <span className="ckfp-fake-select-val">Argentina</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </div>
             </div>
 
-            {/* Nombre + Apellidos */}
             <div className="ckfp-row2">
-              <div className="ckfp-field">
-                <input
-                  type="text" autoComplete="given-name" placeholder="Nombre"
-                  value={form.nombre}
-                  onChange={e => setF("nombre", e.target.value)}
-                  onBlur={() => touch("nombre")}
-                  className={`ckfp-input${fieldError("nombre") ? " err" : ""}${fieldOk("nombre") ? " ok" : ""}`}
-                  disabled={isLogged}
-                />
-                {fieldError("nombre") && <span className="ckfp-field-err">{fieldError("nombre")}</span>}
-              </div>
-              <div className="ckfp-field">
-                <input
-                  type="text" autoComplete="family-name" placeholder="Apellidos"
-                  value={form.apellido}
-                  onChange={e => setF("apellido", e.target.value)}
-                  className="ckfp-input"
-                />
-              </div>
-            </div>
-
-            {/* Dirección */}
-            <div className="ckfp-field">
-              <input
-                type="text" autoComplete="address-line1" placeholder="Dirección"
-                value={form.direccion}
-                onChange={e => setF("direccion", e.target.value)}
-                onBlur={() => touch("direccion")}
-                className={`ckfp-input${fieldError("direccion") ? " err" : ""}${fieldOk("direccion") ? " ok" : ""}`}
+              <CheckoutField
+                label="Nombre" type="text" autoComplete="given-name"
+                value={form.nombre}
+                onChange={e => setF("nombre", e.target.value)}
+                onBlur={() => touch("nombre")}
+                error={fieldError("nombre")} ok={fieldOk("nombre")}
+                disabled={isLogged}
               />
-              {fieldError("direccion") && <span className="ckfp-field-err">{fieldError("direccion")}</span>}
-            </div>
-
-            {/* Casa/apto */}
-            <div className="ckfp-field">
-              <input
-                type="text" autoComplete="address-line2" placeholder="Casa, apartamento, etc. (opcional)"
-                value={form.extra}
-                onChange={e => setF("extra", e.target.value)}
-                className="ckfp-input"
+              <CheckoutField
+                label="Apellidos" type="text" autoComplete="family-name"
+                value={form.apellido}
+                onChange={e => setF("apellido", e.target.value)}
               />
             </div>
 
-            {/* CP + Ciudad */}
+            <CheckoutField
+              label="Dirección" type="text" autoComplete="address-line1"
+              value={form.direccion}
+              onChange={e => setF("direccion", e.target.value)}
+              onBlur={() => touch("direccion")}
+              error={fieldError("direccion")} ok={fieldOk("direccion")}
+            />
+            <CheckoutField
+              label="Casa, apartamento, etc. (opcional)" type="text" autoComplete="address-line2"
+              value={form.extra}
+              onChange={e => setF("extra", e.target.value)}
+            />
+
             <div className="ckfp-row2">
-              <div className="ckfp-field">
-                <input
-                  type="text" autoComplete="postal-code" placeholder="Código postal" inputMode="numeric"
-                  value={form.cp}
-                  onChange={e => setF("cp", e.target.value)}
-                  onBlur={() => touch("cp")}
-                  className={`ckfp-input${fieldError("cp") ? " err" : ""}${fieldOk("cp") ? " ok" : ""}`}
-                />
-                {fieldError("cp") && <span className="ckfp-field-err">{fieldError("cp")}</span>}
-              </div>
-              <div className="ckfp-field">
-                <input
-                  type="text" autoComplete="address-level2" placeholder="Ciudad"
-                  value={form.ciudad}
-                  onChange={e => setF("ciudad", e.target.value)}
-                  onBlur={() => touch("ciudad")}
-                  className={`ckfp-input${fieldError("ciudad") ? " err" : ""}${fieldOk("ciudad") ? " ok" : ""}`}
-                />
-                {fieldError("ciudad") && <span className="ckfp-field-err">{fieldError("ciudad")}</span>}
-              </div>
+              <CheckoutField
+                label="Código postal" type="text" autoComplete="postal-code" inputMode="numeric"
+                value={form.cp}
+                onChange={e => setF("cp", e.target.value)}
+                onBlur={() => touch("cp")}
+                error={fieldError("cp")} ok={fieldOk("cp")}
+              />
+              <CheckoutField
+                label="Ciudad" type="text" autoComplete="address-level2"
+                value={form.ciudad}
+                onChange={e => setF("ciudad", e.target.value)}
+                onBlur={() => touch("ciudad")}
+                error={fieldError("ciudad")} ok={fieldOk("ciudad")}
+              />
             </div>
 
             {/* Provincia */}
             <div className="ckfp-field">
               <div className="ckfp-select-wrap">
                 <select
+                  id="ckfp-provincia"
                   autoComplete="address-level1" value={form.provincia}
                   onChange={e => setF("provincia", e.target.value)}
                   className="ckfp-input ckfp-select"
                 >
                   {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
-                <span className="ckfp-select-label">Provincia / Estado</span>
+                <label htmlFor="ckfp-provincia" className="ckfp-select-label">Provincia / Estado</label>
               </div>
             </div>
 
-            {/* Teléfono */}
-            <div className="ckfp-field">
-              <div className="ckfp-input-icon-wrap">
-                <input
-                  type="tel" autoComplete="tel" placeholder="Teléfono" inputMode="tel"
-                  value={form.tel}
-                  onChange={e => setF("tel", e.target.value)}
-                  onBlur={() => { touch("tel"); captureAbandoned(); }}
-                  className={`ckfp-input ckfp-input--icon${fieldError("tel") ? " err" : ""}`}
-                />
-                <svg className="ckfp-input-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <CheckoutField
+              label="Teléfono" type="tel" autoComplete="tel" inputMode="tel"
+              value={form.tel}
+              onChange={e => setF("tel", e.target.value)}
+              onBlur={() => { touch("tel"); captureAbandoned(); }}
+              error={fieldError("tel")}
+              icon={
+                <svg className="ckfp-input-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
                 </svg>
-              </div>
-              {fieldError("tel") && <span className="ckfp-field-err">{fieldError("tel")}</span>}
-            </div>
-
-            {/* DNI — opcional */}
-            <div className="ckfp-field">
-              <input
-                type="text" autoComplete="off" placeholder="DNI (opcional)" inputMode="numeric"
-                value={form.dni}
-                onChange={e => setF("dni", onlyDigits(e.target.value))}
-                className="ckfp-input"
-                maxLength={8}
-              />
-            </div>
+              }
+            />
+            <CheckoutField
+              label="DNI (opcional)" type="text" autoComplete="off" inputMode="numeric"
+              value={form.dni}
+              onChange={e => setF("dni", onlyDigits(e.target.value))}
+              maxLength={8}
+            />
           </div>
 
-          {/* ── SECCIÓN: Métodos de envío ── */}
-          {(() => {
-            const deliveryUnlocked = form.direccion.trim().length >= 4 || form.ciudad.trim().length >= 2 || form.cp.trim().length >= 4;
-            return (
-              <div className="ckfp-section">
-                <h2 className="ckfp-section-title">Métodos de envío</h2>
-                {!deliveryUnlocked ? (
-                  <div className="ckfp-ship-locked">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Completá la dirección para ver los métodos de envío
-                  </div>
-                ) : (
-                  <div className="ckfp-ship-group">
-                    {SHIP_OPTS.map(opt => (
-                      <label
-                        key={opt.value}
-                        className={`ckfp-ship-opt${shippingMethod === opt.value ? " selected" : ""}`}
-                      >
-                        <input
-                          type="radio" name="shipping" value={opt.value}
-                          checked={shippingMethod === opt.value}
-                          onChange={() => setShippingMethod(opt.value)}
-                        />
-                        <div className="ckfp-ship-info">
-                          <span className="ckfp-ship-title">{opt.title}</span>
-                          <span className="ckfp-ship-sub">{opt.sub}</span>
-                        </div>
-                        <div className="ckfp-ship-price">
-                          {opt.was && <span className="ckfp-ship-was">{money(opt.was)}</span>}
-                          {opt.price === 0
-                            ? <span className="ckfp-ship-free">GRATIS</span>
-                            : <span className="ckfp-ship-cost">{money(opt.price)}</span>}
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
+          <ShippingMethods unlocked={isDeliveryUnlocked(form)} value={shippingMethod} onChange={setShippingMethod} />
 
           {/* ── Cupón (mobile only — desktop lo tiene en sidebar) ── */}
           <div className="ckfp-section ckfp-coupon-mobile">
