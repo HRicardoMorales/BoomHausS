@@ -299,7 +299,7 @@
   color: var(--text); outline: none; text-transform: uppercase; letter-spacing: .5px;
   transition: border-color .15s;
 }
-.cs-coupon-row input:focus { border-color: #aaa; background: #fff; }
+.cs-coupon-row input:focus { border-color: #555; background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
 .cs-coupon-row input.cs-coupon-applied { border-color: var(--cs-done); background: #fff5f5; color: var(--cs-done); }
 .cs-coupon-row input:disabled { opacity: .8; cursor: default; }
 .cs-coupon-btn {

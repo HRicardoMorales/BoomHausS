@@ -3,6 +3,7 @@ import api from "../../services/api";
 import SafeImg from "../SafeImg";
 import { THUMB_WIDTHS } from "../landing/imageSizes";
 import { FALLBACK_IMG, moneyARS } from "./format";
+import { useDialogA11y } from "../../hooks/useDialogA11y";
 
 /* =========================
    Upsell Sheet — aparece antes del checkout
@@ -86,18 +87,21 @@ export default function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfi
     });
   };
 
+  // Escape = "Continuar sin agregar" (lo mismo que tocar el fondo).
+  useDialogA11y(sheetRef, () => confirm(false), { initialFocus: "container" });
+
   return (
     <>
-      <div ref={backdropRef} className="ups-backdrop" onClick={() => confirm(false)} aria-hidden="true" />
-      <div ref={sheetRef} className="ups-sheet" role="dialog" aria-modal="true" aria-label="Agregá un extra">
+      <div ref={backdropRef} className="ups-backdrop" role="presentation" onClick={() => confirm(false)} aria-hidden="true" />
+      <div ref={sheetRef} tabIndex={-1} className="ups-sheet" role="dialog" aria-modal="true" aria-labelledby="ups-sheet-title">
         <div className="ups-sheet-scroll">
           {/* Cabecera */}
           <div className="ups-sheet-head">
             <div className="ups-sheet-promo-banner">
-              <span className="ups-sheet-promo-icon">🏷️</span>
+              <span className="ups-sheet-promo-icon" aria-hidden="true">🏷️</span>
               <span className="ups-sheet-promo-text">DESCUENTOS EXCLUSIVOS PARA TU COMPRA</span>
             </div>
-            <h2 className="ups-sheet-title">{upsell.title || "¿Querés agregar algo?"}</h2>
+            <h2 className="ups-sheet-title" id="ups-sheet-title">{upsell.title || "¿Querés agregar algo?"}</h2>
             <p className="ups-sheet-sub">Mismo envío · ahorrás más llevando los dos</p>
           </div>
 
@@ -111,6 +115,8 @@ export default function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfi
               const saving  = aCmpAt - aPrice;
               const isSel   = selectedSet.has(idx);
               return (
+                // La fila entera es un atajo de puntero; el control accesible es el botón.
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <div key={idx} className={`ups-row${isSel ? " ups-row--on" : ""}`}
                   onClick={() => done && handleToggle(idx)}>
                   <SafeImg src={aImg} alt="" name={item.name} className="ups-row-img"
@@ -125,7 +131,8 @@ export default function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfi
                       {saving > 0 && <span className="ups-row-save">−{moneyARS(saving)}</span>}
                     </div>
                   </div>
-                  <button type="button" aria-label={isSel ? "Quitar" : "Agregar"}
+                  <button type="button" aria-pressed={isSel}
+                    aria-label={`${isSel ? "Quitar" : "Agregar"} ${item.name}`}
                     className={`ups-row-btn${isSel ? " ups-row-btn--on" : ""}`}
                     disabled={!done}
                     onClick={(e) => { e.stopPropagation(); done && handleToggle(idx); }}>

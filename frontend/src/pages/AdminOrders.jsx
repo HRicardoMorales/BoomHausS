@@ -1,7 +1,8 @@
 ﻿// frontend/src/pages/AdminOrders.jsx
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
+import { useDialogA11y } from '../hooks/useDialogA11y';
 
 function money(n) {
   const num = Number(n);
@@ -333,7 +334,13 @@ export default function AdminOrders() {
                       <article key={order._id} className={`ao-card ${open ? 'ao-card--open' : ''}`}>
 
                         {/* Row header */}
-                        <div className="ao-row" onClick={() => setExpanded(open ? null : order._id)}>
+                        <button
+                          type="button"
+                          className="ao-row"
+                          aria-expanded={open}
+                          aria-controls={`ao-detail-${order._id}`}
+                          onClick={() => setExpanded(open ? null : order._id)}
+                        >
                           <div className="ao-row-left">
                             <div className="ao-row-top">
                               <span className="ao-name">{order.customerName || 'Sin nombre'}</span>
@@ -351,13 +358,13 @@ export default function AdminOrders() {
                           <div className="ao-row-right">
                             <span className={`ao-status ao-ps--${order.paymentStatus}`}>{PAYMENT_LABELS[order.paymentStatus] || order.paymentStatus}</span>
                             <span className={`ao-ship ao-ss--${order.shippingStatus}`}>{SHIPPING_LABELS[order.shippingStatus] || order.shippingStatus || 'Pendiente'}</span>
-                            <span className="ao-arrow">{open ? '\u25B2' : '\u25BC'}</span>
+                            <span className="ao-arrow" aria-hidden="true">{open ? '\u25B2' : '\u25BC'}</span>
                           </div>
-                        </div>
+                        </button>
 
                         {/* Expanded detail */}
                         {open && (
-                          <div className="ao-detail">
+                          <div className="ao-detail" id={`ao-detail-${order._id}`}>
 
                             {/* Quick actions */}
                             <div className="ao-actions">
@@ -387,8 +394,9 @@ export default function AdminOrders() {
                             {/* Status selectors */}
                             <div className="ao-selectors">
                               <div className="ao-sel-group">
-                                <label className="ao-sel-lbl">Estado pago</label>
+                                <label className="ao-sel-lbl" htmlFor={`ao-pay-${order._id}`}>Estado pago</label>
                                 <select
+                                  id={`ao-pay-${order._id}`}
                                   className="ao-sel"
                                   value={order.paymentStatus || 'pending'}
                                   onChange={e => updateOrder(order._id, { paymentStatus: e.target.value })}
@@ -397,8 +405,9 @@ export default function AdminOrders() {
                                 </select>
                               </div>
                               <div className="ao-sel-group">
-                                <label className="ao-sel-lbl">Estado envío</label>
+                                <label className="ao-sel-lbl" htmlFor={`ao-ship-${order._id}`}>Estado envío</label>
                                 <select
+                                  id={`ao-ship-${order._id}`}
                                   className="ao-sel"
                                   value={order.shippingStatus || 'pending'}
                                   onChange={e => updateOrder(order._id, { shippingStatus: e.target.value })}
@@ -407,9 +416,10 @@ export default function AdminOrders() {
                                 </select>
                               </div>
                               <div className="ao-sel-group ao-sel-group--track">
-                                <label className="ao-sel-lbl">N° seguimiento</label>
+                                <label className="ao-sel-lbl" htmlFor={`ao-track-${order._id}`}>N° seguimiento</label>
                                 <div className="ao-track-row">
                                   <input
+                                    id={`ao-track-${order._id}`}
                                     className="ao-sel ao-track-inp"
                                     type="text"
                                     placeholder="Código de tracking"
@@ -670,15 +680,7 @@ export default function AdminOrders() {
 
       {/* Lightbox */}
       {lightbox && (
-        <div className="ao-lb" onClick={() => setLightbox(null)}>
-          <div className="ao-lb-inner" onClick={e => e.stopPropagation()}>
-            <img src={lightbox} alt="Comprobante" className="ao-lb-img" />
-            <div className="ao-lb-actions">
-              <button className="ao-btn ao-btn--dark" onClick={() => setLightbox(null)}>Cerrar</button>
-              <a href={lightbox} target="_blank" rel="noreferrer" className="ao-btn ao-btn--primary">Abrir original</a>
-            </div>
-          </div>
-        </div>
+        <ProofLightbox src={lightbox} onClose={() => setLightbox(null)} />
       )}
 
       <style>{`
@@ -717,6 +719,7 @@ export default function AdminOrders() {
 
 /* Search bar */
 .ao-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.ao-search:focus-visible{border-color:#0f172a;box-shadow:0 0 0 3px rgba(15,23,42,.12)}
 .ao-search{flex:1 1 220px;padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font-size:.88rem;font-weight:600;outline:none;transition:border .15s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .ao-search:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
 .ao-search::placeholder{color:#94a3b8;font-weight:500}
@@ -744,7 +747,8 @@ export default function AdminOrders() {
 .ao-card--open{border-color:#a5b4fc}
 
 /* Row header */
-.ao-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;gap:12px;transition:background .1s}
+.ao-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;gap:12px;transition:background .1s;width:100%;border:0;background:none;font:inherit;color:inherit;text-align:left}
+.ao-row:focus-visible{outline:2px solid #0f172a;outline-offset:-2px}
 .ao-row:hover{background:#f8fafc}
 .ao-row-left{flex:1;min-width:0}
 .ao-row-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -904,5 +908,29 @@ export default function AdminOrders() {
 }
       `}</style>
     </>
+  );
+}
+
+/** Visor del comprobante: diálogo modal con foco atrapado y Escape para cerrar. */
+function ProofLightbox({ src, onClose }) {
+  const ref = useRef(null);
+  useDialogA11y(ref, onClose);
+  return (
+    <div className="ao-lb" role="presentation" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div
+        ref={ref}
+        tabIndex={-1}
+        className="ao-lb-inner"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Comprobante de pago"
+      >
+        <img src={src} alt="Comprobante de pago" className="ao-lb-img" />
+        <div className="ao-lb-actions">
+          <button type="button" className="ao-btn ao-btn--dark" onClick={onClose}>Cerrar</button>
+          <a href={src} target="_blank" rel="noreferrer" className="ao-btn ao-btn--primary">Abrir original</a>
+        </div>
+      </div>
+    </div>
   );
 }

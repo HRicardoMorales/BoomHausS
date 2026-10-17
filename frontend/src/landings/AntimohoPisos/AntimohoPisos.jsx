@@ -423,12 +423,11 @@ export default function AntimohoPisos() {
               </div>
 
               {/* Bundle picker */}
-              <div className="amp-bundles" id="amp-bundles">
+              <div className="amp-bundles" id="amp-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {effectiveBundles.map((b, i) => (
                   <label
                     key={b.id}
                     className={`amp-bundle-opt${selectedBundle === i ? ' selected' : ''}`}
-                    onClick={() => setSelectedBundle(i)}
                   >
                     <input type="radio" name="amp-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="amp-bundle-thumb">

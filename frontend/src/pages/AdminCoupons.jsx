@@ -126,8 +126,9 @@ export default function AdminCoupons() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div>
-                <label style={labelStyle}>Código</label>
+                <label htmlFor="cpn-code" style={labelStyle}>Código</label>
                 <input
+                  id="cpn-code"
                   style={inputStyle}
                   placeholder="ej: PROMO10"
                   value={form.code}
@@ -138,8 +139,9 @@ export default function AdminCoupons() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label style={labelStyle}>Tipo</label>
+                  <label htmlFor="cpn-type" style={labelStyle}>Tipo</label>
                   <select
+                    id="cpn-type"
                     style={inputStyle}
                     value={form.type}
                     onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
@@ -149,8 +151,9 @@ export default function AdminCoupons() {
                   </select>
                 </div>
                 <div>
-                  <label style={labelStyle}>{form.type === 'percent' ? 'Descuento (%)' : 'Descuento ($)'}</label>
+                  <label htmlFor="cpn-value" style={labelStyle}>{form.type === 'percent' ? 'Descuento (%)' : 'Descuento ($)'}</label>
                   <input
+                    id="cpn-value"
                     style={inputStyle}
                     type="number"
                     placeholder={form.type === 'percent' ? 'ej: 15' : 'ej: 5000'}
@@ -162,8 +165,9 @@ export default function AdminCoupons() {
               </div>
 
               <div>
-                <label style={labelStyle}>Pedido mínimo ($) <span style={{ opacity: .5 }}>opcional</span></label>
+                <label htmlFor="cpn-min" style={labelStyle}>Pedido mínimo ($) <span style={{ opacity: .5 }}>opcional</span></label>
                 <input
+                  id="cpn-min"
                   style={inputStyle}
                   type="number"
                   placeholder="ej: 45000 — dejar vacío para sin mínimo"
@@ -175,8 +179,9 @@ export default function AdminCoupons() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label style={labelStyle}>Usos máximos <span style={{ opacity: .5 }}>opcional</span></label>
+                  <label htmlFor="cpn-max-uses" style={labelStyle}>Usos máximos <span style={{ opacity: .5 }}>opcional</span></label>
                   <input
+                    id="cpn-max-uses"
                     style={inputStyle}
                     type="number"
                     placeholder="vacío = ilimitado"
@@ -186,8 +191,9 @@ export default function AdminCoupons() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>Vence el <span style={{ opacity: .5 }}>opcional</span></label>
+                  <label htmlFor="cpn-expires" style={labelStyle}>Vence el <span style={{ opacity: .5 }}>opcional</span></label>
                   <input
+                    id="cpn-expires"
                     style={inputStyle}
                     type="date"
                     value={form.expiresAt}

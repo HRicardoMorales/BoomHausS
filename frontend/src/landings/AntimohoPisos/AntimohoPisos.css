@@ -584,3 +584,6 @@
   .amp-sec { padding: 56px 0; }
   .amp-hero { padding: 40px 0 52px; }
 }
+
+/* El radio está oculto visualmente: el foco de teclado se ve en la tarjeta. */
+.amp-bundle-opt:has(input:focus-visible) { outline: 2px solid var(--amp-red); outline-offset: 3px; }

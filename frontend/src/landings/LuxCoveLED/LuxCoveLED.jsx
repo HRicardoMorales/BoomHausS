@@ -627,9 +627,9 @@ export default function LuxCoveLED() {
               </div>
 
               {/* Bundle selector */}
-              <div className="led-bundles">
+              <div className="led-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {BUNDLES.map((b, i) => (
-                  <label key={b.id} className={`led-bundle-opt${selectedBundle === i ? ' selected' : ''}`} onClick={() => setSelectedBundle(i)}>
+                  <label key={b.id} className={`led-bundle-opt${selectedBundle === i ? ' selected' : ''}`}>
                     <input type="radio" name="led-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="led-bundle-body">
                       <div className="led-bundle-top">

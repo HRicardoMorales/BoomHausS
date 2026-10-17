@@ -134,6 +134,36 @@ img { max-width: 100%; display: block; }
   outline-offset: 2px;
 }
 
+/* =============== Foco de teclado (WCAG 2.4.7) ===============
+   Base para todo lo enfocable: solo aparece con teclado (:focus-visible),
+   no al tocar en mobile. Va con :where() (especificidad 0) para que los
+   estilos de foco propios de cada componente sigan ganando. */
+:where(a, button, summary, [role="button"], [role="tab"], [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+/* Contenedores que reciben foco por código (diálogos, <main> tras el
+   skip-link) no muestran anillo: el foco va a su contenido. */
+[tabindex="-1"]:focus { outline: none; }
+
+/* Skip-link: primer Tab de la página, invisible hasta enfocarlo. */
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10000;
+  padding: 10px 16px;
+  border-radius: var(--radius-control);
+  background: var(--color-text);
+  color: #fff;
+  font-weight: var(--weight-black);
+  text-decoration: none;
+  transform: translateY(calc(-100% - 20px));
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.skip-link:focus-visible { transform: none; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
+
 /* Antes el degradé terminaba en verde (rgba(27,77,62), resto de un tema
    anterior) y la sombra también era verde. Ahora todo sale de la marca. */
 .btn-primary {

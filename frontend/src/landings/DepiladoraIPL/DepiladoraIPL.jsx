@@ -506,12 +506,11 @@ export default function DepiladoraIPL() {
               </ul>
 
               {/* Bundle selector */}
-              <div className="ipl-bundles">
+              <div className="ipl-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {BUNDLES.map((b, i) => (
                   <label
                     key={b.id}
                     className={`ipl-bundle-opt${selectedBundle === i ? ' selected' : ''}`}
-                    onClick={() => setSelectedBundle(i)}
                   >
                     <input type="radio" name="ipl-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="ipl-bundle-body">

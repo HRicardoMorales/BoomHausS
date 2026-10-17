@@ -60,6 +60,9 @@ export default function CategoryTabs({ categories, active, onChange }) {
   };
 
   return (
+    // Patrón APG de tabs con "roving tabindex": el foco vive en cada tab
+    // (tabIndex 0/-1) y el tablist solo escucha las flechas que burbujean.
+    // eslint-disable-next-line jsx-a11y/interactive-supports-focus
     <div
       className={`hc-tabs ${rect ? "has-pill" : ""}`}
       role="tablist"

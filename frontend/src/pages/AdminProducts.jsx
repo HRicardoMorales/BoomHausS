@@ -608,10 +608,10 @@ export default function AdminProducts() {
                     </span>
                   )}
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: form.isActive ? '#10b981' : '#94a3b8' }}>
-                    <label className="ap-toggle">
+                    <span className="ap-toggle">
                       <input type="checkbox" checked={form.isActive} onChange={e => setF('isActive', e.target.checked)} />
                       <span className="ap-toggle-slider" />
-                    </label>
+                    </span>
                     {form.isActive ? 'Activo' : 'Inactivo'}
                   </label>
                 </div>

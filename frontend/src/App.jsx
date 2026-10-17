@@ -125,6 +125,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <SkipLink targetId="contenido" />
       <ScrollToTop />
       <RouteSeo />
       {chrome.marquee && <Marquee countdownKey="pd_countdown" />}
@@ -132,7 +133,8 @@ export default function App() {
       
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
-      <div className="app-body">
+      {/* Destino del skip-link. No es <main> porque cada página ya define el suyo. */}
+      <div className="app-body" id="contenido" tabIndex={-1}>
         <ErrorBoundary resetKey={location.pathname}>
         <Suspense fallback={<RouteFallback />}>
         <Routes>
@@ -190,5 +192,24 @@ export default function App() {
       {chrome.footer && <Footer />}
       {chrome.whatsapp && <WhatsAppButton />}
     </div>
+  );
+}
+
+/**
+ * Skip-link: mueve el foco al contenido sin tocar la URL (un hash cambiaría
+ * la location del router y dispararía efectos de ruta como ScrollToTop).
+ */
+function SkipLink({ targetId }) {
+  const onClick = (e) => {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    e.preventDefault();
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: 'start' });
+  };
+  return (
+    <a className="skip-link" href={`#${targetId}`} onClick={onClick}>
+      Saltar al contenido
+    </a>
   );
 }

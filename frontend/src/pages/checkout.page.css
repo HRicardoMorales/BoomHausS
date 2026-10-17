@@ -121,7 +121,7 @@
 .ckfp-coupon-toggle:hover { color: #374151; }
 .ckfp-coupon-row { display: flex; gap: 8px; margin-top: 4px; }
 .ckfp-coupon-inp { flex: 1; height: 38px; border: 1.5px solid #d1d5db; border-radius: 8px; padding: 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; outline: none; background: #fff; }
-.ckfp-coupon-inp:focus { border-color: #111827; }
+.ckfp-coupon-inp:focus { border-color: #111827; box-shadow: 0 0 0 3px rgba(0,0,0,.07); }
 .ckfp-coupon-btn { height: 38px; padding: 0 14px; border: 1.5px solid #d1d5db; border-radius: 8px; background: #f3f4f6; font-size: 12px; font-weight: 800; color: #374151; cursor: pointer; white-space: nowrap; }
 .ckfp-coupon-btn:hover:not(:disabled) { background: #e5e7eb; }
 .ckfp-coupon-btn:disabled { opacity: .5; cursor: not-allowed; }
