@@ -23,3 +23,16 @@ export function calcItemTotal(it) {
   }
   return Math.round(qty * base);
 }
+
+/** Total cobrado y total "de lista" de una línea (para tachar el precio anterior). */
+export function lineTotals(item, calcItemTotal) {
+  const total = calcItemTotal(item);
+  const original = item.bundleTotal && item.compareAtPrice
+    ? Number(item.compareAtPrice)
+    : (Number(item.price) || 0) * (Number(item.quantity) || 0);
+  return { total, original, discounted: original > total };
+}
+
+export function itemThumb(item) {
+  return item.imageUrl || item.image || null;
+}
