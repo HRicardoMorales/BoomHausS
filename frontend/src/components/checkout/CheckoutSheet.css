@@ -178,7 +178,13 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 20px; cursor: pointer; border-bottom: 1px solid var(--border);
   background: var(--bg);
+  /* es un <button>: reset de los estilos nativos */
+  width: 100%; border: 0; border-bottom: 1px solid var(--border); border-radius: 0;
+  font: inherit; color: inherit; text-align: left;
 }
+.cs-summary-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.cs-summary-strike { display: block; font-size: 11px; color: #6b6b6b; text-decoration: line-through; }
+.cs-summary-total  { display: block; font-weight: 900; font-size: 15px; color: var(--text); }
 .cs-summary-items { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 20px; }
 
 /* Pay panel */

@@ -11,6 +11,9 @@ import { LogoVisa, LogoMC, LogoAmex, LogoMP } from "../components/checkout/Payme
 import { CabaConfirmModal } from "../components/checkout/CabaConfirmModal";
 import { OrderConfirmation } from "../components/checkout/OrderConfirmation";
 import { ExitIntentModal } from "../components/checkout/ExitIntentModal";
+import { CheckoutNav } from "../components/checkout/CheckoutNav";
+import { OrderSummaryBar } from "../components/checkout/OrderSummaryBar";
+import { CartStep } from "../components/checkout/CartStep";
 import "../components/checkout/CheckoutSheet.css";
 
 // Meta cookies/eventId helpers viven en lib/metaPixel.js — usar getFbCookies()
@@ -44,7 +47,6 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [showExitIntent, setShowExitIntent] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
   const cartTime = useCountdown("pd_cd_v2", 335);
   const socialProofCount = useMemo(() => 18 + Math.floor(Math.random() * 12), []);
   const [sameAddr, setSameAddr] = useState(true);
@@ -535,7 +537,6 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
   }
 
   const firstImg = items[0]?.imageUrl || items[0]?.image || null;
-  const G = accentColor; // accent color for inline styles
 
   return (
     <>
@@ -553,302 +554,56 @@ export function CheckoutSheet({ onClose, allowCod = true, primaryColor = "#1b4d3
       <div className="cs-overlay" onClick={handleOverlayClick} style={{ '--primary': primaryColor, '--primary-hover': primaryHover, '--cs-done': accentColor, '--text': '#0b1220', '--border': '#ebebeb', '--border2': '#d0d0d0', '--bg': '#f8f8f8', '--cs-accent-bg': accentBg, '--cs-accent-border': accentBorder, '--cs-accent-text': accentText }}>
         <div className="cs-sheet" ref={sheetRef} style={fontFamily ? { fontFamily } : undefined}>
 
-          {/* ─── NAVBAR ─── */}
-          <div className="cs-nav">
-            <div className="cs-nav-side cs-nav-side--left">
-              {step <= 2 && (
-                step === 0 ? (
-                  <button className="cs-nav-back" onClick={onClose} aria-label="Volver a la tienda">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-                    Volver
-                  </button>
-                ) : (
-                  <button className="cs-nav-btn" onClick={() => goToStep(step - 1)} aria-label="Volver al paso anterior">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-                  </button>
-                )
-              )}
-            </div>
+          <CheckoutNav
+            step={step}
+            storeName={import.meta.env.VITE_STORE_NAME || "Amelor"}
+            onExit={onClose}
+            onBack={() => goToStep(step - 1)}
+            onClose={handleClose}
+          />
 
-            <div className="cs-nav-center">
-              {import.meta.env.VITE_STORE_NAME || "Amelor"}
-            </div>
-
-            <div className="cs-nav-side cs-nav-side--right">
-              {step <= 2 && (
-                <>
-                  {(step === 1 || step === 2) && (
-                    <span className="cs-nav-secure">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                      Seguro
-                    </span>
-                  )}
-                  <button className="cs-nav-btn" onClick={handleClose} aria-label="Cerrar">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Collapsible summary + progress (steps 1 & 2) */}
+          {/* Resumen colapsable + progreso (pasos 1 y 2) */}
           {(step === 1 || step === 2) && (
-            <div>
-              <div className="cs-summary-toggle" onClick={() => setSummaryOpen(o => !o)}>
-                <span style={{ fontSize: 13, fontWeight: 800, color: "var(--primary)", display: "flex", alignItems: "center", gap: 6 }}>
-                  Resumen del pedido
-                  <span style={{ fontSize: 11, color: "#888", transform: summaryOpen ? "rotate(180deg)" : "none", display: "inline-block", transition: "transform .2s" }}>▼</span>
-                </span>
-                <div style={{ textAlign: "right" }}>
-                  {(savings > 0 || discountAmount > 0) && <div style={{ fontSize: 11, color: "#888", textDecoration: "line-through" }}>{money(discountAmount > 0 ? totalPrice : fullPrice)}</div>}
-                  <div style={{ fontWeight: 900, fontSize: 15, color: "var(--text)" }}>{money(finalTotal)}</div>
-                </div>
-              </div>
-
-              {summaryOpen && (
-                <div className="cs-summary-items">
-                  {items.map((it, i) => (
-                    <div key={i}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", fontSize: 13, fontWeight: 700 }}>
-                        <span style={{ color: "var(--text)" }}>{it.name} × {it.quantity}</span>
-                        <span>{money(calc(it))}</span>
-                      </div>
-                      {it.gifts?.map((gift, gi) => (
-                        <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0 3px 10px", fontSize: 12, fontWeight: 700 }}>
-                          <span style={{ color: accentColor }}>🎁 {gift}</span>
-                          <span style={{ color: accentColor, fontWeight: 900 }}>GRATIS</span>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: shippingCost > 0 ? "var(--text)" : accentColor, paddingTop: 6, borderTop: "1px solid var(--border)", marginTop: 6 }}>
-                    <span>Envío</span><span>{shippingCost > 0 ? money(shippingCost) : "GRATIS"}</span>
-                  </div>
-                  {discountAmount > 0 && (
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700, color: accentColor, paddingTop: 6 }}>
-                      <span>Cupón {appliedCoupon?.code}</span><span>-{money(discountAmount)}</span>
-                    </div>
-                  )}
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 900, paddingTop: 8 }}>
-                    <span>Total</span><span>{money(finalTotal)}</span>
-                  </div>
-                </div>
-              )}
-
-              <div style={{ padding: "14px 28px 0" }}>
-                <div className="cs-progress">
-                  <div className={`cs-step-circle ${step >= 1 && step < 2 ? "active" : step >= 2 ? "done" : ""}`}>{step >= 2 ? "✓" : "1"}</div>
-                  <div className={`cs-step-line ${step >= 2 ? "done" : ""}`} />
-                  <div className={`cs-step-circle ${step === 2 ? "active" : step > 2 ? "done" : ""}`}>{step > 2 ? "✓" : "2"}</div>
-                  <div className="cs-step-line" />
-                  <div className={`cs-step-circle ${step === 2 ? "active" : ""}`}>3</div>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0 8px" }}>
-                  {["Tus datos", "Pago", "✓ Confirmación"].map((l, i) => {
-                    const done = (i === 0 && step >= 2) || (i === 1 && step >= 2);
-                    const active = (i === 0 && step === 1) || (i === 1 && step === 1) || (i === 2 && step === 2);
-                    return <span key={l} className={`cs-step-label ${done ? "done" : active ? "active" : ""}`}>{l}</span>;
-                  })}
-                </div>
-              </div>
-            </div>
+            <OrderSummaryBar
+              step={step}
+              items={items}
+              calc={calc}
+              accentColor={accentColor}
+              appliedCoupon={appliedCoupon}
+              totalPrice={totalPrice}
+              fullPrice={fullPrice}
+              savings={savings}
+              discountAmount={discountAmount}
+              shippingCost={shippingCost}
+              finalTotal={finalTotal}
+            />
           )}
 
           {/* ─── BODY ─── */}
           <div ref={bodyRef} className={`cs-body${stepTransition === "exiting" ? " cs-body--exiting" : stepTransition === "entering" ? " cs-body--entering" : ""}`}>
 
             {/* ══════ STEP 0 — CART ══════ */}
-            {step === 0 && (() => {
-              // ✅ Detecta si el carrito tiene el Kit Completo del mundial
-              const hasKit = items.some((it) => {
-                const n = (it.name || "").toLowerCase();
-                return n.includes("kit") && n.includes("revendedor");
-              });
-              return (
-              <div>
-                {/* Hero benefits bar — color sigue la landing via --primary */}
-                <div className="cs-ship-banner">
-                  <span className="cs-ship-banner-text">🚚 Envío gratis a todo el país</span>
-                  {hasKit && <span className="cs-ship-banner-text">· 🎁 +20 unidades de regalo incluidas</span>}
-                </div>
-
-                {/* Cart items */}
-                <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {items.length === 0 && (
-                    <div style={{ textAlign: "center", padding: "32px 0", color: "#aaa", fontWeight: 700 }}>Tu carrito está vacío.</div>
-                  )}
-                  {items.map((it, idx) => {
-                    const itemTotal = calc(it);
-                    const origTotal = it.bundleTotal && it.compareAtPrice
-                      ? Number(it.compareAtPrice)
-                      : (Number(it.price) || 0) * (Number(it.quantity) || 0);
-                    const hasDiscount = (it.bundleTotal && it.compareAtPrice && Number(it.compareAtPrice) > itemTotal)
-                      || (it.promo?.type === "bundle2" && it.promo?.discountPct > 0);
-                    const thumb = it.imageUrl || it.image || null;
-                    return (
-                      <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", background: "#fff", border: "1px solid var(--border)", borderRadius: 14, padding: "12px 12px", boxShadow: "0 2px 10px rgba(0,0,0,.05)" }}>
-
-                        {/* Imágenes: bundle (múltiples) o producto único */}
-                        <div style={{ position: "relative", flexShrink: 0 }}>
-                          {it.bundleImgs?.length > 0 ? (() => {
-                            // Siempre: [producto principal] + [imágenes del bundle], sin duplicados
-                            const mainImg = it.imageUrl || it.image;
-                            const otherImgs = mainImg
-                              ? it.bundleImgs.filter(s => s !== mainImg)
-                              : it.bundleImgs;
-                            const allImgs = mainImg ? [mainImg, ...otherImgs] : it.bundleImgs;
-                            return (
-                              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                {allImgs.map((src, bIdx) => (
-                                  <div key={bIdx} style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                    {bIdx > 0 && <span style={{ fontSize: 11, fontWeight: 900, color: "var(--primary)", opacity: .55, lineHeight: 1 }}>+</span>}
-                                    <div style={{ width: 52, height: 52, borderRadius: 9, overflow: "hidden", background: "#f5f0f3", border: "1px solid rgba(0,0,0,.07)", flexShrink: 0 }}>
-                                      <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
-                                    </div>
-                                  </div>
-                                ))}
-                                <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
-                              </div>
-                            );
-                          })() : (
-                            <>
-                              <div style={{ width: 76, height: 76, borderRadius: 10, overflow: "hidden", background: "#f0f4f8", display: "grid", placeItems: "center", border: "1px solid rgba(0,0,0,.07)" }}>
-                                {thumb ? <img src={thumb} alt={it.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>📦</span>}
-                              </div>
-                              <span style={{ position: "absolute", top: -6, right: -6, background: "var(--primary)", color: "#fff", borderRadius: 999, width: 20, height: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{it.quantity}</span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          {(() => {
-                            const parts = it.name.split(' — ');
-                            return parts.length > 1 ? (
-                              <>
-                                <div style={{ fontWeight: 900, fontSize: 13, lineHeight: 1.3, color: "rgba(11,18,32,.90)" }}>{parts[0]}</div>
-                                <div style={{ fontWeight: 700, fontSize: 11.5, color: "var(--primary)", marginTop: 2, lineHeight: 1.3 }}>{parts[1]}</div>
-                              </>
-                            ) : (
-                              <div style={{ fontWeight: 900, fontSize: 13, lineHeight: 1.3, color: "rgba(11,18,32,.90)" }}>{it.name}</div>
-                            );
-                          })()}
-                          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 5 }}>
-                            {hasDiscount && it.promo?.discountPct > 0 && (
-                              <span style={{ fontSize: 10.5, background: accentBg, color: accentText, border: `1px solid ${accentBorder}`, borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
-                                -{it.promo.discountPct}% OFF
-                              </span>
-                            )}
-                            {hasDiscount && it.bundleTotal && (
-                              <span style={{ fontSize: 10.5, background: accentBg, color: accentText, border: `1px solid ${accentBorder}`, borderRadius: 999, padding: "2px 7px", fontWeight: 800 }}>
-                                PACK AHORRO
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Price */}
-                        <div style={{ textAlign: "right", flexShrink: 0, paddingTop: 2 }}>
-                          {hasDiscount && origTotal !== itemTotal && (
-                            <div style={{ fontSize: 11, textDecoration: "line-through", color: "#bbb", fontWeight: 700 }}>{money(origTotal)}</div>
-                          )}
-                          <div style={{ fontWeight: 900, fontSize: 16, color: hasDiscount ? accentColor : "var(--text)" }}>{money(itemTotal)}</div>
-                        </div>
-                      </div>
-                      {it.gifts?.length > 0 && (
-                        <div style={{ background: "#fffbeb", border: "1.5px solid #fde68a", borderRadius: 10, padding: "8px 12px", display: "flex", flexDirection: "column", gap: 5 }}>
-                          <div style={{ fontSize: 11, fontWeight: 900, color: "#b45309", letterSpacing: ".04em", marginBottom: 2 }}>🎁 INCLUIDO EN TU PEDIDO</div>
-                          {it.gifts.map((gift, gi) => (
-                            <div key={gi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: "#78350f" }}>· {gift}</span>
-                              <span style={{ fontSize: 11.5, fontWeight: 900, color: "#d97706", background: "#fef3c7", borderRadius: 999, padding: "2px 8px" }}>GRATIS</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Totals */}
-                <div style={{ padding: "0 16px 10px" }}>
-                  <div className="cs-totals">
-                    <div className="cs-total-row"><span>Envío</span><span style={{ color: shippingCost > 0 ? "var(--text)" : accentColor, fontWeight: 800 }}>{shippingCost > 0 ? money(shippingCost) : "GRATIS"}</span></div>
-                    {savings > 0 && <div className="cs-total-row" style={{ color: accentColor }}><span>Ahorrás</span><span>-{money(savings)}</span></div>}
-                    {discountAmount > 0 && (
-                      <div className="cs-total-row" style={{ color: accentColor }}>
-                        <span>Cupón <strong>{appliedCoupon.code}</strong></span>
-                        <span>-{money(discountAmount)}</span>
-                      </div>
-                    )}
-                    <div className="cs-total-row final">
-                      <span>Total</span>
-                      <span>
-                        {discountAmount > 0 && <span style={{ fontSize: 14, fontWeight: 700, textDecoration: "line-through", color: "#aaa", marginRight: 8 }}>{money(totalPrice)}</span>}
-                        {money(finalTotal)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Coupon — discreto */}
-                  {!appliedCoupon && (
-                    <button
-                      className="cs-coupon-toggle"
-                      onClick={() => setCouponOpen(o => !o)}
-                    >
-                      ¿Tenés un código de descuento?
-                    </button>
-                  )}
-                  {(couponOpen || appliedCoupon) && (
-                    <div className="cs-coupon-body">
-                      <div className="cs-coupon-row">
-                        <input
-                          type="text"
-                          placeholder="Código de cupón"
-                          value={couponInput}
-                          onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
-                          onKeyDown={e => e.key === "Enter" && !appliedCoupon && applyCoupon()}
-                          className={appliedCoupon ? "cs-coupon-applied" : ""}
-                          disabled={!!appliedCoupon}
-                        />
-                        {appliedCoupon ? (
-                          <button className="cs-coupon-btn remove" onClick={removeCoupon}>Quitar</button>
-                        ) : (
-                          <button className="cs-coupon-btn" onClick={applyCoupon} disabled={couponApplying || !couponInput.trim()}>
-                            {couponApplying ? "..." : "Aplicar"}
-                          </button>
-                        )}
-                      </div>
-                      {couponError && <div className="cs-coupon-err">{couponError}</div>}
-                      {appliedCoupon && !couponError && (
-                        <div className="cs-coupon-ok">
-                          ✓ Cupón aplicado — {appliedCoupon.type === "percent" ? `${appliedCoupon.value}% de descuento` : `${money(appliedCoupon.value)} de descuento`}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Countdown urgency */}
-                  {cartTime !== "00:00" && (
-                    <div style={{ textAlign: "center", marginTop: 12 }}>
-                      <span className="cs-cd-pill">
-                        ⚡ Oferta válida por <span className="cs-cd-pill-time">&nbsp;{cartTime}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Social proof */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, fontWeight: 800, color: accentText, background: accentBg, border: `1px solid ${accentBorder}`, borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
-                    <span style={{ fontSize: 15, lineHeight: 1 }}>🔥</span>
-                    <span>{socialProofCount} personas compraron esto en las últimas 24 horas</span>
-                  </div>
-
-                </div>
-              </div>
-              );
-            })()}
+            {step === 0 && (
+              <CartStep
+                items={items}
+                calc={calc}
+                accent={{ color: accentColor, bg: accentBg, border: accentBorder, text: accentText }}
+                totals={{ shippingCost, savings, discountAmount, totalPrice, finalTotal }}
+                coupon={{
+                  applied: appliedCoupon,
+                  open: couponOpen,
+                  onToggle: () => setCouponOpen(o => !o),
+                  input: couponInput,
+                  onInputChange: (v) => { setCouponInput(v); setCouponError(""); },
+                  applying: couponApplying,
+                  error: couponError,
+                  onApply: applyCoupon,
+                  onRemove: removeCoupon,
+                }}
+                cartTime={cartTime}
+                socialProofCount={socialProofCount}
+              />
+            )}
 
             {/* ══════ STEP 1 — INFO + ENTREGA ══════ */}
             {step === 1 && (
