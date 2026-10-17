@@ -3,6 +3,7 @@ import { Suspense, useEffect } from 'react';
 
 import Navbar from './components/navbar.jsx';
 import RouteSeo from './seo/RouteSeo.jsx';
+import { getLayoutChrome } from './routes/layoutChrome.js';
 import Marquee from './components/marquee.jsx';
 import Footer from './components/Footer.jsx';
 
@@ -64,29 +65,8 @@ function PrivateRoute({ children }) {
 export default function App() {
   const location = useLocation();
 
-  // ✅ Navbar/marquee ocultos en checkout y landing B2B
-  const hideChrome = location.pathname === '/checkout' || location.pathname === '/lp/antimoho-pisos';
-  // ✅ Marquee oculto además en landings con header o cinta propia
-  const hideMarquee = hideChrome || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos' || location.pathname === '/lp/masajeador-ems-eyes' || location.pathname === '/lp/masajeador-facial-iones-lambo';
-  // ✅ Footer oculto en checkout y landing B2B mundial
-  const hideFooter = location.pathname === '/lp/mundial-revendedores' || location.pathname === '/checkout' || location.pathname === '/lp/masajeador-facial-iones-lambo' || location.pathname === '/lp/masajeador-ems-eyes' || location.pathname === '/lp/sillon-puff-inflable' || location.pathname === '/lp/kit-belleza-6en1' || location.pathname === '/lp/escultor-led' || location.pathname === '/lp/depiladora-ipl' || location.pathname === '/lp/parches-detox' || location.pathname === '/lp/antimoho-pisos';
-  // ✅ WhatsApp global oculto donde la pagina renderiza su propio boton
-  //    (evita duplicar). Alcance:
-  //    - landings (/lp/*): todas tienen su <WaTab> propio con estilo custom
-  //    - product detail (/products/:id): tiene <WaTab>
-  //    - admin (/admin/*): no queremos WA de cliente en el panel admin
-  //    - checkout: UI densa, floating extra molesta
-  //    Excepcion /lp/antimoho-pisos: la landing NO tiene WaTab propio
-  //    todavia (WIP), asi que dejamos el global para no dejarla sin WA.
-  //    TODO: cuando se termine AntimohoPisos, agregarle su WaTab y sacar
-  //    la excepcion.
-  //    Home (/, /public) SI muestra el global (antes tenia un .hc-wa-fab
-  //    local duplicado; se removio para consolidar en el componente global).
-  const hideWhatsApp =
-    location.pathname === '/checkout' ||
-    location.pathname.startsWith('/admin') ||
-    location.pathname.startsWith('/products/') ||
-    (location.pathname.startsWith('/lp/') && location.pathname !== '/lp/antimoho-pisos');
+  // Qué partes del layout global lleva cada ruta: ver routes/layoutChrome.js.
+  const chrome = getLayoutChrome(location.pathname);
 
   // PageView en cada cambio de ruta SPA. El primer PageView lo dispara
   // metaPixelInit al bootear la app.
@@ -146,8 +126,8 @@ export default function App() {
     <div className="app-shell">
       <ScrollToTop />
       <RouteSeo />
-      {!hideMarquee && <Marquee countdownKey="pd_countdown" />}
-      {!hideChrome && <Navbar />}
+      {chrome.marquee && <Marquee countdownKey="pd_countdown" />}
+      {chrome.navbar && <Navbar />}
       
       {/* ❌ CartToast ELIMINADO AQUÍ (Ahora vive en ProductDetail) */}
 
@@ -206,8 +186,8 @@ export default function App() {
         </ErrorBoundary>
       </div>
 
-      {!hideChrome && !hideFooter && <Footer />}
-      {!hideWhatsApp && <WhatsAppButton />}
+      {chrome.footer && <Footer />}
+      {chrome.whatsapp && <WhatsAppButton />}
     </div>
   );
 }
