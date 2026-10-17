@@ -37,6 +37,7 @@ const Terms = lazyWithRetry(() => import('./pages/Terms.jsx'));
 const Privacy = lazyWithRetry(() => import('./pages/Privacy.jsx'));
 const Returns = lazyWithRetry(() => import('./pages/Returns.jsx'));
 const SuccessPayment = lazyWithRetry(() => import('./pages/SuccessPayment'));
+const NotFound = lazyWithRetry(() => import('./pages/NotFound.jsx'));
 
 const AdminHome = lazyWithRetry(() => import('./pages/AdminHome.jsx'));
 const AdminOrders = lazyWithRetry(() => import('./pages/AdminOrders.jsx'));
@@ -177,10 +178,10 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/returns" element={<Returns />} />
-          <Route path="*" element={<Navigate to="/public" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/success-payment" element={<SuccessPayment />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
         </ErrorBoundary>
