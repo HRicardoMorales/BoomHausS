@@ -438,7 +438,8 @@ export default function DepiladoraIPL() {
 
   return (
     <>
-      <div className="ipl-wrap">
+      <main className="ipl-wrap">
+        <title>Depiladora IPL Profesional | Luz pulsada en casa | Amelor</title>
 
         {/* ══ S1 — ANNOUNCEMENT BAR ══ */}
         <div className="ipl-ann-bar">
@@ -869,7 +870,7 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
                 <button className="ipl-rev-arrow" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}>‹</button>
                 <div className="ipl-rev-dots">
                   {REVIEWS.map((_, i) => (
-                    <button key={i} className={`ipl-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} />
+                    <button key={i} type="button" className={`ipl-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} aria-label={`Ver reseña ${i + 1} de ${REVIEWS.length}`} aria-current={i === reviewIdx || undefined} />
                   ))}
                 </div>
                 <button className="ipl-rev-arrow" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}>›</button>
@@ -954,10 +955,10 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
           </div>
         </div>
 
-      </div>{/* /ipl-wrap */}
+      </main>{/* /ipl-wrap */}
 
       {/* Sticky CTA bar */}
-      <div className={`ipl-sticky-bar${stickyVisible ? ' ipl-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`ipl-sticky-bar${stickyVisible ? ' ipl-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <button className="ipl-btn-cta" onClick={handleBuy} disabled={soldOut}>
           {soldOut ? 'AGOTADO' : 'AGREGAR AL CARRITO ➔'}
         </button>

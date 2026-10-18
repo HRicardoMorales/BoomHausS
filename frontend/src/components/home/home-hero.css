@@ -284,8 +284,12 @@
   .hc-hero-tile,
   .hc-hero-eyebrow-dot { animation: none; }
   .hc-hero-tile { transform: rotate(var(--r)); }
-  .hc-seen-loop { animation: none; }
-  .hc-seen-track { overflow-x: auto; }
+  /* Sin animación: los canales se acomodan en filas (sin scroll horizontal,
+     que obligaría a hacer la franja enfocable con teclado). */
+  .hc-seen-loop { animation: none; width: auto; }
+  .hc-seen-row { flex-wrap: wrap; }
+  .hc-seen-row[aria-hidden="true"] { display: none; }
+  .hc-seen-track { -webkit-mask-image: none; mask-image: none; }
   .hc-hero-cta, .hc-hero-cta-arrow, .hc-best-progress span { transition: none; }
 }
 

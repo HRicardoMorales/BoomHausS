@@ -169,7 +169,8 @@ export default function WineLanding({ config: mc, theme }) {
 
   return (
     <>
-    <div className="wine-wrap" style={theme.vars}>
+    <main className="wine-wrap" style={theme.vars}>
+      <title>{mc.pageTitle}</title>
 
       {/* ── CINTA ── (reemplaza al marquee global, oculto en App para estas rutas) */}
       <div className="ems-mq" aria-hidden="true">
@@ -419,7 +420,7 @@ export default function WineLanding({ config: mc, theme }) {
       />
 
       <WhatsAppTab wa={mc.whatsapp} raised={stickyVisible} />
-    </div>
+    </main>
 
     {showCheckout && (
       <CheckoutSheet

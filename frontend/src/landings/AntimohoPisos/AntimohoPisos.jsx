@@ -337,7 +337,8 @@ export default function AntimohoPisos() {
 
   return (
     <>
-      <div className="amp-wrap">
+      <main className="amp-wrap">
+        <title>Anti-Moho PRO | Pisos y juntas como nuevos | Amelor</title>
 
         {/* ══ TOPBAR + SALEBAR ══ */}
         <div className="amp-topbar">
@@ -679,10 +680,10 @@ export default function AntimohoPisos() {
           </div>
         </div>
 
-      </div>{/* /amp-wrap */}
+      </main>{/* /amp-wrap */}
 
       {/* ══ Sticky CTA bar (mobile) ══ */}
-      <div className={`amp-sticky-bar${stickyVisible ? ' amp-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`amp-sticky-bar${stickyVisible ? ' amp-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <div className="amp-sticky-thumb">
           {galleryImages[0]?.src
             ? <SafeImg src={galleryImages[0].src} alt="" width={40} height={40} sizes="40px" widths={ICON_WIDTHS} />

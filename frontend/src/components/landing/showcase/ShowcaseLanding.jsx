@@ -147,7 +147,8 @@ export default function ShowcaseLanding({ config: mc, theme }) {
   const activeImg = heroImgs[activeImgIdx] || heroImgs[0] || { src: '', alt: productName };
 
   return (
-    <div className="spf-wrap" style={ctaVars}>
+    <main className="spf-wrap" style={ctaVars}>
+      <title>{mc.pageTitle}</title>
 
       {/* ============================================================
           HERO — imagen izquierda / info+bundles derecha
@@ -396,6 +397,6 @@ export default function ShowcaseLanding({ config: mc, theme }) {
       <WhatsAppTab wa={mc.whatsapp} raised={stickyVisible} />
 
       {showSheet && <CheckoutSheet onClose={() => setShowSheet(false)} allowCod={allowCod} />}
-    </div>
+    </main>
   );
 }

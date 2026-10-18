@@ -119,7 +119,16 @@ export default function ReviewsWithBars({
           >
             ‹
           </button>
-          <div className="lp-rwb__row" id={carouselId} ref={rowRef} onScroll={onScroll}>
+          {/* Enfocable para poder desplazar las reseñas con las flechas del teclado. */}
+          <div
+            className="lp-rwb__row"
+            id={carouselId}
+            ref={rowRef}
+            onScroll={onScroll}
+            role="region"
+            aria-label="Lista de reseñas, desplazable"
+            tabIndex={0}
+          >
             {reviews.map((r, i) => (
               <article
                 className="lp-rwb__slide"

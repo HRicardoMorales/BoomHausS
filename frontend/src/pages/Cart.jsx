@@ -202,6 +202,7 @@ function Cart() {
                                                                 updateQty(it.productId, v);
                                                             }}
                                                             inputMode="numeric"
+                                                            aria-label={`Cantidad de ${it.name}`}
                                                             className="qty-input input"
                                                         />
                                                         <button

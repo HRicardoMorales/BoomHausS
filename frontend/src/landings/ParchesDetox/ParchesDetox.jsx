@@ -339,7 +339,8 @@ export default function ParchesDetoxLanding() {
 
   return (
     <>
-      <div className="pdx-wrap">
+      <main className="pdx-wrap">
+        <title>{mc.pageTitle}</title>
 
         {/* ══ S1 — ANNOUNCEMENT BAR ══ */}
         <div className="pdx-ann-bar">
@@ -697,7 +698,7 @@ export default function ParchesDetoxLanding() {
                 <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}>‹</button>
                 <div className="pdx-rev-dots">
                   {REVIEWS.map((_, i) => (
-                    <button key={i} className={`pdx-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} />
+                    <button key={i} type="button" className={`pdx-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} aria-label={`Ver reseña ${i + 1} de ${REVIEWS.length}`} aria-current={i === reviewIdx || undefined} />
                   ))}
                 </div>
                 <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}>›</button>
@@ -780,10 +781,10 @@ export default function ParchesDetoxLanding() {
           </div>
         </div>
 
-      </div>{/* /pdx-wrap */}
+      </main>{/* /pdx-wrap */}
 
       {/* Sticky CTA bar */}
-      <div className={`pdx-sticky-bar${stickyVisible ? ' pdx-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`pdx-sticky-bar${stickyVisible ? ' pdx-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <button className="pdx-btn-cta" onClick={handleBuy} disabled={soldOut}>
           {soldOut ? 'AGOTADO' : 'QUIERO PROBAR ESTA NOCHE 🌙'}
         </button>

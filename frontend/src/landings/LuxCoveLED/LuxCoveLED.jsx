@@ -560,7 +560,8 @@ export default function LuxCoveLED() {
 
   return (
     <>
-      <div className="led-wrap">
+      <main className="led-wrap">
+        <title>{`${displayName} | Amelor`}</title>
 
         {/* ══ S1 — ANNOUNCEMENT BAR (C1) ══ */}
         <div className="led-ann-bar">
@@ -1135,10 +1136,10 @@ export default function LuxCoveLED() {
           </div>
         </div>
 
-      </div>{/* /led-wrap */}
+      </main>{/* /led-wrap */}
 
       {/* Sticky CTA bar (mobile) */}
-      <div className={`led-sticky-bar${stickyVisible ? ' led-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`led-sticky-bar${stickyVisible ? ' led-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <button className="led-btn-cta" onClick={handleBuy} disabled={soldOut}>
           {soldOut ? 'AGOTADO' : 'AGREGAR AL CARRITO ➔'}
         </button>

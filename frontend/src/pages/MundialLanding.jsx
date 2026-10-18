@@ -46,11 +46,6 @@ export default function MundialLanding() {
   // Mínimo de compra (envío gratis a partir de este monto)
   const MIN_ORDER = Number(MC.minOrder?.amount) || 50000;
 
-  // Title + meta
-  useEffect(() => {
-    if (MC.pageTitle) document.title = MC.pageTitle;
-  }, []);
-
   // Fetch all products in parallel — fallback al config si la API falla
   useEffect(() => {
     let cancel = false;
@@ -277,6 +272,7 @@ export default function MundialLanding() {
 
   return (
     <main className="section pd-page ml-page">
+      {MC.pageTitle && <title>{MC.pageTitle}</title>}
       {/* 1. HERO blue */}
       <Band variant="blue" waCtx="general">
         <HeroSection onCtaPrimary={scrollToCatalog} onCtaSecondary={openWhatsapp} />

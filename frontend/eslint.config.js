@@ -43,6 +43,10 @@ export default defineConfig([
       'react/no-danger-with-children': 'error',
       'react/jsx-no-target-blank': 'error',
       'react/void-dom-elements-no-children': 'error',
+      // Un carrusel con scroll propio tiene que poder enfocarse para moverlo
+      // con el teclado (axe: scrollable-region-focusable); el patrón WAI es
+      // role="region" + aria-label + tabIndex={0}.
+      'jsx-a11y/no-noninteractive-tabindex': ['error', { tags: [], roles: ['tabpanel', 'region'] }],
     },
   },
   {

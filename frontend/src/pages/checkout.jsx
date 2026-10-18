@@ -302,7 +302,7 @@ export default function Checkout() {
         <header className="ckfp-header"><Link to="/" className="ckfp-logo">{storeName}</Link></header>
         <main className="ckfp-empty">
           <div style={{ fontSize: "3rem", marginBottom: 12 }}>🛒</div>
-          <h2>Tu carrito está vacío</h2>
+          <h1>Tu carrito está vacío</h1>
           <Link to="/products" className="ckfp-btn-pay" style={{ display: "inline-block", marginTop: 16 }}>Ver productos →</Link>
         </main>
       </div>
@@ -329,6 +329,7 @@ export default function Checkout() {
 
       {/* ── MAIN GRID ── */}
       <main className="ckfp-main">
+        <h1 className="sr-only">Finalizar compra</h1>
 
         {/* ── Columna izquierda: form ── */}
         <div className="ckfp-form-col">

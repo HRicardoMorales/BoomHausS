@@ -43,6 +43,7 @@ import { useLandingVariants } from "../hooks/product/useLandingVariants";
 // Último import a propósito: estas reglas venían de un <style> inline al final
 // del árbol y tienen que seguir ganando el empate de orden.
 import "./ProductDetail.page.css";
+import { SITE_NAME } from "../seo/routeSeo.js";
 
 /* ========================================================================
    MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
@@ -222,7 +223,7 @@ function ProductDetail({ id, slug }) {
 
   return (
     <main className="section main-wrapper pd-page pd-detail">
-      {/* Marquee movido a App.jsx arriba del navbar */}
+      <title>{(slug && MC?.pageTitle) || `${effectiveProduct.name} · ${SITE_NAME}`}</title>
 
       {/* HERO ROW: en desktop ≥980px se convierte en 2 columnas (imagen izq, controles der) */}
       <div className="pd-hero-row">
