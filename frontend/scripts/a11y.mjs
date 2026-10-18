@@ -21,8 +21,9 @@ import { AxeBuilder } from '@axe-core/playwright';
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
-    const [k, v] = a.replace(/^--/, '').split('=');
-    return [k, v ?? true];
+    // Solo el primer "=" separa: las rutas pueden traer query (?a=1&b=2).
+    const [k, ...rest] = a.replace(/^--/, '').split('=');
+    return [k, rest.length ? rest.join('=') : true];
   }),
 );
 
