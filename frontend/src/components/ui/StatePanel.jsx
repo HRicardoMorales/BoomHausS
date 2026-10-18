@@ -24,6 +24,18 @@ const ICONS = {
       <path d="M4 4l16 16" />
     </>
   ),
+  refresh: (
+    <>
+      <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+      <path d="M20 4v7h-7" />
+    </>
+  ),
+  alert: (
+    <>
+      <path d="M12 3.5 21.5 20h-19L12 3.5Z" />
+      <path d="M12 10v4.5M12 17.2h.01" />
+    </>
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="6.5" />

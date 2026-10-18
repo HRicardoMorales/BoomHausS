@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import logger from '../utils/logger.js';
+import StatePanel from './ui/StatePanel.jsx';
 
 const CHUNK_ERROR = /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Loading chunk/i;
 
@@ -46,39 +47,50 @@ export default class ErrorBoundary extends Component {
     const isApp = this.props.scope === 'app';
     const reload = () => window.location.reload();
 
+    const actions = (
+      <>
+        {isChunk || isApp ? (
+          <button type="button" className="btn btn-primary" onClick={reload}>
+            {isChunk ? 'Recargar' : 'Reintentar'}
+          </button>
+        ) : (
+          <button type="button" className="btn btn-primary" onClick={this.retry}>
+            Reintentar
+          </button>
+        )}
+        {isApp ? (
+          <a href="/" className="btn btn-ghost">Ir al inicio</a>
+        ) : (
+          <Link to="/" className="btn btn-ghost" onClick={this.retry}>
+            Ir al inicio
+          </Link>
+        )}
+      </>
+    );
+
+    // Mismo lenguaje visual que los estados vacíos/de error de la tienda.
+    // h1: la página que falló no llegó a renderizar el suyo.
     return (
-      <section className={`error-fallback${isApp ? ' error-fallback--app' : ''}`} role="alert" aria-live="assertive">
-        <span className="error-fallback__mark" aria-hidden="true">!</span>
-        <h1 className="error-fallback__title">
-          {isChunk ? 'Hay una versión nueva del sitio' : 'Algo no salió como esperábamos'}
-        </h1>
-        <p className="error-fallback__text">
-          {isChunk
-            ? 'Actualizamos la tienda mientras navegabas. Recargá la página para seguir.'
-            : `No pudimos mostrar ${isApp ? 'la página' : 'esta sección'}. Tu carrito sigue guardado.`}
-        </p>
-        <div className="error-fallback__actions">
-          {isChunk || isApp ? (
-            <button type="button" className="btn btn-primary" onClick={reload}>
-              {isChunk ? 'Recargar' : 'Reintentar'}
-            </button>
-          ) : (
-            <button type="button" className="btn btn-primary" onClick={this.retry}>
-              Reintentar
-            </button>
-          )}
-          {isApp ? (
-            <a href="/" className="btn btn-ghost">Ir al inicio</a>
-          ) : (
-            <Link to="/" className="btn btn-ghost" onClick={this.retry}>
-              Ir al inicio
-            </Link>
-          )}
-        </div>
+      <>
+        <StatePanel
+          tone="error"
+          icon={isChunk ? 'refresh' : 'alert'}
+          as="h1"
+          eyebrow={isChunk ? 'Actualización' : 'Error inesperado'}
+          title={isChunk ? 'Hay una versión nueva del sitio' : 'Algo no salió como esperábamos'}
+          actions={actions}
+          className={isApp ? 'error-fallback--app' : ''}
+        >
+          <p>
+            {isChunk
+              ? 'Actualizamos la tienda mientras navegabas. Recargá la página para seguir.'
+              : `No pudimos mostrar ${isApp ? 'la página' : 'esta sección'}. Tu carrito sigue guardado.`}
+          </p>
+        </StatePanel>
         {import.meta.env.DEV && (
           <pre className="error-fallback__debug">{String(error?.stack || error)}</pre>
         )}
-      </section>
+      </>
     );
   }
 }
