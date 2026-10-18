@@ -37,6 +37,11 @@ const DEFAULT_ROUTES = [
   '/lp/masajeador-ems-eyes',
   '/lp/depiladora-ipl',
   '/lp/parches-detox',
+  '/lp/mundial-revendedores',
+  '/lp/kit-belleza-6en1',
+  '/lp/masajeador-facial-iones-lambo',
+  '/lp/escultor-led',
+  '/lp/antimoho-pisos',
 ];
 const ROUTES = args.routes ? String(args.routes).split(',') : DEFAULT_ROUTES;
 const WIDTH = Number(args.width) || 390;

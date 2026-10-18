@@ -233,7 +233,7 @@
 .ipl-bundle-perks { font-size: 11px; color: rgba(46,42,57,.72); font-family: 'Inter', sans-serif; font-weight: 500; }
 .ipl-bundle-price-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .ipl-bundle-price { font-size: 15px; font-weight: 800; color: #111; white-space: nowrap; }
-.ipl-bundle-compare { font-size: 11.5px; color: #75727d; font-weight: 500; text-decoration: line-through; white-space: nowrap; }
+.ipl-bundle-compare { font-size: 11.5px; color: #6f6c78; font-weight: 500; text-decoration: line-through; white-space: nowrap; }
 
 .ipl-bundle-extras-wrap { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .ipl-bundle-thumbs { display: flex; align-items: flex-start; gap: 6px; flex-wrap: nowrap; }

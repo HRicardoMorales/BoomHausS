@@ -26,7 +26,7 @@
 .semanas-section .semanas-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 10px; text-align:center; }
 .semanas-section .semanas-accent { color:#8B1A4A; }
 @media (max-width:520px) { .semanas-section .semanas-title { font-size:1.75rem; } }
-.semanas-section .semanas-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 20px; text-align:center; }
+.semanas-section .semanas-sub { font-size:.90rem; color:rgba(11,18,32,.64); line-height:1.55; margin:0 0 20px; text-align:center; }
 .semanas-section .semanas-img { width:100%; border-radius:14px; display:block; object-fit:cover; max-height:320px; margin:0 0 32px; }
 .semanas-section .semanas-list { display:flex; flex-direction:column; }
 .semanas-section .semana-row { display:grid; grid-template-columns:84px 1fr; gap:16px; align-items:flex-start; }
@@ -42,7 +42,7 @@
 .pasos-section .pasos-kicker { font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#8B1A4A; margin-bottom:10px; }
 .pasos-section .pasos-title { font-size:2.2rem; font-weight:900; color:rgba(11,18,32,.92); line-height:1.15; margin:0 0 12px; }
 @media (max-width:520px) { .pasos-section .pasos-title { font-size:1.75rem; } }
-.pasos-section .pasos-sub { font-size:.90rem; color:rgba(11,18,32,.52); line-height:1.55; margin:0 0 32px; }
+.pasos-section .pasos-sub { font-size:.90rem; color:rgba(11,18,32,.64); line-height:1.55; margin:0 0 32px; }
 .pasos-section .pasos-list { display:flex; flex-direction:column; gap:36px; }
 .pasos-section .paso-item { display:flex; flex-direction:column; align-items:center; gap:10px; }
 .pasos-section .paso-circle-wrap { position:relative; display:inline-block; }

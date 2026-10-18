@@ -21,7 +21,7 @@ export function HowItWorks() {
           <div key={i} className="ml-htw-step">
             <div className="ml-htw-num">{String(i + 1).padStart(2, "0")}</div>
             <div className="ml-htw-icon">{s.icon}</div>
-            <h4 className="ml-htw-stepTitle">{s.title}</h4>
+            <h3 className="ml-htw-stepTitle">{s.title}</h3>
             <p className="ml-htw-stepText">{s.text}</p>
           </div>
         ))}

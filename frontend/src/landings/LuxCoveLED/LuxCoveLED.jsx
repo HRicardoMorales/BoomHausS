@@ -619,7 +619,7 @@ export default function LuxCoveLED() {
               </div>
 
               <div className="led-target-section">
-                <h3 className="led-target-title">¿Es para vos?</h3>
+                <h2 className="led-target-title">¿Es para vos?</h2>
                 <ul className="led-target-list">
                   {FOR_WHOM.map((item, i) => (
                     <li key={i}>→ {item}</li>
@@ -684,7 +684,7 @@ export default function LuxCoveLED() {
               </div>
 
               <div className="led-urgency">
-                <span>🔴</span>
+                <span aria-hidden="true">🔴</span>
                 <span>Casi agotado | Solo quedan 7 unidades</span>
               </div>
 
@@ -945,7 +945,14 @@ export default function LuxCoveLED() {
         {/* ══ S10 — LUCES LED CARRUSEL (C8) ══ */}
         <div className="led-lights-section">
           <h2 className="led-lights-title">Obtené tratamientos de miles de pesos con un solo dispositivo.</h2>
-          <div className="led-lights-track-wrap" ref={lightsTrackRef} onScroll={handleLightsScroll}>
+          <div
+            className="led-lights-track-wrap"
+            ref={lightsTrackRef}
+            onScroll={handleLightsScroll}
+            role="region"
+            aria-label="Modos de luz LED (deslizá para ver más)"
+            tabIndex={0}
+          >
             <div className="led-lights-track">
               {lights.map((light, i) => (
                 <div key={i} className="led-lights-card">

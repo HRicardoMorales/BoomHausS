@@ -127,7 +127,7 @@
 :where(.wine-wrap) .flow-text--rich .flow-title { margin-bottom:8px; }
 :where(.wine-wrap) .spf-flow-ph { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; box-sizing:border-box; }
 :where(.wine-wrap) .spf-flow-ph-icon { font-size:3.5rem; }
-:where(.wine-wrap) .spf-flow-ph-text { font-size:.78rem; font-weight:600; color:rgba(11,18,32,.38); text-align:center; line-height:1.45; }
+:where(.wine-wrap) .spf-flow-ph-text { font-size:.78rem; font-weight:600; color:rgba(11,18,32,.62); text-align:center; line-height:1.45; }
 
 :where(.wine-wrap) .grt-section { text-align:center; padding:56px 20px 52px; display:flex; flex-direction:column; align-items:center; }
 :where(.wine-wrap) .grt-medal {

@@ -537,7 +537,7 @@ export default function AntimohoPisos() {
               {FEATURES.map((f, i) => (
                 <div key={i} className="amp-feat-card">
                   <div className="amp-feat-icon"><f.icon /></div>
-                  <h4>{f.title}</h4>
+                  <h3>{f.title}</h3>
                   <p>{f.desc}</p>
                 </div>
               ))}
@@ -577,7 +577,7 @@ export default function AntimohoPisos() {
                 <div key={s.num} className="amp-step">
                   <div className="amp-step-num">{s.num}</div>
                   <span className="amp-step-tag">{s.tag}</span>
-                  <h4>{s.title}</h4>
+                  <h3>{s.title}</h3>
                   <p>{s.desc}</p>
                 </div>
               ))}
@@ -593,7 +593,7 @@ export default function AntimohoPisos() {
           <div className="amp-container amp-mini-grid">
             {MINI_FEATURES.map((m, i) => (
               <div key={i} className="amp-mini-card">
-                <h4>{m.title}</h4>
+                <h3>{m.title}</h3>
                 <p>{m.desc}</p>
               </div>
             ))}
@@ -632,7 +632,7 @@ export default function AntimohoPisos() {
               {REVIEWS_DATA.map((r, i) => (
                 <div key={i} className="amp-review-card">
                   <div className="amp-review-stars">{'★'.repeat(r.stars)}</div>
-                  <h4>{r.title}</h4>
+                  <h3>{r.title}</h3>
                   <p>&ldquo;{r.text}&rdquo;</p>
                   <div className="amp-review-name">{r.name}</div>
                   <div className="amp-review-verified"><IconCheckCircle /> Compra verificada</div>

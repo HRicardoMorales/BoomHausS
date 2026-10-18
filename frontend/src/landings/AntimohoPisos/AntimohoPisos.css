@@ -21,7 +21,7 @@
   --amp-red-hover: #b0222c;
   --amp-green:     #157A42;
   --amp-grey-bg:   #F4F6F8;
-  --amp-grey-text: #6F7D88;
+  --amp-grey-text: #5B6974; /* #6F7D88 daba 3,9–4,2:1 */
   --amp-text:      #2C3A47;
   --amp-white:     #FFFFFF;
   --amp-border:    #E3E7EB;
@@ -129,7 +129,7 @@
   align-items: center;
   gap: 4px;
   font-variant-numeric: tabular-nums;
-  background: rgba(255,255,255,.15);
+  background: rgba(0,0,0,.22); /* blanco sobre .15 de blanco daba 4,25:1 */
   border-radius: 6px;
   padding: 2px 8px;
 }
@@ -431,7 +431,7 @@
   margin-bottom: 10px;
 }
 .amp-feat-icon svg { width: 19px; height: 19px; }
-.amp-feat-card h4 { font-size: 14px; font-weight: 700; color: var(--amp-navy); margin-bottom: 4px; }
+.amp-feat-card h3 { font-size: 14px; font-weight: 700; color: var(--amp-navy); margin-bottom: 4px; }
 .amp-feat-card p { font-size: 12.5px; line-height: 1.5; color: var(--amp-grey-text); margin: 0; }
 
 /* ── Copy largo + CTA (S8) ───────────────────────────────── */
@@ -440,6 +440,9 @@
 .amp-copy-sec p { font-size: 14.5px; line-height: 1.7; color: var(--amp-text); margin-bottom: 14px; text-align: left; }
 .amp-copy-note { font-size: 12px; color: var(--amp-grey-text); font-style: italic; }
 .amp-copy-cta-wrap { text-align: center; margin-top: 22px; }
+/* `.amp-wrap a { color: inherit }` (0,1,1) le ganaba a la clase y el CTA
+   salía con texto oscuro sobre rojo (2,2:1). */
+.amp-wrap .amp-inline-cta,
 .amp-inline-cta {
   display: inline-block;
   background: var(--amp-red);
@@ -463,19 +466,19 @@
   font-weight: 800; font-family: 'Bricolage Grotesque', sans-serif;
 }
 .amp-step-tag { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; color: var(--amp-red); text-transform: uppercase; margin-bottom: 4px; }
-.amp-step h4 { font-size: 15.5px; font-weight: 700; color: var(--amp-navy); margin-bottom: 6px; }
+.amp-step h3 { font-size: 15.5px; font-weight: 700; color: var(--amp-navy); margin-bottom: 6px; }
 .amp-step p { font-size: 13.5px; line-height: 1.55; color: var(--amp-grey-text); margin: 0; }
 
 /* ── Mini features 4-grid (S10) ──────────────────────────── */
 .amp-mini-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; text-align: center; }
-.amp-mini-card h4 { font-size: 14px; font-weight: 700; color: var(--amp-navy); margin-bottom: 4px; }
+.amp-mini-card h3 { font-size: 14px; font-weight: 700; color: var(--amp-navy); margin-bottom: 4px; }
 .amp-mini-card p { font-size: 12.5px; line-height: 1.5; color: var(--amp-grey-text); margin: 0; }
 
 /* ── Fundador / marca (S11) ──────────────────────────────── */
 .amp-founder-sec { background: var(--amp-navy); padding: 40px 0; }
 .amp-founder-grid { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: center; }
-.amp-founder-grid .amp-img-placeholder { min-height: 260px; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.5); }
-.amp-founder-eyebrow { color: var(--amp-red); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+.amp-founder-grid .amp-img-placeholder { min-height: 260px; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.62); }
+.amp-founder-eyebrow { color: #FF8F96; /* el rojo de marca sobre navy da 2,9:1 */ font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 8px; }
 .amp-founder-h2 { color: #fff; font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 14px; }
 .amp-founder-grid p { color: rgba(255,255,255,.8); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
 
@@ -483,7 +486,7 @@
 .amp-reviews-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 .amp-review-card { background: #fff; border: 1px solid var(--amp-border); border-radius: 12px; padding: 18px; }
 .amp-review-stars { color: #FFC65C; font-size: 13px; margin-bottom: 8px; }
-.amp-review-card h4 { font-size: 14.5px; font-weight: 700; color: var(--amp-navy); margin-bottom: 6px; }
+.amp-review-card h3 { font-size: 14.5px; font-weight: 700; color: var(--amp-navy); margin-bottom: 6px; }
 .amp-review-card p { font-size: 13.5px; line-height: 1.6; color: var(--amp-text); margin-bottom: 10px; }
 .amp-review-name { font-size: 12.5px; font-weight: 700; color: var(--amp-text); }
 .amp-review-verified { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--amp-green); font-weight: 600; margin-top: 2px; }

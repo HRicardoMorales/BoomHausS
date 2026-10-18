@@ -77,7 +77,14 @@ export function ResellerReviews() {
           ‹
         </button>
 
-        <div className="rv-row" ref={rowRef} onScroll={onScroll}>
+        <div
+          className="rv-row"
+          ref={rowRef}
+          onScroll={onScroll}
+          role="region"
+          aria-label="Reseñas de revendedores (deslizá para ver más)"
+          tabIndex={0}
+        >
           {MC.reviews.map((r, i) => {
             const [c1, c2] = getAvatarColors(r.name);
             return (
