@@ -1,5 +1,6 @@
 import ProductCard from "./ProductCard.jsx";
 import SkeletonCard from "./SkeletonCard.jsx";
+import StatePanel from "../ui/StatePanel.jsx";
 import { ALL_CATEGORIES } from "./catalogCategories.js";
 
 const SKELETON_COUNT = 8;
@@ -10,49 +11,53 @@ const pillBtn = { padding: "10px 22px", borderRadius: 999 };
 
 function FetchErrorState({ onRetry, waLink }) {
   return (
-    <div className="hc-empty">
-      <div className="hc-empty-ico" aria-hidden="true">📡</div>
-      <h3 className="hc-empty-title">Estamos teniendo un problema técnico</h3>
-      <p className="hc-empty-sub" style={{ marginBottom: 18 }}>
-        No pudimos cargar el catálogo. Reintentá en unos segundos —
-        o hablanos por WhatsApp y te ayudamos a comprar directamente.
+    <StatePanel
+      tone="error"
+      size="inline"
+      as="h3"
+      title="No pudimos cargar el catálogo"
+      actions={
+        <>
+          <button type="button" className="btn btn-primary" style={pillBtn} onClick={onRetry}>
+            Reintentar
+          </button>
+          {waLink && (
+            <a className="btn btn-ghost" style={pillBtn} href={waLink} target="_blank" rel="noreferrer">
+              Comprar por WhatsApp
+            </a>
+          )}
+        </>
+      }
+    >
+      <p>
+        Es un problema de conexión de nuestro lado. Reintentá en unos segundos
+        o escribinos por WhatsApp y te ayudamos a comprar directamente.
       </p>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-        <button type="button" className="btn btn-primary" style={pillBtn} onClick={onRetry}>
-          Reintentar
-        </button>
-        {waLink && (
-          <a className="btn btn-ghost" style={pillBtn} href={waLink} target="_blank" rel="noreferrer">
-            💬 Comprar por WhatsApp
-          </a>
-        )}
-      </div>
-    </div>
+    </StatePanel>
   );
 }
 
 function EmptyState({ filtered, onShowAll }) {
   return (
-    <div className="hc-empty">
-      <div className="hc-empty-ico" aria-hidden="true">🛍️</div>
-      <h3 className="hc-empty-title">
-        {filtered ? "No hay productos en esta categoría" : "Sin productos disponibles"}
-      </h3>
-      <p className="hc-empty-sub">
-        {filtered ? (
-          <button
-            type="button"
-            className="btn btn-ghost"
-            style={{ display: "inline", padding: "4px 12px", fontSize: ".82rem" }}
-            onClick={onShowAll}
-          >
-            Ver todos
+    <StatePanel
+      size="inline"
+      as="h3"
+      icon={filtered ? "search" : "bag"}
+      title={filtered ? "Nada en esta categoría (todavía)" : "Estamos reponiendo la tienda"}
+      actions={
+        filtered && (
+          <button type="button" className="btn btn-ghost" style={pillBtn} onClick={onShowAll}>
+            Ver todos los productos
           </button>
-        ) : (
-          "Volvé pronto — estamos cargando novedades."
-        )}
+        )
+      }
+    >
+      <p>
+        {filtered
+          ? "Probá con otra categoría o mirá el catálogo completo."
+          : "Volvé pronto: estamos cargando novedades."}
       </p>
-    </div>
+    </StatePanel>
   );
 }
 

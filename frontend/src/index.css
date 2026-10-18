@@ -454,6 +454,7 @@ h2 { color: var(--color-brand-ink); font-weight: 800; letter-spacing: -0.5px; }
   text-align: center;
   animation: rf-in 320ms var(--ease) both;
 }
+.error-fallback--app { min-height: 100svh; }
 .error-fallback__mark {
   display: grid; place-items: center;
   width: 56px; height: 56px;

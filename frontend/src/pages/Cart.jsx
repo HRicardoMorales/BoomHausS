@@ -3,6 +3,7 @@ import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import SafeImg from '../components/SafeImg.jsx';
+import StatePanel from '../components/ui/StatePanel.jsx';
 
 function money(n) {
     const num = Number(n);
@@ -75,15 +76,15 @@ function Cart() {
                 </section>
 
                 {isEmpty ? (
-                    <section className="card reveal" style={{ marginTop: '1rem', padding: '1.2rem' }}>
-                        <span className="badge">Vacío</span>
-                        <p className="muted" style={{ marginTop: '0.65rem' }}>
-                            No tenés productos en el carrito.
-                        </p>
-                        <div style={{ marginTop: '1rem' }}>
-                            <Link className="btn btn-primary" to="/products">Ir a la tienda →</Link>
-                        </div>
-                    </section>
+                    <StatePanel
+                        size="inline"
+                        icon="bag"
+                        eyebrow="0 productos"
+                        title="Tu carrito está esperando"
+                        actions={<Link className="btn btn-primary" to="/products">Ir a la tienda</Link>}
+                    >
+                        <p>Todavía no agregaste nada. Lo que sumes queda guardado en este dispositivo aunque cierres la página.</p>
+                    </StatePanel>
                 ) : (
                     // ✅ 2. Usamos la clase .cart-grid definida arriba para responsive
                     <section className="reveal cart-grid">

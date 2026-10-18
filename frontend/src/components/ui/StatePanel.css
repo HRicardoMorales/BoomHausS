@@ -1,0 +1,101 @@
+/* Estados vacíos y de error. Mismo lenguaje que la 404: serif para el
+   título, rosa solo como acento, entrada corta que respeta reduced-motion. */
+
+.state-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-inline: auto;
+  max-width: 30rem;
+  text-align: center;
+  animation: sp-in 420ms var(--ease-out) both;
+}
+.state-panel--page {
+  min-height: min(62svh, 560px);
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+}
+.state-panel--inline {
+  grid-column: 1 / -1;
+  padding: var(--space-8) var(--space-4);
+}
+
+/* Ícono dentro de un anillo con una órbita punteada que gira lento:
+   da vida al estado sin competir con el CTA. */
+.state-panel__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  aspect-ratio: 1;
+  margin-bottom: var(--space-2);
+  border-radius: 50%;
+  color: var(--color-brand-text);
+  background: radial-gradient(circle at 30% 25%, var(--white), var(--color-brand-soft) 70%);
+  box-shadow: inset 0 0 0 1px var(--rose-200), var(--shadow-sm);
+}
+.state-panel__icon::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 1px dashed var(--rose-300);
+  animation: sp-orbit 24s linear infinite;
+}
+.state-panel__icon svg { width: 1.9rem; height: 1.9rem; }
+.state-panel--inline .state-panel__icon { width: 3.75rem; }
+.state-panel--inline .state-panel__icon svg { width: 1.6rem; height: 1.6rem; }
+
+.state-panel--error .state-panel__icon {
+  color: var(--ink-900);
+  background: radial-gradient(circle at 30% 25%, var(--white), var(--surface-sunken) 70%);
+}
+
+.state-panel__eyebrow {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--color-brand-text);
+}
+
+.state-panel__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--text-3xl);
+  line-height: 1.05;
+  letter-spacing: -.015em;
+  color: var(--color-text);
+  text-wrap: balance;
+}
+.state-panel--inline .state-panel__title { font-size: var(--text-2xl); }
+
+.state-panel__text {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.state-panel__text > * { margin: 0; }
+.state-panel__text > * + * { margin-top: var(--space-2); }
+
+.state-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+/* En celular los CTA ocupan el ancho: más fácil de tocar con el pulgar. */
+@media (max-width: 479px) {
+  .state-panel__actions { flex-direction: column; align-self: stretch; }
+  .state-panel__actions > * { justify-content: center; text-align: center; }
+}
+
+@keyframes sp-in { from { opacity: 0; transform: translateY(10px); } }
+@keyframes sp-orbit { to { rotate: 1turn; } }
+@media (prefers-reduced-motion: reduce) {
+  .state-panel, .state-panel__icon::after { animation: none; }
+}

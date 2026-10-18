@@ -1,0 +1,24 @@
+/* Esqueleto con la forma de ProductDetail: galería arriba en celular,
+   dos columnas en desktop. */
+.products-skel {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-4) var(--space-12);
+}
+.products-skel__media { aspect-ratio: 1; }
+.products-skel__info { display: grid; gap: var(--space-3); align-content: start; }
+
+@media (min-width: 900px) {
+  .products-skel { grid-template-columns: 1.1fr .9fr; gap: var(--space-12); }
+}
+
+.products-debug {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  text-align: left;
+  font-size: .72rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}

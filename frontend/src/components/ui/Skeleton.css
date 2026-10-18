@@ -1,0 +1,15 @@
+.skel {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #f0ebe2 25%, #e8e0d4 50%, #f0ebe2 75%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skel-shimmer {
+  from { background-position: 200% center; }
+  to { background-position: -200% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
+}

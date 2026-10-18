@@ -1,11 +1,13 @@
+import Skeleton from "../ui/Skeleton.jsx";
+
 export default function SkeletonCard() {
   return (
     <div className="hc-card hc-card-skeleton" aria-hidden="true">
-      <div className="hc-card-img hc-skel" />
+      <Skeleton className="hc-card-img" height="auto" radius="0" />
       <div className="hc-card-body" style={{ gap: 10 }}>
-        <div className="hc-skel" style={{ height: 16, borderRadius: 8, width: "75%" }} />
-        <div className="hc-skel" style={{ height: 28, borderRadius: 8, width: "55%" }} />
-        <div className="hc-skel" style={{ height: 40, borderRadius: 12 }} />
+        <Skeleton height={16} width="75%" />
+        <Skeleton height={28} width="55%" />
+        <Skeleton height={40} radius={12} />
       </div>
     </div>
   );
