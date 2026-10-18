@@ -109,7 +109,7 @@
 .ckfp-sa-totals { border-top: 1px solid #e5e7eb; padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
 .ckfp-sa-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #374151; }
 .ckfp-sa-row--accent { color: #16a34a; }
-.ckfp-sa-free { color: #16a34a; font-weight: 700; }
+.ckfp-sa-free { color: #15803d; font-weight: 700; }
 .ckfp-sa-final { display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 8px; margin-top: 2px; }
 
 /* ── Coupon mobile section (oculto en desktop porque está en el sidebar) ── */
@@ -139,7 +139,7 @@
 .ckfp-login-link:hover { color: #111827; text-decoration: underline; }
 .ckfp-subscribe-label { display: flex; align-items: center; gap: 9px; margin-top: 10px; font-size: 13px; font-weight: 400; color: #374151; cursor: pointer; user-select: none; }
 .ckfp-subscribe-check { width: 15px; height: 15px; flex-shrink: 0; accent-color: #111827; cursor: pointer; margin: 0; }
-.ckfp-ship-locked { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #d1d5db; border-radius: 10px; padding: 14px 16px; font-size: 13px; font-weight: 500; color: #9ca3af; }
+.ckfp-ship-locked { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #d1d5db; border-radius: 10px; padding: 14px 16px; font-size: 13px; font-weight: 500; color: #6b7280; }
 
 /* ── Error ── */
 .ckfp-error-box { background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 12px 14px; font-size: 13px; font-weight: 800; margin: 20px 0 0; animation: ckShake .4s ease; }
@@ -166,7 +166,7 @@
 .ckfp-fake-select {
   display: flex; align-items: center; gap: 10px;
   border: 1.5px solid #d1d5db; border-radius: 8px; padding: 11px 14px;
-  font-size: 14px; background: #f9fafb; color: #9ca3af;
+  font-size: 14px; background: #f9fafb; color: #6b7280;
 }
 .ckfp-fake-select-val { flex: 1; color: #111827; font-weight: 500; }
 
@@ -210,7 +210,7 @@ select.ckfp-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
 .ckfp-pay-card-logos { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: wrap; }
 .ckfp-logo-img { display: block; border-radius: 4px; object-fit: contain; }
 .ckfp-pay-card-lbl { font-size: 13.5px; font-weight: 600; color: #111827; margin-right: 4px; }
-.ckfp-pay-more { font-size: 11px; font-weight: 800; color: #6b7280; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 1px 5px; }
+.ckfp-pay-more { font-size: 11px; font-weight: 800; color: #4b5563; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 1px 5px; }
 .ckfp-pay-chev { flex-shrink: 0; transition: transform .2s; }
 .ckfp-pay-chev.open { transform: rotate(180deg); }
 .ckfp-pay-card-body { padding: 12px 16px 14px; border-top: 1px solid #e5e7eb; font-size: 13px; font-weight: 500; color: #6b7280; line-height: 1.6; }

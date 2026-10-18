@@ -268,7 +268,7 @@
 }
 :where(.pd-detail) .hero-was{
   text-decoration: line-through;
-  color: #999;
+  color: #767676; /* gris AA más claro sobre blanco (4,5:1) */
   font-size: 22px;
   font-weight: 400;
 }
@@ -609,7 +609,7 @@
 :where(.pd-detail) .vsel2-from {
   font-size: .65rem;
   font-weight: 700;
-  color: rgba(11,18,32,.42);
+  color: rgba(11,18,32,.62);
   padding: 0 8px 7px;
 }
 /* Separador visual entre selector y bundles */
@@ -1483,7 +1483,7 @@
 :where(.pd-detail) .auth3-role{
   font-size: .8rem;
   font-weight: 500;
-  color: rgba(255,255,255,.45);
+  color: rgba(255,255,255,.65);
   margin-top: 2px;
 }
 
@@ -1494,7 +1494,8 @@
   gap: 6px;
   font-size: .72rem;
   font-weight: 700;
-  color: var(--pd-accent-soft);
+  /* La tarjeta es oscura: aclarar el acento (sea cual sea el tema) para AA. */
+  color: color-mix(in srgb, var(--pd-accent-soft) 35%, #fff);
   background: rgba(16,185,129,.10);
   border: 1px solid rgba(16,185,129,.25);
   border-radius: 999px;
@@ -1505,7 +1506,7 @@
   margin: 0;
   font-size: .72rem;
   font-weight: 500;
-  color: rgba(255,255,255,.28);
+  color: rgba(255,255,255,.6);
   line-height: 1.5;
   border-top: 1px solid rgba(255,255,255,.06);
   padding-top: 12px;
@@ -1781,7 +1782,7 @@
 :where(.pd-detail) .about2-stat-lbl{
   font-size: .65rem;
   font-weight: 700;
-  color: rgba(11,18,32,.42);
+  color: rgba(11,18,32,.62);
   margin-top: 5px;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -1842,7 +1843,7 @@
 :where(.pd-detail) .sticky-count{ display:flex; align-items:center; gap: 4px; }
 :where(.pd-detail) .sticky-countLabel{
   font-size: .58rem;
-  color: rgba(11,18,32,.40);
+  color: rgba(11,18,32,.62);
   font-weight: 800;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1851,7 +1852,7 @@
 
 :where(.pd-detail) .sticky-prices{ display:flex; align-items: baseline; gap: 5px; flex-wrap: wrap; }
 :where(.pd-detail) .sticky-qty{ font-size: .68rem; font-weight: 900; color: #fff; background: var(--pd-accent); border-radius: 999px; padding: 1px 7px; letter-spacing: .02em; align-self: center; }
-:where(.pd-detail) .sticky-old{ color: rgba(11,18,32,.35); font-weight: 700; text-decoration: line-through; font-size: .7rem; }
+:where(.pd-detail) .sticky-old{ color: rgba(11,18,32,.6); font-weight: 700; text-decoration: line-through; font-size: .7rem; }
 :where(.pd-detail) .sticky-now{ font-weight: 900; color: rgba(11,18,32,.92); font-size: .95rem; }
 
 :where(.pd-detail) .sticky-pro-btn2{

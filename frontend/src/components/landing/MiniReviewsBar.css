@@ -4,7 +4,7 @@
 .lp-mrb {
   --mrb-accent: rgba(27, 77, 62, 0.8);
   --mrb-ink: rgba(11, 18, 32, 0.82);
-  --mrb-muted: rgba(11, 18, 32, 0.38);
+  --mrb-muted: rgba(11, 18, 32, 0.62); /* AA sobre blanco */
   --mrb-star: #d69e2e;
   margin-top: 14px;
 }

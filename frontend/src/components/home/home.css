@@ -29,12 +29,12 @@
 .hc-cd-time {
   font-variant-numeric: tabular-nums;
   font-weight: 900; font-size: 1.05rem;
-  color: #C4932A; letter-spacing: 2px;
+  color: #8A6418; letter-spacing: 2px; /* oro AA sobre crema (4,7:1) */
   white-space: nowrap;
 }
 .hc-cd-cta {
   font-size: .75rem; font-weight: 800;
-  color: #9B8B7A;
+  color: #6E5F50;
   letter-spacing: .04em; text-transform: uppercase;
   white-space: nowrap;
 }
@@ -72,7 +72,7 @@
   letter-spacing: .04em; text-transform: uppercase;
 }
 .hc-sec-count {
-  font-size: .82rem; font-weight: 700; color: #9B8B7A;
+  font-size: .82rem; font-weight: 700; color: #7A6A5A;
 }
 
 /* Reveal on scroll: `components/motion/Reveal.jsx` (Framer Motion). */
@@ -174,14 +174,14 @@
 }
 .hc-price-was {
   font-size: .78rem; font-weight: 600;
-  color: #9B8B7A; text-decoration: line-through;
+  color: #7A6A5A; text-decoration: line-through; /* AA: 5,2:1 */
 }
 .hc-price-now {
   font-size: 1.38rem; font-weight: 900;
   color: #0A0A0A; letter-spacing: -0.03em; line-height: 1;
 }
 .hc-price-pct {
-  font-size: .68rem; font-weight: 800; color: #DC2626;
+  font-size: .68rem; font-weight: 800; color: #B91C1C;
   background: rgba(220,38,38,.08);
   border: 1px solid rgba(220,38,38,.18);
   padding: 3px 7px; border-radius: 999px;
