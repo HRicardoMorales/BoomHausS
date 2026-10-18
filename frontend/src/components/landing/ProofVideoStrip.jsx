@@ -74,7 +74,7 @@ function StripMedia({ item }) {
     case "gif":
     case "image":
       return (
-        <img className="lp-vs__media-el" {...responsiveImage(media.src, { widths: [240, 360, 480] })} sizes="(min-width: 900px) 300px, 33vw" alt={item.label} loading="lazy" decoding="async" />
+        <img className="lp-vs__media-el" {...responsiveImage(media.src, { widths: [240, 360, 480] })} sizes="(min-width: 900px) 300px, 33vw" alt="" loading="lazy" decoding="async" />
       );
     default:
       return (

@@ -4,7 +4,7 @@
 .lp-rwb {
   --rwb-ink: rgba(11, 18, 32, 0.92);
   --rwb-text: rgba(11, 18, 32, 0.7);
-  --rwb-muted: rgba(11, 18, 32, 0.45);
+  --rwb-muted: rgba(11, 18, 32, 0.62);
   --rwb-accent: rgba(27, 77, 62, 0.95);
   --rwb-bar: linear-gradient(90deg, #1b4d3e, #2f855a);
   --rwb-quote: #c53030;

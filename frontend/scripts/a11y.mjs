@@ -150,7 +150,10 @@ try {
       summary[v.id] = (summary[v.id] || 0) + v.nodes.length;
       console.log(`  ${blocks ? '✗' : '·'} [${v.impact}] ${v.id} (${v.nodes.length}) — ${v.help}`);
       for (const n of v.nodes.slice(0, args.verbose ? 50 : 3)) {
-        console.log(`      ${n.target.join(' ')}`);
+        // En contraste, axe trae colores y ratio: sirve para corregir sin abrir DevTools.
+        const c = v.id === 'color-contrast' ? n.any?.[0]?.data : null;
+        const detail = c ? `  (${c.fgColor} sobre ${c.bgColor} = ${c.contrastRatio}:1, pide ${c.expectedContrastRatio})` : '';
+        console.log(`      ${n.target.join(' ')}${detail}`);
       }
     }
   }

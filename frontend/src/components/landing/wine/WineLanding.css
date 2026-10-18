@@ -84,7 +84,7 @@
 :where(.wine-wrap) .bnd2-badge { font-size:.62rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:rgba(139,26,74,.10); color:#8B1A4A; border:1px solid rgba(139,26,74,.20); white-space:nowrap; }
 :where(.wine-wrap) .bnd2-badge--pop { background:linear-gradient(135deg,#8B1A4A,#C2185B); color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(139,26,74,.25); }
 :where(.wine-wrap) .bnd2-prices { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
-:where(.wine-wrap) .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.35); text-decoration:line-through; font-weight:600; line-height:1.1; }
+:where(.wine-wrap) .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.60); text-decoration:line-through; font-weight:600; line-height:1.1; }
 :where(.wine-wrap) .bnd2-now { font-size:1.10rem; font-weight:900; color:rgba(11,18,32,.90); line-height:1.1; }
 :where(.wine-wrap) .spf-soldout-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.38); }
 :where(.wine-wrap) .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(139,26,74,.07); font-size:.80rem; font-weight:700; color:#8B1A4A; letter-spacing:.01em; line-height:1.35; }
@@ -98,6 +98,7 @@
 :where(.wine-wrap) .pd-bands > section:first-child { padding-top:28px; }
 :where(.wine-wrap) .pd-band--light { background:#FFF5F8; }
 :where(.wine-wrap) .pd-band--blue  { background:#8B1A4A; }
+:where(.wine-wrap) .pd-band--blue .sec-sub { color:rgba(255,255,255,.78); }
 
 :where(.wine-wrap) .sec-head { text-align:center; margin:0 0 20px; }
 :where(.wine-wrap) .sec-title { margin:0; font-weight:1100; letter-spacing:.06em; text-transform:uppercase; font-size:1.55rem; color:rgba(11,18,32,.92); }

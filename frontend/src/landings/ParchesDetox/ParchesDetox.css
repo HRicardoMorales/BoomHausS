@@ -300,13 +300,13 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-.pdx-bundle-benefit { font-size: 11.5px; color: #777; line-height: 1.4; }
+.pdx-bundle-benefit { font-size: 11.5px; color: #666; line-height: 1.4; }
 
 /* Precio */
 .pdx-bundle-price { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex-shrink: 0; }
 .pdx-bundle-pct-badge { font-size: 10px; font-weight: 800; color: #fff; background: #DC2626; border-radius: 999px; padding: 1px 6px; align-self: flex-end; margin-bottom: 1px; }
 .pdx-bundle-now  { font-size: 17px; font-weight: 900; color: #111; }
-.pdx-bundle-was  { font-size: 11px; color: #999; text-decoration: line-through; }
+.pdx-bundle-was  { font-size: 11px; color: #6e6e6e; text-decoration: line-through; }
 .pdx-bundle-per-night { font-size: 10px; font-weight: 600; color: var(--pdx-green); margin-top: 2px; white-space: nowrap; }
 
 /* Banner inter-bundles */
@@ -494,7 +494,7 @@
   margin: 0 0 5px;
   line-height: 1.25;
 }
-.pdx-vstrip-sub { font-size: .88rem; font-weight: 600; color: rgba(10,30,20,.50); margin: 0; }
+.pdx-vstrip-sub { font-size: .88rem; font-weight: 600; color: rgba(10,30,20,.68); margin: 0; }
 .pdx-vstrip-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -757,7 +757,7 @@
   font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
 }
 .pdx-footer-bottom {
-  font-size: 12px; color: rgba(255,255,255,0.4);
+  font-size: 12px; color: rgba(255,255,255,0.6);
   padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,0.1);
   width: 100%;

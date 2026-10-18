@@ -100,7 +100,7 @@
 }
 .sc-footer-note {
   font-size: .72rem;
-  color: rgba(var(--sc-ink), .40);
+  color: rgba(var(--sc-ink), .62);
   margin: 0 0 14px;
   font-style: italic;
 }
@@ -125,7 +125,7 @@
 .sc-stat-lbl {
   font-size: .62rem;
   font-weight: 800;
-  color: rgba(var(--sc-ink), .45);
+  color: rgba(var(--sc-ink), .62);
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -137,12 +137,12 @@
 .pd-band--blue .sc-circle::after { background: var(--sc-band-hole); }
 .pd-band--blue .sc-pct,
 .pd-band--blue .sc-stat-val { color: var(--sc-band-to); }
-.pd-band--blue .sc-text { color: rgba(226, 232, 240, .70); }
+.pd-band--blue .sc-text { color: rgba(226, 232, 240, .84); }
 .pd-band--blue .sc-text strong { color: rgba(255, 255, 255, .90); }
 .pd-band--blue .sc-footer { border-top-color: rgba(255, 255, 255, .08); }
-.pd-band--blue .sc-footer-note { color: rgba(226, 232, 240, .40); }
+.pd-band--blue .sc-footer-note { color: rgba(226, 232, 240, .80); }
 .pd-band--blue .sc-stat { border-right-color: rgba(255, 255, 255, .08); }
-.pd-band--blue .sc-stat-lbl { color: rgba(226, 232, 240, .45); }
+.pd-band--blue .sc-stat-lbl { color: rgba(226, 232, 240, .80); }
 
 /* ProductDetail usa un azul noche en el agujero del donut sobre banda oscura */
 .sc-section--navy-hole { --sc-band-hole: #0b172a; }

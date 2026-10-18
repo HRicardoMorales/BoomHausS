@@ -79,7 +79,7 @@
 :where(.spf-wrap) .bnd2-tablet { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 6px; border-radius:12px; border:1px solid rgba(11,18,32,.11); background:#fff; text-align:center; }
 :where(.spf-wrap) .bnd2-tablet-ico   { font-size:1.25rem; line-height:1; }
 :where(.spf-wrap) .bnd2-tablet-line1 { font-size:.72rem; font-weight:800; color:rgba(11,18,32,.80); line-height:1.2; }
-:where(.spf-wrap) .bnd2-tablet-line2 { font-size:.65rem; font-weight:600; color:rgba(11,18,32,.48); line-height:1.2; }
+:where(.spf-wrap) .bnd2-tablet-line2 { font-size:.65rem; font-weight:600; color:rgba(11,18,32,.62); line-height:1.2; }
 
 /* ── Bundle picker ── */
 :where(.spf-wrap) .bnd2-wrap { display:flex; flex-direction:column; gap:10px; margin:14px 0 4px; }
@@ -98,7 +98,7 @@
 :where(.spf-wrap) .bnd2-badge { font-size:.62rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:rgba(27,77,62,.10); color:#1B4D3E; border:1px solid rgba(27,77,62,.20); white-space:nowrap; }
 :where(.spf-wrap) .bnd2-badge--pop { background:linear-gradient(135deg,#1B4D3E,#2F855A); color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(27,77,62,.25); }
 :where(.spf-wrap) .bnd2-prices { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
-:where(.spf-wrap) .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.35); text-decoration:line-through; font-weight:600; line-height:1.1; }
+:where(.spf-wrap) .bnd2-was { font-size:.72rem; color:rgba(11,18,32,.60); text-decoration:line-through; font-weight:600; line-height:1.1; }
 :where(.spf-wrap) .bnd2-now { font-size:1.10rem; font-weight:900; color:rgba(11,18,32,.90); line-height:1.1; }
 :where(.spf-wrap) .spf-soldout-label { font-size:.78rem; font-weight:700; color:rgba(11,18,32,.38); }
 :where(.spf-wrap) .bnd2-benefit { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(27,77,62,.07); font-size:.80rem; font-weight:700; color:#1B4D3E; letter-spacing:.01em; line-height:1.35; }
@@ -117,6 +117,7 @@
 :where(.spf-wrap) .pd-bands > section:first-child { padding-top:28px; }
 :where(.spf-wrap) .pd-band--light { background:#ffffff; }
 :where(.spf-wrap) .pd-band--blue  { background:#1B4D3E; }
+:where(.spf-wrap) .pd-band--blue .sec-sub { color:rgba(255,255,255,.74); }
 /* Tema verde de esta landing: también la barra de anuncios global */
 body:has(.spf-wrap) .marquee { --marquee-bg:#1B4D3E; }
 

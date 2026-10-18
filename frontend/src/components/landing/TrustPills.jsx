@@ -26,7 +26,9 @@ const DEFAULT_TRUST_ITEMS = [
  * botón con `aria-expanded`/`aria-controls` y el panel es una región
  * etiquetada. Solo uno abierto a la vez, como antes.
  */
-export default function TrustPills({ items = DEFAULT_TRUST_ITEMS, tone = "wine" }) {
+export default function TrustPills({ items = DEFAULT_TRUST_ITEMS, tone = "wine", headingLevel = 3 }) {
+  // El nivel depende de dónde se monte (bajo el h1 del hero va h2).
+  const Heading = `h${headingLevel}`;
   const [open, setOpen] = useState(null);
   const baseId = useId();
 
@@ -38,7 +40,7 @@ export default function TrustPills({ items = DEFAULT_TRUST_ITEMS, tone = "wine" 
         const panelId = `${baseId}-panel-${i}`;
         return (
           <div key={item.title} className={`lp-tp__item${isOpen ? " is-open" : ""}`}>
-            <h3 className="lp-tp__heading">
+            <Heading className="lp-tp__heading">
               <button
                 type="button"
                 id={btnId}
@@ -51,7 +53,7 @@ export default function TrustPills({ items = DEFAULT_TRUST_ITEMS, tone = "wine" 
                 <span className="lp-tp__title">{item.title}</span>
                 <span className="lp-tp__sign" aria-hidden="true" />
               </button>
-            </h3>
+            </Heading>
             <div id={panelId} role="region" aria-labelledby={btnId} className="lp-tp__panel" hidden={!isOpen}>
               {item.body}
             </div>

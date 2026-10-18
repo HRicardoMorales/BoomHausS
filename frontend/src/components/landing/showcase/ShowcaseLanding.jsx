@@ -307,7 +307,7 @@ export default function ShowcaseLanding({ config: mc, theme }) {
           <div className="dtx-container dtx-py">
             <div className="sec-head">
               <h2 className="sec-title" style={{ color:'rgba(255,255,255,.92)' }}>{mc.beforeAfter.title}</h2>
-              <p className="sec-sub" style={{ color:'rgba(255,255,255,.55)' }}>{mc.beforeAfter.subtitle}</p>
+              <p className="sec-sub">{mc.beforeAfter.subtitle}</p>
             </div>
             <BeforeAfterSlider
               imgBefore={mc.beforeAfter.beforeImg}

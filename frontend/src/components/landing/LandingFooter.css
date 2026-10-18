@@ -13,9 +13,9 @@
   --lf-logo: 1.5rem;
   --lf-text: .80rem;
   --lf-small: .68rem;
-  --lf-tagline: rgba(255, 255, 255, .38);
+  --lf-tagline: rgba(255, 255, 255, .56);
   --lf-trust: rgba(255, 255, 255, .65);
-  --lf-faint: rgba(255, 255, 255, .28);
+  --lf-faint: rgba(255, 255, 255, .52);
   --lf-chip: rgba(255, 255, 255, .50);
   --lf-chip-bg: rgba(255, 255, 255, .07);
   --lf-chip-border: rgba(255, 255, 255, .11);
@@ -33,14 +33,14 @@
   --lf-logo: 1.4rem;
   --lf-text: .78rem;
   --lf-small: .66rem;
-  --lf-tagline: rgba(255, 255, 255, .45);
-  --lf-trust: rgba(255, 255, 255, .70);
-  --lf-faint: rgba(255, 255, 255, .30);
-  --lf-chip: rgba(255, 255, 255, .55);
+  --lf-tagline: rgba(255, 255, 255, .74);
+  --lf-trust: rgba(255, 255, 255, .78);
+  --lf-faint: rgba(255, 255, 255, .70);
+  --lf-chip: rgba(255, 255, 255, .76);
   --lf-chip-bg: rgba(255, 255, 255, .10);
   --lf-chip-border: rgba(255, 255, 255, .15);
   --lf-rule: rgba(255, 255, 255, .12);
-  --lf-link: rgba(255, 255, 255, .55);
+  --lf-link: rgba(255, 255, 255, .74);
 
   background: var(--lf-bg);
 }
