@@ -3,6 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import { useDialogA11y } from '../hooks/useDialogA11y';
+import Skeleton, { SkeletonGroup } from '../components/ui/Skeleton.jsx';
+
+/* Filas fantasma con la altura de una fila real del listado. */
+function RowsSkeleton({ label, rows = 5 }) {
+  return (
+    <SkeletonGroup label={label} className="ao-list">
+      {Array.from({ length: rows }, (_, i) => (
+        <Skeleton key={i} height="68px" radius="12px" style={{ display: 'block', opacity: 1 - i * 0.14 }} />
+      ))}
+    </SkeletonGroup>
+  );
+}
 
 function money(n) {
   const num = Number(n);
@@ -309,18 +321,30 @@ export default function AdminOrders() {
                   <option value="todos">Todos</option>
                   {PAYMENT_OPTS.map(s => <option key={s} value={s}>{PAYMENT_LABELS[s]}</option>)}
                 </select>
-                <button className="ao-btn ao-btn--ghost" onClick={fetchOrders} title="Recargar">
+                <button className="ao-btn ao-btn--ghost" onClick={fetchOrders} title="Recargar" aria-label="Recargar pedidos">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
                 </button>
               </div>
 
               {/* Order list */}
               {loading ? (
-                <div className="ao-empty">Cargando pedidos...</div>
+                <RowsSkeleton label="Cargando pedidos…" />
               ) : error ? (
-                <div className="ao-empty ao-empty--err">{error}</div>
+                <div className="ao-empty ao-empty--err" role="alert">
+                  <p>{error}</p>
+                  <button type="button" className="ao-btn ao-btn--ghost" onClick={fetchOrders}>Reintentar</button>
+                </div>
               ) : !filtered.length ? (
-                <div className="ao-empty">No se encontraron pedidos</div>
+                <div className="ao-empty" role="status">
+                  {search || filter !== 'todos' ? (
+                    <>
+                      <p>Ningún pedido coincide con la búsqueda o el filtro.</p>
+                      <button type="button" className="ao-btn ao-btn--ghost" onClick={() => { setSearch(''); setFilter('todos'); }}>Limpiar filtros</button>
+                    </>
+                  ) : (
+                    <p>Todavía no hay pedidos.</p>
+                  )}
+                </div>
               ) : (
                 <div className="ao-list">
                   {filtered.map(order => {
@@ -560,10 +584,17 @@ export default function AdminOrders() {
               </div>
 
               {loadingCarts ? (
-                <div className="ao-empty">Cargando...</div>
+                <RowsSkeleton label="Cargando carritos…" rows={4} />
               ) : !filteredCarts.length ? (
-                <div className="ao-empty">
-                  {cartSearch ? 'Sin resultados para la búsqueda' : 'Sin carritos abandonados pendientes 🎉'}
+                <div className="ao-empty" role="status">
+                  {cartSearch ? (
+                    <>
+                      <p>Sin resultados para la búsqueda.</p>
+                      <button type="button" className="ao-btn ao-btn--ghost" onClick={() => setCartSearch('')}>Limpiar búsqueda</button>
+                    </>
+                  ) : (
+                    <p>No hay carritos abandonados pendientes.</p>
+                  )}
                 </div>
               ) : (
                 <div className="ao-list">
@@ -740,7 +771,10 @@ export default function AdminOrders() {
 /* Order list */
 .ao-list{display:flex;flex-direction:column;gap:10px}
 .ao-empty{text-align:center;padding:40px 20px;color:#64748b;font-weight:600;font-size:.9rem}
-.ao-empty--err{color:#dc2626}
+.ao-empty--err{color:#b91c1c}
+.ao-empty p{margin:0 0 12px}
+.ao-empty p:last-child{margin:0}
+.ao-empty .ao-btn{display:inline-flex}
 
 /* Order card */
 .ao-card{border-radius:14px;border:1px solid #e2e8f0;background:#fff;overflow:hidden;transition:border-color .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -881,8 +915,8 @@ export default function AdminOrders() {
   .ao-stat-val{font-size:1rem}
   .ao-stat-lbl{font-size:.6rem}
   .ao-bar{flex-direction:column;gap:6px;margin-bottom:14px}
-  .ao-filter{flex:1;width:100%}
-  .ao-search{width:100%}
+  .ao-filter{flex:0 0 auto;width:100%}
+  .ao-search{flex:0 0 auto;width:100%} /* en columna, flex-basis 220px se volvía alto */
   .ao-selectors{flex-direction:column;gap:8px;padding:10px}
   .ao-info{grid-template-columns:1fr;padding:10px}
   .ao-row{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
