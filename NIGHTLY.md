@@ -173,6 +173,9 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - Accesibilidad: `eslint-plugin-jsx-a11y` encuentra lo estático en segundos (ya está en el lint); para lo dinámico (contraste real, landmarks, foco) sumar `@axe-core/playwright` como devDependency y correrlo sobre las rutas principales en cada sesión de UI.
 - `npm run a11y` en el sandbox: `CHROMIUM_PATH=/opt/pw-browsers/chromium npm run a11y` (el `playwright-core` del repo busca un headless-shell que no está). Para elegir la opacidad mínima de un gris `rgba(...)` sobre un fondo, un script de 15 líneas que recorre alpha hasta 4,6:1 ahorra prueba y error.
 
+- Smoke con servidor propio (`http.createServer` sobre `dist/`): **poner `content-type` a `.js`/`.css`**, si no los módulos no cargan y todo parece renderizar "bien" sin errores (solo se nota porque no hay `<main>`). Chequear `!!document.querySelector('main')` como señal de que React montó.
+- `npm run a11y` con las 16 rutas por defecto puede pasar los 5 min en el sandbox: pasarle solo las rutas tocadas en cada sesión.
+
 ## Registro de sesiones
 
 | Fecha | Hora | Hecho | Commit |
@@ -247,3 +250,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-18 | 06:52 | Estados de UI parte 2: Mis pedidos rediseñado (OrderCard + línea de tiempo Pedido → Pago → Envío, esqueleto, vacío/error con StatePanel, totales), ErrorBoundary sobre StatePanel, estados del admin + fix del buscador gigante en mobile. Lint 0, build OK (npm ci limpio), axe 0 en /my-orders × 4 estados × 390/1280, Playwright sin errores. | 375914f, 19bbbcb, e4c4fc7 |
 | 2026-10-18 | 07:52 | Estados de UI parte 3: pantalla de regreso de MP separada en orquestador + `PaymentResult` presentacional (ticket con sello animado, línea de tiempo, comprobante troquelado, estado verificando). Lógica de pago/pixel intacta. Lint 0, build OK (npm ci limpio), axe 0 (incluye minor) en 4 estados × 390/1280, capturas revisadas. | 52fd1ea |
 | 2026-10-18 | 08:52 | Backend parte 1: carritos abandonados de `app.js` a rutas + controller (función pura de captura con coerción y lista blanca, `validateObjectId` 400, 404, errores al `errorHandler`). `node --check` OK, smoke con stubs 10/10, frontend `npm ci` + build OK, lint 0. Zod queda como parte 2. | 57e225d |
+| 2026-10-18 | 09:52 | Sesión final: revisión de la noche. `npm ci` + build OK, lint 0; `node --check` en los 4 archivos de backend tocados y `app.js` levanta sin Mongo (23 capas, rutas de carritos montadas, DB gate 503). Smoke Playwright (API mockeada, hosts externos bloqueados) en 9 rutas × 390/1280: 0 errores de runtime, sin scroll horizontal, `<main>` y `<title>` propios en todas. `npm run a11y` no terminó en 5 min en el sandbox (se cortó; las sesiones de la noche lo corrieron por partes). PR #1 en borrador actualizado. | — |
