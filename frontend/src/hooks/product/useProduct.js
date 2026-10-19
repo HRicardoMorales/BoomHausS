@@ -34,7 +34,8 @@ export function useProduct({ id, slug }) {
       } catch (err) {
         if (stale) return;
         const status = err?.response?.status;
-        const kind = status === 404 ? "not-found" : "network";
+        // 400 = id mal formado (validateObjectId en el backend): tampoco existe.
+        const kind = status === 404 || status === 400 ? "not-found" : "network";
         if (kind === "not-found" && slug) {
           logger.debug(`[useProduct] sin producto con slug "${slug}" (Admin → Productos → Slug)`);
         }

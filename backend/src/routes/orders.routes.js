@@ -15,6 +15,7 @@ const {
 
 const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
+const validateObjectId = require("../middlewares/validateObjectId");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
@@ -123,6 +124,7 @@ router.get("/my", authRequired, getMyOrders);
 router.post(
   "/:id/payment-proof",
   authRequired,
+  validateObjectId(),
   uploadPaymentProof,
   uploadPaymentProofController
 );
@@ -137,18 +139,18 @@ router.get("/", authRequired, adminOnly, getOrders);
  * Admin:
  * - Actualizar estados (pago/envío)
  */
-router.patch("/:id", authRequired, adminOnly, updateOrderStatus);
+router.patch("/:id", authRequired, adminOnly, validateObjectId(), updateOrderStatus);
 
 /**
  * Admin:
  * - Aprobar comprobante
  */
-router.patch("/:id/verify", authRequired, adminOnly, verifyPaymentProofController);
+router.patch("/:id/verify", authRequired, adminOnly, validateObjectId(), verifyPaymentProofController);
 
 /**
  * Admin:
  * - Rechazar comprobante (con reason opcional)
  */
-router.patch("/:id/reject", authRequired, adminOnly, rejectPaymentProofController);
+router.patch("/:id/reject", authRequired, adminOnly, validateObjectId(), rejectPaymentProofController);
 
 module.exports = router;

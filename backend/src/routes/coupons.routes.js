@@ -8,6 +8,7 @@ const {
   deleteCoupon,
 } = require('../controllers/coupons.controller');
 const { authRequired, adminRequired } = require('../middlewares/authMiddleware');
+const validateObjectId = require('../middlewares/validateObjectId');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post('/validate', validateCoupon);
 // DELETE /api/coupons/:id      — admin: eliminar cupón
 router.get   ('/',    authRequired, adminRequired, listCoupons);
 router.post  ('/',    authRequired, adminRequired, createCoupon);
-router.patch ('/:id', authRequired, adminRequired, updateCoupon);
-router.delete('/:id', authRequired, adminRequired, deleteCoupon);
+router.patch ('/:id', authRequired, adminRequired, validateObjectId(), updateCoupon);
+router.delete('/:id', authRequired, adminRequired, validateObjectId(), deleteCoupon);
 
 module.exports = router;

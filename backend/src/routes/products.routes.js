@@ -13,6 +13,7 @@ const {
 } = require('../controllers/products.controller');
 
 const { authRequired, adminRequired } = require('../middlewares/authMiddleware');
+const validateObjectId = require('../middlewares/validateObjectId');
 
 const router = Router();
 
@@ -35,9 +36,9 @@ router.get('/slug/:slug', getProductBySlug);
 router.post('/', authRequired, adminRequired, createProduct);
 
 // PATCH /api/products/:id (admin)
-router.patch('/:id', authRequired, adminRequired, updateProduct);
+router.patch('/:id', authRequired, adminRequired, validateObjectId(), updateProduct);
 
 // GET /api/products/:id (público)
-router.get('/:id', getProductById);
+router.get('/:id', validateObjectId(), getProductById);
 
 module.exports = router;
