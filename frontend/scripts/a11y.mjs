@@ -14,18 +14,11 @@
  *
  * Variables opcionales: CHROMIUM_PATH (binario de Chromium a usar).
  */
-import { spawn } from 'node:child_process';
-import { setTimeout as sleep } from 'node:timers/promises';
 import { chromium } from 'playwright-core';
 import { AxeBuilder } from '@axe-core/playwright';
+import { makeFixtures, parseArgs, routeRequests, startPreview } from './lib/harness.mjs';
 
-const args = Object.fromEntries(
-  process.argv.slice(2).map((a) => {
-    // Solo el primer "=" separa: las rutas pueden traer query (?a=1&b=2).
-    const [k, ...rest] = a.replace(/^--/, '').split('=');
-    return [k, rest.length ? rest.join('=') : true];
-  }),
-);
+const args = parseArgs();
 
 const DEFAULT_ROUTES = [
   '/',
@@ -48,53 +41,9 @@ const ROUTES = args.routes ? String(args.routes).split(',') : DEFAULT_ROUTES;
 const WIDTH = Number(args.width) || 390;
 const PORT = Number(args.port) || 4179;
 const FAIL_ON = args.all ? null : new Set(['serious', 'critical']);
+// axe no mira el contenido de las imágenes: el pixel liso alcanza.
+const FIXTURES = makeFixtures();
 const BASE = `http://localhost:${PORT}`;
-
-// ── Datos de ejemplo para la API ─────────────────────────────────────────
-const PIXEL =
-  'data:image/svg+xml;utf8,' +
-  encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="600" height="600" fill="#e8dcd4"/></svg>');
-
-const product = (i, slug = `mock-producto-${i}`) => ({
-  _id: `64b0000000000000000000${String(i).padStart(2, '0')}`,
-  name: `Producto de ejemplo ${i}`,
-  slug,
-  description: 'Descripción de ejemplo para la auditoría de accesibilidad.',
-  price: 19999 + i * 1000,
-  compareAtPrice: 34999 + i * 1000,
-  category: 'belleza',
-  images: [PIXEL, PIXEL],
-  stock: 25,
-  isActive: true,
-  variants: [],
-});
-const PRODUCTS = Array.from({ length: 8 }, (_, i) => product(i + 1));
-const CART = [{ ...PRODUCTS[0], productId: PRODUCTS[0]._id, quantity: 1 }];
-
-function mockApi(url) {
-  const { pathname } = new URL(url);
-  const path = pathname.replace(/^\/api/, '');
-  const slug = path.match(/^\/products\/slug\/([^/]+)/)?.[1];
-  if (slug) return { ok: true, data: product(1, slug) };
-  if (/^\/products\/[^/]+$/.test(path) && !path.endsWith('/all')) return { ok: true, data: product(1, 'mock-producto') };
-  if (path.startsWith('/products')) return { ok: true, data: PRODUCTS };
-  return { ok: true, data: [] };
-}
-
-// ── Servidor ─────────────────────────────────────────────────────────────
-async function startPreview() {
-  const proc = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
-    stdio: 'pipe',
-  });
-  for (let i = 0; i < 60; i++) {
-    try {
-      if ((await fetch(BASE)).ok) return proc;
-    } catch { /* todavía no levantó */ }
-    await sleep(250);
-  }
-  proc.kill();
-  throw new Error(`vite preview no respondió en ${BASE} (¿corriste npm run build?)`);
-}
 
 // ── Auditoría ────────────────────────────────────────────────────────────
 async function audit(browser, route) {
@@ -106,19 +55,12 @@ async function audit(browser, route) {
   await context.addInitScript((cart) => {
     // Carrito con un producto para que /cart y /checkout no queden vacíos.
     try { localStorage.setItem('cartItems', JSON.stringify(cart)); } catch { /* sin storage */ }
-  }, CART);
+  }, FIXTURES.cart);
   const page = await context.newPage();
   const runtimeErrors = [];
   page.on('pageerror', (e) => runtimeErrors.push(e.message));
 
-  await page.route('**/*', (r) => {
-    const url = r.request().url();
-    if (url.startsWith(BASE) || url.startsWith('data:')) return r.continue();
-    if (/\/api\//.test(url)) {
-      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockApi(url)) });
-    }
-    return r.abort();
-  });
+  await routeRequests(page, { base: BASE, fixtures: FIXTURES });
 
   await page.goto(BASE + route, { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
@@ -137,7 +79,7 @@ async function audit(browser, route) {
   return { route, violations, landmarks, runtimeErrors };
 }
 
-const preview = await startPreview();
+const { proc: preview } = await startPreview(PORT);
 const browser = await chromium.launch(
   process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
 );

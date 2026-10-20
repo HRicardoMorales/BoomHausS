@@ -10,10 +10,13 @@ Tienda online en producción para el mercado argentino: catálogo, fichas de pro
 
 No es un proyecto de tutorial: tiene tráfico real, pagos reales y el tipo de deuda que aparece cuando un negocio crece rápido. Este README cuenta qué se construyó y, sobre todo, **cómo se llevó de "funciona" a "se puede mantener"** con números medibles.
 
+**Demo en vivo:** [boomhauss.com.ar](https://www.boomhauss.com.ar)
+
 ---
 
 ## Contenido
 
+- [Capturas](#capturas)
 - [Qué hay adentro](#qué-hay-adentro)
 - [Arquitectura](#arquitectura)
 - [Stack](#stack)
@@ -22,6 +25,18 @@ No es un proyecto de tutorial: tiene tráfico real, pagos reales y el tipo de de
 - [Correrlo localmente](#correrlo-localmente)
 - [Tests y CI](#tests-y-ci)
 - [Estructura del repo](#estructura-del-repo)
+
+## Capturas
+
+Generadas por `npm run screenshots` sobre el build de producción (API mockeada, sin backend; fotos de producto vectoriales para que sean reproducibles sin red).
+
+| | Mobile (390 px) | Desktop (1280 px) |
+| --- | --- | --- |
+| **Home** | <img src="docs/screenshots/home-mobile.webp" width="220" alt="Home en mobile"> | <img src="docs/screenshots/home-desktop.webp" width="520" alt="Home en desktop"> |
+| **Ficha de producto** | <img src="docs/screenshots/ficha-mobile.webp" width="220" alt="Ficha de producto en mobile"> | <img src="docs/screenshots/ficha-desktop.webp" width="520" alt="Ficha de producto en desktop"> |
+| **Landing de campaña** | <img src="docs/screenshots/landing-mobile.webp" width="220" alt="Landing de campaña en mobile"> | <img src="docs/screenshots/landing-desktop.webp" width="520" alt="Landing de campaña en desktop"> |
+| **Checkout** | <img src="docs/screenshots/checkout-mobile.webp" width="220" alt="Checkout en mobile"> | <img src="docs/screenshots/checkout-desktop.webp" width="520" alt="Checkout en desktop"> |
+| **Mis pedidos** | <img src="docs/screenshots/mis-pedidos-mobile.webp" width="220" alt="Mis pedidos en mobile"> | <img src="docs/screenshots/mis-pedidos-desktop.webp" width="520" alt="Mis pedidos en desktop"> |
 
 ## Qué hay adentro
 
@@ -161,6 +176,7 @@ npm run lint
 npm test          # Vitest: precios, carrito, estados de pedido, envíos
 npm run build
 npm run a11y      # axe sobre el build (requiere Chromium)
+npm run screenshots  # capturas del README en docs/screenshots (--images=live para fotos reales)
 
 # Backend
 cd backend
@@ -191,6 +207,8 @@ frontend/
     landings/           # configs de cada landing (datos, no código)
     hooks/  utils/  context/  routes/  styles/
   scripts/a11y.mjs      # auditoría axe sobre el build
+  scripts/screenshots.mjs  # capturas mobile/desktop para el README
+  scripts/lib/harness.mjs  # preview + API mockeada compartidos por ambos
 .github/workflows/ci.yml
 ```
 
