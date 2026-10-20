@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { CartContext } from "./cart.context";
 import { trackWithCapi } from '../lib/metaPixel';
+import { BUNDLE2_DISCOUNT_PCT, calcItemTotal, cartTotal } from "../utils/cartMath";
 
 const CART_KEY = "cartItems";
-
-// 🔧 Config promo (mantenelo igual que en ProductDetail)
-const BUNDLE2_DISCOUNT_PCT = 18;
 
 function safeParse(json, fallback) {
     try {
@@ -25,26 +23,6 @@ function writeCartToStorage(items) {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
 }
 
-// ✅ total por item con promos
-function calcItemTotal(it) {
-    // Bundle con precio fijo (el más común en landings con bundle picker)
-    if (it?.bundleTotal) return Math.round(Number(it.bundleTotal));
-
-    const qty = Math.max(0, Number(it?.quantity) || 0);
-    const base = Math.max(0, Number(it?.price) || 0);
-    if (!qty || !base) return 0;
-
-    // Promo "Lleva 2" (-X% por pares)
-    if (it?.promo?.type === "bundle2") {
-        const discountPct = Math.max(0, Number(it?.promo?.discountPct) || 0);
-        const pairsQty = Math.floor(qty / 2) * 2;
-        const remQty = qty - pairsQty;
-        return Math.round(pairsQty * base * (1 - discountPct / 100) + remQty * base);
-    }
-
-    return Math.round(qty * base);
-}
-
 export function CartProvider({ children }) {
     const [items, setItems] = useState(() => readCartFromStorage());
 
@@ -52,9 +30,7 @@ export function CartProvider({ children }) {
         writeCartToStorage(items);
     }, [items]);
 
-    const totalPrice = useMemo(() => {
-        return items.reduce((acc, it) => acc + calcItemTotal(it), 0);
-    }, [items]);
+    const totalPrice = useMemo(() => cartTotal(items), [items]);
 
     // ✅ Agregar / sumar
     function addItem(product, qty = 1, options = {}) {
