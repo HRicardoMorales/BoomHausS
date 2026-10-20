@@ -103,7 +103,7 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 - [ ] Contraste del botón de login/registro: `.authPrimaryBtn` blanco sobre `#c8928b` = 2,64:1 (axe serious en `/login`, visto al correr a11y en `/my-orders` sin sesión). Mismo problema que `.btn-primary` (ver Pendientes): resolver junto con la decisión del CTA.
 - [ ] Ficha de producto: los bullets y el título secundario ("Más higiene y orden todos los días", "Dispenser automático sin contacto") están hardcodeados en la plantilla y aparecen en cualquier producto (se ve en `docs/screenshots/ficha-*.webp` con un sérum). Pasarlos a datos del producto (`highlights`) con fallback genérico neutro.
 - [ ] Dependencias sin uso en el frontend: `react-hook-form`, `zod` y `zustand` no se importan en `src/` → `npm uninstall` (verificar build/tests) o usarlas de verdad (zod para el checkout reutilizando reglas del backend).
-- [ ] `frontend/README.md` es el default de Vite: reemplazar por 5 líneas que apunten al README raíz (scripts del frontend).
+- [x] `frontend/README.md` (2026-10-20, 436b010): reemplazado el default de Vite por tabla de scripts + link al README raíz.
 
 ## Pendientes para Rick (requieren decisión o acceso)
 
@@ -272,3 +272,4 @@ Referencia visual de la home: https://www.luxcove.co/ (tomar la **estructura**, 
 | 2026-10-20 | 06:52 | CI: GitHub Action con lint + vitest + build (frontend, con resumen de bundle) y `node --check` + node:test (backend), sin secretos. Pipeline corrido local completo (52 + 65 tests, build OK, lint 0) y primer run en GitHub verde. | e4c48b8 |
 | 2026-10-20 | 07:53 | README parte 1: `README.md` de portafolio (badges, arquitectura en Mermaid, flujo de compra, decisiones técnicas con bugs reales, tabla antes/ahora, cómo correrlo, tests/CI, estructura), afirmaciones verificadas contra el código. `npm ci` + build OK, lint 0. Capturas quedan como parte 2. | d982a49 |
 | 2026-10-20 | 08:53 | README parte 2: `npm run screenshots` (10 WebP mobile/desktop con fixtures deterministas, sin deps nuevas), arnés compartido `scripts/lib/harness.mjs`, fix del cuelgue de `npm run a11y` (vite preview huérfano), README con capturas y demo. `npm ci` + build OK, lint 0, vitest 52/52, a11y corre y termina. | 0c3ef81 |
+| 2026-10-20 | 09:53 | Sesión final: revisión de la noche. `npm ci` + build OK, lint 0, vitest 52/52, backend `npm test` 65/65, `node --check` en todo lo tocado de `backend/src`; CI de GitHub verde en el último head. `frontend/README.md` con scripts. Descripción del PR #1 (borrador) actualizada con la noche del 10-20. | 436b010 |
