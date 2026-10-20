@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, nightly/portfolio]
+  pull_request:
+  workflow_dispatch:
+
+# Un solo run por rama: un push nuevo cancela el anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend · lint, tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      # El script a11y usa playwright-core contra un Chromium propio; en CI no hace falta descargarlo.
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Tamaño del bundle
+        run: |
+          {
+            echo '### Bundle (gzip)'
+            echo
+            echo '| Archivo | Tamaño | gzip |'
+            echo '|---|---:|---:|'
+            for f in $(ls -S dist/assets/*.js dist/assets/*.css 2>/dev/null | head -12); do
+              raw=$(stat -c %s "$f")
+              gz=$(gzip -c "$f" | wc -c)
+              printf '| `%s` | %s kB | %s kB |\n' "$(basename "$f")" "$((raw / 1024))" "$((gz / 1024))"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  backend:
+    name: Backend · sintaxis y tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: node --check en todo src/
+        run: find src -name '*.js' -print0 | xargs -0 -n1 node --check
+      # Los tests levantan app.js sin Mongo ni red (ver test/setup.js): no necesitan secretos.
+      - run: npm test
