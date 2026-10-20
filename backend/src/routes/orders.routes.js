@@ -16,6 +16,8 @@ const {
 const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
 const validateObjectId = require("../middlewares/validateObjectId");
+const { validate } = require("../middlewares/validate");
+const { createOrderBody } = require("../validation/orders.schemas");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
@@ -107,9 +109,9 @@ router.post("/card-payment", async (req, res) => {
 
 /**
  * Público:
- * - Crear orden
+ * - Crear orden (zod valida solo contacto/envío; ítems y total los resuelve el controller)
  */
-router.post("/", createOrder);
+router.post("/", validate({ body: createOrderBody }), createOrder);
 
 /**
  * User:
