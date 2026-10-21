@@ -54,3 +54,20 @@ describe("ficha genérica (/products/:id)", () => {
     expect(mc.trustBullets).toEqual(["P"]);
   });
 });
+
+describe("applyProductCopy — descripción", () => {
+  const product = { description: "  Texto largo  " };
+
+  it("la ficha genérica la toma como productDescription", () => {
+    expect(applyProductCopy(genericProductConfig, product).productDescription).toBe("Texto largo");
+  });
+
+  it("las landings propias no la muestran", () => {
+    expect(applyProductCopy(landing, product)).toBe(landing);
+  });
+
+  it("descripción vacía o no-string no agrega nada", () => {
+    expect(applyProductCopy(genericProductConfig, { description: "  " })).toBe(genericProductConfig);
+    expect(applyProductCopy(genericProductConfig, { description: 5 })).toBe(genericProductConfig);
+  });
+});

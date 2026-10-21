@@ -50,7 +50,8 @@ export const MAX_HIGHLIGHTS = 6;
 
 /**
  * Textos del producto cargados desde el admin: `subtitle` pisa el subtítulo
- * del hero y `highlights` los bullets. Sin datos en el producto queda el
+ * del hero, `highlights` los bullets y `description` llega como
+ * `productDescription` si el config tiene `showProductDescription`. Sin datos en el producto queda el
  * config (o los bullets neutros de la ficha genérica).
  */
 export function applyProductCopy(config, product) {
@@ -62,11 +63,18 @@ export function applyProductCopy(config, product) {
         .filter(Boolean)
         .slice(0, MAX_HIGHLIGHTS)
     : [];
-  if (!subtitle && !highlights.length) return config;
+  // La descripción larga solo la muestran los configs que la piden (la ficha
+  // genérica): las landings propias ya cuentan el producto con sus secciones.
+  const description =
+    config?.showProductDescription && typeof product?.description === "string"
+      ? product.description.trim()
+      : "";
+  if (!subtitle && !highlights.length && !description) return config;
   return {
     ...config,
     ...(subtitle && { heroSubtitle: subtitle }),
     ...(highlights.length && { trustBullets: highlights }),
+    ...(description && { productDescription: description }),
   };
 }
 

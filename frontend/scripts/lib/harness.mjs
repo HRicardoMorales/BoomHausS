@@ -79,7 +79,9 @@ export function makeProduct(i, slug = `mock-producto-${i}`, { realistic = false 
     name: realistic ? NAMES[(i - 1) % NAMES.length] : `Producto de ejemplo ${i}`,
     slug,
     description: realistic
-      ? 'Fórmula liviana de absorción rápida. Uso diario, mañana y noche, sobre piel limpia.'
+      ? 'Fórmula liviana de absorción rápida, pensada para el uso diario sin dejar sensación grasa.\n\n'
+        + 'Qué incluye:\n- Frasco de 50 ml con dosificador\n- Guía de uso paso a paso\n- Garantía de 30 días\n\n'
+        + 'Aplicar mañana y noche sobre la piel limpia y seca.'
       : 'Descripción de ejemplo para la auditoría de accesibilidad.',
     price: 19999 + i * 1000,
     compareAtPrice: 34999 + i * 1000,

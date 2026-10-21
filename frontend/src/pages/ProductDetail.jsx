@@ -19,6 +19,7 @@ import AuthorityCard from "../components/product/AuthorityCard";
 import FaqSectionPro from "../components/product/FaqSectionPro";
 import VideoStripSection from "../components/product/VideoStripSection";
 import StoryBlocks from "../components/product/StoryBlocks";
+import ProductDescription from "../components/product/ProductDescription";
 import MiniReviewsBar from "../components/landing/MiniReviewsBar";
 import AboutSection from "../components/product/AboutSection";
 import UpsellSheet from "../components/product/UpsellSheet";
@@ -95,6 +96,9 @@ function ProductDetail({ id, slug }) {
     [MCRaw, activeVariant, product]
   );
   const miniReviews = useMemo(() => pickMiniReviews(MC), [MC]);
+  const hasStoryBand = Boolean(
+    MC.productDescription || MC.proofVideos?.length || MC.storyBlocks?.length
+  );
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -448,12 +452,17 @@ function ProductDetail({ id, slug }) {
           </Band>
         )}
 
-        <Band variant="light">
-          <div className="pd-sections-new">
-            <VideoStripSection mc={MC} />
-            <StoryBlocks mc={MC} />
-          </div>
-        </Band>
+        {/* Sin descripción, videos ni historia (ficha genérica de un producto
+            sin textos) la banda quedaba vacía: un hueco blanco de ~70 px. */}
+        {hasStoryBand && (
+          <Band variant="light">
+            <div className="pd-sections-new">
+              <ProductDescription text={MC.productDescription} />
+              <VideoStripSection mc={MC} />
+              <StoryBlocks mc={MC} />
+            </div>
+          </Band>
+        )}
 
         <WaveSeparator from="light" dark={NAVY} />
 

@@ -19,6 +19,8 @@ export const GENERIC_TRUST_BULLETS = [
 
 const genericProductConfig = {
   trustBullets: GENERIC_TRUST_BULLETS,
+  // `description` del producto como sección "Sobre el producto".
+  showProductDescription: true,
 
   about: {
     title: "QUIÉNES SOMOS",
