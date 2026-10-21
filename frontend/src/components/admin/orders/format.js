@@ -152,6 +152,11 @@ export function cartClipboardText(cart) {
   ].filter(Boolean).join('\n');
 }
 
+/** Total de una línea de pedido: el precio del pack si lo hay; si no, precio × cantidad (mínimo 1). */
+export function orderItemTotal(it) {
+  return it?.bundleTotal ? Number(it.bundleTotal) : (Number(it?.price) || 0) * (Number(it?.quantity) || 1);
+}
+
 export function sortNewestFirst(list) {
   const t = (o) => new Date(o?.createdAt || 0).getTime() || 0;
   return [...(list || [])].sort((a, b) => t(b) - t(a));

@@ -36,4 +36,24 @@ describe("AdminOrders (integración con hooks y panel)", () => {
     await waitFor(() => expect(api.post).toHaveBeenCalledWith("/abandoned-carts/c1/recover"));
     expect(await screen.findByText("Carrito marcado como recuperado.")).toBeTruthy();
   });
+
+  it("el detalle del pedido: tracking con Enter y aprobación manual con confirmación", async () => {
+    api.patch.mockImplementation((url, body) => Promise.resolve({ data: { ok: true, data: { _id: "o1", customerName: "Ana Gómez", paymentStatus: "pending", shippingStatus: "pending", totalAmount: 1000, createdAt: recent, items: [], ...body } } }));
+    render(<AdminOrders />);
+    const row = await screen.findByRole("button", { name: /Ana Gómez/ });
+    expect(row.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(row);
+    expect(row.getAttribute("aria-expanded")).toBe("true");
+
+    const input = screen.getByLabelText("N° seguimiento");
+    fireEvent.change(input, { target: { value: "  AR123  " } });
+    fireEvent.submit(input.closest("form"));
+    await waitFor(() => expect(api.patch).toHaveBeenCalledWith("/orders/o1", { trackingNumber: "AR123" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprobar manual" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Aprobar el pago manualmente?" });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Aprobar pago" }));
+    await waitFor(() => expect(api.patch).toHaveBeenCalledWith("/orders/o1", { paymentStatus: "approved" }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Aprobar manual" })).toBeNull());
+  });
 });
