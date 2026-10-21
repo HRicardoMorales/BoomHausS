@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 import Skeleton, { SkeletonGroup } from '../components/ui/Skeleton.jsx';
+import { useConfirm } from '../components/ui/useConfirm.jsx';
+import { useNotice } from '../components/ui/useNotice.jsx';
 
 /* Filas fantasma con la altura de una fila real del listado. */
 function RowsSkeleton({ label, rows = 5 }) {
@@ -62,6 +64,8 @@ const SHIP_METHOD_MAP = {
 };
 
 export default function AdminOrders() {
+  const { confirm, confirmDialog } = useConfirm();
+  const { notify, notice } = useNotice();
   const [tab, setTab] = useState('orders');
 
   // Orders
@@ -119,7 +123,7 @@ export default function AdminOrders() {
         const u = res.data.data;
         setOrders(prev => prev.map(o => o._id === u._id ? u : o));
       }
-    } catch { alert('Error al actualizar'); }
+    } catch { notify('No se pudo actualizar el pedido.', { tone: 'error' }); }
     finally { setUpdating(null); }
   }
 
@@ -129,30 +133,41 @@ export default function AdminOrders() {
       const res = await api.patch(`/orders/${order._id}/verify`);
       if (res.data?.ok && res.data.data) setOrders(prev => prev.map(o => o._id === res.data.data._id ? res.data.data : o));
       else fetchOrders();
-    } catch { alert('Error verificando'); }
+    } catch { notify('No se pudo verificar el pago.', { tone: 'error' }); }
     finally { setUpdating(null); }
   }
 
   async function recoverCart(id) {
-    if (!window.confirm('¿Marcar como recuperado/descartado?')) return;
-    try { await api.post(`/abandoned-carts/${id}/recover`); fetchCarts(); }
-    catch { alert('Error al actualizar'); }
+    const ok = await confirm({
+      title: '¿Marcar el carrito como recuperado?',
+      message: 'Sale de la lista de pendientes. Podés reabrirlo después.',
+      confirmLabel: 'Marcar recuperado',
+    });
+    if (!ok) return;
+    try { await api.post(`/abandoned-carts/${id}/recover`); fetchCarts(); notify('Carrito marcado como recuperado.', { tone: 'success' }); }
+    catch { notify('No se pudo actualizar el carrito.', { tone: 'error' }); }
   }
 
   async function reopenCart(id) {
     try { await api.post(`/abandoned-carts/${id}/reopen`); fetchCarts(); }
-    catch { alert('Error al reabrir'); }
+    catch { notify('No se pudo reabrir el carrito.', { tone: 'error' }); }
   }
 
   async function markContacted(id) {
     try { await api.post(`/abandoned-carts/${id}/contacted`); fetchCarts(); }
-    catch { alert('Error al marcar contactado'); }
+    catch { notify('No se pudo marcar como contactado.', { tone: 'error' }); }
   }
 
   async function deleteCart(id) {
-    if (!window.confirm('¿Eliminar este carrito abandonado? Esta acción no se puede deshacer.')) return;
-    try { await api.delete(`/abandoned-carts/${id}`); fetchCarts(); }
-    catch { alert('Error al eliminar'); }
+    const ok = await confirm({
+      title: '¿Eliminar este carrito abandonado?',
+      message: 'Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    try { await api.delete(`/abandoned-carts/${id}`); fetchCarts(); notify('Carrito eliminado.', { tone: 'success' }); }
+    catch { notify('No se pudo eliminar el carrito.', { tone: 'error' }); }
   }
 
   function copyCart(cart) {
@@ -399,9 +414,14 @@ export default function AdminOrders() {
                                 <button
                                   className="ao-btn ao-btn--primary"
                                   disabled={updating === order._id}
-                                  onClick={() => {
-                                    if (proofUrl) verifyOrder(order);
-                                    else if (window.confirm('¿Aprobar pago manualmente?')) updateOrder(order._id, { paymentStatus: 'approved' });
+                                  onClick={async () => {
+                                    if (proofUrl) { verifyOrder(order); return; }
+                                    const ok = await confirm({
+                                      title: '¿Aprobar el pago manualmente?',
+                                      message: 'El pedido no tiene comprobante adjunto. Confirmá solo si ya verificaste el cobro.',
+                                      confirmLabel: 'Aprobar pago',
+                                    });
+                                    if (ok) updateOrder(order._id, { paymentStatus: 'approved' });
                                   }}
                                 >
                                   {updating === order._id ? 'Procesando...' : (proofUrl ? 'Aprobar pago' : 'Aprobar manual')}
@@ -708,6 +728,8 @@ export default function AdminOrders() {
 
         </div>
       </main>
+      {confirmDialog}
+      {notice}
 
       {/* Lightbox */}
       {lightbox && (

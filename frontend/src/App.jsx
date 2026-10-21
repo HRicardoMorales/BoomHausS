@@ -32,7 +32,6 @@ const Checkout = lazyWithRetry(() => import('./pages/checkout.jsx'));
 const Login = lazyWithRetry(() => import('./pages/login.jsx'));
 const Register = lazyWithRetry(() => import('./pages/register.jsx'));
 const MyOrders = lazyWithRetry(() => import('./pages/myOrders.jsx'));
-const TiendaRedirect = lazyWithRetry(() => import('./pages/tiendaRedirect.jsx'));
 const Terms = lazyWithRetry(() => import('./pages/Terms.jsx'));
 const Privacy = lazyWithRetry(() => import('./pages/Privacy.jsx'));
 const Returns = lazyWithRetry(() => import('./pages/Returns.jsx'));
@@ -173,7 +172,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/my-orders" element={<PrivateRoute><MyOrders /></PrivateRoute>} />
-          <Route path="/tienda" element={<TiendaRedirect />} />
+          {/* Alias viejo: /products ya resuelve el producto principal (con esqueleto y reintento). */}
+          <Route path="/tienda" element={<Navigate to="/products" replace />} />
           <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
           <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
           <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />

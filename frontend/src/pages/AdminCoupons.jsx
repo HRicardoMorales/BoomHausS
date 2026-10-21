@@ -1,12 +1,14 @@
 // frontend/src/pages/AdminCoupons.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useConfirm } from '../components/ui/useConfirm.jsx';
 
 const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
 
 const EMPTY_FORM = { code: '', type: 'percent', value: '', minOrderAmount: '', maxUses: '', expiresAt: '' };
 
 export default function AdminCoupons() {
+  const { confirm, confirmDialog } = useConfirm();
   const [coupons, setCoupons]     = useState([]);
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState('');
@@ -43,7 +45,14 @@ export default function AdminCoupons() {
   }
 
   async function deleteCoupon(id) {
-    if (!window.confirm('¿Eliminar este cupón?')) return;
+    const coupon = coupons.find(c => c._id === id);
+    const ok = await confirm({
+      title: coupon?.code ? `¿Eliminar el cupón ${coupon.code}?` : '¿Eliminar este cupón?',
+      message: 'Deja de funcionar en el checkout al instante. Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar cupón',
+      tone: 'danger',
+    });
+    if (!ok) return;
     try {
       await api.delete(`/coupons/${id}`);
       setCoupons(prev => prev.filter(c => c._id !== id));
@@ -304,6 +313,7 @@ export default function AdminCoupons() {
           </div>
         )}
       </div>
+      {confirmDialog}
     </main>
   );
 }

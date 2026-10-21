@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfirm } from '../components/ui/useConfirm.jsx';
 import { LANDING_CONFIGS, LANDING_META } from '../landings/index';
 
 /* ─── helpers ─── */
@@ -125,6 +126,7 @@ function bundlesFromConfig(rootBundles) {
 }
 
 export default function AdminProducts() {
+  const { confirm, confirmDialog } = useConfirm();
   const [products, setProducts]       = useState([]);
   const [selectedId, setSelectedId]   = useState('');
   const [form, setForm]               = useState(EMPTY_FORM);
@@ -251,7 +253,13 @@ export default function AdminProducts() {
 
   async function handleDelete() {
     if (!form._id) return;
-    if (!window.confirm(`¿Eliminar "${form.name}"? Esta acción no se puede deshacer.`)) return;
+    const ok = await confirm({
+      title: `¿Eliminar "${form.name}"?`,
+      message: 'Se quita del catálogo de la tienda. Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar producto',
+      tone: 'danger',
+    });
+    if (!ok) return;
     setDeleting(true); setError('');
     try {
       await api.delete(`/products/${form._id}`);
@@ -812,6 +820,7 @@ export default function AdminProducts() {
           </div>
         </div>
       </div>
+      {confirmDialog}
     </main>
   );
 }
