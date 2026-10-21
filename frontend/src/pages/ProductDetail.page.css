@@ -2031,6 +2031,12 @@
 :where(.pd-detail) .pd-block:last-child{ padding-bottom: 0; }
 :where(.pd-detail) .pd-sections-new{ padding-top: 8px; padding-bottom: 36px; }
 :where(.pd-detail) #authority{ padding-bottom: 0; margin-bottom: -20px; }
+/* La banda ya da el aire: la primera/última sección no suma el suyo. Sin
+   esto, en la ficha genérica (banda azul solo con la garantía) quedaban
+   ~110 px de azul vacío arriba del sello y lo mismo sobre "Quiénes somos". */
+:where(.pd-detail) .pd-sections-new > :first-child{ margin-top: 0; }
+:where(.pd-detail) .pd-sections-new > .grt-section:first-child{ padding-top: 0; }
+:where(.pd-detail) .pd-sections-new > .grt-section:last-child{ padding-bottom: 0; }
 
 /* ===== BEFORE / AFTER SLIDER ===== */
 :where(.pd-detail) .ba-wrap{
