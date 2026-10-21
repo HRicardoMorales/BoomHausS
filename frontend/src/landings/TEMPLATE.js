@@ -35,7 +35,7 @@ const miProductoConfig = {
   ],
 
   miniDescription:
-    "Descripción corta del producto que aparece en el accordion de ficha técnica.",
+    "Descripción corta del producto: se muestra como primer acordeón (\"Descripción del producto\") del bloque de compra, en texto plano.",
 
   storyBlocks: [
     {

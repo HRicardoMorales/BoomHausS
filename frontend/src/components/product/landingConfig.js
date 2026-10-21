@@ -35,6 +35,7 @@ export function resolveLandingConfig(config, activeVariant, product) {
   }
 
   base = applyProductCopy(base, product);
+  base = withDescriptionAccordion(base);
 
   if (!product?.bundles?.length || !base.bundles?.length) return base;
 
@@ -43,6 +44,29 @@ export function resolveLandingConfig(config, activeVariant, product) {
     return db ? { ...cb, price: db.price, compareAt: db.compareAt ?? cb.compareAt } : cb;
   });
   return { ...base, bundles };
+}
+
+/** Título del acordeón que muestra la descripción corta del config. */
+export const DESCRIPTION_ACCORDION_TITLE = "Descripción del producto";
+
+/**
+ * La descripción corta (`miniDescription`, de la variante o del config) entra
+ * como primer acordeón del bloque de compra, en texto plano (los acordeones
+ * del config traen `html` propio; este no se inyecta como HTML). Si el
+ * producto ya muestra su descripción larga (ficha genérica) no se duplica.
+ */
+export function withDescriptionAccordion(config) {
+  const text =
+    typeof config?.miniDescription === "string" ? config.miniDescription.trim() : "";
+  if (!text || config.productDescription) return config;
+  const current = Array.isArray(config.heroAccordions) ? config.heroAccordions : [];
+  return {
+    ...config,
+    heroAccordions: [
+      { id: "descripcion", icon: "📝", title: DESCRIPTION_ACCORDION_TITLE, text },
+      ...current,
+    ],
+  };
 }
 
 /** Máximo de bullets que muestra el hero (y que acepta el backend). */

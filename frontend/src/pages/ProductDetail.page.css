@@ -1032,13 +1032,22 @@
   background: rgb(var(--pd-accent-rgb) / .12);
   border-color: rgb(var(--pd-accent-rgb) / .38);
 }
+/* Alto real del contenido con grid 0fr → 1fr (sin tope fijo de max-height
+   que cortaba textos largos como la descripción). */
 :where(.pd-detail) .hacc-body{
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .28s ease;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .28s ease;
 }
 :where(.pd-detail) .hacc-item--open .hacc-body{
-  max-height: 200px;
+  grid-template-rows: 1fr;
+}
+:where(.pd-detail) .hacc-inner{
+  min-height: 0;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce){
+  :where(.pd-detail) .hacc-body{ transition: none; }
 }
 :where(.pd-detail) .hacc-content{
   padding: 0 14px 14px 38px;
@@ -1046,6 +1055,10 @@
   font-weight: 500;
   color: rgba(11,18,32,.68);
   line-height: 1.6;
+}
+:where(.pd-detail) .hacc-content--text{
+  margin: 0;
+  white-space: pre-line;
 }
 :where(.pd-detail) .hacc-content strong{
   color: rgba(11,18,32,.85);

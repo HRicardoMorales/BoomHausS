@@ -32,6 +32,7 @@ import ProductGallery from "../components/product/ProductGallery";
 import VariantSelector from "../components/product/VariantSelector";
 import PaymentIcons from "../components/product/PaymentIcons";
 import BundlePicker from "../components/product/BundlePicker";
+import HeroAccordions from "../components/product/HeroAccordions";
 import {
   resolveLandingConfig,
   resolveGalleryImages,
@@ -377,6 +378,9 @@ function ProductDetail({ id, slug }) {
                   </div>
                 </div>
               )}
+
+              {/* Acordeones (descripción, regalos, garantía) — con bundles los muestra el BundlePicker */}
+              {!MC.bundles && <HeroAccordions items={MC.heroAccordions} />}
 
               {/* Trust lines */}
               {MC.trustLines && (

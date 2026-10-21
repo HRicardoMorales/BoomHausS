@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { applyProductCopy, resolveLandingConfig, MAX_HIGHLIGHTS } from "./landingConfig";
+import {
+  applyProductCopy,
+  resolveLandingConfig,
+  withDescriptionAccordion,
+  DESCRIPTION_ACCORDION_TITLE,
+  MAX_HIGHLIGHTS,
+} from "./landingConfig";
+import { LANDING_CONFIGS } from "../../landings/index.js";
 import genericProductConfig, { GENERIC_TRUST_BULLETS } from "../../landings/generic.js";
 
 const landing = { heroSubtitle: "Subtítulo de la landing", trustBullets: ["A", "B"] };
@@ -69,5 +76,45 @@ describe("applyProductCopy — descripción", () => {
   it("descripción vacía o no-string no agrega nada", () => {
     expect(applyProductCopy(genericProductConfig, { description: "  " })).toBe(genericProductConfig);
     expect(applyProductCopy(genericProductConfig, { description: 5 })).toBe(genericProductConfig);
+  });
+});
+
+describe("withDescriptionAccordion (miniDescription)", () => {
+  const regalo = { icon: "⭐", title: "Regalos", html: "<b>x</b>" };
+
+  it("suma la descripción corta como primer acordeón, en texto plano", () => {
+    const out = withDescriptionAccordion({ miniDescription: "  Hola <b>mundo</b>  ", heroAccordions: [regalo] });
+    expect(out.heroAccordions).toHaveLength(2);
+    expect(out.heroAccordions[0]).toMatchObject({ title: DESCRIPTION_ACCORDION_TITLE, text: "Hola <b>mundo</b>" });
+    expect(out.heroAccordions[0].html).toBeUndefined();
+    expect(out.heroAccordions[1]).toBe(regalo);
+  });
+
+  it("sin descripción, vacía o no-string devuelve el mismo config", () => {
+    for (const miniDescription of [undefined, "", "   ", 42, { $ne: 1 }]) {
+      const cfg = { miniDescription, heroAccordions: [regalo] };
+      expect(withDescriptionAccordion(cfg)).toBe(cfg);
+    }
+  });
+
+  it("no duplica si el producto ya muestra su descripción larga", () => {
+    const cfg = { miniDescription: "corta", productDescription: "larga" };
+    expect(withDescriptionAccordion(cfg)).toBe(cfg);
+  });
+
+  it("la variante activa pisa la descripción del config", () => {
+    const cfg = { miniDescription: "de la landing", bundles: [{ qty: 1, price: 10 }] };
+    const out = resolveLandingConfig(cfg, { miniDescription: "de la variante" }, null);
+    expect(out.heroAccordions[0].text).toBe("de la variante");
+    expect(cfg.heroAccordions).toBeUndefined(); // no muta el config estático
+  });
+
+  it("toda landing con miniDescription la muestra (ninguna queda muerta)", () => {
+    const withMini = Object.entries(LANDING_CONFIGS).filter(([, c]) => c.miniDescription);
+    expect(withMini.length).toBeGreaterThan(0);
+    for (const [, c] of withMini) {
+      const out = resolveLandingConfig(c, null, null);
+      expect(out.heroAccordions[0].title).toBe(DESCRIPTION_ACCORDION_TITLE);
+    }
   });
 });
