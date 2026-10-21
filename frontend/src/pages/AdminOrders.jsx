@@ -1,43 +1,17 @@
-﻿// frontend/src/pages/AdminOrders.jsx
+// frontend/src/pages/AdminOrders.jsx
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import api from '../services/api';
+import { useMemo, useRef, useState } from 'react';
 import { useDialogA11y } from '../hooks/useDialogA11y';
-import Skeleton, { SkeletonGroup } from '../components/ui/Skeleton.jsx';
 import { useConfirm } from '../components/ui/useConfirm.jsx';
 import { useNotice } from '../components/ui/useNotice.jsx';
-
-/* Filas fantasma con la altura de una fila real del listado. */
-function RowsSkeleton({ label, rows = 5 }) {
-  return (
-    <SkeletonGroup label={label} className="ao-list">
-      {Array.from({ length: rows }, (_, i) => (
-        <Skeleton key={i} height="68px" radius="12px" style={{ display: 'block', opacity: 1 - i * 0.14 }} />
-      ))}
-    </SkeletonGroup>
-  );
-}
-
-function money(n) {
-  const num = Number(n);
-  if (Number.isNaN(num)) return '$0';
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
-}
-
-function formatDate(d) {
-  if (!d) return '—';
-  try { return new Date(d).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' }); }
-  catch { return '—'; }
-}
-
-function relativeTime(d) {
-  if (!d) return '';
-  const mins = Math.round((Date.now() - new Date(d).getTime()) / 60000);
-  if (isNaN(mins) || mins < 0) return '';
-  if (mins < 60) return `hace ${mins}m`;
-  if (mins < 1440) return `hace ${Math.round(mins / 60)}h`;
-  return `hace ${Math.round(mins / 1440)}d`;
-}
+import { useAdminOrders } from '../hooks/admin/useAdminOrders.js';
+import { useAbandonedCarts } from '../hooks/admin/useAbandonedCarts.js';
+import RowsSkeleton from '../components/admin/orders/RowsSkeleton.jsx';
+import AbandonedCartsPanel from '../components/admin/orders/AbandonedCartsPanel.jsx';
+import {
+  money, formatDate, relativeTime, PAYMENT_LABELS, SHIPPING_LABELS, PAYMENT_OPTS, SHIPPING_OPTS,
+  METHOD_MAP, SHIP_METHOD_MAP, orderWaLink, orderClipboardText, computeOrderStats, filterOrders,
+} from '../components/admin/orders/format.js';
 
 const getImageUrl = (url) => {
   if (!url) return null;
@@ -46,238 +20,33 @@ const getImageUrl = (url) => {
   return `${BASE_URL}/${url.startsWith('/') ? url.slice(1) : url}`;
 };
 
-const PAYMENT_LABELS = { pending: 'Pendiente', proof_uploaded: 'Comprobante', approved: 'Aprobado', confirmed: 'Confirmado', rejected: 'Rechazado', cancelled: 'Cancelado' };
-const SHIPPING_LABELS = { pending: 'Pendiente', shipped: 'En camino', delivered: 'Entregado', cancelled: 'Cancelado' };
-const PAYMENT_OPTS = Object.keys(PAYMENT_LABELS);
-const SHIPPING_OPTS = Object.keys(SHIPPING_LABELS);
-
-const METHOD_MAP = {
-  mercadopago: { label: 'Mercado Pago', ico: 'ao-met--mp' },
-  cod: { label: 'Contra entrega', ico: 'ao-met--cod' },
-  transfer: { label: 'Transferencia', ico: 'ao-met--tf' },
-};
-
-const SHIP_METHOD_MAP = {
-  caba_cod: 'CABA · pago al recibir',
-  correo_argentino: 'Correo Argentino',
-  retiro_oficina: 'Retiro en oficina',
-};
 
 export default function AdminOrders() {
   const { confirm, confirmDialog } = useConfirm();
   const { notify, notice } = useNotice();
   const [tab, setTab] = useState('orders');
 
-  // Orders
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // Pedidos: datos y acciones en el hook; acá solo estado de la vista.
+  const { orders, loading, error, updating, refresh: fetchOrders, updateOrder, verifyOrder } =
+    useAdminOrders({ enabled: tab === 'orders', notify });
   const [filter, setFilter] = useState('todos');
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState(null);
-  const [updating, setUpdating] = useState(null);
   const [lightbox, setLightbox] = useState(null);
   const [copied, setCopied] = useState(null);
   const [trackInputs, setTrackInputs] = useState({});
 
-  // Abandoned
-  const [carts, setCarts] = useState([]);
-  const [loadingCarts, setLoadingCarts] = useState(false);
-  const [cartSearch, setCartSearch] = useState('');
-  const [cartShowAll, setCartShowAll] = useState(false); // muestra también recuperados
-  const [cartExpanded, setCartExpanded] = useState(null);
-  const [cartCopied, setCartCopied] = useState(null);
-
-  useEffect(() => {
-    if (tab === 'orders') fetchOrders();
-    if (tab === 'abandoned') fetchCarts();
-  // fetchOrders/fetchCarts se recrean en cada render y leen el estado vigente;
-  // el efecto se dispara solo por cambio de pestaña o del filtro de recuperados.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, cartShowAll]);
-
-  async function fetchOrders() {
-    try {
-      setLoading(true);
-      const res = await api.get('/orders');
-      if (res.data?.ok) setOrders((res.data.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-    } catch { setError('Error al cargar pedidos'); }
-    finally { setLoading(false); }
-  }
-
-  async function fetchCarts() {
-    try {
-      setLoadingCarts(true);
-      const res = await api.get(`/abandoned-carts${cartShowAll ? '?all=1' : ''}`);
-      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-      setCarts(list);
-    } catch { /* silent */ }
-    finally { setLoadingCarts(false); }
-  }
-
-  async function updateOrder(id, changes) {
-    try {
-      setUpdating(id);
-      const res = await api.patch(`/orders/${id}`, changes);
-      if (res.data?.ok) {
-        const u = res.data.data;
-        setOrders(prev => prev.map(o => o._id === u._id ? u : o));
-      }
-    } catch { notify('No se pudo actualizar el pedido.', { tone: 'error' }); }
-    finally { setUpdating(null); }
-  }
-
-  async function verifyOrder(order) {
-    try {
-      setUpdating(order._id);
-      const res = await api.patch(`/orders/${order._id}/verify`);
-      if (res.data?.ok && res.data.data) setOrders(prev => prev.map(o => o._id === res.data.data._id ? res.data.data : o));
-      else fetchOrders();
-    } catch { notify('No se pudo verificar el pago.', { tone: 'error' }); }
-    finally { setUpdating(null); }
-  }
-
-  async function recoverCart(id) {
-    const ok = await confirm({
-      title: '¿Marcar el carrito como recuperado?',
-      message: 'Sale de la lista de pendientes. Podés reabrirlo después.',
-      confirmLabel: 'Marcar recuperado',
-    });
-    if (!ok) return;
-    try { await api.post(`/abandoned-carts/${id}/recover`); fetchCarts(); notify('Carrito marcado como recuperado.', { tone: 'success' }); }
-    catch { notify('No se pudo actualizar el carrito.', { tone: 'error' }); }
-  }
-
-  async function reopenCart(id) {
-    try { await api.post(`/abandoned-carts/${id}/reopen`); fetchCarts(); }
-    catch { notify('No se pudo reabrir el carrito.', { tone: 'error' }); }
-  }
-
-  async function markContacted(id) {
-    try { await api.post(`/abandoned-carts/${id}/contacted`); fetchCarts(); }
-    catch { notify('No se pudo marcar como contactado.', { tone: 'error' }); }
-  }
-
-  async function deleteCart(id) {
-    const ok = await confirm({
-      title: '¿Eliminar este carrito abandonado?',
-      message: 'Esta acción no se puede deshacer.',
-      confirmLabel: 'Eliminar',
-      tone: 'danger',
-    });
-    if (!ok) return;
-    try { await api.delete(`/abandoned-carts/${id}`); fetchCarts(); notify('Carrito eliminado.', { tone: 'success' }); }
-    catch { notify('No se pudo eliminar el carrito.', { tone: 'error' }); }
-  }
-
-  function copyCart(cart) {
-    const lines = [
-      `— CARRITO ABANDONADO —`,
-      `Cliente: ${cart.name || '—'}`,
-      cart.phone ? `Tel: ${cart.phone}` : '',
-      cart.email ? `Email: ${cart.email}` : '',
-      cart.address ? `Dirección: ${cart.address}` : '',
-      [cart.city, cart.province, cart.postalCode].filter(Boolean).join(', ') || '',
-      cart.step ? `Paso: ${cart.step}` : '',
-      cart.paymentMethod ? `Método pago: ${cart.paymentMethod}` : '',
-      cart.landingSource ? `Landing: ${cart.landingSource}` : '',
-      '',
-      ...(cart.items || []).map(it => `  ${it.quantity}x ${it.name} — ${money((it.price || 0) * (it.quantity || 0))}`),
-      '',
-      `Total: ${money(cart.totalAmount)}`,
-    ].filter(Boolean).join('\n');
-    navigator.clipboard.writeText(lines).then(() => { setCartCopied(cart._id); setTimeout(() => setCartCopied(null), 1500); });
-  }
+  const carts = useAbandonedCarts({ enabled: tab === 'abandoned', notify });
 
   function copyOrder(order) {
-    const lines = [
-      `Pedido: ${order._id}`,
-      `Cliente: ${order.customerName || '—'}`,
-      order.customerPhone ? `Tel: ${order.customerPhone}` : '',
-      order.customerEmail ? `Email: ${order.customerEmail}` : '',
-      order.customerDni ? `DNI: ${order.customerDni}` : '',
-      `Dirección: ${order.shippingAddress || '—'}`,
-      `Envío: ${SHIP_METHOD_MAP[order.shippingMethod] || order.shippingMethod || '—'}`,
-      `Método pago: ${METHOD_MAP[order.paymentMethod]?.label || order.paymentMethod || '—'}`,
-      '',
-      ...(order.items || []).map(it => `  ${it.quantity}x ${it.name} — ${money(it.price * it.quantity)}`),
-      '',
-      `Total: ${money(order.totalAmount)}`,
-      order.notes ? `Notas: ${order.notes}` : '',
-    ].filter(Boolean).join('\n');
-    navigator.clipboard.writeText(lines).then(() => { setCopied(order._id); setTimeout(() => setCopied(null), 1500); });
+    navigator.clipboard.writeText(orderClipboardText(order)).then(
+      () => { setCopied(order._id); setTimeout(() => setCopied(null), 1500); },
+      () => notify('No se pudo copiar al portapapeles.', { tone: 'error' }),
+    );
   }
 
-  function waLink(order) {
-    if (!order.customerPhone) return null;
-    let ph = order.customerPhone.replace(/\D/g, '');
-    if (!ph.startsWith('54')) ph = '549' + ph.replace(/^549/, '');
-    const msg = `Hola ${order.customerName || ''}! Te escribo de Amelor sobre tu pedido del ${formatDate(order.createdAt)}. ${(order.items || []).map(it => `${it.quantity}x ${it.name}`).join(', ')}. Total: ${money(order.totalAmount)}`;
-    return `https://wa.me/${ph}?text=${encodeURIComponent(msg)}`;
-  }
-
-  function cartWaLink(cart) {
-    if (!cart.phone) return null;
-    let ph = cart.phone.replace(/\D/g, '');
-    if (!ph.startsWith('54')) ph = '549' + ph.replace(/^549/, '');
-    const firstName = (cart.name || '').split(' ')[0];
-    const productList = (cart.items || []).map(i => `${i.quantity}x ${i.name}`).join(', ') || 'tu pedido';
-    const total = cart.totalAmount ? ` por ${money(cart.totalAmount)}` : '';
-    const msg =
-      `Hola${firstName ? ' ' + firstName : ''}! 👋 Te escribo de Amelor.\n\n` +
-      `Vi que estabas cerrando tu compra de ${productList}${total} y quedó pendiente. ` +
-      `¿Tuviste algún inconveniente con el pago o el envío?\n\n` +
-      `Si querés, te ayudo a finalizarlo por acá mismo. 🙌`;
-    return `https://wa.me/${ph}?text=${encodeURIComponent(msg)}`;
-  }
-
-  // Computed
-  const stats = useMemo(() => {
-    const total = orders.reduce((a, o) => a + (Number(o.totalAmount) || 0), 0);
-    const approved = orders.filter(o => ['approved', 'confirmed'].includes(o.paymentStatus)).length;
-    const review = orders.filter(o => o.paymentStatus === 'proof_uploaded').length;
-    const pending = orders.filter(o => o.paymentStatus === 'pending').length;
-    const shipped = orders.filter(o => o.shippingStatus === 'shipped').length;
-    const delivered = orders.filter(o => o.shippingStatus === 'delivered').length;
-    return { total, approved, review, pending, shipped, delivered };
-  }, [orders]);
-
-  const filtered = useMemo(() => {
-    return orders.filter(o => {
-      if (filter !== 'todos' && o.paymentStatus !== filter) return false;
-      if (!search.trim()) return true;
-      const q = search.toLowerCase();
-      return [o._id, o.customerName, o.customerEmail, o.customerPhone, o.customerDni, ...(o.items || []).map(i => i.name)]
-        .some(f => (f || '').toLowerCase().includes(q));
-    });
-  }, [orders, filter, search]);
-
-  // Abandoned: stats + filtrado
-  const cartStats = useMemo(() => {
-    const pending = carts.filter(c => !c.recovered);
-    const totalValue = pending.reduce((a, c) => a + (Number(c.totalAmount) || 0), 0);
-    const now = Date.now();
-    const hot = pending.filter(c => {
-      const t = new Date(c.updatedAt || c.createdAt || 0).getTime();
-      return !isNaN(t) && (now - t) < 60 * 60 * 1000; // menos de 1h
-    }).length;
-    const withPhone = pending.filter(c => !!c.phone).length;
-    const recovered = carts.filter(c => c.recovered).length;
-    return { pendingCount: pending.length, totalValue, hot, withPhone, recovered };
-  }, [carts]);
-
-  const filteredCarts = useMemo(() => {
-    const q = cartSearch.trim().toLowerCase();
-    if (!q) return carts;
-    return carts.filter(c => {
-      const hay = [
-        c.name, c.phone, c.email, c.address, c.city, c.province,
-        c.landingSource, c.step, c.paymentMethod,
-        ...(c.items || []).map(i => i.name),
-      ].filter(Boolean).join(' ').toLowerCase();
-      return hay.includes(q);
-    });
-  }, [carts, cartSearch]);
+  const stats = useMemo(() => computeOrderStats(orders), [orders]);
+  const filtered = useMemo(() => filterOrders(orders, { status: filter, query: search }), [orders, filter, search]);
 
   return (
     <>
@@ -295,7 +64,7 @@ export default function AdminOrders() {
                 Pedidos <span className="ao-tab-count">{orders.length}</span>
               </button>
               <button className={`ao-tab ${tab === 'abandoned' ? 'ao-tab--on ao-tab--warn' : ''}`} onClick={() => setTab('abandoned')}>
-                Abandonados {carts.length > 0 && <span className="ao-tab-count ao-tab-count--warn">{carts.length}</span>}
+                Abandonados {carts.carts.length > 0 && <span className="ao-tab-count ao-tab-count--warn">{carts.carts.length}</span>}
               </button>
             </div>
           </header>
@@ -367,7 +136,7 @@ export default function AdminOrders() {
                     const proofUrl = getImageUrl(order.paymentProofUrl);
                     const isApproved = ['approved', 'confirmed'].includes(order.paymentStatus);
                     const met = METHOD_MAP[order.paymentMethod] || { label: order.paymentMethod || 'Otro', ico: '' };
-                    const wa = waLink(order);
+                    const wa = orderWaLink(order);
 
                     return (
                       <article key={order._id} className={`ao-card ${open ? 'ao-card--open' : ''}`}>
@@ -550,181 +319,7 @@ export default function AdminOrders() {
           )}
 
           {/* ====== ABANDONED TAB ====== */}
-          {tab === 'abandoned' && (
-            <>
-              <div className="ao-abandon-header">
-                <div>
-                  <h2 className="ao-abandon-title">Recuperación de ventas</h2>
-                  <p className="ao-abandon-sub">Personas que dejaron datos pero no pagaron. Contactalos por WhatsApp para cerrar la venta.</p>
-                </div>
-                <button className="ao-btn ao-btn--ghost" onClick={fetchCarts}>↻ Actualizar</button>
-              </div>
-
-              {/* Stats abandoned */}
-              <div className="ao-stats">
-                <div className="ao-stat ao-st--yellow">
-                  <div className="ao-stat-val">{cartStats.pendingCount}</div>
-                  <div className="ao-stat-lbl">Pendientes</div>
-                </div>
-                <div className="ao-stat ao-st--green">
-                  <div className="ao-stat-val">{money(cartStats.totalValue)}</div>
-                  <div className="ao-stat-lbl">Valor a recuperar</div>
-                </div>
-                <div className="ao-stat ao-st--red">
-                  <div className="ao-stat-val">{cartStats.hot}</div>
-                  <div className="ao-stat-lbl">🔥 Hot (&lt;1h)</div>
-                </div>
-                <div className="ao-stat ao-st--blue">
-                  <div className="ao-stat-val">{cartStats.withPhone}</div>
-                  <div className="ao-stat-lbl">Con teléfono</div>
-                </div>
-                <div className="ao-stat ao-st--muted">
-                  <div className="ao-stat-val">{cartStats.recovered}</div>
-                  <div className="ao-stat-lbl">Recuperados</div>
-                </div>
-              </div>
-
-              {/* Search + toggle */}
-              <div className="ao-bar">
-                <input
-                  className="ao-search"
-                  type="text"
-                  placeholder="Buscar por nombre, tel, email, producto, landing..."
-                  value={cartSearch}
-                  onChange={e => setCartSearch(e.target.value)}
-                />
-                <label className="ao-cart-toggle">
-                  <input
-                    type="checkbox"
-                    checked={cartShowAll}
-                    onChange={e => setCartShowAll(e.target.checked)}
-                  />
-                  Mostrar recuperados
-                </label>
-              </div>
-
-              {loadingCarts ? (
-                <RowsSkeleton label="Cargando carritos…" rows={4} />
-              ) : !filteredCarts.length ? (
-                <div className="ao-empty" role="status">
-                  {cartSearch ? (
-                    <>
-                      <p>Sin resultados para la búsqueda.</p>
-                      <button type="button" className="ao-btn ao-btn--ghost" onClick={() => setCartSearch('')}>Limpiar búsqueda</button>
-                    </>
-                  ) : (
-                    <p>No hay carritos abandonados pendientes.</p>
-                  )}
-                </div>
-              ) : (
-                <div className="ao-list">
-                  {filteredCarts.map(cart => {
-                    const wa = cartWaLink(cart);
-                    const dateSource = cart.updatedAt || cart.createdAt || new Date();
-                    const ago = relativeTime(dateSource);
-                    const mins = Math.round((Date.now() - new Date(dateSource).getTime()) / 60000);
-                    const hot = !isNaN(mins) && mins < 60;
-                    const isOpen = cartExpanded === cart._id;
-                    const totalItems = cart.totalItems || (cart.items || []).reduce((a, it) => a + (Number(it.quantity) || 0), 0);
-                    const stepLabel = {
-                      cart: 'Carrito',
-                      info: 'Datos personales',
-                      shipping: 'Envío',
-                      payment: 'Pago',
-                      checkout_form: 'Checkout',
-                      checkout_page: 'Checkout',
-                    }[cart.step] || cart.step || '—';
-
-                    return (
-                      <article key={cart._id} className={`ao-cart-card ${cart.recovered ? 'ao-cart-card--done' : ''}`}>
-                        {/* Header row */}
-                        <div className="ao-cart-header">
-                          <div className="ao-cart-head-left">
-                            <div className="ao-cart-name-row">
-                              <span className="ao-cart-name">{cart.name || 'Sin nombre'}</span>
-                              {hot && <span className="ao-cart-badge ao-cart-badge--hot">🔥 HOT</span>}
-                              {cart.recovered && <span className="ao-cart-badge ao-cart-badge--done">✓ Recuperado</span>}
-                              {cart.contactedAt && !cart.recovered && <span className="ao-cart-badge ao-cart-badge--contact">📞 Contactado</span>}
-                            </div>
-                            <div className="ao-cart-meta">
-                              <span className={`ao-cart-ago ${hot ? 'ao-cart-ago--hot' : ''}`}>{ago || '—'}</span>
-                              <span className="ao-cart-sep">•</span>
-                              <span>Paso: <strong>{stepLabel}</strong></span>
-                              {cart.landingSource && (
-                                <>
-                                  <span className="ao-cart-sep">•</span>
-                                  <span>Landing: <strong>{cart.landingSource}</strong></span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="ao-cart-head-right">
-                            <div className="ao-cart-total">{money(cart.totalAmount)}</div>
-                            <div className="ao-cart-items-count">{totalItems} ítem{totalItems !== 1 ? 's' : ''}</div>
-                          </div>
-                        </div>
-
-                        {/* Contact row */}
-                        <div className="ao-cart-contact">
-                          {cart.phone && (
-                            <span className="ao-cart-chip">📱 <a href={`tel:${cart.phone}`}>{cart.phone}</a></span>
-                          )}
-                          {cart.email && (
-                            <span className="ao-cart-chip">✉️ <a href={`mailto:${cart.email}`}>{cart.email}</a></span>
-                          )}
-                          {cart.address && (
-                            <span className="ao-cart-chip">📍 {cart.address}{cart.city ? `, ${cart.city}` : ''}</span>
-                          )}
-                          {cart.paymentMethod && (
-                            <span className="ao-cart-chip">💳 {cart.paymentMethod}</span>
-                          )}
-                        </div>
-
-                        {/* Items (toggle) */}
-                        <button className="ao-cart-expand" onClick={() => setCartExpanded(isOpen ? null : cart._id)}>
-                          {isOpen ? '▲ Ocultar productos' : `▼ Ver productos (${(cart.items || []).length})`}
-                        </button>
-                        {isOpen && (
-                          <div className="ao-cart-items-box">
-                            {(cart.items || []).map((it, i) => (
-                              <div key={i} className="ao-item-row">
-                                <div className="ao-item-left">
-                                  <span className="ao-item-name">{it.name}</span>
-                                  <span className="ao-item-qty"> × {it.quantity}</span>
-                                </div>
-                                <span className="ao-item-total">{money((it.price || 0) * (it.quantity || 0))}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Actions */}
-                        <div className="ao-cart-actions">
-                          {wa ? (
-                            <a href={wa} target="_blank" rel="noreferrer" className="ao-btn ao-btn--wa">💬 WhatsApp</a>
-                          ) : (
-                            <span className="ao-muted">Sin teléfono</span>
-                          )}
-                          <button className="ao-btn ao-btn--ghost" onClick={() => copyCart(cart)}>
-                            {cartCopied === cart._id ? '✓ Copiado' : '📋 Copiar'}
-                          </button>
-                          {!cart.contactedAt && !cart.recovered && (
-                            <button className="ao-btn ao-btn--ghost" onClick={() => markContacted(cart._id)}>📞 Contactado</button>
-                          )}
-                          {!cart.recovered ? (
-                            <button className="ao-btn ao-btn--primary" onClick={() => recoverCart(cart._id)}>✓ Recuperado</button>
-                          ) : (
-                            <button className="ao-btn ao-btn--ghost" onClick={() => reopenCart(cart._id)}>↺ Reabrir</button>
-                          )}
-                          <button className="ao-btn ao-btn--danger" onClick={() => deleteCart(cart._id)}>🗑</button>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
+          {tab === 'abandoned' && <AbandonedCartsPanel carts={carts} notify={notify} />}
 
         </div>
       </main>
