@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import { LANDING_CONFIGS } from "../landings/index.js";
+import genericProductConfig from "../landings/generic.js";
 import { CheckoutSheet } from "./CheckoutSheet";
 import StatsCircles from "../components/landing/StatsCircles";
 import RatingSummary from "../components/product/RatingSummary";
@@ -46,12 +47,13 @@ import "./ProductDetail.page.css";
 import { SITE_NAME } from "../seo/routeSeo.js";
 
 /* ========================================================================
-   MARKETING CONTENT — se carga dinámicamente desde src/landings/index.js
-   El fallback es 'porta-cepillos' cuando se abre por /products/:id
-   Para agregar un producto nuevo: copiá src/landings/porta-cepillos.js,
-   editá los textos y registralo en src/landings/index.js
+   MARKETING CONTENT — /lp/:slug usa su config de src/landings/index.js.
+   /products/:id usa la ficha genérica (landings/generic.js): antes caía en
+   el config del porta cepillos y cualquier producto mostraba sus bullets,
+   reseñas, FAQ y upsell.
+   Para agregar una landing: copiá src/landings/TEMPLATE.js y registrala
+   en src/landings/index.js.
    ======================================================================== */
-const MARKETING_CONTENT = LANDING_CONFIGS["porta-cepillos"] || {};
 
 // Azul de las bandas oscuras (.pd-band--blue): color de las olas entre bandas.
 const NAVY = "#0b172a";
@@ -71,7 +73,7 @@ function ProductDetail({ id, slug }) {
   const { addItem } = useCart();
 
   // Config de la landing: /lp/:slug usa la suya; /products/:id la genérica.
-  const MCRaw = (slug && LANDING_CONFIGS[slug]) || MARKETING_CONTENT;
+  const MCRaw = (slug && LANDING_CONFIGS[slug]) || genericProductConfig;
 
   const {
     variantIdx: selectedVariantIdx,

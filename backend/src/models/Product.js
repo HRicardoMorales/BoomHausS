@@ -27,6 +27,24 @@ const productSchema = new mongoose.Schema(
             default: ''
         },
 
+        // Subtítulo corto del hero de la ficha (pisa el del config de la landing)
+        subtitle: {
+            type: String,
+            default: '',
+            trim: true,
+            maxlength: 120
+        },
+
+        // Bullets del hero de la ficha (pisan los del config de la landing)
+        highlights: {
+            type: [{ type: String, trim: true, maxlength: 80 }],
+            default: [],
+            validate: {
+                validator: (arr) => arr.length <= 6,
+                message: 'Máximo 6 highlights.'
+            }
+        },
+
         // Precio (ARS)
         price: {
             type: Number,

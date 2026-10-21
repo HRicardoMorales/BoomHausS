@@ -4,6 +4,8 @@ import Reveal from "../motion/Reveal";
 
 export default function StoryBlocks({ mc = {} }) {
   const blocks = mc.storyBlocks;
+  // La ficha genérica (/products/:id) no tiene bloques de historia.
+  if (!blocks?.length) return null;
   return (
     <section className="pd-flow">
       {blocks.map((b, i) => (

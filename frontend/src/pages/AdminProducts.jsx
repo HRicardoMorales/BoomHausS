@@ -108,6 +108,7 @@ const EMPTY_FORM = {
   _id: '', slug: '', name: '', description: '',
   price: '', compareAtPrice: '', imagesText: '',
   category: 'general', isActive: true, bundles: [],
+  subtitle: '', highlightsText: '',
 };
 
 function bundlesFromConfig(rootBundles) {
@@ -172,6 +173,8 @@ export default function AdminProducts() {
       category: p?.category || 'general',
       isActive: p?.isActive ?? true,
       bundles: finalBundles,
+      subtitle: p?.subtitle || '',
+      highlightsText: (Array.isArray(p?.highlights) ? p.highlights : []).join('\n'),
     });
   }
 
@@ -222,6 +225,8 @@ export default function AdminProducts() {
         images,
         category:       String(form.category || 'general').trim(),
         isActive:       form.isActive,
+        subtitle:       String(form.subtitle || '').trim(),
+        highlights:     String(form.highlightsText || '').split('\n').map(s => s.trim()).filter(Boolean),
         bundles:        form.bundles.map(b => ({
           qty:       Number(b.qty),
           price:     Number(b.price),
@@ -324,6 +329,8 @@ export default function AdminProducts() {
       form.imagesText !== (selected.images || []).join('\n') ||
       (form.category || '') !== (selected.category || '') ||
       form.isActive !== (selected.isActive ?? true) ||
+      form.subtitle !== (selected.subtitle || '') ||
+      form.highlightsText !== (selected.highlights || []).join('\n') ||
       dbBundles !== fmBundles;
   }, [form, selected]);
 
@@ -643,6 +650,14 @@ export default function AdminProducts() {
                   <div>
                     <span className="ap-lbl">Descripción corta</span>
                     <textarea className="ap-inp" rows={2} value={form.description} onChange={e => setF('description', e.target.value)} placeholder="Descripción visible en la landing" style={{ resize: 'vertical' }} />
+                  </div>
+                  <div>
+                    <span className="ap-lbl">Subtítulo de la ficha</span>
+                    <input className="ap-inp" value={form.subtitle} maxLength={120} onChange={e => setF('subtitle', e.target.value)} placeholder="Ej: Más higiene y orden todos los días" />
+                  </div>
+                  <div>
+                    <span className="ap-lbl">Bullets de la ficha (uno por línea, máx. 6)</span>
+                    <textarea className="ap-inp" rows={4} value={form.highlightsText} onChange={e => setF('highlightsText', e.target.value)} placeholder={'⚡ Beneficio principal\n🔋 Recargable'} style={{ resize: 'vertical' }} />
                   </div>
                 </div>
               </div>

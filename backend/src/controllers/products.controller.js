@@ -101,10 +101,30 @@ async function getAllProducts(req, res, next) {
     }
 }
 
+// Textos del hero editables desde el admin. Se normalizan acá (string, trim,
+// topes) en vez de rechazar: el form manda una línea por bullet y puede venir
+// con líneas vacías o de más.
+const MAX_HIGHLIGHTS = 6;
+const MAX_HIGHLIGHT_LEN = 80;
+const MAX_SUBTITLE_LEN = 120;
+
+function normalizeSubtitle(value) {
+    return typeof value === 'string' ? value.trim().slice(0, MAX_SUBTITLE_LEN) : '';
+}
+
+function normalizeHighlights(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+        .filter((h) => typeof h === 'string')
+        .map((h) => h.trim().slice(0, MAX_HIGHLIGHT_LEN))
+        .filter(Boolean)
+        .slice(0, MAX_HIGHLIGHTS);
+}
+
 // POST /api/products
 async function createProduct(req, res, next) {
     try {
-        const { name, description, price, category, slug, images, compareAtPrice, isActive, bundles } = req.body;
+        const { name, description, price, category, slug, images, compareAtPrice, isActive, bundles, subtitle, highlights } = req.body;
 
         if (!name || price === undefined) {
             const err = new Error('Nombre y precio son obligatorios.');
@@ -128,6 +148,8 @@ async function createProduct(req, res, next) {
             compareAtPrice: compareAtPrice ?? undefined,
             isActive: isActive ?? true,
             bundles: Array.isArray(bundles) ? bundles : [],
+            subtitle: normalizeSubtitle(subtitle),
+            highlights: normalizeHighlights(highlights),
         };
 
         // si mandan slug, que sea único
@@ -151,7 +173,7 @@ async function createProduct(req, res, next) {
 async function updateProduct(req, res, next) {
     try {
         const { id } = req.params;
-        const { name, description, price, category, images, isActive, slug, compareAtPrice, bundles } = req.body;
+        const { name, description, price, category, images, isActive, slug, compareAtPrice, bundles, subtitle, highlights } = req.body;
 
         const product = await Product.findById(id);
         if (!product) {
@@ -168,6 +190,8 @@ async function updateProduct(req, res, next) {
         if (isActive !== undefined) product.isActive = isActive;
         if (compareAtPrice !== undefined) product.compareAtPrice = compareAtPrice;
         if (bundles !== undefined) product.bundles = Array.isArray(bundles) ? bundles : [];
+        if (subtitle !== undefined) product.subtitle = normalizeSubtitle(subtitle);
+        if (highlights !== undefined) product.highlights = normalizeHighlights(highlights);
 
         if (slug !== undefined) {
             const nextSlug = String(slug || '').trim();
@@ -197,5 +221,7 @@ module.exports = {
     getProductBySlug,
     getAllProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    normalizeHighlights,
+    normalizeSubtitle
 };

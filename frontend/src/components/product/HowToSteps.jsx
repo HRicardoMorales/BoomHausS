@@ -5,6 +5,7 @@ import Reveal from "../motion/Reveal";
 
 export default function HowToSteps({ mc = {} }) {
   const { howTo } = mc;
+  if (!howTo?.title) return null;
 
   return (
     <section className="pd-block" id="howto">

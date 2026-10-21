@@ -4,6 +4,7 @@ import Reveal from "../motion/Reveal";
 export default function FaqSectionPro({ mc = {} }) {
   const [openIndex, setOpenIndex] = useState(null);
   const { faq, faqTitle } = mc;
+  if (!faq?.length) return null;
 
   return (
     <section className="faq-acc-wrap" id="faq-section">

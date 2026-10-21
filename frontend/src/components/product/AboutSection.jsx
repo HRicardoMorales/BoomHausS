@@ -3,12 +3,14 @@ import Reveal from "../motion/Reveal";
 
 export default function AboutSection({ mc = {} }) {
   const { about, soldCount, reviewScore, reviewCount } = mc;
+  if (!about?.text) return null;
 
+  // Solo números que vienen del config: sin valores inventados de relleno.
   const stats = [
-    { value: soldCount  ? `+${soldCount}`              : "+500",  label: "Ventas realizadas"   },
-    { value: reviewScore ? `${reviewScore} ⭐`          : "4.8 ⭐", label: "Calificación promedio" },
-    { value: reviewCount ? `+${reviewCount}`            : "+100",  label: "Reseñas verificadas" },
-  ];
+    soldCount   && { value: `+${soldCount}`,    label: "Ventas realizadas" },
+    reviewScore && { value: `${reviewScore} ⭐`, label: "Calificación promedio" },
+    reviewCount && { value: `+${reviewCount}`,  label: "Reseñas verificadas" },
+  ].filter(Boolean);
 
   return (
     <Reveal as="section" className="about2" id="about">
@@ -33,17 +35,19 @@ export default function AboutSection({ mc = {} }) {
         </div>
       </div>
 
-      <div className="about2-stats">
-        {stats.map((s, i) => (
-          <div key={i} className="about2-stat">
-            <div className="about2-stat-val">{s.value}</div>
-            <div className="about2-stat-lbl">{s.label}</div>
-          </div>
-        ))}
-      </div>
+      {stats.length > 0 && (
+        <div className="about2-stats">
+          {stats.map((s, i) => (
+            <div key={i} className="about2-stat">
+              <div className="about2-stat-val">{s.value}</div>
+              <div className="about2-stat-lbl">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="about2-pills">
-        {about.bullets.map((b, i) => (
+        {(about.bullets || []).map((b, i) => (
           <div key={i} className="about2-pill">{b}</div>
         ))}
       </div>

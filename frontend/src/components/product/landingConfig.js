@@ -18,8 +18,9 @@ export function defaultBundleIdx(config, bundles) {
 
 /**
  * Config efectivo: la variante activa pisa packs, bullets y descripción corta;
- * si el producto de la base tiene packs guardados, sus precios pisan los del
- * config (se cruzan por cantidad).
+ * el subtítulo y los bullets del producto (admin) pisan a ambos; si el
+ * producto de la base tiene packs guardados, sus precios pisan los del config
+ * (se cruzan por cantidad).
  */
 export function resolveLandingConfig(config, activeVariant, product) {
   let base = config;
@@ -33,6 +34,8 @@ export function resolveLandingConfig(config, activeVariant, product) {
     };
   }
 
+  base = applyProductCopy(base, product);
+
   if (!product?.bundles?.length || !base.bundles?.length) return base;
 
   const bundles = base.bundles.map((cb) => {
@@ -40,6 +43,31 @@ export function resolveLandingConfig(config, activeVariant, product) {
     return db ? { ...cb, price: db.price, compareAt: db.compareAt ?? cb.compareAt } : cb;
   });
   return { ...base, bundles };
+}
+
+/** Máximo de bullets que muestra el hero (y que acepta el backend). */
+export const MAX_HIGHLIGHTS = 6;
+
+/**
+ * Textos del producto cargados desde el admin: `subtitle` pisa el subtítulo
+ * del hero y `highlights` los bullets. Sin datos en el producto queda el
+ * config (o los bullets neutros de la ficha genérica).
+ */
+export function applyProductCopy(config, product) {
+  const subtitle = typeof product?.subtitle === "string" ? product.subtitle.trim() : "";
+  const highlights = Array.isArray(product?.highlights)
+    ? product.highlights
+        .filter((h) => typeof h === "string")
+        .map((h) => h.trim())
+        .filter(Boolean)
+        .slice(0, MAX_HIGHLIGHTS)
+    : [];
+  if (!subtitle && !highlights.length) return config;
+  return {
+    ...config,
+    ...(subtitle && { heroSubtitle: subtitle }),
+    ...(highlights.length && { trustBullets: highlights }),
+  };
 }
 
 /**
