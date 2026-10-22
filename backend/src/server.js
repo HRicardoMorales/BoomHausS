@@ -19,6 +19,7 @@
 const mongoose = require('mongoose');
 const app = require('./app');
 const logger = require('./utils/logger').child('server');
+const { startAbandonedCartReminderJob } = require('./jobs/abandonedCartReminder');
 
 const PORT = process.env.PORT || 4000;
 const SHUTDOWN_TIMEOUT_MS = 10_000; // 10s para drenar requests en vuelo
@@ -26,6 +27,9 @@ const SHUTDOWN_TIMEOUT_MS = 10_000; // 10s para drenar requests en vuelo
 const server = app.listen(PORT, () => {
     logger.info(`API escuchando en el puerto ${PORT}`, { env: process.env.NODE_ENV || 'development' });
 });
+
+// Cron de mails de carrito abandonado (apagado salvo ABANDONED_CART_EMAILS=true).
+const abandonedCartJob = startAbandonedCartReminderJob();
 
 let shuttingDown = false;
 
@@ -36,6 +40,7 @@ async function shutdown(signal, exitCode = 0) {
     if (shuttingDown) return;
     shuttingDown = true;
     logger.warn(`${signal} recibido. Iniciando graceful shutdown`, { exitCode });
+    abandonedCartJob?.stop();
 
     // Force exit si algo se cuelga (mongo drainage, http keep-alive largo, etc)
     const forceExit = setTimeout(() => {

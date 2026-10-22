@@ -18,6 +18,20 @@ const smtpTransport = (!resend && process.env.SMTP_HOST && process.env.SMTP_USER
     })
     : null;
 
+// Remitente: tiene que ser un dominio verificado en Resend. Cuando amelor.com.ar
+// esté verificado, definir EMAIL_FROM=pedidos@amelor.com.ar en Render.
+const FROM_ADDRESS = process.env.EMAIL_FROM || 'pedidos@boomhauss.com.ar';
+
+// Los datos del carrito llegan de un endpoint público: escapar antes de meterlos en HTML.
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 async function sendEmail({ from, to, subject, html }) {
     if (resend) {
         const result = await resend.emails.send({ from, to, subject, html });
@@ -163,7 +177,7 @@ async function sendOrderConfirmationEmail(order, opts = {}) {
 
         // 3. ENVIAR EL CORREO
         await sendEmail({
-            from: `${storeName} <pedidos@boomhauss.com.ar>`,
+            from: `${storeName} <${FROM_ADDRESS}>`,
             to: order.customerEmail,
             subject: `✅ Confirmación de Pedido #${order._id} - ${storeName}`,
             html: htmlContent,
@@ -206,7 +220,7 @@ async function sendPasswordResetEmail(email, resetUrl) {
         `;
 
         await sendEmail({
-            from: `${storeName} <pedidos@boomhauss.com.ar>`,
+            from: `${storeName} <${FROM_ADDRESS}>`,
             to: email,
             subject: `🔐 Recuperá tu acceso a ${storeName}`,
             html: htmlContent,
@@ -219,18 +233,18 @@ async function sendPasswordResetEmail(email, resetUrl) {
 }
 
 async function sendAbandonedCartEmail(cart) {
-  if (!resend) return false;
+  if (!resend && !smtpTransport) return false;
   if (!cart.email) return false;
 
   try {
-    const storeName = process.env.STORE_NAME || 'BoomHausS';
-    const whatsappNumber = process.env.WHATSAPP_NUMBER || '';
-    const frontendUrl = process.env.FRONTEND_URL || 'https://www.boomhauss.com.ar';
+    const storeName = escapeHtml(process.env.STORE_NAME || 'Amelor');
+    const whatsappNumber = String(process.env.WHATSAPP_NUMBER || '').replace(/[^\d]/g, '');
+    const frontendUrl = process.env.FRONTEND_URL || 'https://amelor.com.ar';
 
     const productsHtml = (cart.items || []).map(item => `
       <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:10px 0;">
-        <span style="color:#333;font-weight:500;">${item.quantity || 1}x ${item.name}</span>
-        <span style="color:#333;font-weight:bold;">$${item.price}</span>
+        <span style="color:#333;font-weight:500;">${Number(item.quantity) || 1}x ${escapeHtml(item.name)}</span>
+        <span style="color:#333;font-weight:bold;">$${Number(item.price) || 0}</span>
       </div>
     `).join('');
 
@@ -256,10 +270,10 @@ async function sendAbandonedCartEmail(cart) {
       <div class="header"><div class="logo">${storeName}</div></div>
       <div class="content">
         <h1 class="title">¡Olvidaste algo! 🛒</h1>
-        <p class="sub">Hola${cart.name ? ` <strong>${cart.name}</strong>` : ''}, dejaste productos en tu carrito. ¡Todavía están disponibles!</p>
+        <p class="sub">Hola${cart.name ? ` <strong>${escapeHtml(cart.name)}</strong>` : ''}, dejaste productos en tu carrito. ¡Todavía están disponibles!</p>
         <div class="order-box">
           ${productsHtml}
-          <div class="total"><span>Total</span><span>$${cart.totalAmount || cart.total || 0}</span></div>
+          <div class="total"><span>Total</span><span>$${Number(cart.totalAmount || cart.total) || 0}</span></div>
         </div>
         <a href="${frontendUrl}" class="btn">✅ Completar mi compra →</a>
         ${waUrl ? `<a href="${waUrl}" class="btn btn-wa">📱 Tengo una pregunta</a>` : ''}
@@ -269,7 +283,7 @@ async function sendAbandonedCartEmail(cart) {
     `;
 
     await sendEmail({
-      from: `${storeName} <pedidos@boomhauss.com.ar>`,
+      from: `${storeName} <${FROM_ADDRESS}>`,
       to: cart.email,
       subject: `🛒 ¿Olvidaste algo? Tu carrito te espera — ${storeName}`,
       html: htmlContent,
@@ -286,4 +300,5 @@ module.exports = {
     sendOrderConfirmationEmail,
     sendPasswordResetEmail,
     sendAbandonedCartEmail,
+    escapeHtml,
 };
