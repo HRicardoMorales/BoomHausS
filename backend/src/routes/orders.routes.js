@@ -65,12 +65,12 @@ router.post("/card-payment", async (req, res) => {
       body: {
         transaction_amount: Number(amount),
         token,
-        description: "Compra en BoomHausS",
+        description: "Compra en Amelor",
         installments: Number(installments) || 1,
         payment_method_id: paymentMethodId,
         issuer_id: issuerId ? Number(issuerId) : undefined,
         payer: {
-          email: email || "comprador@boomhauss.com",
+          email: email || "comprador@amelor.com.ar",
           identification: {
             type: identificationType || "DNI",
             number: String(identificationNumber || ""),

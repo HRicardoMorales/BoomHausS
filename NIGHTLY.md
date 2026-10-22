@@ -129,7 +129,7 @@ Actualizado el 2026-10-22 con las respuestas de Rick (marca **Amelor**, dominio 
 - **Render (backend):** `FRONTEND_URL=https://amelor.com.ar` (links de recuperar contraseña, back_urls de MP y botón del mail de carrito), `STORE_NAME=Amelor`; para los mails de carrito abandonado `ABANDONED_CART_EMAILS=true`; cuando amelor.com.ar esté verificado en Resend, `EMAIL_FROM=pedidos@amelor.com.ar` (hasta entonces sale de `pedidos@boomhauss.com.ar`).
 - **Newsletter:** el form de la home usa `frontend/src/services/newsletter.js`, que es un **mock**. Rick lo configura después (proveedor o endpoint `POST /api/newsletter`; cambiar solo ese archivo). Si no, ocultar `<HomeNewsletter />` antes de mergear.
 - **Decisiones de diseño (Rick las responde con las skills nuevas de `.claude/skills/`):** contraste del CTA rosa (`.btn-primary` y `.authPrimaryBtn`, 2,6:1); tema verde vs. marca en ProductDetail (variables `--pd-accent*`); imágenes y videos hotlinkeados de `luxcove.co`, `lummia.com.co` y `radielle.com.ar` → assets propios en Cloudinary.
-- **MP:** la descripción del ítem de Mercado Pago dice "Compra en BoomHausS" (`backend/src/routes/orders.routes.js`). Es flujo de pago → no se tocó; cambiarlo a mano si molesta.
+- ~~MP: descripción "Compra en BoomHausS"~~ → cambiada a "Compra en Amelor" con permiso explícito de Rick (2026-10-22). El resto del flujo de pago sigue intocable.
 - **Enumeración de emails** en `forgot-password`: Rick decidió dejarlo como está.
 
 ## Skills recomendadas
