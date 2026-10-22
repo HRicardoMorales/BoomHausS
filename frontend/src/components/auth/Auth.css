@@ -148,6 +148,7 @@
 }
 .authPrimaryBtn:hover:not(:disabled) { background: var(--primary-hover); }
 .authPrimaryBtn:disabled { opacity: .7; cursor: not-allowed; }
+.authPrimaryBtn--link { display: block; text-align: center; text-decoration: none; }
 
 .authMetaRow {
   margin-top: 1.15rem;
@@ -180,6 +181,32 @@
   background: rgba(255, 80, 80, .20);
 }
 .authAlertText { font-weight: 800; line-height: 1.4; }
+
+.authNotice {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  border: 1px solid rgba(22, 163, 74, .4);
+  background: rgba(22, 163, 74, .08);
+  border-radius: 14px;
+  padding: .75rem .85rem;
+  margin-bottom: .85rem;
+}
+.authNoticeIcon {
+  flex: none;
+  width: 26px; height: 26px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  font-weight: 950;
+  color: #14532d;
+  background: rgba(22, 163, 74, .2);
+}
+.authNoticeText { font-weight: 800; line-height: 1.4; color: #14532d; }
+
+/* Variante de una columna (sin panel lateral) */
+.authPage--compact .container { max-width: 560px; }
+.authPage--compact .authGrid { grid-template-columns: 1fr; }
+.authPage--compact .authMetaRow { justify-content: center; text-align: center; }
 
 /* Panel lateral */
 .authSide { padding: 1.1rem; position: sticky; top: 90px; overflow: hidden; }

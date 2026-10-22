@@ -32,11 +32,18 @@ function normalize(pathname) {
   return ALIASES[clean] ?? clean;
 }
 
+// Rutas con parámetro: el título sale del prefijo.
+function prefixTitle(path) {
+  if (path.startsWith("/admin")) return `Admin · ${SITE_NAME}`;
+  if (path.startsWith("/reset-password/")) return `Nueva contraseña · ${SITE_NAME}`;
+  return null;
+}
+
 export function getRouteSeo(pathname, origin) {
   const path = normalize(pathname);
   const base = (__SITE_URL__ || origin || "").replace(/\/+$/, "");
   return {
-    title: TITLES[path] ?? (path.startsWith("/admin") ? `Admin · ${SITE_NAME}` : null),
+    title: TITLES[path] ?? prefixTitle(path),
     canonical: `${base}${path}`,
     noindex: NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`)),
   };
