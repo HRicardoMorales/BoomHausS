@@ -4,7 +4,7 @@ import Skeleton from "../ui/Skeleton.jsx";
 import {
   formatOrderDate,
   headlineStep,
-  isProofVerified,
+  isPaymentSettled,
   itemTotal,
   money,
   orderSteps,
@@ -40,7 +40,7 @@ export default function OrderCard({ order: o, expanded, onToggle, onUpload, uplo
   const detailId = useId();
   const steps = orderSteps(o);
   const head = headlineStep(steps);
-  const verified = isProofVerified(o);
+  const verified = isPaymentSettled(o);
   const hasProof = Boolean(o.paymentProofUrl);
   const { date, time } = formatOrderDate(o.createdAt);
   const items = o.items || [];

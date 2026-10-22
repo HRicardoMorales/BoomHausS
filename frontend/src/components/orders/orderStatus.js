@@ -22,6 +22,11 @@ export const shortRef = (id = "") => `#${String(id).slice(-8).toUpperCase()}`;
 export const isProofVerified = (o) =>
   Boolean(o?.paymentProofVerified) || String(o?.paymentStatus || "").toLowerCase() === "confirmed";
 
+// El pago ya está resuelto (comprobante verificado o aprobado por MP/admin):
+// no tiene sentido dejar subir otro comprobante.
+export const isPaymentSettled = (o) =>
+  isProofVerified(o) || String(o?.paymentStatus || "").toLowerCase() === "approved";
+
 const SHIPPING_METHODS = {
   sucursal: "Envío a sucursal",
   domicilio: "Envío a domicilio",
@@ -38,7 +43,7 @@ export const shippingMethodLabel = (m) =>
 export function orderSteps(o) {
   const pay = String(o?.paymentStatus || "pending").toLowerCase();
   const ship = String(o?.shippingStatus || "pending").toLowerCase();
-  const paid = isProofVerified(o) || pay === "approved";
+  const paid = isPaymentSettled(o);
 
   let payment;
   if (paid) payment = { state: "done", hint: "Pago confirmado" };

@@ -8,7 +8,7 @@ import api from '../services/api';
 import StatePanel from '../components/ui/StatePanel.jsx';
 import { SkeletonGroup } from '../components/ui/Skeleton.jsx';
 import OrderCard, { OrderCardSkeleton } from '../components/orders/OrderCard.jsx';
-import { money, orderSteps } from '../components/orders/orderStatus.js';
+import { isPaymentSettled, money, orderSteps } from '../components/orders/orderStatus.js';
 import './myOrders.css';
 
 export default function MyOrders() {
@@ -86,9 +86,7 @@ export default function MyOrders() {
         selectedOrderIdRef.current = order._id;
 
         // ✅ si está verificado, no dejamos subir
-        const verified =
-            Boolean(order.paymentProofVerified) ||
-            String(order.paymentStatus || '').toLowerCase() === 'confirmed';
+        const verified = isPaymentSettled(order);
 
         if (verified) {
             setUploadError('Este pedido ya fue verificado. No necesitás subir otro comprobante.');
@@ -143,9 +141,7 @@ export default function MyOrders() {
 
     async function uploadPaymentProof(order, fileOverride = null) {
         // ✅ si está verificado, bloqueamos
-        const verified =
-            Boolean(order.paymentProofVerified) ||
-            String(order.paymentStatus || '').toLowerCase() === 'confirmed';
+        const verified = isPaymentSettled(order);
 
         if (verified) {
             setUploadError('Este pedido ya fue verificado. No necesitás subir otro comprobante.');

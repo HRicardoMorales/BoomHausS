@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatOrderDate, headlineStep, isProofVerified, orderSteps, shippingMethodLabel, shortRef } from "./orderStatus";
+import { formatOrderDate, headlineStep, isPaymentSettled, isProofVerified, orderSteps, shippingMethodLabel, shortRef } from "./orderStatus";
 
 const states = (o) => Object.fromEntries(orderSteps(o).map((s) => [s.key, s.state]));
 
@@ -40,6 +40,15 @@ describe("helpers", () => {
     expect(isProofVerified({ paymentProofVerified: 1 })).toBe(true);
     expect(isProofVerified({ paymentStatus: "approved" })).toBe(false);
     expect(isProofVerified(null)).toBe(false);
+  });
+
+  it("isPaymentSettled: verificado o aprobado ya no deja subir comprobante", () => {
+    expect(isPaymentSettled({ paymentStatus: "approved" })).toBe(true);
+    expect(isPaymentSettled({ paymentStatus: "Confirmed" })).toBe(true);
+    expect(isPaymentSettled({ paymentProofVerified: true })).toBe(true);
+    expect(isPaymentSettled({ paymentStatus: "proof_uploaded", paymentProofUrl: "x" })).toBe(false);
+    expect(isPaymentSettled({ paymentStatus: "pending" })).toBe(false);
+    expect(isPaymentSettled(undefined)).toBe(false);
   });
 
   it("shortRef toma los últimos 8 caracteres en mayúscula", () => {
