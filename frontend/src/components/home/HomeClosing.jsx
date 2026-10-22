@@ -6,7 +6,9 @@ import ProofVideoGrid from "./ProofVideoGrid.jsx";
 import HomeBenefits from "./HomeBenefits.jsx";
 import HomeTransformations from "./HomeTransformations.jsx";
 import HomeGuarantee from "./HomeGuarantee.jsx";
-import HomeNewsletter from "./HomeNewsletter.jsx";
+// HomeNewsletter queda fuera hasta conectar un proveedor real: hoy
+// services/newsletter.js es un mock que dice "¡Listo!" sin guardar el mail.
+// Para volver a mostrarlo: importarlo y ponerlo después de <HomeGuarantee />.
 import "./home-proof.css";
 import "./home-closing.css";
 
@@ -17,7 +19,6 @@ export default function HomeClosing({ waLink }) {
       <HomeBenefits waLink={waLink} />
       <HomeTransformations />
       <HomeGuarantee waLink={waLink} />
-      <HomeNewsletter />
     </>
   );
 }
