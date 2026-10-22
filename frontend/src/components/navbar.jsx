@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { clearAuth, getStoredAuth, isAdmin } from '../utils/auth';
 import './navbar.css';
+import { STORE_NAME } from "../config/brand.js";
 
 
 export default function Navbar() {
@@ -50,7 +51,7 @@ export default function Navbar() {
         navigate('/login');
     }
 
-    const storeName = import.meta.env.VITE_STORE_NAME || 'Amelor';
+    const storeName = STORE_NAME;
     const linkBase = ({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`;
 
     return (

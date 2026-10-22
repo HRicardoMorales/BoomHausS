@@ -1,7 +1,11 @@
 // Metadata por ruta. Las landings (/lp/*) y el detalle de producto se dejan
 // sin título propio acá: usan el título por defecto o el que definan ellas.
 
-export const SITE_NAME = "Amelor";
+import { DEFAULT_STORE_NAME } from "../config/brand.js";
+
+// Los títulos usan la marca fija (no la del entorno) para no cambiar el SEO
+// si alguien define VITE_STORE_NAME con otro valor en un deploy de prueba.
+export const SITE_NAME = DEFAULT_STORE_NAME;
 
 const TITLES = {
   "/": `${SITE_NAME} · Tienda oficial de belleza`,

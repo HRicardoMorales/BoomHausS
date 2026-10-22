@@ -22,6 +22,7 @@ import {
 } from "../components/home/catalogCategories.js";
 import "../components/home/home.css";
 import "../components/home/home-hero.css";
+import { STORE_NAME } from "../config/brand.js";
 
 /* Bajo el pliegue: chunks aparte (ver LazySection). Opiniones va sola porque
    queda entre el carrusel y el catálogo; el resto es el cierre de la página. */
@@ -31,7 +32,7 @@ const HomeClosing = lazyWithRetry(() => import("../components/home/HomeClosing.j
 const FEATURED_MAX = 8;
 const FEATURED_MIN_DISCOUNT = 5;
 
-const storeName = import.meta.env.VITE_STORE_NAME || "Encontratodo";
+const storeName = STORE_NAME;
 const whatsapp = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 const waLink = whatsapp
   ? `https://wa.me/${String(whatsapp).replace(/[^\d]/g, "")}?text=${encodeURIComponent(

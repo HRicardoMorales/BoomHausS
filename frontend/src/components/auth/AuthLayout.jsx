@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Auth.css";
+import { STORE_NAME } from "../../config/brand.js";
 
-const STORE_NAME = import.meta.env.VITE_STORE_NAME || "Encontratodo";
 
 /**
  * Esqueleto común de las páginas de auth: encabezado con marca, columna del

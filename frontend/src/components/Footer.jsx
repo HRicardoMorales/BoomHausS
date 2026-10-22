@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
+import { STORE_NAME } from "../config/brand.js";
 
 function buildWhatsAppLink({ phone, text }) {
   const digits = String(phone || "").replace(/[^\d]/g, "");
@@ -16,7 +17,7 @@ const WA_ICON = (
 );
 
 export default function Footer() {
-  const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
+  const storeName = STORE_NAME;
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "";
   const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || "";
 

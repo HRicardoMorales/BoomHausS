@@ -26,10 +26,7 @@
 import { useState } from 'react';
 import { responsiveImage, DEFAULT_WIDTHS } from '../utils/imageCdn.js';
 
-// Monograma de marca (primer caracter de VITE_STORE_NAME). Sale del env
-// para que se auto-sincronice si cambia el nombre de la tienda.
-const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'Amelor';
-const BRAND_MONO = String(STORE_NAME).trim().charAt(0).toUpperCase() || 'A';
+import { BRAND_MONOGRAM as BRAND_MONO } from '../config/brand.js';
 
 export default function SafeImg({
     src,

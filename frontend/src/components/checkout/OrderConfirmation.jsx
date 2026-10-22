@@ -1,9 +1,10 @@
 import { money } from "./checkoutFormat";
+import { STORE_NAME } from "../../config/brand.js";
 
 /** Paso final del checkout: resumen del pedido confirmado + contacto por WhatsApp. */
 export function OrderConfirmation({ isCod, items, total, shippingCost, onClose }) {
   const waNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
-  const storeName = import.meta.env.VITE_STORE_NAME || "Amelor";
+  const storeName = STORE_NAME;
   const waText = encodeURIComponent(`Hola ${storeName}! 👋 Acabo de hacer un pedido por ${money(total)} y quería confirmar los detalles de entrega.`);
   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : null;
   const totalQty = items.reduce((s, i) => s + (Number(i.quantity) || 0), 0);

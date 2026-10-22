@@ -1,9 +1,10 @@
 // frontend/src/pages/Privacy.jsx
 
 import { Link } from 'react-router-dom';
+import { STORE_NAME } from "../config/brand.js";
 
 function Privacy() {
-    const storeName = import.meta.env.VITE_STORE_NAME || 'Encontratodo';
+    const storeName = STORE_NAME;
     const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || '';
     const whatsapp = import.meta.env.VITE_WHATSAPP_NUMBER || '';
 
