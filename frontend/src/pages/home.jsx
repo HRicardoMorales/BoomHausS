@@ -4,6 +4,8 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCatalog } from "../hooks/useCatalog.js";
+import { useBestsellerIds } from "../hooks/useBestsellerIds.js";
+import { rankBySales } from "../components/home/bestsellers.js";
 import { discountPct } from "../utils/pricing.js";
 import HomeHero from "../components/home/HomeHero.jsx";
 import CountdownBar from "../components/home/CountdownBar.jsx";
@@ -58,6 +60,12 @@ export default function Home() {
 
   const categories = useMemo(() => categoriesOf(products), [products]);
   const featured = useMemo(() => pickFeatured(products), [products]);
+  const bestsellerIds = useBestsellerIds();
+  // Más vendidos reales si hay datos de ventas suficientes; si no, ofertas.
+  const bestsellers = useMemo(
+    () => rankBySales(products, bestsellerIds, { max: FEATURED_MAX }),
+    [products, bestsellerIds]
+  );
   const maxDiscount = useMemo(() => maxDiscountOf(products), [products]);
   const filtered = useMemo(
     () => (activeCat === ALL_CATEGORIES
@@ -82,13 +90,19 @@ export default function Home() {
       <CountdownBar />
 
       <div className="hc-wrap">
-        {!loading && featured.length >= 2 && (
+        {!loading && bestsellers ? (
+          <BestsellerCarousel
+            eyebrow="Lo que más se lleva la gente"
+            title="Los más vendidos"
+            products={bestsellers}
+          />
+        ) : !loading && featured.length >= 2 ? (
           <BestsellerCarousel
             eyebrow="Selección de la semana"
             title="Las ofertas que más rinden"
             products={featured}
           />
-        )}
+        ) : null}
       </div>
 
       <LazySection component={HomeReviews} minHeight={560} />

@@ -4,6 +4,7 @@
 
 const Product = require('../models/Product');
 const logger = require('../utils/logger').child('products');
+const { getBestsellerIds } = require('../services/bestsellers');
 
 // GET /api/products/single
 async function getSingleProduct(req, res) {
@@ -44,6 +45,17 @@ async function getProducts(req, res, next) {
     try {
         const products = await Product.find({ isActive: true });
         res.json({ ok: true, data: products });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// GET /api/products/bestsellers (público — ids/slugs ordenados por ventas pagas)
+async function getBestsellers(req, res, next) {
+    try {
+        const ids = await getBestsellerIds();
+        res.set('Cache-Control', 'public, max-age=600');
+        res.json({ ok: true, data: ids });
     } catch (error) {
         next(error);
     }
@@ -217,6 +229,7 @@ module.exports = {
     getSingleProduct,
     getProducts,
     getProductSlugs,
+    getBestsellers,
     getProductById,
     getProductBySlug,
     getAllProducts,

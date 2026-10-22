@@ -12,8 +12,8 @@ import { TAP_PRESS } from "../motion/motionPresets.js";
  * `transform` directo en el nodo y la transición CSS lo suaviza (0 renders al
  * arrastrar; antes cada evento re-renderizaba la sección entera). Se probó
  * `useSpring` de Framer: +4,3 KB gz en el entry por un efecto que CSS ya da.
- * Se ordena por descuento (no hay datos de ventas en el modelo): el título no
- * promete "más vendidos".
+ * El orden lo decide la home: por ventas reales (GET /products/bestsellers)
+ * cuando hay datos suficientes, si no por descuento con otro título.
  */
 const MotionButton = m.button;
 

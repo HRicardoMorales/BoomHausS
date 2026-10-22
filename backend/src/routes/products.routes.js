@@ -5,6 +5,7 @@ const {
     getSingleProduct,
     getProducts,
     getProductSlugs,
+    getBestsellers,
     getProductById,
     getProductBySlug,
     getAllProducts,
@@ -25,6 +26,9 @@ router.get('/', getProducts);
 
 // GET /api/products/slugs (público — todos los slugs para deduplicación en home)
 router.get('/slugs', getProductSlugs);
+
+// GET /api/products/bestsellers (público — antes de /:id para no chocar)
+router.get('/bestsellers', getBestsellers);
 
 // GET /api/products/all (admin)
 router.get('/all', authRequired, adminRequired, getAllProducts);
