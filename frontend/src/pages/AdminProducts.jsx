@@ -1,351 +1,108 @@
 // frontend/src/pages/AdminProducts.jsx
-import { useEffect, useMemo, useState } from 'react';
+// Editor de productos del admin. Datos y llamadas a la API en `useAdminProducts`;
+// formato, payload, "sin guardar" y sincronización con landings en `productForm.js`.
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
 import { useConfirm } from '../components/ui/useConfirm.jsx';
+import { useNotice } from '../components/ui/useNotice.jsx';
+import { useAdminProducts } from '../hooks/admin/useAdminProducts.js';
 import { LANDING_CONFIGS, LANDING_META } from '../landings/index';
+import {
+  CATEGORIES, EMPTY_FORM, filterProducts, findLandingForSlug, formFromProduct, isDirty,
+  lines, listPrice, missingLandingProducts, money, payloadFromForm, pct, updateBundle,
+} from '../components/admin/products/productForm.js';
 
-/* ─── helpers ─── */
-function money(n) {
-  const num = Number(n);
-  if (Number.isNaN(num)) return '$0';
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
-}
-function sanitizeSlug(s) {
-  return String(s || '').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-}
-function pct(price, compareAt) {
-  const p = Number(price) || 0;
-  const c = Number(compareAt) || 0;
-  if (c > p && p > 0) return Math.round(((c - p) / c) * 100);
-  return 0;
-}
-
-/* ─── Find which landing config (and variant) maps to a product slug ─── */
-function findLandingForSlug(slug) {
-  if (!slug) return null;
-  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
-    if (config.productSlug === slug) {
-      return { landingSlug, config, variant: null, rootBundles: config.bundles || null };
-    }
-    if (Array.isArray(config.variants)) {
-      for (const variant of config.variants) {
-        if (variant.productSlug === slug) {
-          return { landingSlug, config, variant, rootBundles: variant.bundles || null };
-        }
-      }
-    }
-  }
-  return null;
-}
-
-/* ─── Extract images from config (main images array or first storyBlock imgs) ─── */
-function extractImages(config) {
-  if (Array.isArray(config.images) && config.images.length) return config.images;
-  if (Array.isArray(config.storyBlocks)) {
-    return config.storyBlocks.map(b => b.img).filter(Boolean).slice(0, 4);
-  }
-  return [];
-}
-
-/* ─── Guess category from landing slug ─── */
-function guessCategory(landingSlug) {
-  if (landingSlug.includes('mochila')) return 'mascotas';
-  if (landingSlug.includes('lampara') || landingSlug.includes('nebuliz') || landingSlug.includes('porta')) return 'hogar';
-  if (landingSlug.includes('soporte') || landingSlug.includes('nasal')) return 'salud';
-  if (landingSlug.includes('consola')) return 'otro';
-  return 'general';
-}
-
-/* ─── Derive all product slugs from LANDING_CONFIGS ─── */
-function allLandingProducts() {
-  const out = [];
-  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
-    const meta = LANDING_META.find(m => m.slug === landingSlug);
-    if (Array.isArray(config.variants)) {
-      for (const v of config.variants) {
-        if (v.productSlug) out.push({
-          productSlug: v.productSlug,
-          name: `${meta?.name || landingSlug} — ${v.name}`,
-          landingSlug,
-          price: v.bundles?.[0]?.price || 0,
-          category: guessCategory(landingSlug),
-          images: v.images?.length ? v.images : extractImages(config),
-          bundles: v.bundles || [],
-        });
-      }
-    } else {
-      // usa productSlug del config, o el propio landingSlug como fallback
-      const slug = config.productSlug || landingSlug;
-      out.push({
-        productSlug: slug,
-        name: meta?.name || config.checkoutName || landingSlug,
-        landingSlug,
-        price: config.bundles?.[0]?.price || 0,
-        category: guessCategory(landingSlug),
-        images: extractImages(config),
-        bundles: config.bundles || [],
-      });
-    }
-  }
-  return out;
-}
-
-const CATEGORIES = [
-  { v: 'general',   l: 'General' },
-  { v: 'hogar',     l: 'Hogar' },
-  { v: 'mascotas',  l: 'Mascotas' },
-  { v: 'salud',     l: 'Salud' },
-  { v: 'accesorios',l: 'Accesorios' },
-  { v: 'kits',      l: 'Kits' },
-  { v: 'inflables', l: 'Inflables' },
-  { v: 'gorros',    l: 'Gorros' },
-  { v: 'ruido',     l: 'Ruido' },
-  { v: 'mundial',   l: 'Mundial' },
-  { v: 'otro',      l: 'Otro' },
-];
-
-const EMPTY_FORM = {
-  _id: '', slug: '', name: '', description: '',
-  price: '', compareAtPrice: '', imagesText: '',
-  category: 'general', isActive: true, bundles: [],
-  subtitle: '', highlightsText: '',
-};
-
-function bundlesFromConfig(rootBundles) {
-  if (!Array.isArray(rootBundles) || !rootBundles.length) return [];
-  return rootBundles.map(b => ({
-    qty:       b.qty,
-    price:     b.price,
-    compareAt: b.compareAt ?? 0,
-    label:     b.label || '',
-    badge:     b.badge || '',
-    benefit:   b.benefit || '',
-    popular:   b.popular || false,
-  }));
-}
+const plural = (n, word) => `${n} ${word}${n !== 1 ? 's' : ''}`;
 
 export default function AdminProducts() {
   const { confirm, confirmDialog } = useConfirm();
-  const [products, setProducts]       = useState([]);
+  const { notify, notice } = useNotice({ duration: 2600 });
+  const { products, loading, error: loadError, busy, refresh, save, remove, seedOne, seedMany } = useAdminProducts();
+
   const [selectedId, setSelectedId]   = useState('');
-  const [form, setForm]               = useState(EMPTY_FORM);
-  const [loading, setLoading]         = useState(true);
-  const [saving, setSaving]           = useState(false);
-  const [deleting, setDeleting]       = useState(false);
-  const [seeding, setSeeding]         = useState(null);   // slug being seeded
-  const [seedingAll, setSeedingAll]   = useState(false);
-  const [error, setError]             = useState('');
-  const [ok, setOk]                   = useState('');
+  const [form, setForm]               = useState(() => ({ ...EMPTY_FORM }));
+  const [actionError, setActionError] = useState('');
   const [search, setSearch]           = useState('');
   const [mobileView, setMobileView]   = useState('list');
   const [showSync, setShowSync]       = useState(false);
 
+  const error = actionError || loadError;
+  const saving = busy === 'save';
+  const deleting = busy === 'delete';
+  const seedingAll = busy === 'seed-all';
+
   const selected = useMemo(() => products.find(p => p._id === selectedId) || null, [products, selectedId]);
+  const landingInfo = useMemo(() => findLandingForSlug(form.slug, LANDING_CONFIGS), [form.slug]);
+  const filtered = useMemo(() => filterProducts(products, search), [products, search]);
+  const missingProducts = useMemo(() => missingLandingProducts(products, LANDING_CONFIGS, LANDING_META), [products]);
+  const hasChanges = useMemo(() => isDirty(form, selected, LANDING_CONFIGS), [form, selected]);
+  const basePct = pct(form.price, form.compareAtPrice);
+  const imageList = useMemo(() => lines(form.imagesText), [form.imagesText]);
 
-  /* landing info for selected product */
-  const landingInfo = useMemo(() => findLandingForSlug(form.slug), [form.slug]);
-
-  const filtered = useMemo(() => {
-    if (!search.trim()) return products;
-    const q = search.toLowerCase();
-    return products.filter(p => p.name?.toLowerCase().includes(q) || p.slug?.toLowerCase().includes(q));
-  }, [products, search]);
-
-  /* missing products (in landing configs but not in DB) */
-  const missingProducts = useMemo(() => {
-    const dbSlugs = new Set(products.map(p => p.slug));
-    return allLandingProducts().filter(lp => !dbSlugs.has(lp.productSlug));
-  }, [products]);
-
-  function hydrate(p) {
-    const images = Array.isArray(p?.images) ? p.images : [];
-    const dbBundles = Array.isArray(p?.bundles) ? p.bundles : [];
-    const landing = findLandingForSlug(p?.slug);
-    const configBundles = landing ? bundlesFromConfig(landing.rootBundles) : [];
-    const finalBundles = dbBundles.length ? dbBundles : configBundles;
-    setForm({
-      _id: p?._id || '',
-      slug: p?.slug || '',
-      name: p?.name || '',
-      description: p?.description || '',
-      price: p?.price ?? '',
-      compareAtPrice: p?.compareAtPrice ?? '',
-      imagesText: images.join('\n'),
-      category: p?.category || 'general',
-      isActive: p?.isActive ?? true,
-      bundles: finalBundles,
-      subtitle: p?.subtitle || '',
-      highlightsText: (Array.isArray(p?.highlights) ? p.highlights : []).join('\n'),
-    });
+  // El formulario se hidrata solo al elegir un producto: refrescar la lista
+  // (después de guardar, por ejemplo) no pisa ediciones sin guardar.
+  function select(p) {
+    setSelectedId(p?._id || '');
+    setForm(formFromProduct(p, LANDING_CONFIGS));
+    setActionError('');
   }
 
-  async function fetchAll() {
-    setLoading(true); setError('');
-    try {
-      const res = await api.get('/products/all');
-      const arr = Array.isArray(res?.data?.data || res?.data) ? (res?.data?.data || res?.data) : [];
-      setProducts(arr);
-      if (arr.length && !selectedId) { setSelectedId(arr[0]._id); hydrate(arr[0]); }
-      if (!arr.length) { setSelectedId(''); hydrate({}); }
-    } catch (e) {
-      setError(e?.response?.data?.message || 'No se pudieron cargar los productos');
-    } finally { setLoading(false); }
+  // Primera carga: abre el primer producto. Se ajusta durante el render (patrón
+  // recomendado por React) en vez de un efecto que dispara un segundo render.
+  const [autoSelected, setAutoSelected] = useState(false);
+  if (!autoSelected && !loading) {
+    setAutoSelected(true);
+    if (products.length) select(products[0]);
   }
-
-  // Carga inicial única.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchAll(); }, []);
-  // Re-hidrata el formulario solo al cambiar de producto, no cuando se
-  // refresca la lista (pisaría ediciones sin guardar).
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (selected) hydrate(selected); }, [selectedId]);
-
-  function flash(msg) { setOk(msg); setTimeout(() => setOk(''), 2600); }
 
   function setF(key, val) { setForm(f => ({ ...f, [key]: val })); }
-
-  function setBundleField(idx, field, val) {
-    setForm(f => {
-      const b = [...f.bundles];
-      const isStr = field === 'label' || field === 'badge' || field === 'benefit';
-      b[idx] = { ...b[idx], [field]: field === 'popular' ? val : isStr ? val : (Number(val) || 0) };
-      return { ...f, bundles: b };
-    });
-  }
+  function setBundleField(idx, field, val) { setForm(f => ({ ...f, bundles: updateBundle(f.bundles, idx, field, val) })); }
 
   async function handleSave(e) {
-    e.preventDefault(); setSaving(true); setError(''); setOk('');
-    try {
-      const images = String(form.imagesText || '').split('\n').map(s => s.trim()).filter(Boolean);
-      const payload = {
-        slug:           sanitizeSlug(form.slug),
-        name:           String(form.name || '').trim(),
-        description:    String(form.description || '').trim(),
-        price:          Number(form.price) || 0,
-        compareAtPrice: Number(form.compareAtPrice) || 0,
-        images,
-        category:       String(form.category || 'general').trim(),
-        isActive:       form.isActive,
-        subtitle:       String(form.subtitle || '').trim(),
-        highlights:     String(form.highlightsText || '').split('\n').map(s => s.trim()).filter(Boolean),
-        bundles:        form.bundles.map(b => ({
-          qty:       Number(b.qty),
-          price:     Number(b.price),
-          compareAt: Number(b.compareAt) || 0,
-          label:     String(b.label || ''),
-          badge:     String(b.badge || ''),
-          benefit:   String(b.benefit || ''),
-          popular:   Boolean(b.popular),
-        })),
-      };
-      if (!payload.slug) throw new Error('Falta slug');
-      if (!payload.name) throw new Error('Falta nombre');
-      if (!payload.price && !payload.bundles.length) throw new Error('Falta precio');
-      if (form._id) await api.patch(`/products/${form._id}`, payload);
-      else await api.post('/products', payload);
-      flash('Guardado correctamente ✓');
-      await fetchAll();
-    } catch (e2) {
-      setError(e2?.response?.data?.message || e2?.message || 'Error al guardar');
-    } finally { setSaving(false); }
+    e.preventDefault();
+    const { payload, error: invalid } = payloadFromForm(form);
+    if (invalid) { setActionError(invalid); return; }
+    setActionError('');
+    const res = await save(form._id, payload);
+    if (!res.ok) { setActionError(res.message); return; }
+    notify(form._id ? 'Cambios guardados' : 'Producto creado', { tone: 'success' });
+    // Un alta nueva queda seleccionada (antes saltaba al primer producto de la lista).
+    if (res.data?._id) select(res.data);
   }
 
   async function handleDelete() {
     if (!form._id) return;
-    const ok = await confirm({
+    const yes = await confirm({
       title: `¿Eliminar "${form.name}"?`,
       message: 'Se quita del catálogo de la tienda. Esta acción no se puede deshacer.',
       confirmLabel: 'Eliminar producto',
       tone: 'danger',
     });
-    if (!ok) return;
-    setDeleting(true); setError('');
-    try {
-      await api.delete(`/products/${form._id}`);
-      flash('Producto eliminado');
-      setSelectedId('');
-      setForm(EMPTY_FORM);
-      await fetchAll();
-    } catch (e2) {
-      setError(e2?.response?.data?.message || 'Error al eliminar');
-    } finally { setDeleting(false); }
-  }
-
-  function buildSeedPayload(lp) {
-    const firstBundle = lp.bundles?.[0];
-    return {
-      name:           lp.name,
-      slug:           lp.productSlug,
-      price:          lp.price || firstBundle?.price || 1,
-      compareAtPrice: firstBundle?.compareAt || 0,
-      category:       lp.category || 'general',
-      images:         lp.images || [],
-      isActive:       true,
-      bundles:        (lp.bundles || []).map((b, idx) => ({
-        qty: b.qty ?? (idx + 1), price: b.price ?? 0, compareAt: b.compareAt ?? 0,
-        label: b.label || '', badge: b.badge || '', benefit: b.benefit || '', popular: b.popular || false,
-      })),
-    };
+    if (!yes) return;
+    setActionError('');
+    const res = await remove(form._id);
+    if (!res.ok) { setActionError(res.message); return; }
+    notify('Producto eliminado', { tone: 'success' });
+    select(null);
+    setMobileView('list');
   }
 
   async function seedProduct(lp) {
-    setSeeding(lp.productSlug); setError('');
-    try {
-      await api.post('/products', buildSeedPayload(lp));
-      flash(`"${lp.name}" creado ✓`);
-      await fetchAll();
-    } catch (e2) {
-      setError(e2?.response?.data?.message || e2?.message || 'Error al crear');
-    } finally { setSeeding(null); }
+    setActionError('');
+    const res = await seedOne(lp);
+    if (!res.ok) { setActionError(res.message); return; }
+    notify(`"${lp.name}" creado`, { tone: 'success' });
   }
 
   async function seedAll() {
-    setSeedingAll(true); setError(''); setOk('');
-    const missing = allLandingProducts().filter(lp => !products.some(p => p.slug === lp.productSlug));
-    if (missing.length === 0) {
-      flash('Todos los productos ya están sincronizados ✓');
-      setSeedingAll(false);
-      return;
-    }
-    let created = 0;
-    const errors = [];
-    for (const lp of missing) {
-      try {
-        await api.post('/products', buildSeedPayload(lp));
-        created++;
-      } catch (e) {
-        const msg = e?.response?.data?.message || e?.message || 'Error desconocido';
-        errors.push(`"${lp.name}": ${msg}`);
-      }
-    }
-    await fetchAll();
-    setSeedingAll(false);
-    if (errors.length > 0) setError(`${errors.length} error(es): ${errors[0]}${errors.length > 1 ? ` (+${errors.length - 1} más)` : ''}`);
-    if (created > 0) flash(`${created} producto${created !== 1 ? 's' : ''} creado${created !== 1 ? 's' : ''} ✓`);
+    setActionError('');
+    if (!missingProducts.length) { notify('Todos los productos ya están sincronizados', { tone: 'success' }); return; }
+    const { created, errors } = await seedMany(missingProducts);
+    if (errors.length) setActionError(`${plural(errors.length, 'error')}: ${errors[0]}${errors.length > 1 ? ` (+${errors.length - 1} más)` : ''}`);
+    if (created) notify(`${plural(created, 'producto')} ${created !== 1 ? 'creados' : 'creado'}`, { tone: 'success' });
   }
 
-  const hasChanges = useMemo(() => {
-    if (!selected) return true;
-    const dbBundles = JSON.stringify((selected.bundles || []).map(b => ({ qty: b.qty, price: b.price, compareAt: b.compareAt, label: b.label || '' })));
-    const fmBundles = JSON.stringify((form.bundles || []).map(b => ({ qty: b.qty, price: Number(b.price), compareAt: Number(b.compareAt), label: b.label || '' })));
-    return form.name !== (selected.name || '') ||
-      form.slug !== (selected.slug || '') ||
-      String(form.price) !== String(selected.price ?? '') ||
-      String(form.compareAtPrice) !== String(selected.compareAtPrice ?? '') ||
-      form.description !== (selected.description || '') ||
-      form.imagesText !== (selected.images || []).join('\n') ||
-      (form.category || '') !== (selected.category || '') ||
-      form.isActive !== (selected.isActive ?? true) ||
-      form.subtitle !== (selected.subtitle || '') ||
-      form.highlightsText !== (selected.highlights || []).join('\n') ||
-      dbBundles !== fmBundles;
-  }, [form, selected]);
-
-  const basePct = pct(form.price, form.compareAtPrice);
-  const imageList = useMemo(() => form.imagesText.split('\n').map(s => s.trim()).filter(Boolean), [form.imagesText]);
-
-  if (loading) return (
+  if (loading && !products.length) return (
     <main className="section"><div className="container" style={{ maxWidth: 1150 }}>
       <div className="card" style={{ padding: '2.5rem', textAlign: 'center' }}>
         <div style={{ fontSize: 32, marginBottom: 10 }}>⏳</div>
@@ -439,23 +196,19 @@ export default function AdminProducts() {
             <button className="btn btn-ghost" onClick={() => setShowSync(s => !s)} style={{ fontSize: 13, color: showSync ? 'var(--primary)' : undefined }}>
               Sincronizar landings
             </button>
-            <button className="btn btn-ghost" onClick={fetchAll} style={{ fontSize: 13 }}>Recargar</button>
+            <button className="btn btn-ghost" onClick={refresh} disabled={loading} style={{ fontSize: 13 }}>Recargar</button>
           </div>
         </div>
 
         {/* ── Alerts ── */}
         {error && (
-          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(239,68,68,.3)', background: 'rgba(239,68,68,.06)', fontWeight: 700, fontSize: 13, color: '#dc2626', display: 'flex', justifyContent: 'space-between' }}>
+          <div role="alert" style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(239,68,68,.3)', background: 'rgba(239,68,68,.06)', fontWeight: 700, fontSize: 13, color: '#dc2626', display: 'flex', justifyContent: 'space-between' }}>
             <span>{error}</span>
-            <button onClick={() => setError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontWeight: 900, marginLeft: 12 }}>✕</button>
+            {actionError
+              ? <button type="button" onClick={() => setActionError('')} aria-label="Cerrar error" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontWeight: 900, marginLeft: 12 }}>✕</button>
+              : <button type="button" onClick={refresh} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontWeight: 900, marginLeft: 12, textDecoration: 'underline' }}>Reintentar</button>}
           </div>
         )}
-        {ok && (
-          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(16,185,129,.3)', background: 'rgba(16,185,129,.06)', fontWeight: 700, fontSize: 13, color: '#059669' }}>
-            {ok}
-          </div>
-        )}
-
         {/* ── Sync panel ── */}
         {showSync && (
           <div className="ap-section" style={{ marginTop: 14 }}>
@@ -492,10 +245,10 @@ export default function AdminProducts() {
                     <button
                       className="btn btn-primary"
                       style={{ fontSize: 12, padding: '6px 14px', whiteSpace: 'nowrap', flexShrink: 0 }}
-                      disabled={!!seeding || seedingAll}
+                      disabled={busy !== null}
                       onClick={() => seedProduct(lp)}
                     >
-                      {seeding === lp.productSlug ? 'Creando...' : 'Crear'}
+                      {busy === `seed:${lp.productSlug}` ? 'Creando...' : 'Crear'}
                     </button>
                   </div>
                 ))
@@ -531,7 +284,7 @@ export default function AdminProducts() {
                 <button
                   className="btn btn-primary"
                   style={{ fontSize: 12, padding: '7px 13px', whiteSpace: 'nowrap', flexShrink: 0 }}
-                  onClick={() => { setSelectedId(''); setForm(EMPTY_FORM); setMobileView('editor'); }}
+                  onClick={() => { select(null); setMobileView('editor'); }}
                 >
                   + Nuevo
                 </button>
@@ -541,13 +294,13 @@ export default function AdminProducts() {
                 {filtered.map(p => {
                   const thumb = p.images?.[0];
                   const isAct = selectedId === p._id;
-                  const hasBundles = Array.isArray(p.bundles) && p.bundles.length > 0;
+                  const { fromBundles: hasBundles, price: fromPrice } = listPrice(p);
                   return (
                     <button
                       key={p._id}
                       type="button"
                       className={`ap-prod-row ${isAct ? 'ap-active' : ''}`}
-                      onClick={() => { setSelectedId(p._id); setMobileView('editor'); }}
+                      onClick={() => { if (p._id !== selectedId) select(p); setMobileView('editor'); }}
                     >
                       <div className="ap-thumb">
                         {thumb
@@ -566,7 +319,7 @@ export default function AdminProducts() {
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 64 }}>
                         {hasBundles
-                          ? <div style={{ fontSize: 11, color: '#888', fontWeight: 700 }}>desde<br />{money(Math.min(...p.bundles.map(b => b.price)))}</div>
+                          ? <div style={{ fontSize: 11, color: '#888', fontWeight: 700 }}>desde<br />{money(fromPrice)}</div>
                           : <>
                             <div style={{ fontWeight: 900, fontSize: 13 }}>{money(p.price)}</div>
                             {p.compareAtPrice > 0 && p.compareAtPrice > p.price && (
@@ -821,6 +574,7 @@ export default function AdminProducts() {
         </div>
       </div>
       {confirmDialog}
+      {notice}
     </main>
   );
 }
