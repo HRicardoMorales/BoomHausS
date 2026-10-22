@@ -1,0 +1,232 @@
+/* /login y /register — antes un <style> de ~270 líneas duplicado en cada página.
+   Los azules (rgba(0,90,255,…)) eran del tema viejo: pasan a tokens de marca. */
+
+.authPage :where(p, h2, h3, ul) { margin: 0; }
+.authPage :where(ul) { padding: 0; list-style: none; }
+
+/* .badge ya no tiene estilo global: pill propio para las etiquetas de auth. */
+.authPage .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .3rem .65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--color-brand-tint);
+  color: var(--color-brand-text);
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.authHeader { padding: 1.2rem; position: relative; overflow: hidden; }
+.authHeader::before,
+.authSide::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background:
+    radial-gradient(900px 360px at 8% 0%, rgba(200, 146, 139, .18), transparent 60%),
+    radial-gradient(700px 280px at 92% 20%, rgba(200, 146, 139, .10), transparent 55%);
+  pointer-events: none;
+}
+.authHeader > *,
+.authSide > * { position: relative; }
+
+.authHeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.authHeaderBrand { display: flex; align-items: center; gap: .65rem; }
+.authDot {
+  width: 12px; height: 12px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 6px var(--focus-ring);
+}
+.authBrandName { font-weight: 950; letter-spacing: -.02em; }
+.authBrandSub { font-size: .9rem; color: var(--muted); }
+
+.authTitle {
+  margin: .75rem 0 .25rem;
+  letter-spacing: -.05em;
+  font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+}
+.authSubtitle { margin-top: .35rem; max-width: 70ch; line-height: 1.6; }
+
+.authGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr .9fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.authCard { padding: 1.1rem; }
+.authForm { display: grid; gap: .9rem; margin-top: .2rem; }
+
+/* Campo */
+.authLabel { display: grid; gap: .45rem; font-weight: 800; letter-spacing: -.01em; }
+.authField {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: .55rem .65rem;
+  background: rgba(255, 255, 255, .03);
+  transition: border-color var(--t, .2s), box-shadow var(--t, .2s);
+}
+.authField:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+.authField.is-invalid { border-color: var(--color-danger); }
+.authFieldIcon { opacity: .9; }
+
+/* `.authField .authInput` (0,2,0) le gana a `input` / `input:focus` globales
+   de index.css (0,1,1): antes se dibujaba un segundo borde y anillo adentro
+   del campo al enfocar. El anillo lo pone .authField:focus-within. */
+.authField .authInput,
+.authField .authInput:focus {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  box-shadow: none;
+  padding: .25rem 0;
+  font-size: 1rem; /* ≥16px: iOS no hace zoom al enfocar */
+}
+.authPassBtn {
+  flex: none;
+  border: 0;
+  background: var(--color-brand-soft);
+  color: var(--color-brand-text);
+  padding: .35rem .55rem;
+  min-height: 32px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+.authPassBtn:hover { background: var(--secondary); }
+
+/* El <p> de mensajes siempre existe (región viva estable); vacío no ocupa lugar. */
+.authFieldHint,
+.authFieldError { font-size: .88rem; line-height: 1.4; }
+.authFieldHint { font-weight: 600; color: var(--muted); }
+.authFieldError { font-weight: 800; color: var(--color-danger); }
+.authFieldHint:empty,
+.authFieldError:empty { display: none; }
+
+.authForgot {
+  justify-self: end;
+  font-size: .9rem;
+  color: var(--color-brand-text);
+  font-weight: 700;
+  text-decoration: none;
+  margin: -.2rem 0 .5rem;
+}
+.authForgot:hover { text-decoration: underline; }
+
+/* Contraste pendiente de decisión de marca (ver NIGHTLY.md → Pendientes). */
+.authPrimaryBtn {
+  border: 0;
+  cursor: pointer;
+  border-radius: 14px;
+  padding: .9rem 1rem;
+  font-weight: 950;
+  letter-spacing: -.02em;
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, .18);
+}
+.authPrimaryBtn:hover:not(:disabled) { background: var(--primary-hover); }
+.authPrimaryBtn:disabled { opacity: .7; cursor: not-allowed; }
+
+.authMetaRow {
+  margin-top: 1.15rem;
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.authLink { font-weight: 950; text-decoration: none; color: var(--color-brand-text); }
+.authLink:hover, .authBack:hover { text-decoration: underline; }
+.authBack { text-decoration: none; font-weight: 900; color: inherit; }
+
+.authAlert {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  border: 1px solid rgba(255, 80, 80, .45);
+  background: rgba(255, 80, 80, .08);
+  border-radius: 14px;
+  padding: .75rem .85rem;
+  margin-bottom: .85rem;
+}
+.authAlertIcon {
+  flex: none;
+  width: 26px; height: 26px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  font-weight: 950;
+  background: rgba(255, 80, 80, .20);
+}
+.authAlertText { font-weight: 800; line-height: 1.4; }
+
+/* Panel lateral */
+.authSide { padding: 1.1rem; position: sticky; top: 90px; overflow: hidden; }
+.authSideBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  background: var(--color-brand-tint);
+  font-weight: 950;
+}
+.authSideTitle {
+  margin-top: .7rem;
+  font-weight: 950;
+  letter-spacing: -.03em;
+  font-size: 1.2rem;
+}
+.authSideText { margin-top: .35rem; line-height: 1.6; }
+
+.authBenefits { margin-top: .9rem; display: grid; gap: .75rem; }
+.authBenefit {
+  display: flex;
+  gap: .7rem;
+  align-items: flex-start;
+  padding: .75rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .03);
+}
+.authBenefitIco {
+  flex: none;
+  width: 34px; height: 34px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--color-brand-soft);
+}
+.authBenefitT { font-family: inherit; font-size: 1rem; color: var(--text); font-weight: 950; letter-spacing: -.02em; }
+.authBenefitP { margin-top: .2rem; line-height: 1.55; }
+
+.authChips { margin-top: 1rem; display: flex; gap: .5rem; flex-wrap: wrap; }
+
+@media (max-width: 980px) {
+  .authGrid { grid-template-columns: 1fr; }
+  .authSide { position: relative; top: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .authField { transition: none; }
+}
