@@ -1,4 +1,4 @@
-# BoomHausS — ecommerce full stack
+# Amelor — ecommerce full stack
 
 [![CI](https://github.com/HRicardoMorales/BoomHausS/actions/workflows/ci.yml/badge.svg)](https://github.com/HRicardoMorales/BoomHausS/actions/workflows/ci.yml)
 ![React 19](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
@@ -10,7 +10,7 @@ Tienda online en producción para el mercado argentino: catálogo, fichas de pro
 
 No es un proyecto de tutorial: tiene tráfico real, pagos reales y el tipo de deuda que aparece cuando un negocio crece rápido. Este README cuenta qué se construyó y, sobre todo, **cómo se llevó de "funciona" a "se puede mantener"** con números medibles.
 
-**Demo en vivo:** [boomhauss.com.ar](https://www.boomhauss.com.ar)
+**Demo en vivo:** [amelor.com.ar](https://amelor.com.ar)
 
 ---
 
@@ -163,7 +163,7 @@ npm ci
 npm run dev
 ```
 
-Variables mínimas del backend: `MONGO_URI`, `JWT_SECRET`, `PORT`. Mercado Pago, Cloudinary, mail y Meta son opcionales para navegar el sitio; sin ellas esas integraciones quedan inactivas. El frontend tiene su propio `frontend/.env.example` (`VITE_API_URL`, píxel de Meta; opcionales: `VITE_STORE_NAME`, `VITE_WHATSAPP_NUMBER`, `VITE_MP_PUBLIC_KEY`).
+Variables mínimas del backend: `MONGO_URI`, `JWT_SECRET`, `PORT`. Mercado Pago, Cloudinary, mail y Meta son opcionales para navegar el sitio; sin ellas esas integraciones quedan inactivas. El frontend tiene su propio `frontend/.env.example` (`VITE_STORE_NAME`, `VITE_WHATSAPP_NUMBER`, `VITE_SUPPORT_EMAIL`, `VITE_META_PIXEL_ID`; todas opcionales) y en el build de Vercel se puede definir `SITE_URL` para las URLs absolutas de SEO.
 
 > Sin `MONGO_URI` el backend igual levanta: la API responde `503` con `Retry-After` gracias al DB gate, y los tests corren así.
 

@@ -50,6 +50,12 @@ const allowedExact = new Set(
   [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'https://amelor.com.ar',
+    'https://www.amelor.com.ar',
+    // dominios anteriores: se mantienen mientras redirijan a la tienda
+    'https://boomhauss.com.ar',
+    'https://www.boomhauss.com.ar',
+    'https://boomhauss-frontend.vercel.app',
     process.env.CLIENT_URL, // por si lo usás
   ].filter(Boolean)
 );
@@ -76,9 +82,13 @@ function isAllowedOrigin(origin) {
     // solo http/https
     if (protocol !== 'http:' && protocol !== 'https:') return false;
 
-    // ✅ permite cualquier dominio de Vercel que empiece con boom-haus-
-    // ej: boom-haus-xxxxx-ricardo-morales-projects.vercel.app
-    if (hostname.startsWith('boom-haus-') && hostname.endsWith('.vercel.app')) return true;
+    // ✅ previews de Vercel de ESTE proyecto (scope ricardo-morales-projects)
+    // ej: boom-haus-s-git-nightly-portfolio-ricardo-morales-projects.vercel.app
+    if (
+      protocol === 'https:' &&
+      hostname.startsWith('boom-haus-') &&
+      hostname.endsWith('-ricardo-morales-projects.vercel.app')
+    ) return true;
 
     // ✅ si tenés el dominio production estable (recomendado)
     if (hostname === 'boom-haus.vercel.app') return true;
@@ -89,15 +99,12 @@ function isAllowedOrigin(origin) {
   }
 }
 
-// Busca donde tengas configurado 'cors' y cámbialo por esto:
-
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",                 // Tu PC local
-    "https://boomhauss-frontend.vercel.app", // Tu link viejo de Vercel
-    "https://boomhauss.com.ar",              // 👈 ESTE ES EL NUEVO QUE FALTABA
-    "https://www.boomhauss.com.ar"           // El mismo con www
-  ],
+  // Antes era una lista fija que no incluía amelor.com.ar ni las previews;
+  // ahora usa isAllowedOrigin (exactos + CLIENT_URL(S) + previews del proyecto).
+  origin(origin, cb) {
+    cb(null, isAllowedOrigin(origin));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]

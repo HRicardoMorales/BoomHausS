@@ -4,6 +4,7 @@
 // por props desde useAdminOrders.
 
 import { useState } from 'react';
+import { baseURL as API_BASE_URL } from '../../../services/api';
 import {
   money, formatDate, relativeTime, PAYMENT_LABELS, SHIPPING_LABELS, PAYMENT_OPTS, SHIPPING_OPTS,
   METHOD_MAP, SHIP_METHOD_MAP, orderWaLink, orderClipboardText, orderItemTotal,
@@ -12,7 +13,8 @@ import {
 const getImageUrl = (url) => {
   if (!url) return null;
   if (url.startsWith('http')) return url;
-  const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  // /uploads lo sirve el backend en la raíz (no bajo /api): origen del backend.
+  const BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
   return `${BASE_URL}/${url.startsWith('/') ? url.slice(1) : url}`;
 };
 
