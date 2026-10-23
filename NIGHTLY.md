@@ -180,6 +180,7 @@ Actualizado el 2026-10-22 con las respuestas de Rick (marca **Amelor**, dominio 
 
 - `npx -y knip@5 --reporter compact` en `frontend/` da en ~1 min archivos/exports/deps sin uso; ojo con falsos positivos: las `@fontsource-variable/*` se importan desde CSS. Verificar cada hallazgo con grep antes de anotarlo (en esta auditoría un `ls | head` truncado hizo creer que faltaba `seedProducts.js`).
 
+- Sesión final: si el PR anterior ya está mergeado (`list_pull_requests` vacío), abrir uno nuevo con `create_pull_request` (`draft: true`). Antes, `git log HEAD..origin/main` + `git merge-tree --write-tree origin/main HEAD` para ver si `main` diverge y si hay conflictos.
 - Setup: la sesión arranca con el repo ya clonado en HEAD detached; `git checkout nightly/portfolio` alcanza. `gh` no está disponible: el PR se actualiza con las tools MCP de GitHub (`update_pull_request`).
 - Remote nuevo: GitHub avisa que el repo se movió a `https://github.com/HRicardoMorales/BoomHausS.git` (el push funciona igual por redirect); conviene actualizar el `origin` en el setup.
 
@@ -330,3 +331,4 @@ Actualizado el 2026-10-22 con las respuestas de Rick (marca **Amelor**, dominio 
 | 2026-10-23 | 06:53 | Métricas parte 2b-1 (backend): búsqueda server-side `?q=`/`?status=` en `GET /api/orders` (regex escapada, combina con el cursor) y `GET /api/orders/stats` con un `aggregate` de un `$group`. Backend 136/136, `node --check`, lint 0, `npm ci` + build OK. Partida: el "Cargar más" + stats en el admin queda como 2b-2. | baa6a65 |
 | 2026-10-23 | 07:53 | Métricas parte 2b-2 (frontend admin): pedidos paginados con "Cargar más", búsqueda/estado en el servidor con debounce, tarjetas desde `/orders/stats`, descarte de respuestas viejas. Lint 0, vitest 185/185, backend 136/136, `npm ci` + build OK. | 4054903 |
 | 2026-10-23 | 08:53 | knip en CI + limpieza: 4 deps, `App.css`, 5 logos y 27 exports sin uso fuera; knip 0 (con prueba negativa), lint 0, vitest 185/185, `npm ci` + build OK. | 2e5e8d6 |
+| 2026-10-23 | 09:52 | Sesión final: revisión de la noche. `npm ci` + build OK, lint 0, knip 0, vitest 185/185, backend 136/136, `node --check` en todo `backend/src`; diff sin `console.log`/TODO nuevos. El PR #1 ya estaba mergeado por Rick → merge de `main` en la rama (sin cambios de archivos) y **PR borrador #2** `nightly/portfolio` → `main` (no mergear). | 420ac2d / PR #2 |
