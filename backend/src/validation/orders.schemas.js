@@ -62,4 +62,28 @@ const createOrderBody = z.looseObject({
   notes: optionalText(1000, 'Las notas pueden tener hasta 1000 caracteres.', 'Notas inválidas.'),
 });
 
-module.exports = { createOrderBody };
+// Query de GET /api/orders (admin). Sin `cursor` ni `limit` → lista completa
+// (lo que consume hoy el admin); con alguno de los dos → paginado.
+// `?limit=1&limit=2` llega como array → 400, igual que un cursor inventado.
+const { CURSOR_RE, DEFAULT_LIMIT, MAX_LIMIT } = require('../services/orderListing');
+
+const listOrdersQuery = z
+  .object({
+    cursor: z
+      .string({ error: 'Cursor inválido.' })
+      .regex(CURSOR_RE, 'Cursor inválido.')
+      .optional(),
+    limit: z
+      .string({ error: `limit debe ser un número entre 1 y ${MAX_LIMIT}.` })
+      .regex(/^\d{1,3}$/, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`)
+      .transform(Number)
+      .pipe(z.number().int().min(1, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`).max(MAX_LIMIT, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`))
+      .optional(),
+  })
+  .transform(({ cursor, limit }) => ({
+    paginated: cursor !== undefined || limit !== undefined,
+    cursor,
+    limit: limit ?? DEFAULT_LIMIT,
+  }));
+
+module.exports = { createOrderBody, listOrdersQuery };

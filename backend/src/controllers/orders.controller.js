@@ -11,6 +11,7 @@ const { sendPurchaseEvent } = require("../services/metaCapi");
 // Mercado Pago
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const logger = require('../utils/logger').child('orders');
+const listing = require('../services/orderListing');
 
 // Cliente MP (PRODUCCIÓN)
 const client = new MercadoPagoConfig({
@@ -322,10 +323,23 @@ async function createOrder(req, res, next) {
 
 // === RESTO DE FUNCIONES (Admin/User) ===
 
+// Sin query → todos los pedidos (contrato que usa hoy el admin).
+// Con `?limit=` y/o `?cursor=` → una página + `nextCursor` (null = no hay más).
 async function getOrders(req, res, next) {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 }).lean();
-        return res.json({ ok: true, data: orders });
+        const q = req.validatedQuery || { paginated: false };
+        if (!q.paginated) {
+            const orders = await Order.find().sort(listing.SORT).lean();
+            return res.json({ ok: true, data: orders });
+        }
+
+        const cursor = q.cursor ? listing.decodeCursor(q.cursor) : null;
+        const filter = cursor
+            ? listing.beforeCursorFilter(cursor, (id) => new mongoose.Types.ObjectId(id))
+            : {};
+        const docs = await Order.find(filter).sort(listing.SORT).limit(q.limit + 1).lean();
+        const page = listing.buildPage(docs, q.limit);
+        return res.json({ ok: true, data: page.data, nextCursor: page.nextCursor });
     } catch (error) {
         next(error);
     }

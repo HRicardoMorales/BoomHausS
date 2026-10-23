@@ -162,10 +162,6 @@ function buildKpis(rows = []) {
     pagos_iniciados_change: pctChange(cur.iniciados, prev.iniciados),
     pagos_completados: cur.completados,
     pagos_completados_change: pctChange(cur.completados, prev.completados),
-    // Sin analytics conectado no hay visitas: se mantiene en el contrato
-    // (el dashboard lo lee) hasta la parte 2, que lo rotula "sin datos".
-    visitas: 0,
-    visitas_change: 0,
     conversion: cur.iniciados > 0 ? Math.round((cur.completados / cur.iniciados) * 1000) / 10 : 0,
     review_count: cur.review,
     pending_count: cur.pending,

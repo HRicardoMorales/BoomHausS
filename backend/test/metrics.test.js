@@ -67,7 +67,6 @@ describe('buildKpis', () => {
       ventas: 45000, ventas_change: 50,
       pagos_iniciados: 8, pagos_iniciados_change: 100,
       pagos_completados: 3, pagos_completados_change: 0,
-      visitas: 0, visitas_change: 0,
       conversion: 37.5,
       review_count: 2, pending_count: 3, shipped_count: 1,
     });

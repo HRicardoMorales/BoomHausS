@@ -17,7 +17,7 @@ const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
 const validateObjectId = require("../middlewares/validateObjectId");
 const { validate } = require("../middlewares/validate");
-const { createOrderBody } = require("../validation/orders.schemas");
+const { createOrderBody, listOrdersQuery } = require("../validation/orders.schemas");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
@@ -135,7 +135,7 @@ router.post(
  * Admin:
  * - Listar pedidos
  */
-router.get("/", authRequired, adminOnly, getOrders);
+router.get("/", authRequired, adminOnly, validate({ query: listOrdersQuery }), getOrders);
 
 /**
  * Admin:
