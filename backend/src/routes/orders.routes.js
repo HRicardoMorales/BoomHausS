@@ -6,6 +6,7 @@ const router = Router();
 const {
   createOrder,
   getOrders,
+  getOrderStats,
   updateOrderStatus,
   getMyOrders,
   uploadPaymentProofController,
@@ -17,7 +18,7 @@ const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
 const validateObjectId = require("../middlewares/validateObjectId");
 const { validate } = require("../middlewares/validate");
-const { createOrderBody, listOrdersQuery } = require("../validation/orders.schemas");
+const { createOrderBody, listOrdersQuery, orderStatsQuery } = require("../validation/orders.schemas");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
@@ -133,7 +134,13 @@ router.post(
 
 /**
  * Admin:
- * - Listar pedidos
+ * - Estadísticas del panel (mismos filtros que el listado, un solo aggregate)
+ */
+router.get("/stats", authRequired, adminOnly, validate({ query: orderStatsQuery }), getOrderStats);
+
+/**
+ * Admin:
+ * - Listar pedidos (paginado y con búsqueda si llegan `limit`/`cursor`/`q`/`status`)
  */
 router.get("/", authRequired, adminOnly, validate({ query: listOrdersQuery }), getOrders);
 

@@ -12,6 +12,7 @@ const { sendPurchaseEvent } = require("../services/metaCapi");
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const logger = require('../utils/logger').child('orders');
 const listing = require('../services/orderListing');
+const search = require('../services/orderSearch');
 
 // Cliente MP (PRODUCCIÓN)
 const client = new MercadoPagoConfig({
@@ -324,7 +325,10 @@ async function createOrder(req, res, next) {
 // === RESTO DE FUNCIONES (Admin/User) ===
 
 // Sin query → todos los pedidos (contrato que usa hoy el admin).
-// Con `?limit=` y/o `?cursor=` → una página + `nextCursor` (null = no hay más).
+// Con `?limit=`, `?cursor=`, `?q=` o `?status=` → una página + `nextCursor`
+// (null = no hay más). La búsqueda corre en Mongo, no sobre lo ya cargado.
+const toObjectId = (id) => new mongoose.Types.ObjectId(id);
+
 async function getOrders(req, res, next) {
     try {
         const q = req.validatedQuery || { paginated: false };
@@ -334,12 +338,26 @@ async function getOrders(req, res, next) {
         }
 
         const cursor = q.cursor ? listing.decodeCursor(q.cursor) : null;
-        const filter = cursor
-            ? listing.beforeCursorFilter(cursor, (id) => new mongoose.Types.ObjectId(id))
-            : {};
+        const filter = search.mergeFilters(
+            search.buildOrderFilter(q, toObjectId),
+            cursor ? listing.beforeCursorFilter(cursor, toObjectId) : null,
+        );
         const docs = await Order.find(filter).sort(listing.SORT).limit(q.limit + 1).lean();
         const page = listing.buildPage(docs, q.limit);
         return res.json({ ok: true, data: page.data, nextCursor: page.nextCursor });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// Tarjetas del panel ("Recaudado", "A revisar"…) sobre TODOS los pedidos
+// que cumplen el filtro, en un solo aggregate: con el listado paginado ya no
+// se pueden contar en el navegador.
+async function getOrderStats(req, res, next) {
+    try {
+        const match = search.buildOrderFilter(req.validatedQuery || {}, toObjectId);
+        const rows = await Order.aggregate(search.statsPipeline(match));
+        return res.json({ ok: true, data: search.normalizeStats(rows) });
     } catch (error) {
         next(error);
     }
@@ -433,6 +451,7 @@ async function rejectPaymentProofController(req, res, next) {
 module.exports = {
     createOrder,
     getOrders,
+    getOrderStats,
     updateOrderStatus,
     getMyOrders,
     uploadPaymentProofController,
