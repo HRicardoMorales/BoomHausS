@@ -23,7 +23,7 @@ function escapeRegex(text) {
   return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Los mismos campos que filtraba el panel en el navegador (filterOrders).
+// Los mismos campos que filtraba antes el panel en el navegador.
 const SEARCH_FIELDS = Object.freeze([
   'customerName', 'customerEmail', 'customerPhone', 'customerDni', 'items.name',
 ]);
@@ -65,8 +65,8 @@ const eq = (field, value) => ({ $eq: [`$${field}`, value] });
 
 /**
  * Pipeline de una sola pasada: un `$group` con todos los contadores.
- * Mismas definiciones que `computeOrderStats` del frontend, para que las
- * tarjetas no cambien de significado al pasar al servidor.
+ * Mismas definiciones que usaban las tarjetas cuando se calculaban en el
+ * navegador, para que no cambien de significado al pasar al servidor.
  */
 function statsPipeline(match = {}) {
   const pipeline = [];

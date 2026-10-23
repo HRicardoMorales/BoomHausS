@@ -157,33 +157,7 @@ export function orderItemTotal(it) {
   return it?.bundleTotal ? Number(it.bundleTotal) : (Number(it?.price) || 0) * (Number(it?.quantity) || 1);
 }
 
-export function sortNewestFirst(list) {
-  const t = (o) => new Date(o?.createdAt || 0).getTime() || 0;
-  return [...(list || [])].sort((a, b) => t(b) - t(a));
-}
-
-export function computeOrderStats(orders) {
-  const count = (fn) => orders.filter(fn).length;
-  return {
-    total: orders.reduce((a, o) => a + (Number(o.totalAmount) || 0), 0),
-    approved: count((o) => o.paymentStatus === 'approved' || o.paymentStatus === 'confirmed'),
-    review: count((o) => o.paymentStatus === 'proof_uploaded'),
-    pending: count((o) => o.paymentStatus === 'pending'),
-    shipped: count((o) => o.shippingStatus === 'shipped'),
-    delivered: count((o) => o.shippingStatus === 'delivered'),
-  };
-}
-
 const matches = (fields, q) => fields.some((f) => String(f ?? '').toLowerCase().includes(q));
-
-export function filterOrders(orders, { status = 'todos', query = '' } = {}) {
-  const q = query.trim().toLowerCase();
-  return orders.filter((o) => {
-    if (status !== 'todos' && o.paymentStatus !== status) return false;
-    if (!q) return true;
-    return matches([o._id, o.customerName, o.customerEmail, o.customerPhone, o.customerDni, ...(o.items || []).map((i) => i.name)], q);
-  });
-}
 
 export function computeCartStats(carts, now = Date.now()) {
   const pending = carts.filter((c) => !c.recovered);

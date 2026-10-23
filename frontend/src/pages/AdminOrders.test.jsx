@@ -11,7 +11,9 @@ const recent = new Date(Date.now() - 5 * 60000).toISOString();
 
 beforeEach(() => {
   vi.resetAllMocks();
-  api.get.mockImplementation((url) => Promise.resolve(url.startsWith("/orders")
+  api.get.mockImplementation((url) => Promise.resolve(url === "/orders/stats"
+    ? { data: { ok: true, data: { count: 1, total: 1000, approved: 0, review: 0, pending: 1, shipped: 0, delivered: 0 } } }
+    : url.startsWith("/orders")
     ? { data: { ok: true, data: [{ _id: "o1", customerName: "Ana Gómez", paymentStatus: "pending", shippingStatus: "pending", totalAmount: 1000, createdAt: recent, items: [] }] } }
     : { data: { ok: true, data: [{ _id: "c1", name: "Leo Paz", phone: "1155551234", totalAmount: 5000, updatedAt: recent, step: "payment", items: [{ name: "Lámpara", quantity: 1, price: 5000 }] }] } }));
   api.post.mockResolvedValue({ data: { ok: true } });
@@ -21,7 +23,9 @@ describe("AdminOrders (integración con hooks y panel)", () => {
   it("lista los pedidos y pasa a abandonados, donde recuperar pide confirmación", async () => {
     render(<AdminOrders />);
     expect(await screen.findByText("Ana Gómez")).toBeTruthy();
-    expect(api.get).toHaveBeenCalledWith("/orders");
+    expect(api.get).toHaveBeenCalledWith("/orders", { params: { limit: 50 } });
+    expect(await screen.findByText("Mostrando 1 de 1 pedidos")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Cargar más" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /Abandonados/ }));
     const card = (await screen.findByText("Leo Paz")).closest("article");
