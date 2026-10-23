@@ -87,13 +87,13 @@ export function findLandingForSlug(slug, configs) {
 }
 
 /** Imágenes del config: `images` o, si no hay, las de los bloques de historia. */
-export function extractImages(config) {
+function extractImages(config) {
   if (Array.isArray(config.images) && config.images.length) return config.images;
   if (Array.isArray(config.storyBlocks)) return config.storyBlocks.map((b) => b.img).filter(Boolean).slice(0, 4);
   return [];
 }
 
-export function guessCategory(landingSlug) {
+function guessCategory(landingSlug) {
   if (landingSlug.includes('mochila')) return 'mascotas';
   if (/lampara|nebuliz|porta/.test(landingSlug)) return 'hogar';
   if (/soporte|nasal/.test(landingSlug)) return 'salud';

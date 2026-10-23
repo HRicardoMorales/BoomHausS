@@ -8,7 +8,7 @@ import "./ProductCatalog.css";
 /* =========================
    PRODUCT CARD
 ========================= */
-export function ProductCard({ cfg, productData, onAdd, onBuy }) {
+function ProductCard({ cfg, productData, onAdd, onBuy }) {
   const [packs, setPacks] = useState(1);
 
   // ⚠️ Prioridad: la imagen del CONFIG de la landing gana sobre la de la API.

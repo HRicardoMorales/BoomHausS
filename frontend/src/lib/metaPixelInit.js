@@ -6,7 +6,7 @@
 // env var), no hace nada — window.fbq queda undefined y todas las funciones
 // de metaPixel.js son no-op silencioso.
 
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 
 let initialized = false;
 

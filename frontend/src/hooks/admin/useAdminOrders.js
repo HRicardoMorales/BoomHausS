@@ -13,7 +13,7 @@ import api from '../../services/api';
 import { useDebouncedValue } from '../useDebouncedValue.js';
 
 const noop = () => {};
-export const PAGE_SIZE = 50;
+const PAGE_SIZE = 50;
 
 /** Agrega una página a la lista sin duplicar pedidos (p. ej. si entró uno nuevo entre página y página). */
 export function appendPage(prev, page) {

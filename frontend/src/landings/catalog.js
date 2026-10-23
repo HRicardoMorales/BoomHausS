@@ -16,7 +16,7 @@ const LANDING_PRODUCT_SLUGS = new Set(
  * 4. prefijo: "sillon-puff-inflable-sunfield" extiende un productSlug conocido
  *    con palabras agregadas en el admin (p. ej. la marca).
  */
-export function findLandingSlug(productSlug) {
+function findLandingSlug(productSlug) {
   if (!productSlug) return null;
   for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
     if (landingSlug === productSlug) return landingSlug;
@@ -35,7 +35,7 @@ export function findLandingSlug(productSlug) {
 }
 
 /** URL de la ficha: la landing si existe, si no el detalle genérico. */
-export function productHref(product) {
+function productHref(product) {
   const landingSlug = findLandingSlug(product.slug);
   return landingSlug ? `/lp/${landingSlug}` : `/products/${product._id}`;
 }
@@ -72,7 +72,7 @@ function buildLandingVirtualProducts() {
   return out;
 }
 
-export const LANDING_VIRTUAL_PRODUCTS = buildLandingVirtualProducts();
+const LANDING_VIRTUAL_PRODUCTS = buildLandingVirtualProducts();
 
 /**
  * Catálogo visible a partir de la respuesta de la API.
@@ -82,6 +82,7 @@ export const LANDING_VIRTUAL_PRODUCTS = buildLandingVirtualProducts();
  * Regla dura: precio > 0 obligatorio, nunca una card "$ 0" con botón de compra.
  * Los virtuales solo se suman acá, con la API respondiendo OK: nunca como
  * fallback de un error de red.
+ * @public Se importa con `import()` dinámico en `hooks/useCatalog.js`.
  */
 export function buildCatalog(apiProducts, dbSlugs = [], virtuals = LANDING_VIRTUAL_PRODUCTS) {
   const active = (Array.isArray(apiProducts) ? apiProducts : []).filter((p) => p.isActive !== false);

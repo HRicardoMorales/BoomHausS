@@ -16,7 +16,6 @@ export default defineConfig({
           if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//.test(id)) {
             return "vendor-react";
           }
-          if (id.includes("@mercadopago")) return "vendor-mercadopago";
           return undefined;
         },
       },

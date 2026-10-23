@@ -17,7 +17,7 @@ export function moneyARS(n) {
 }
 
 /* Hash determinístico pequeño — para valores "reales" pero estables */
-export function seedHash(str = "") {
+function seedHash(str = "") {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
     h = (h * 31 + str.charCodeAt(i)) | 0;
@@ -51,7 +51,7 @@ export function getInitials(name = "") {
 }
 
 /* Gradiente estable por nombre (para avatars de iniciales) */
-export const AVATAR_GRADIENTS = [
+const AVATAR_GRADIENTS = [
   ["#1B4D3E", "#059669"],
   ["#0369A1", "#0EA5E9"],
   ["#7C2D12", "#EA580C"],

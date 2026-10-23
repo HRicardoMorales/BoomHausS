@@ -1,4 +1,4 @@
-export const CATEGORY_LABELS = {
+const CATEGORY_LABELS = {
   general: "General",
   gorros: "Gorros",
   accesorios: "Accesorios",

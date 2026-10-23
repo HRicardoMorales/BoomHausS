@@ -20,7 +20,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
 const svgUri = (svg) => 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 
 /** Pixel liso: alcanza para axe, que no mira el contenido de las imágenes. */
-export const PIXEL = svgUri(
+const PIXEL = svgUri(
   '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="600" height="600" fill="#e8dcd4"/></svg>',
 );
 
@@ -37,7 +37,7 @@ const PALETTES = [
  * "Foto de producto" vectorial: fondo de estudio, sombra y un frasco o
  * dispositivo estilizado. Determinista por índice, sin depender de CDNs.
  */
-export function productFixture(i = 0, { w = 800, h = 800 } = {}) {
+function productFixture(i = 0, { w = 800, h = 800 } = {}) {
   const [bg, mid, ink] = PALETTES[i % PALETTES.length];
   const cx = w / 2;
   const s = Math.min(w, h) / 800;
@@ -72,7 +72,7 @@ const NAMES = [
   'Crema reparadora nocturna',
 ];
 
-export function makeProduct(i, slug = `mock-producto-${i}`, { realistic = false } = {}) {
+function makeProduct(i, slug = `mock-producto-${i}`, { realistic = false } = {}) {
   const img = realistic ? [productFixture(i), productFixture(i + 1)] : [PIXEL, PIXEL];
   return {
     _id: `64b0000000000000000000${String(i).padStart(2, '0')}`,
@@ -126,7 +126,7 @@ export function makeFixtures({ realistic = false } = {}) {
   return { products, cart, orders };
 }
 
-export function mockApi(url, fx = makeFixtures()) {
+function mockApi(url, fx = makeFixtures()) {
   const { pathname } = new URL(url);
   const path = pathname.replace(/^\/api/, '');
   const slug = path.match(/^\/products\/slug\/([^/]+)/)?.[1];

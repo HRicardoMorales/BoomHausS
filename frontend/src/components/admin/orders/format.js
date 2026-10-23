@@ -3,8 +3,6 @@
 // formatos, links de WhatsApp, textos para copiar, estadísticas y filtros.
 // Sin React ni red, así se testea con datos de ejemplo.
 
-export const HOUR_MS = 60 * 60 * 1000;
-
 export const PAYMENT_LABELS = { pending: 'Pendiente', proof_uploaded: 'Comprobante', approved: 'Aprobado', confirmed: 'Confirmado', rejected: 'Rechazado', cancelled: 'Cancelado' };
 export const SHIPPING_LABELS = { pending: 'Pendiente', shipped: 'En camino', delivered: 'Entregado', cancelled: 'Cancelado' };
 export const PAYMENT_OPTS = Object.keys(PAYMENT_LABELS);
@@ -22,7 +20,7 @@ export const SHIP_METHOD_MAP = {
   retiro_oficina: 'Retiro en oficina',
 };
 
-export const CART_STEP_LABELS = {
+const CART_STEP_LABELS = {
   cart: 'Carrito',
   info: 'Datos personales',
   shipping: 'Envío',
@@ -47,7 +45,7 @@ export function formatDate(d) {
 }
 
 /** Minutos desde `d` hasta `now`; null si la fecha no sirve o es futura. */
-export function minutesSince(d, now = Date.now()) {
+function minutesSince(d, now = Date.now()) {
   if (!d) return null;
   const mins = Math.round((now - new Date(d).getTime()) / 60000);
   return Number.isNaN(mins) || mins < 0 ? null : mins;

@@ -107,7 +107,7 @@ export function imageAtWidth(src, width) {
 }
 
 /** true si `src` está en un CDN que acepta redimensionado por URL. */
-export function isTransformable(src) {
+function isTransformable(src) {
   return imageAtWidth(src, 1) !== null;
 }
 
