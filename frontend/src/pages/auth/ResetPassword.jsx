@@ -1,103 +1,97 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
+import AuthLayout from "../../components/auth/AuthLayout";
+import AuthField from "../../components/auth/AuthField";
+import { MIN_PASSWORD, authErrorMessage, registerError } from "../../components/auth/authForm";
+
+export const RESET_REDIRECT_MS = 3000;
 
 export default function ResetPassword() {
-    const { token } = useParams(); // Capturamos el token de la URL
-    const navigate = useNavigate();
+  const { token } = useParams();
+  const navigate = useNavigate();
 
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
+  // Tras el éxito, al login en 3 s. Con limpieza: si la persona toca
+  // "Ir a iniciar sesión" antes (o se va), el timer no navega después.
+  useEffect(() => {
+    if (!done) return undefined;
+    const id = setTimeout(() => navigate("/login", { replace: true }), RESET_REDIRECT_MS);
+    return () => clearTimeout(id);
+  }, [done, navigate]);
 
-        if (password !== confirmPassword) {
-            return setError("Las contraseñas no coinciden ❌");
-        }
+  const mismatch = confirm.length > 0 && password !== confirm;
 
-        if (password.length < 6) {
-            return setError("La contraseña debe tener al menos 6 caracteres");
-        }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const invalid = registerError({ password, confirm });
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
 
-        setLoading(true);
+    setError("");
+    setLoading(true);
+    try {
+      await api.post(`/auth/reset-password/${token}`, { password });
+      setDone(true);
+    } catch (err) {
+      setError(authErrorMessage(err, "El link expiró o es inválido."));
+    } finally {
+      setLoading(false);
+    }
+  }
 
-        try {
-            // Llamada al backend con el token
-            await api.post(`/auth/reset-password/${token}`, { password });
+  return (
+    <AuthLayout
+      badge="Nueva contraseña"
+      brandSub="Último paso para recuperar tu cuenta."
+      title="Elegí una contraseña nueva"
+      subtitle={`Usá al menos ${MIN_PASSWORD} caracteres. Después vas a poder entrar con ella.`}
+      error={error}
+      notice={done ? "¡Contraseña actualizada! Te llevamos al login en unos segundos." : ""}
+      back={{ to: "/login", label: "Volver a iniciar sesión" }}
+    >
+      {done ? (
+        <Link to="/login" replace className="authPrimaryBtn authPrimaryBtn--link">
+          Ir a iniciar sesión →
+        </Link>
+      ) : (
+        <form onSubmit={handleSubmit} className="authForm" aria-busy={loading}>
+          <AuthField
+            label="Nueva contraseña"
+            icon="🔒"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={setPassword}
+            placeholder={`Mínimo ${MIN_PASSWORD} caracteres`}
+            revealable
+            required
+          />
+          <AuthField
+            label="Repetir contraseña"
+            icon="🔒"
+            type="password"
+            autoComplete="new-password"
+            value={confirm}
+            onChange={setConfirm}
+            placeholder="Repetila"
+            error={mismatch ? "Las contraseñas no coinciden." : ""}
+            revealable
+            required
+          />
 
-            setMessage("✅ ¡Contraseña actualizada! Redirigiendo al login...");
-
-            // Esperamos 2 segundos y lo mandamos al login
-            setTimeout(() => {
-                navigate("/login");
-            }, 3000);
-
-        } catch (err) {
-            setError(err.response?.data?.message || "El link expiró o es inválido.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="auth-container" style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
-            <div className="card" style={{ padding: "30px", borderRadius: "12px", boxShadow: "0 4px 15px rgba(0,0,0,0.1)", textAlign: "center", backgroundColor: "white" }}>
-                <h2 style={{ color: "#0B5CFF", marginBottom: "20px" }}>Nueva Contraseña 🔒</h2>
-
-                {error && <div style={{ color: "red", background: "#fee", padding: "10px", borderRadius: "8px", marginBottom: "15px" }}>{error}</div>}
-                {message && <div style={{ color: "green", background: "#e8f5e9", padding: "10px", borderRadius: "8px", marginBottom: "15px" }}>{message}</div>}
-
-                {!message && ( // Ocultamos el formulario si ya hubo éxito
-                    <form onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: "15px", textAlign: "left" }}>
-                            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Nueva Contraseña</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                placeholder="******"
-                                style={{ width: "100%", padding: "12px", borderRadius: "8px", border: "1px solid #ccc" }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "20px", textAlign: "left" }}>
-                            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Confirmar Contraseña</label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                                placeholder="******"
-                                style={{ width: "100%", padding: "12px", borderRadius: "8px", border: "1px solid #ccc" }}
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            style={{
-                                width: "100%",
-                                padding: "14px",
-                                backgroundColor: loading ? "#ccc" : "#0B5CFF",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "50px",
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                                cursor: loading ? "not-allowed" : "pointer"
-                            }}
-                        >
-                            {loading ? "Actualizando..." : "Cambiar Contraseña"}
-                        </button>
-                    </form>
-                )}
-            </div>
-        </div>
-    );
+          <button className="authPrimaryBtn" type="submit" disabled={loading}>
+            {loading ? "Actualizando…" : "Cambiar contraseña"}
+          </button>
+        </form>
+      )}
+    </AuthLayout>
+  );
 }

@@ -1,1011 +1,155 @@
 // frontend/src/pages/home.jsx
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
-import { LANDING_CONFIGS } from "../landings/index.js";
-import SafeImg from "../components/SafeImg.jsx";
+// Home / catálogo. La página solo orquesta: datos en `useCatalog`, reglas del
+// catálogo en `landings/catalog.js` y la UI en `components/home/*`.
+import { useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { useCatalog } from "../hooks/useCatalog.js";
+import { useBestsellerIds } from "../hooks/useBestsellerIds.js";
+import { rankBySales } from "../components/home/bestsellers.js";
+import { discountPct } from "../utils/pricing.js";
+import HomeHero from "../components/home/HomeHero.jsx";
+import CountdownBar from "../components/home/CountdownBar.jsx";
+import SeenInStrip from "../components/home/SeenInStrip.jsx";
+import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
+import LazySection from "../components/home/LazySection.jsx";
+import { lazyWithRetry } from "../utils/lazyWithRetry.js";
+import CategoryTabs from "../components/home/CategoryTabs.jsx";
+import CatalogGrid from "../components/home/CatalogGrid.jsx";
+import Reveal from "../components/motion/Reveal.jsx";
+import {
+  ALL_CATEGORIES,
+  categoriesOf,
+  categoryLabel,
+  productCategory,
+} from "../components/home/catalogCategories.js";
+import "../components/home/home.css";
+import "../components/home/home-hero.css";
+import { STORE_NAME } from "../config/brand.js";
 
-/* ── useCountdown — mismo hook que marquee.jsx y ProductDetail.jsx ── */
-/* Misma sessionStorage key "pd_countdown" → sincronizado con el marquee */
-function useCountdown(storageKey, minutes) {
-  const [left, setLeft] = useState(0);
-  useEffect(() => {
-    const saved = Number(sessionStorage.getItem(storageKey));
-    const target =
-      saved && saved > Date.now() ? saved : Date.now() + minutes * 60 * 1000;
-    sessionStorage.setItem(storageKey, String(target));
-    const tick = () => setLeft(Math.max(0, target - Date.now()));
-    tick();
-    const t = setInterval(tick, 1000);
-    return () => clearInterval(t);
-  }, [storageKey, minutes]);
-  const totalSec = Math.floor(left / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
-  const ss = String(totalSec % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
+/* Bajo el pliegue: chunks aparte (ver LazySection). Opiniones va sola porque
+   queda entre el carrusel y el catálogo; el resto es el cierre de la página. */
+const HomeReviews = lazyWithRetry(() => import("../components/home/HomeReviews.jsx"));
+const HomeClosing = lazyWithRetry(() => import("../components/home/HomeClosing.jsx"));
+
+const FEATURED_MAX = 8;
+const FEATURED_MIN_DISCOUNT = 5;
+
+const storeName = STORE_NAME;
+const whatsapp = import.meta.env.VITE_WHATSAPP_NUMBER || "";
+const waLink = whatsapp
+  ? `https://wa.me/${String(whatsapp).replace(/[^\d]/g, "")}?text=${encodeURIComponent(
+      `Hola! 👋 Quiero consultar sobre los productos de ${storeName}.`
+    )}`
+  : null;
+
+/* Destacados: los de mayor descuento si hay al menos 3, si no los primeros. */
+function pickFeatured(products) {
+  const discounted = products
+    .filter((p) => discountPct(p.price, p.compareAtPrice) >= FEATURED_MIN_DISCOUNT)
+    .sort((a, b) => discountPct(b.price, b.compareAtPrice) - discountPct(a.price, a.compareAtPrice));
+  return (discounted.length >= 3 ? discounted : products).slice(0, FEATURED_MAX);
 }
 
-/* ── Helpers ─────────────────────────────────────────────────────── */
-const moneyARS = (n) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(Number(n) || 0);
+const maxDiscountOf = (products) =>
+  products.reduce((best, p) => Math.max(best, discountPct(p.price, p.compareAtPrice)), 0);
 
-function discountPct(price, compare) {
-  const p = Number(price) || 0;
-  const c = Number(compare) || 0;
-  return c > p && p > 0 ? Math.round(((c - p) / c) * 100) : 0;
-}
-
-const CAT_LABELS = {
-  general:    "General",
-  gorros:     "Gorros",
-  accesorios: "Accesorios",
-  inflables:  "Inflables",
-  ruido:      "Ruido",
-  hogar:      "Hogar",
-  kits:       "Kits",
-  mundial:    "Mundial",
-  otro:       "Otro",
-};
-const VALID_CATS = new Set(Object.keys(CAT_LABELS));
-const catLabel = (k) => CAT_LABELS[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1) : "General");
-
-/* ── Encontrar el landingSlug canónico para un productSlug de DB ──
-   Replica la lógica de findLandingForSlug del admin:
-   1. Clave directa del config (ej: "parches-detox")
-   2. config.productSlug (ej: "lampara-magnetica-negro-kit" → "lampara-magnetica")
-   3. variant.productSlug (variantes de una misma landing) */
-function findLandingSlug(productSlug) {
-  if (!productSlug) return null;
-  // First pass: exact matches (key, productSlug, variant productSlugs)
-  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
-    if (landingSlug === productSlug) return landingSlug;
-    if (config.productSlug === productSlug) return landingSlug;
-    if (Array.isArray(config.variants)) {
-      for (const v of config.variants) {
-        if (v.productSlug === productSlug) return landingSlug;
-      }
-    }
-  }
-  // Second pass: prefix match — handles slugs like "sillon-puff-inflable-sunfield"
-  // that extend a known productSlug with extra words (e.g. brand name added in admin)
-  for (const [landingSlug, config] of Object.entries(LANDING_CONFIGS)) {
-    const base = config.productSlug || landingSlug;
-    if (productSlug.startsWith(base + '-')) return landingSlug;
-  }
-  return null;
-}
-
-/* ── ProductCard ─────────────────────────────────────────────────── */
-function ProductCard({ product, index = 0 }) {
-  const navigate = useNavigate();
-
-  // Defensa en profundidad: nunca renderizar una card sin precio valido.
-  // El filtro `visible` de arriba ya deberia bloquearlo, pero si algo se cuela
-  // (bug futuro, virtual del landing config sin bundle, product entry corrupto)
-  // mejor que la card no exista a que aparezca con "$ 0" + boton "Ver oferta".
-  if (!(Number(product?.price) > 0)) return null;
-
-  const img  = product.images?.[0] || product.imageUrl || "";
-  const pct  = discountPct(product.price, product.compareAtPrice);
-  const landingSlug = findLandingSlug(product.slug);
-  const href = landingSlug ? `/lp/${landingSlug}` : `/products/${product._id}`;
-  // Stagger up to 7 cards, after that no extra delay (below fold anyway)
-  const delay = Math.min(index, 7) * 70;
-
-  return (
-    <article
-      className="hc-card reveal"
-      style={{ transitionDelay: `${delay}ms` }}
-      onClick={() => navigate(href)}
-    >
-      <div className="hc-card-img">
-        <SafeImg
-          src={img}
-          name={product.name}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-        />
-        {pct > 0 && <span className="hc-badge-off">-{pct}%</span>}
-      </div>
-      <div className="hc-card-body">
-        <div className="hc-card-name">{product.name}</div>
-        <div className="hc-card-prices">
-          {product.compareAtPrice > product.price && (
-            <span className="hc-price-was">{moneyARS(product.compareAtPrice)}</span>
-          )}
-          <span className="hc-price-now">{moneyARS(product.price)}</span>
-          {pct > 0 && <span className="hc-price-pct">-{pct}%</span>}
-        </div>
-        <Link
-          className="btn btn-primary hc-card-cta"
-          to={href}
-          onClick={(e) => e.stopPropagation()}
-        >
-          Ver oferta →
-        </Link>
-      </div>
-    </article>
-  );
-}
-
-/* ── Skeleton card ───────────────────────────────────────────────── */
-function SkeletonCard() {
-  return (
-    <div className="hc-card hc-card-skeleton">
-      <div className="hc-card-img hc-skel" />
-      <div className="hc-card-body" style={{ gap: 10 }}>
-        <div className="hc-skel" style={{ height: 16, borderRadius: 8, width: "75%" }} />
-        <div className="hc-skel" style={{ height: 28, borderRadius: 8, width: "55%" }} />
-        <div className="hc-skel" style={{ height: 40, borderRadius: 12 }} />
-      </div>
-    </div>
-  );
-}
-
-/* ── Main ────────────────────────────────────────────────────────── */
 export default function Home() {
-  const [products, setProducts]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [fetchError, setFetchError] = useState(false);
-  const [retryAttempt, setRetryAttempt] = useState(0); // 0 = primer intento, 1+ = reintento
-  const [activeCat, setActiveCat] = useState("todos");
+  const { products, loading, fetchError, retryAttempt, retry } = useCatalog();
+  const [activeCat, setActiveCat] = useState(ALL_CATEGORIES);
   const catalogRef = useRef(null);
 
-  const storeName = import.meta.env.VITE_STORE_NAME || "Encontratodo";
-  const whatsapp  = import.meta.env.VITE_WHATSAPP_NUMBER || "";
-  const waLink    = whatsapp
-    ? `https://wa.me/${String(whatsapp).replace(/[^\d]/g, "")}?text=${encodeURIComponent(
-        `Hola! 👋 Quiero consultar sobre los productos de ${storeName}.`
-      )}`
-    : null;
-
-  /* Productos virtuales desde configs de landing (aparecen aunque no estén en DB).
-     Se deduplican por referencia de config para evitar duplicar aliases
-     (ej: 'nebulizador' y 'nebulizador-mesh' apuntan al mismo objeto). */
-  const landingVirtualProducts = useMemo(() => {
-    const seenCfgs = new Set();
-    return Object.entries(LANDING_CONFIGS).reduce((acc, [key, cfg]) => {
-      if (seenCfgs.has(cfg)) return acc;
-      seenCfgs.add(cfg);
-      const slug = cfg.productSlug || key;
-      const v0 = cfg.variants?.[0];
-      // Fallback para configs sin variants (ej: sillón puff, parches detox):
-      // imagen del primer storyBlock o heroImages, precio del primer bundle
-      const img = v0?.thumbImg || v0?.images?.[0]
-        || (typeof cfg.heroImages?.[0] === 'string' ? cfg.heroImages[0] : cfg.heroImages?.[0]?.src)
-        || cfg.storyBlocks?.[0]?.img
-        || "";
-      const price = v0?.bundles?.[0]?.price || cfg.bundles?.[0]?.price || 0;
-      const compareAt = v0?.bundles?.[0]?.compareAt || cfg.bundles?.[0]?.compareAt || 0;
-      acc.push({
-        _id: `lp-${slug}`,
-        name: cfg.checkoutName || slug,
-        slug,
-        images: img ? [img] : [],
-        price,
-        compareAtPrice: compareAt,
-        isActive: true,
-      });
-      return acc;
-    }, []);
-  }, []);
-
-  /* Fetch con retry + backoff para cubrir cold start de Render (~30-60s).
-     Regla dura: los productos virtuales de configs NUNCA salen como fallback
-     de un error de red — solo se agregan cuando la API respondio OK y su
-     slug no matchea con ningun producto de la BD. Si la API falla despues
-     de todos los reintentos, mostramos error explicito, no un catalogo
-     fantasma con $ 0. */
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setFetchError(false);
-    setRetryAttempt(0);
-
-    // Delays entre intentos: 0 (inmediato), 1s, 3s, 6s. Cubre cold start
-    // tipico de Render free tier sin castigar al usuario si la API vuelve
-    // rapido. Total worst-case: ~10s antes de mostrar error.
-    const delays = [0, 1000, 3000, 6000];
-    let lastError = null;
-
-    for (let i = 0; i < delays.length; i++) {
-      if (delays[i] > 0) {
-        setRetryAttempt(i);
-        await new Promise(r => setTimeout(r, delays[i]));
-      }
-      try {
-        const [productsRes, slugsRes] = await Promise.all([
-          api.get("/products"),
-          api.get("/products/slugs").catch(() => ({ data: { data: [] } })),
-        ]);
-        const raw = productsRes.data?.data ?? productsRes.data ?? [];
-        const arr = Array.isArray(raw) ? raw : [];
-        const apiProducts = arr.filter((p) => p.isActive !== false);
-
-        // Todos los slugs en DB (activos + inactivos) — impide que virtuales reaparezcan al desactivar
-        const rawSlugs = slugsRes.data?.data ?? [];
-        const allDbSlugs = new Set(Array.isArray(rawSlugs) ? rawSlugs : []);
-        // Complementar con slugs activos por si /slugs falla
-        apiProducts.forEach(p => p.slug && allDbSlugs.add(p.slug));
-
-        // Slugs de landing configs canónicos — para deduplicación por prefijo
-        const landingProductSlugs = new Set(
-          Object.values(LANDING_CONFIGS).map(cfg => cfg.productSlug).filter(Boolean)
-        );
-        // Excluir virtual si su slug existe en DB (active o inactive).
-        // Virtuales solo aparecen aca — donde la API respondio OK y el slug
-        // realmente no existe en la BD. Nunca en el catch (ver regla arriba).
-        const extras = landingVirtualProducts.filter((p) => !allDbSlugs.has(p.slug));
-        // Excluir productos de DB cuyo slug extiende un productSlug de landing
-        const filteredApiProducts = apiProducts.filter(p => {
-          if (!p.slug) return true;
-          if (landingProductSlugs.has(p.slug)) return true;
-          for (const base of landingProductSlugs) {
-            if (p.slug.startsWith(base + '-')) return false;
-          }
-          return true;
-        });
-        const merged = [...extras, ...filteredApiProducts];
-        // Filtro estricto: precio > 0 es REQUERIDO. El OR anterior
-        // (imagen || precio) dejaba pasar cards con imagen + $0, lo que
-        // generaba "$ 0" con boton "Ver oferta" para productos desactivados
-        // o virtuales de landing configs sin bundle. Nunca cobrar $0.
-        const visible = merged.filter((p) => Number(p.price) > 0);
-        setProducts(visible);
-        setFetchError(false);
-        setLoading(false);
-        setRetryAttempt(0);
-        return;
-      } catch (e) {
-        lastError = e;
-        console.warn(`Home catalog fetch attempt ${i + 1}/${delays.length} failed:`, e?.message || e);
-      }
-    }
-
-    // Todos los intentos fallaron. NO caemos al fallback de virtuales
-    // (mostrarian $ 0 con boton de compra — peor UX que un mensaje claro).
-    console.error("Home catalog: todos los reintentos fallaron", lastError);
-    setProducts([]);
-    setFetchError(true);
-    setLoading(false);
-    setRetryAttempt(0);
-  }, [landingVirtualProducts]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  /* Scroll-reveal — mismo patrón que MundialLanding:
-     elementos en viewport → is-visible inmediato (con stagger via transitionDelay)
-     elementos bajo el fold → IO los revela al scrollear */
-  useEffect(() => {
-    if (loading) return;
-    let io = null;
-    const timer = setTimeout(() => {
-      const vh = window.innerHeight;
-
-      // ── Cards ──────────────────────────────────────────────────
-      const cards = Array.from(document.querySelectorAll(".hc-card.reveal:not(.is-visible)"));
-      const belowFoldCards = [];
-      cards.forEach((el) => {
-        const top = el.getBoundingClientRect().top;
-        if (top < vh + 60) {
-          // Ya en viewport o muy cerca → visibilizar de inmediato
-          // El transitionDelay inline maneja el stagger de la animación
-          el.classList.add("is-visible");
-        } else {
-          belowFoldCards.push(el);
-        }
-      });
-
-      // ── Trust items ────────────────────────────────────────────
-      document.querySelectorAll(".hc-trust-item.reveal:not(.is-visible)")
-        .forEach((el) => el.classList.add("is-visible"));
-
-      // ── Section headers (hc-anim) ──────────────────────────────
-      document.querySelectorAll(".hc-anim:not(.in-view)").forEach((el) => {
-        if (el.getBoundingClientRect().top < vh) {
-          el.classList.add("in-view");
-        } else {
-          el.classList.add("hc-hidden");
-          belowFoldCards.push(el); // observar junto con las cards
-        }
-      });
-
-      // ── IO solo para los elementos bajo el fold ────────────────
-      if (belowFoldCards.length) {
-        io = new IntersectionObserver(
-          (entries) => entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            if (e.target.classList.contains("hc-card")) {
-              e.target.classList.add("is-visible");
-            } else {
-              e.target.classList.remove("hc-hidden");
-              e.target.classList.add("in-view");
-            }
-            io.unobserve(e.target);
-          }),
-          { threshold: 0.05 }
-        );
-        belowFoldCards.forEach((el) => io.observe(el));
-      }
-    }, 60);
-
-    return () => {
-      clearTimeout(timer);
-      if (io) io.disconnect();
-    };
-  }, [loading, activeCat]);
-
-  /* Categories — only known valid keys */
-  const categories = useMemo(() => {
-    const seen = new Set();
-    products.forEach((p) => {
-      const c = (p.category || "general").trim();
-      if (VALID_CATS.has(c) && c !== "general") seen.add(c);
-    });
-    return Array.from(seen).sort();
-  }, [products]);
-
-  const showCategoryTabs = categories.length > 0;
-
-  /* Featured: prioritize discounted products; fallback to first products */
-  const featured = useMemo(() => {
-    const discounted = products
-      .filter((p) => discountPct(p.price, p.compareAtPrice) >= 5)
-      .sort((a, b) => discountPct(b.price, b.compareAtPrice) - discountPct(a.price, a.compareAtPrice));
-    // Use discounted if enough, otherwise show all products
-    return (discounted.length >= 3 ? discounted : products).slice(0, 8);
-  }, [products]);
-
-  /* Filtered list */
-  const filtered = useMemo(() => (
-    activeCat === "todos"
+  const categories = useMemo(() => categoriesOf(products), [products]);
+  const featured = useMemo(() => pickFeatured(products), [products]);
+  const bestsellerIds = useBestsellerIds();
+  // Más vendidos reales si hay datos de ventas suficientes; si no, ofertas.
+  const bestsellers = useMemo(
+    () => rankBySales(products, bestsellerIds, { max: FEATURED_MAX }),
+    [products, bestsellerIds]
+  );
+  const maxDiscount = useMemo(() => maxDiscountOf(products), [products]);
+  const filtered = useMemo(
+    () => (activeCat === ALL_CATEGORIES
       ? products
-      : products.filter((p) => (p.category || "general") === activeCat)
-  ), [products, activeCat]);
-
-  const maxDiscount = products.reduce((best, p) => {
-    const pct = discountPct(p.price, p.compareAtPrice);
-    return pct > best ? pct : best;
-  }, 0);
-
-  /* Countdown — misma key que marquee.jsx → sincronizan */
-  const countdownTime = useCountdown("pd_countdown", 18);
+      : products.filter((p) => productCategory(p) === activeCat)),
+    [products, activeCat]
+  );
 
   const scrollToCatalog = () =>
     catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  const TRUST_ITEMS = [
-    { ico: "🚚", lbl: "Envío",    val: "Gratis a todo el país" },
-    { ico: "💳", lbl: "Pagás con", val: "Mercado Pago" },
-    { ico: "🔒", lbl: "Compra",   val: "100% segura" },
-    { ico: "📦", lbl: "Stock",    val: "Real · sale hoy" },
-  ];
-
   return (
     <main className="section hc-page">
-      {/* ────────────────────────────── CSS */}
-      <style>{`
-        /* =====================================================
-           HOME CATALOG — hc- prefix  (Luxcove-inspired)
-        ===================================================== */
-
-        /* === PAGE BG === */
-        .hc-page { background: #FAFAF7; }
-
-        /* === HERO === */
-        .hc-hero {
-          width: 100%;
-          padding: 84px 24px 76px;
-          background: #FDFBF7;
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-          border-bottom: 1px solid #EDE8DF;
-        }
-        .hc-hero::before {
-          content: "";
-          position: absolute; inset: 0;
-          background-image: radial-gradient(circle, rgba(0,0,0,.045) 1px, transparent 1px);
-          background-size: 28px 28px;
-          pointer-events: none;
-        }
-        .hc-hero-inner {
-          position: relative; z-index: 1;
-          max-width: 680px; margin: 0 auto;
-          display: flex; flex-direction: column; align-items: center;
-        }
-        .hc-hero-eyebrow {
-          display: inline-flex; align-items: center; gap: 7px;
-          font-size: .70rem; font-weight: 800;
-          letter-spacing: .16em; text-transform: uppercase;
-          color: #9B8B7A; margin-bottom: 20px;
-        }
-        .hc-hero-eyebrow-dot {
-          width: 7px; height: 7px; border-radius: 999px;
-          background: #C4932A;
-          box-shadow: 0 0 0 0 rgba(196,147,42,.5);
-          animation: hcDotPulse 2.2s ease-out infinite;
-        }
-        @keyframes hcDotPulse {
-          0%  { box-shadow: 0 0 0 0 rgba(196,147,42,.55); }
-          70% { box-shadow: 0 0 0 9px rgba(196,147,42,0); }
-          100%{ box-shadow: 0 0 0 0 rgba(196,147,42,0); }
-        }
-        .hc-hero-title {
-          margin: 0 0 20px;
-          font-size: clamp(2.6rem, 6vw, 4.2rem);
-          font-weight: 900;
-          color: #0A0A0A;
-          letter-spacing: -0.04em;
-          line-height: 1.05;
-        }
-        .hc-hero-title span {
-          background: linear-gradient(130deg, #B8832A 0%, #E8B84A 100%);
-          -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .hc-hero-sub {
-          font-size: 1.05rem; font-weight: 500;
-          color: #7A7067;
-          margin: 0 0 32px; line-height: 1.6;
-          max-width: 440px;
-        }
-        .hc-hero-actions {
-          display: flex; align-items: center; justify-content: center;
-          gap: 12px; flex-wrap: wrap;
-        }
-        .hc-hero-cta {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 16px 34px; border-radius: 999px;
-          background: #0A0A0A;
-          color: #fff; font-weight: 700; font-size: .97rem;
-          letter-spacing: .02em; border: none; cursor: pointer;
-          font-family: inherit;
-          box-shadow: 0 8px 24px rgba(0,0,0,.22);
-          transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-        }
-        .hc-hero-cta:hover {
-          transform: translateY(-2px);
-          background: #222;
-          box-shadow: 0 16px 36px rgba(0,0,0,.30);
-        }
-        .hc-hero-badge {
-          display: inline-flex; align-items: center; gap: 7px;
-          padding: 13px 22px; border-radius: 999px;
-          border: 1px solid #DDD5C8;
-          color: #5A4E42; font-weight: 700; font-size: .88rem;
-          background: #fff;
-        }
-        @media (max-width: 600px) {
-          .hc-hero { padding: 56px 20px 48px; }
-          .hc-hero-title { font-size: clamp(2.1rem, 8vw, 2.8rem); }
-          .hc-hero-sub { font-size: .93rem; margin-bottom: 26px; }
-        }
-
-        /* === ANNOUNCEMENT / COUNTDOWN BAR === */
-        .hc-cd-bar {
-          width: 100%;
-          background: #F5F0E8;
-          border-bottom: 1px solid #EDE8DF;
-          padding: 11px 16px;
-          display: flex; align-items: center; justify-content: center;
-          gap: 14px; flex-wrap: wrap;
-        }
-        .hc-cd-text {
-          font-size: .80rem; font-weight: 800;
-          color: #3A3028;
-          letter-spacing: .03em; white-space: nowrap;
-        }
-        .hc-cd-sep {
-          width: 1px; height: 14px;
-          background: #D5CCB9; flex-shrink: 0;
-        }
-        .hc-cd-time {
-          font-variant-numeric: tabular-nums;
-          font-weight: 900; font-size: 1.05rem;
-          color: #C4932A; letter-spacing: 2px;
-          white-space: nowrap;
-        }
-        .hc-cd-cta {
-          font-size: .75rem; font-weight: 800;
-          color: #9B8B7A;
-          letter-spacing: .04em; text-transform: uppercase;
-          white-space: nowrap;
-        }
-        @media (max-width: 480px) {
-          .hc-cd-bar { gap: 10px; padding: 9px 14px; }
-          .hc-cd-text { font-size: .74rem; }
-          .hc-cd-time { font-size: .95rem; }
-          .hc-cd-cta { display: none; }
-        }
-
-        /* === TRUST STRIP === */
-        .hc-trust {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 10px;
-          margin: 20px auto 0;
-          width: min(var(--container), calc(100% - 2rem));
-        }
-        .hc-trust-item {
-          display: flex; flex-direction: column;
-          align-items: center; gap: 5px;
-          text-align: center;
-          padding: 18px 10px 16px;
-          border-radius: 16px;
-          border: 1px solid #EDE8DF;
-          background: #fff;
-          box-shadow: 0 2px 8px rgba(0,0,0,.04);
-          transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-        }
-        .hc-trust-item:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 28px rgba(0,0,0,.09);
-          border-color: #C8BFB3;
-        }
-        .hc-trust-item.reveal:not(.is-visible) {
-          opacity: 0; transform: translateY(14px);
-          transition: opacity .5s ease, transform .5s ease;
-        }
-        .hc-trust-item.reveal.is-visible { opacity: 1; transform: translateY(0); }
-        .hc-trust-item.reveal.is-visible:hover { transform: translateY(-3px); }
-        .hc-trust-ico { font-size: 1.65rem; line-height: 1; }
-        .hc-trust-lbl {
-          font-size: .60rem; font-weight: 800;
-          letter-spacing: .08em; text-transform: uppercase;
-          color: #9B8B7A; margin-top: 1px;
-        }
-        .hc-trust-val {
-          font-size: .80rem; font-weight: 800;
-          color: #0A0A0A; line-height: 1.2;
-        }
-        @media (max-width: 600px) {
-          .hc-trust { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-          .hc-trust-item { padding: 14px 8px 12px; }
-          .hc-trust-ico { font-size: 1.4rem; }
-          .hc-trust-val { font-size: .75rem; }
-        }
-
-        /* === CONTAINER WRAPPER === */
-        .hc-wrap {
-          width: min(var(--container), calc(100% - 2rem));
-          margin: 0 auto;
-        }
-
-        /* === SECTION HEADERS === */
-        .hc-sec-head {
-          display: flex; align-items: baseline;
-          justify-content: space-between;
-          gap: 10px; flex-wrap: wrap;
-          margin-top: 48px;
-        }
-        .hc-sec-title {
-          margin: 0;
-          font-size: clamp(1.25rem, 2.4vw, 1.6rem);
-          font-weight: 900; letter-spacing: -0.03em; color: #0A0A0A;
-        }
-        .hc-sec-pill {
-          font-size: .72rem; font-weight: 800;
-          color: #9B8B7A;
-          background: #F5F0E8;
-          border: 1px solid #EDE8DF;
-          padding: 4px 12px; border-radius: 999px;
-          letter-spacing: .04em; text-transform: uppercase;
-        }
-        .hc-sec-count {
-          font-size: .82rem; font-weight: 700; color: #9B8B7A;
-        }
-
-        .hc-anim { opacity: 1; transform: none; }
-        .hc-hidden {
-          opacity: 0; transform: translateY(20px);
-          transition: opacity .7s ease, transform .7s ease;
-        }
-        .hc-hidden.in-view { opacity: 1; transform: translateY(0); }
-
-        /* === FEATURED CAROUSEL === */
-        .hc-carousel-wrap { position: relative; margin-top: 14px; }
-        .hc-carousel {
-          display: flex; gap: 14px;
-          overflow-x: auto; scroll-snap-type: x mandatory;
-          scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
-          padding-bottom: 4px; scrollbar-width: none;
-        }
-        .hc-carousel::-webkit-scrollbar { display: none; }
-        .hc-carousel .hc-card {
-          flex: 0 0 220px; width: 220px;
-          scroll-snap-align: start;
-          transition-delay: 0ms !important;
-        }
-        .hc-carousel-wrap::after {
-          content: ""; position: absolute;
-          top: 0; right: 0; bottom: 4px; width: 52px;
-          background: linear-gradient(to left, #FAFAF7, transparent);
-          pointer-events: none;
-        }
-        @media (max-width: 480px) {
-          .hc-carousel .hc-card { flex: 0 0 185px; width: 185px; }
-        }
-
-        /* === CATEGORY TABS === */
-        .hc-tabs { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
-        .hc-tab {
-          padding: 7px 18px; border-radius: 999px;
-          border: 1.5px solid #E8E2D9;
-          background: transparent; color: #6B6B6B;
-          font-size: .79rem; font-weight: 700; cursor: pointer;
-          transition: all .14s ease; font-family: inherit;
-          letter-spacing: .02em;
-        }
-        .hc-tab:hover { border-color: #0A0A0A; color: #0A0A0A; }
-        .hc-tab.is-on {
-          background: #0A0A0A; border-color: #0A0A0A;
-          color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.18);
-        }
-
-        /* === PRODUCT GRID === */
-        .hc-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          gap: 18px; margin-top: 18px;
-        }
-        @media (min-width: 1024px) { .hc-grid { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 500px) { .hc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
-
-        /* === PRODUCT CARD === */
-        .hc-card {
-          border: 1px solid #EDE8DF;
-          background: #fff;
-          border-radius: 16px;
-          box-shadow: 0 2px 8px rgba(0,0,0,.05);
-          overflow: hidden; cursor: pointer;
-          display: flex; flex-direction: column;
-          transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, opacity .55s ease;
-        }
-        .hc-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 24px 52px rgba(0,0,0,.12);
-          border-color: #C4B9AC;
-        }
-        .hc-card:hover .hc-card-img img { transform: scale(1.06); }
-        .hc-card.reveal:not(.is-visible) { opacity: 0; transform: translateY(20px); }
-        .hc-card.reveal.is-visible { opacity: 1; transform: translateY(0); }
-        .hc-card.reveal.is-visible:hover { transform: translateY(-5px); }
-
-        .hc-card-img {
-          position: relative; aspect-ratio: 1 / 1;
-          background: #F9F5EE; overflow: hidden;
-        }
-        .hc-card-img img {
-          width: 100%; height: 100%;
-          object-fit: contain; display: block;
-          padding: 12px; box-sizing: border-box;
-          transition: transform .4s ease;
-        }
-        .hc-card-no-img {
-          width: 100%; height: 100%;
-          display: grid; place-items: center;
-          font-size: 2.5rem; color: #9B8B7A; opacity: .4;
-        }
-
-        /* Discount badge — RED como Luxcove */
-        .hc-badge-off {
-          position: absolute; top: 10px; left: 10px; z-index: 2;
-          padding: 5px 10px; border-radius: 6px;
-          background: #DC2626;
-          color: #fff; font-size: .72rem; font-weight: 800;
-          letter-spacing: .05em; text-transform: uppercase;
-          box-shadow: 0 3px 10px rgba(220,38,38,.30);
-        }
-
-        .hc-card-body {
-          padding: 14px 14px 16px;
-          display: flex; flex-direction: column;
-          gap: 6px; flex: 1;
-        }
-        .hc-card-name {
-          font-size: .92rem; font-weight: 700;
-          color: #0A0A0A; line-height: 1.3;
-          display: -webkit-box;
-          -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-          min-height: calc(1.3em * 2);
-        }
-        .hc-card-prices {
-          display: flex; align-items: baseline;
-          gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 4px;
-        }
-        .hc-price-was {
-          font-size: .78rem; font-weight: 600;
-          color: #9B8B7A; text-decoration: line-through;
-        }
-        .hc-price-now {
-          font-size: 1.38rem; font-weight: 900;
-          color: #0A0A0A; letter-spacing: -0.03em; line-height: 1;
-        }
-        .hc-price-pct {
-          font-size: .68rem; font-weight: 800; color: #DC2626;
-          background: rgba(220,38,38,.08);
-          border: 1px solid rgba(220,38,38,.18);
-          padding: 3px 7px; border-radius: 999px;
-          white-space: nowrap;
-        }
-        .hc-card-cta {
-          width: 100%; justify-content: center;
-          font-size: .83rem; padding: 11px 14px; margin-top: 8px;
-          letter-spacing: .01em;
-          background: #0A0A0A !important;
-          color: #fff !important;
-          border-color: #0A0A0A !important;
-          border-radius: 999px !important;
-          transition: transform .18s ease, box-shadow .18s ease, letter-spacing .18s ease;
-        }
-        .hc-card-cta:hover {
-          transform: translateY(-2px) !important;
-          background: #222 !important;
-          box-shadow: 0 10px 24px rgba(0,0,0,.22) !important;
-          letter-spacing: .04em;
-        }
-
-        /* === SKELETON === */
-        .hc-card-skeleton { pointer-events: none; }
-        .hc-skel {
-          background: linear-gradient(90deg, #F0EBE2 25%, #E8E0D4 50%, #F0EBE2 75%);
-          background-size: 200% 100%;
-          animation: hcSkel 1.4s ease-in-out infinite;
-        }
-        .hc-card-skeleton .hc-card-img { aspect-ratio: 1/1; }
-        @keyframes hcSkel {
-          0%   { background-position: 200% center; }
-          100% { background-position: -200% center; }
-        }
-
-        /* === EMPTY STATE === */
-        .hc-empty {
-          grid-column: 1 / -1; padding: 44px 20px;
-          text-align: center; color: #9B8B7A;
-        }
-        .hc-empty-ico { font-size: 2.8rem; margin-bottom: 12px; }
-        .hc-empty-title { font-size: 1.1rem; font-weight: 800; color: #0A0A0A; margin: 0 0 6px; }
-        .hc-empty-sub { font-size: .9rem; font-weight: 600; }
-
-        /* === FLOATING WA BUTTON === */
-        .hc-wa-fab {
-          position: fixed; bottom: 24px; right: 20px; z-index: 9000;
-          display: flex; align-items: center; gap: 8px;
-          padding: 13px 20px; border-radius: 999px;
-          background: #25D366; color: #fff;
-          font-weight: 800; font-size: .87rem;
-          text-decoration: none; letter-spacing: .01em;
-          box-shadow: 0 8px 26px rgba(37,211,102,.38);
-          transition: transform .18s ease, box-shadow .18s ease;
-        }
-        .hc-wa-fab:hover {
-          color: #fff; transform: translateY(-3px);
-          box-shadow: 0 14px 38px rgba(37,211,102,.52);
-        }
-        .hc-wa-fab-ico { font-size: 1.15rem; line-height: 1; }
-        .hc-wa-fab-ring {
-          position: absolute; inset: 0; border-radius: 999px;
-          border: 2px solid rgba(37,211,102,.55);
-          animation: hcWaRing 2.6s ease-out infinite;
-        }
-        @keyframes hcWaRing {
-          0%   { transform: scale(1); opacity: .9; }
-          75%  { transform: scale(1.38); opacity: 0; }
-          100% { transform: scale(1.38); opacity: 0; }
-        }
-        @media (max-width: 480px) {
-          .hc-wa-fab { padding: 13px 15px; }
-          .hc-wa-fab-lbl { display: none; }
-        }
-
-        /* === BOTTOM NAV === */
-        .hc-bottom-nav {
-          display: flex; gap: 10px; flex-wrap: wrap;
-          justify-content: center;
-          margin-top: 28px; padding-bottom: 14px;
-        }
-
-        @media (max-width: 480px) {
-          .hc-card-body { padding: 10px 10px 12px; gap: 5px; }
-          .hc-card-name { font-size: .82rem; min-height: auto; }
-          .hc-price-now { font-size: 1.15rem; }
-          .hc-price-pct { font-size: .64rem; padding: 2px 6px; }
-          .hc-card-cta { font-size: .76rem; padding: 9px 10px; margin-top: 6px; }
-        }
-      `}</style>
-
-      {/* ─── HERO — full bleed ──────────────────────────────────────── */}
-      <section className="hc-hero">
-        <div className="hc-hero-inner">
-          <div className="hc-hero-eyebrow">
-            <span className="hc-hero-eyebrow-dot" />
-            {storeName}
-          </div>
-          <h1 className="hc-hero-title">
-            Todo lo que buscás,<br />
-            <span>al mejor precio</span>
-          </h1>
-          <p className="hc-hero-sub">
-            Productos seleccionados · Stock real · Envío a todo el país
-          </p>
-          <div className="hc-hero-actions">
-            <button className="hc-hero-cta" onClick={scrollToCatalog}>
-              Explorar catálogo <span style={{ fontSize: "1.1em" }}>↓</span>
-            </button>
-            {maxDiscount > 0 && (
-              <span className="hc-hero-badge">
-                🔖 Hasta -{maxDiscount}% OFF
-              </span>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── COUNTDOWN BANNER — mismo hook y key que marquee.jsx ────── */}
-      <div className="hc-cd-bar">
-        <span className="hc-cd-text">⚡ Oferta relámpago termina en</span>
-        <span className="hc-cd-sep" />
-        <span className="hc-cd-time">{countdownTime}</span>
-        <span className="hc-cd-sep" />
-        <span className="hc-cd-cta">Aprovechá ahora</span>
-      </div>
-
-      {/* ─── TRUST STRIP — tarjetas visuales ────────────────────────── */}
-      <div className="hc-trust">
-        {TRUST_ITEMS.map((t, i) => (
-          <div
-            key={i}
-            className="hc-trust-item reveal"
-            style={{ transitionDelay: `${i * 55}ms` }}
-          >
-            <span className="hc-trust-ico">{t.ico}</span>
-            <span className="hc-trust-lbl">{t.lbl}</span>
-            <span className="hc-trust-val">{t.val}</span>
-          </div>
-        ))}
-      </div>
+      <HomeHero
+        storeName={storeName}
+        maxDiscount={maxDiscount}
+        products={featured}
+        loading={loading}
+        onExplore={scrollToCatalog}
+      />
+      <SeenInStrip />
+      <CountdownBar />
 
       <div className="hc-wrap">
-        {/* ─── FEATURED CAROUSEL ──────────────────────────────────── */}
-        {!loading && featured.length >= 2 && (
-          <>
-            <div className="hc-sec-head hc-anim">
-              <h2 className="hc-sec-title">Ofertas destacadas</h2>
-              <span className="hc-sec-pill">🔥 Mayor descuento</span>
-            </div>
-            <div className="hc-carousel-wrap">
-              <div className="hc-carousel">
-                {featured.map((p, i) => (
-                  <ProductCard key={p._id} product={p} index={i} />
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+        {!loading && bestsellers ? (
+          <BestsellerCarousel
+            eyebrow="Lo que más se lleva la gente"
+            title="Los más vendidos"
+            products={bestsellers}
+          />
+        ) : !loading && featured.length >= 2 ? (
+          <BestsellerCarousel
+            eyebrow="Selección de la semana"
+            title="Las ofertas que más rinden"
+            products={featured}
+          />
+        ) : null}
+      </div>
 
-        {/* ─── CATALOG HEADER + TABS ──────────────────────────────── */}
-        <div className="hc-sec-head hc-anim" ref={catalogRef}>
+      <LazySection component={HomeReviews} minHeight={560} />
+
+      <div className="hc-wrap">
+        <Reveal className="hc-sec-head" ref={catalogRef}>
           <h2 className="hc-sec-title">Catálogo</h2>
           {!loading && !fetchError && (
             <span className="hc-sec-count">
               {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
-              {activeCat !== "todos" ? ` en "${catLabel(activeCat)}"` : ""}
+              {activeCat !== ALL_CATEGORIES ? ` en "${categoryLabel(activeCat)}"` : ""}
             </span>
           )}
-        </div>
+        </Reveal>
 
-        {showCategoryTabs && (
-          <div className="hc-tabs" role="tablist">
-            <button
-              type="button" role="tab" aria-selected={activeCat === "todos"}
-              className={`hc-tab ${activeCat === "todos" ? "is-on" : ""}`}
-              onClick={() => setActiveCat("todos")}
-            >
-              Todos
-            </button>
-            {categories.map((c) => (
-              <button
-                key={c} type="button" role="tab" aria-selected={activeCat === c}
-                className={`hc-tab ${activeCat === c ? "is-on" : ""}`}
-                onClick={() => setActiveCat(c)}
-              >
-                {catLabel(c)}
-              </button>
-            ))}
-          </div>
+        {categories.length > 0 && (
+          <CategoryTabs categories={categories} active={activeCat} onChange={setActiveCat} />
         )}
 
-        {/* Mini banner de reintento — solo visible en retry 2+ para que
-            el usuario sepa que estamos activamente reintentando. */}
+        {/* Aviso de reintento: el cold start del backend puede tardar. */}
         {loading && retryAttempt > 0 && (
-          <div style={{
-            textAlign: 'center', fontSize: '.82rem', color: '#8A6A63',
-            marginTop: 14, padding: '10px 14px', borderRadius: 12,
-            background: 'rgba(200, 146, 139, .08)', border: '1px solid rgba(200, 146, 139, .18)',
-          }}>
+          <div className="hc-retry" role="status">
             ⏳ Contactando con el servidor… (intento {retryAttempt + 1} de 4)
           </div>
         )}
 
-        {/* ─── PRODUCT GRID ────────────────────────────────────────── */}
-        <div className="hc-grid">
-          {loading ? (
-            Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-          ) : fetchError ? (
-            <div className="hc-empty">
-              <div className="hc-empty-ico">📡</div>
-              <h3 className="hc-empty-title">Estamos teniendo un problema técnico</h3>
-              <p className="hc-empty-sub" style={{ marginBottom: 18 }}>
-                No pudimos cargar el catálogo. Reintentá en unos segundos —
-                o hablanos por WhatsApp y te ayudamos a comprar directamente.
-              </p>
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  style={{ padding: '10px 22px', borderRadius: 999 }}
-                  onClick={fetchProducts}
-                >
-                  Reintentar
-                </button>
-                {waLink && (
-                  <a
-                    className="btn btn-ghost"
-                    style={{ padding: '10px 22px', borderRadius: 999 }}
-                    href={waLink}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    💬 Comprar por WhatsApp
-                  </a>
-                )}
-              </div>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="hc-empty">
-              <div className="hc-empty-ico">🛍️</div>
-              <h3 className="hc-empty-title">
-                {activeCat !== "todos"
-                  ? "No hay productos en esta categoría"
-                  : "Sin productos disponibles"}
-              </h3>
-              <p className="hc-empty-sub">
-                {activeCat !== "todos"
-                  ? (
-                    <button
-                      className="btn btn-ghost"
-                      style={{ display: "inline", padding: "4px 12px", fontSize: ".82rem" }}
-                      onClick={() => setActiveCat("todos")}
-                    >
-                      Ver todos
-                    </button>
-                  )
-                  : "Volvé pronto — estamos cargando novedades."}
-              </p>
-            </div>
-          ) : (
-            filtered.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)
-          )}
-        </div>
+        <CatalogGrid
+          products={filtered}
+          loading={loading}
+          fetchError={fetchError}
+          activeCat={activeCat}
+          onRetry={retry}
+          onShowAll={() => setActiveCat(ALL_CATEGORIES)}
+          waLink={waLink}
+        />
 
-        {/* ─── BOTTOM NAV ──────────────────────────────────────────── */}
-        {!loading && (
-          <div className="hc-bottom-nav">
-            <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
-            <Link className="btn btn-ghost" to="/cart">Ver carrito</Link>
-          </div>
-        )}
       </div>
 
-      {/* WhatsApp: se usa el componente global <WhatsAppButton /> desde
-          App.jsx. Antes habia un .hc-wa-fab local aca que duplicaba el
-          floating button. Un solo boton por pagina. */}
+      <LazySection component={HomeClosing} minHeight={1600} waLink={waLink} />
+
+      {!loading && (
+        <div className="hc-wrap hc-bottom-nav">
+          <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
+          <Link className="btn btn-ghost" to="/cart">Ver carrito</Link>
+        </div>
+      )}
+      {/* WhatsApp: botón global <WhatsAppButton /> desde App.jsx. */}
     </main>
   );
 }

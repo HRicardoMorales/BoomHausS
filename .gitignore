@@ -11,3 +11,10 @@ frontend/.env
 dist
 .vite
 frontend/.env.production
+
+# Claude local settings (pueden contener secretos); las skills sí se versionan
+.claude/*
+!.claude/skills/
+
+# Archivos subidos por usuarios (comprobantes de pago): nunca al repo
+backend/uploads/

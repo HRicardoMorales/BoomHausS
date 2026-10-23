@@ -17,10 +17,12 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './AntimohoPisos.css';
+import SafeImg from '../../components/SafeImg';
+import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes de producto ──────────────────────────────────────────── */
 const PRODUCT_SLUG   = 'antimoho-pisos';
@@ -335,7 +337,8 @@ export default function AntimohoPisos() {
 
   return (
     <>
-      <div className="amp-wrap">
+      <main className="amp-wrap">
+        <title>Anti-Moho PRO | Pisos y juntas como nuevos | Amelor</title>
 
         {/* ══ TOPBAR + SALEBAR ══ */}
         <div className="amp-topbar">
@@ -368,7 +371,7 @@ export default function AntimohoPisos() {
             <div className="amp-gallery">
               <div className="amp-gallery-main">
                 {galleryImages[activeImg]?.src
-                  ? <img src={galleryImages[activeImg].src} alt={galleryImages[activeImg].alt} />
+                  ? <SafeImg src={galleryImages[activeImg].src} alt={galleryImages[activeImg].alt} width={800} height={800} sizes={HERO_SIZES} priority />
                   : <ImgPlaceholder label={galleryImages[activeImg]?.label} style={{ minHeight: 320 }} />
                 }
               </div>
@@ -383,7 +386,7 @@ export default function AntimohoPisos() {
                     aria-label={`Imagen ${i + 1}`}
                   >
                     {img.src
-                      ? <img src={img.src} alt={img.alt} />
+                      ? <SafeImg src={img.src} alt="" width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
                       : <ImgPlaceholder label={String(i + 1)} />
                     }
                   </div>
@@ -421,12 +424,11 @@ export default function AntimohoPisos() {
               </div>
 
               {/* Bundle picker */}
-              <div className="amp-bundles" id="amp-bundles">
+              <div className="amp-bundles" id="amp-bundles" role="radiogroup" aria-label="Elegí tu pack">
                 {effectiveBundles.map((b, i) => (
                   <label
                     key={b.id}
                     className={`amp-bundle-opt${selectedBundle === i ? ' selected' : ''}`}
-                    onClick={() => setSelectedBundle(i)}
                   >
                     <input type="radio" name="amp-bundle" checked={selectedBundle === i} onChange={() => setSelectedBundle(i)} />
                     <div className="amp-bundle-thumb">
@@ -535,7 +537,7 @@ export default function AntimohoPisos() {
               {FEATURES.map((f, i) => (
                 <div key={i} className="amp-feat-card">
                   <div className="amp-feat-icon"><f.icon /></div>
-                  <h4>{f.title}</h4>
+                  <h3>{f.title}</h3>
                   <p>{f.desc}</p>
                 </div>
               ))}
@@ -575,7 +577,7 @@ export default function AntimohoPisos() {
                 <div key={s.num} className="amp-step">
                   <div className="amp-step-num">{s.num}</div>
                   <span className="amp-step-tag">{s.tag}</span>
-                  <h4>{s.title}</h4>
+                  <h3>{s.title}</h3>
                   <p>{s.desc}</p>
                 </div>
               ))}
@@ -591,7 +593,7 @@ export default function AntimohoPisos() {
           <div className="amp-container amp-mini-grid">
             {MINI_FEATURES.map((m, i) => (
               <div key={i} className="amp-mini-card">
-                <h4>{m.title}</h4>
+                <h3>{m.title}</h3>
                 <p>{m.desc}</p>
               </div>
             ))}
@@ -630,7 +632,7 @@ export default function AntimohoPisos() {
               {REVIEWS_DATA.map((r, i) => (
                 <div key={i} className="amp-review-card">
                   <div className="amp-review-stars">{'★'.repeat(r.stars)}</div>
-                  <h4>{r.title}</h4>
+                  <h3>{r.title}</h3>
                   <p>&ldquo;{r.text}&rdquo;</p>
                   <div className="amp-review-name">{r.name}</div>
                   <div className="amp-review-verified"><IconCheckCircle /> Compra verificada</div>
@@ -678,13 +680,13 @@ export default function AntimohoPisos() {
           </div>
         </div>
 
-      </div>{/* /amp-wrap */}
+      </main>{/* /amp-wrap */}
 
       {/* ══ Sticky CTA bar (mobile) ══ */}
-      <div className={`amp-sticky-bar${stickyVisible ? ' amp-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`amp-sticky-bar${stickyVisible ? ' amp-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <div className="amp-sticky-thumb">
           {galleryImages[0]?.src
-            ? <img src={galleryImages[0].src} alt={CHECKOUT_NAME} />
+            ? <SafeImg src={galleryImages[0].src} alt="" width={40} height={40} sizes="40px" widths={ICON_WIDTHS} />
             : <ImgPlaceholder label="" />
           }
         </div>

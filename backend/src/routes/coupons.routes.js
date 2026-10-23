@@ -8,11 +8,14 @@ const {
   deleteCoupon,
 } = require('../controllers/coupons.controller');
 const { authRequired, adminRequired } = require('../middlewares/authMiddleware');
+const validateObjectId = require('../middlewares/validateObjectId');
+const { validate } = require('../middlewares/validate');
+const { validateCouponBody } = require('../validation/coupons.schemas');
 
 const router = express.Router();
 
 // POST /api/coupons/validate  — público (lo llama el checkout sin login)
-router.post('/validate', validateCoupon);
+router.post('/validate', validate({ body: validateCouponBody }), validateCoupon);
 
 // GET    /api/coupons          — admin: listar todos los cupones
 // POST   /api/coupons          — admin: crear cupón
@@ -20,7 +23,7 @@ router.post('/validate', validateCoupon);
 // DELETE /api/coupons/:id      — admin: eliminar cupón
 router.get   ('/',    authRequired, adminRequired, listCoupons);
 router.post  ('/',    authRequired, adminRequired, createCoupon);
-router.patch ('/:id', authRequired, adminRequired, updateCoupon);
-router.delete('/:id', authRequired, adminRequired, deleteCoupon);
+router.patch ('/:id', authRequired, adminRequired, validateObjectId(), updateCoupon);
+router.delete('/:id', authRequired, adminRequired, validateObjectId(), deleteCoupon);
 
 module.exports = router;

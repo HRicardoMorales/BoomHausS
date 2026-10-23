@@ -1,0 +1,788 @@
+/* Estilos del CheckoutSheet (antes en un <style> inline dentro del componente).
+   Todo va prefijado con .cs- / @keyframes cs* para no chocar con otras páginas.
+   La tipografía por landing se pasa como style inline en .cs-sheet. */
+@keyframes csSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes csSlideDown {
+  from { max-height: 0; opacity: 0; }
+  to   { max-height: 800px; opacity: 1; }
+}
+@keyframes csPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,0,0,.15); }
+  50%      { box-shadow: 0 0 0 6px rgba(0,0,0,0); }
+}
+.cs-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+@media (min-width: 768px) {
+  .cs-overlay { align-items: center; }
+  .cs-sheet { max-width: 480px !important; border-radius: 16px !important; max-height: 92vh !important; }
+}
+.cs-sheet {
+  background: #fff; width: 100%; border-radius: 20px 20px 0 0;
+  max-height: 92vh; display: flex; flex-direction: column;
+  transform: translateY(100%); opacity: 0;
+  transition: transform .38s cubic-bezier(.22,1,.36,1), opacity .28s ease;
+  overflow: hidden;
+}
+.cs-sheet--open { transform: translateY(0) !important; opacity: 1 !important; }
+/* ── Navbar unificado ── */
+.cs-nav {
+  display: flex; align-items: center; height: 56px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: #fff; padding: 0 4px;
+}
+.cs-nav-side {
+  display: flex; align-items: center; min-width: 88px;
+}
+.cs-nav-side--right { justify-content: flex-end; gap: 2px; }
+.cs-nav-center {
+  flex: 1; text-align: center;
+  font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -.01em;
+}
+.cs-nav-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; background: none; border: none;
+  cursor: pointer; border-radius: 10px; color: #444;
+  transition: background .12s; flex-shrink: 0;
+}
+.cs-nav-btn:hover { background: #f5f5f7; }
+.cs-nav-back {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; cursor: pointer;
+  border-radius: 10px; color: #444; padding: 8px 10px 8px 6px;
+  font-size: 13px; font-weight: 700; transition: background .12s;
+  white-space: nowrap;
+}
+.cs-nav-back:hover { background: #f5f5f7; }
+.cs-nav-secure {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 800; color: var(--cs-done);
+  background: var(--cs-accent-bg); border: 1px solid var(--cs-accent-border);
+  border-radius: 999px; padding: 4px 10px; white-space: nowrap;
+  margin-right: 2px;
+}
+
+.cs-body { overflow-y: auto; flex: 1; padding: 0 0 24px; }
+.cs-body::-webkit-scrollbar { width: 4px; }
+.cs-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+@keyframes csStepIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes csStepOut { from { opacity:1; transform:translateY(0); }   to { opacity:0; transform:translateY(-10px); } }
+.cs-body--entering { animation: csStepIn  .30s cubic-bezier(.22,1,.36,1) both; }
+.cs-body--exiting  { animation: csStepOut .18s cubic-bezier(.55,0,.1,1) both; pointer-events:none; overflow:hidden; }
+
+/* Floating label */
+.cs-field { position: relative; }
+.cs-field input, .cs-field select, .cs-field textarea {
+  width: 100%; box-sizing: border-box;
+  padding: 22px 14px 8px; font-size: 15px; font-weight: 400;
+  font-family: inherit;
+  border: 1px solid #d1d5db; border-radius: 8px;
+  background: #fff; color: #111;
+  outline: none; transition: border-color .18s, box-shadow .18s;
+  -webkit-appearance: none; appearance: none;
+}
+.cs-field input:focus, .cs-field select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+}
+.cs-field input.cs-err, .cs-field select.cs-err { border-color: #c0392b !important; }
+.cs-field label {
+  position: absolute; left: 14px; right: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 14px; font-weight: 400; color: #6b7280;
+  transition: all .16s ease; pointer-events: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cs-field input:focus ~ label,
+.cs-field input.hv ~ label,
+.cs-field select ~ label,
+.cs-field textarea:focus ~ label,
+.cs-field textarea.hv ~ label {
+  top: 10px; transform: none; font-size: 11px; color: #6b7280; font-weight: 500;
+}
+.cs-field textarea { padding-top: 26px; padding-bottom: 10px; }
+.cs-field textarea ~ label { top: 18px; transform: none; }
+.cs-field-err { font-size: 12px; color: #c0392b; font-weight: 700; margin-top: 4px; }
+.cs-field select ~ label { top: 10px; transform: none; font-size: 11px; color: #999; font-weight: 700; }
+
+/* (legacy removed) */
+
+/* Radio shipping/pay cards */
+.cs-opt {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; border: 1.5px solid #e0e0e0; border-radius: 12px;
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.cs-opt.cs-opt--active { border-color: var(--primary); background: rgba(0,0,0,.03); }
+.cs-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+
+/* ── Payment step 2 redesign ── */
+.cs-ship-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f8fafc; border: 1.5px solid #e2e8f0;
+  border-radius: 12px; padding: 11px 14px; margin-bottom: 20px;
+}
+.cs-pay-section-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.cs-pay-section-line { flex: 1; height: 1px; background: #e5e7eb; }
+.cs-pay-section-ttl { font-size: 13px; font-weight: 900; color: #1a1a1a; text-transform: uppercase; letter-spacing: .14em; white-space: nowrap; }
+.cs-pay-ssl-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #9ca3af; margin-bottom: 14px; }
+.cs-pcard { border: 1.5px solid #e2e8f0; border-radius: 12px; background: #fff; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.cs-pcard--open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
+.cs-pcard-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 15px 16px; cursor: pointer; min-height: 58px;
+}
+.cs-pcard-row:hover { background: #fafafa; }
+.cs-pcard-row input[type=radio] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+.cs-pcard-lbl { flex: 1; font-size: 14.5px; font-weight: 700; color: #1a1a1a; }
+.cs-pcard-logos { display: flex; align-items: center; gap: 4px; }
+.cs-pcard-chev { color: #c0c0c0; flex-shrink: 0; transition: transform .2s; }
+.cs-pcard-chev--open { transform: rotate(180deg); }
+.cs-pcard-body { padding: 0 16px 16px; border-top: 1.5px solid #f3f4f6; }
+/* MP panel */
+.cs-mp2 { padding-top: 16px; }
+.cs-mp2-title { font-size: 15.5px; font-weight: 800; color: #1a1a1a; text-align: center; margin-bottom: 14px; line-height: 1.3; }
+.cs-mp2-bullets { display: flex; flex-direction: column; gap: 11px; margin-bottom: 16px; }
+.cs-mp2-bullet { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; font-weight: 600; color: #374151; line-height: 1.5; }
+.cs-mp2-bullet strong { font-weight: 800; color: #1e293b; }
+.cs-mp2-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.cs-mp2-footer { display: flex; align-items: center; gap: 11px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 11px 13px; }
+.cs-mp2-footer-main { font-size: 13px; font-weight: 800; color: #1e293b; line-height: 1.3; }
+.cs-mp2-footer-sub { font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-top: 2px; }
+.cs-card-brands-row { display: flex; align-items: center; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1.5px solid #f3f4f6; }
+.cs-card-brands-lbl { font-size: 11px; font-weight: 700; color: #9ca3af; margin-right: 2px; white-space: nowrap; }
+
+/* Progress bar */
+.cs-progress { display: flex; align-items: center; gap: 0; padding: 16px 24px 0; }
+.cs-step-circle {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; border: 2px solid #d0d0d0;
+  background: #fff; color: #aaa; transition: all .2s;
+}
+.cs-step-circle.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.cs-step-circle.done { background: var(--cs-done); border-color: var(--cs-done); color: #fff; }
+.cs-step-line { flex: 1; height: 2px; background: #e0e0e0; }
+.cs-step-line.done { background: var(--cs-done); }
+.cs-step-label { font-size: 11px; font-weight: 700; color: #aaa; margin-top: 4px; text-align: center; }
+.cs-step-label.active { color: var(--primary); }
+.cs-step-label.done { color: var(--cs-done); }
+
+/* Summary collapsible */
+.cs-summary-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; cursor: pointer; border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  /* es un <button>: reset de los estilos nativos */
+  width: 100%; border: 0; border-bottom: 1px solid var(--border); border-radius: 0;
+  font: inherit; color: inherit; text-align: left;
+}
+.cs-summary-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.cs-summary-strike { display: block; font-size: 11px; color: #6b6b6b; text-decoration: line-through; }
+.cs-summary-total  { display: block; font-weight: 900; font-size: 15px; color: var(--text); }
+.cs-summary-items { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 20px; }
+
+/* Pay panel */
+.cs-pay-panel { overflow: hidden; animation: csSlideDown .22s ease forwards; }
+
+/* Benefit bar (legacy) */
+.cs-benefits { background: var(--cs-accent-bg); border-bottom: 1px solid var(--cs-accent-border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-evenly; gap: 4px; }
+.cs-benefits-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: #1a1a1a; }
+.cs-benefits-line { width: 28px; height: 2px; background: var(--cs-done); border-radius: 2px; }
+
+/* ✨ Hero benefits — envío gratis protagonista + regalos si aplica */
+.cs-hero-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px 12px;
+  background: var(--cs-accent-bg);
+  border-bottom: 1px solid var(--cs-accent-border);
+}
+.cs-hero-free,
+.cs-hero-gifts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid var(--cs-accent-border);
+  box-shadow: 0 4px 12px rgba(15,157,110,.08);
+}
+.cs-hero-gifts {
+  border-color: #f59e0b;
+  background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+  box-shadow: 0 4px 14px rgba(245,158,11,.15);
+  animation: csGiftPulse 2.4s ease-in-out infinite;
+}
+@keyframes csGiftPulse {
+  0%,100% { box-shadow: 0 4px 14px rgba(245,158,11,.15); }
+  50%     { box-shadow: 0 6px 22px rgba(245,158,11,.28); }
+}
+.cs-hero-free-ico,
+.cs-hero-gifts-ico {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 20px;
+  background: #ffe8e8;
+}
+.cs-hero-gifts-ico { background: #fde68a; }
+.cs-hero-free-txt,
+.cs-hero-gifts-txt { flex: 1; min-width: 0; }
+.cs-hero-free-title {
+  font-size: 14px;
+  font-weight: 1000;
+  color: #1a1a1a;
+  letter-spacing: .02em;
+  line-height: 1.15;
+}
+.cs-hero-free-sub {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--cs-done);
+  margin-top: 2px;
+}
+.cs-hero-gifts-title {
+  font-size: 14px;
+  font-weight: 1000;
+  color: #92400e;
+  letter-spacing: .02em;
+  line-height: 1.15;
+}
+.cs-hero-gifts-sub {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #b45309;
+  margin-top: 2px;
+}
+
+/* Payment logos */
+.cs-pay-logos { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.cs-logo-badge { background: #f4f6f8; border: 1px solid #e0e0e0; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 900; color: #555; letter-spacing: .03em; display:inline-flex; align-items:center; }
+.cs-logo-rapi { background: #e21e2e; color: #fff; }
+.cs-logo-pf   { background: #f4a900; color: #fff; }
+
+/* Totals */
+.cs-totals { display: flex; flex-direction: column; gap: 8px; }
+.cs-total-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: rgba(11,18,32,.65); }
+.cs-total-row.final { font-size: 18px; font-weight: 900; color: var(--text); border-top: 1.5px solid var(--border); padding-top: 10px; margin-top: 4px; }
+
+/* Coupon field — discreto */
+.cs-coupon-toggle {
+  display: inline-block; margin-top: 12px;
+  font-size: 12px; font-weight: 600; color: #aaa;
+  cursor: pointer; background: none; border: none; padding: 0;
+  text-decoration: none; letter-spacing: .01em;
+  transition: color .15s;
+}
+.cs-coupon-toggle:hover { color: #888; }
+@keyframes csCouponIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cs-coupon-body { animation: csCouponIn .18s ease forwards; margin-top: 8px; }
+.cs-coupon-row { display: flex; gap: 7px; }
+.cs-coupon-row input {
+  flex: 1; height: 38px; border: 1px solid #ddd; border-radius: 7px;
+  padding: 0 10px; font-size: 13px; font-weight: 700; font-family: inherit; background: #fafafa;
+  color: var(--text); outline: none; text-transform: uppercase; letter-spacing: .5px;
+  transition: border-color .15s;
+}
+.cs-coupon-row input:focus { border-color: #555; background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
+.cs-coupon-row input.cs-coupon-applied { border-color: var(--cs-done); background: #fff5f5; color: var(--cs-done); }
+.cs-coupon-row input:disabled { opacity: .8; cursor: default; }
+.cs-coupon-btn {
+  height: 38px; padding: 0 13px; border: 1px solid #ccc; border-radius: 7px;
+  background: #f4f4f4; color: #555; font-size: 12px; font-weight: 800;
+  cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.cs-coupon-btn:hover:not(:disabled) { background: #e8e8e8; border-color: #bbb; }
+.cs-coupon-btn:disabled { opacity: .45; cursor: not-allowed; }
+.cs-coupon-btn.remove { background: #f4f4f4; color: #888; border-color: #ddd; }
+.cs-coupon-btn.remove:hover { background: #eee; }
+.cs-coupon-err { font-size: 11.5px; font-weight: 700; color: #c0392b; margin-top: 5px; }
+.cs-coupon-ok  { font-size: 11.5px; font-weight: 700; color: var(--cs-done); margin-top: 5px; }
+
+/* CTA button */
+.cs-cta {
+  width: 100%; padding: 16px; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 900; font-family: inherit; cursor: pointer;
+  background: var(--primary); color: #fff;
+  transition: background .15s, transform .1s, box-shadow .1s;
+  box-shadow: 0 6px 20px rgba(0,0,0,.18);
+  letter-spacing: .01em;
+}
+.cs-cta:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,.22); }
+.cs-cta:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* Confirm success (legacy) */
+.cs-confirm { text-align: center; padding: 40px 24px; }
+.cs-confirm-icon { font-size: 56px; margin-bottom: 12px; }
+
+/* ── Step 4 confirmation redesign ── */
+@keyframes csCheckCircleIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+@keyframes csCheckDraw {
+  from { stroke-dashoffset: 30; }
+  to   { stroke-dashoffset: 0; }
+}
+.cs-confirm4 {
+  text-align: center; padding: 40px 24px 32px;
+  animation: csFadeUp .4s cubic-bezier(.22,1,.36,1) both;
+}
+.cs-confirm4-circle {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.18);
+  animation: csCheckCircleIn .5s cubic-bezier(.22,1,.36,1) both;
+}
+.cs-confirm4-check {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: csCheckDraw .45s cubic-bezier(.22,1,.36,1) .35s both;
+}
+.cs-confirm4-title {
+  font-size: 24px; font-weight: 900; color: var(--text);
+  margin: 0 0 8px; line-height: 1.2;
+}
+.cs-confirm4-sub {
+  font-size: 14px; font-weight: 600; color: #64748b;
+  margin: 0 auto 24px; line-height: 1.6; max-width: 300px;
+}
+.cs-confirm4-details {
+  background: #f8faff; border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 4px 16px; text-align: left; margin-bottom: 20px;
+}
+.cs-confirm4-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; font-size: 13px; font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+.cs-confirm4-row:last-child { border-bottom: none; }
+.cs-confirm4-label { color: #888; }
+.cs-confirm4-val { color: var(--text); font-weight: 900; }
+.cs-confirm4-val--green { color: var(--cs-done); font-weight: 900; }
+.cs-confirm4-val--total { font-size: 17px; color: var(--primary); }
+.cs-confirm4-wa {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px 0; border-radius: 14px;
+  background: #25d366; color: #fff; font-weight: 900; font-size: 15px;
+  text-decoration: none; margin-bottom: 10px;
+  box-shadow: 0 8px 20px rgba(37,211,102,.25);
+  transition: filter .15s;
+}
+.cs-confirm4-wa:hover { filter: brightness(1.07); }
+.cs-confirm4-close {
+  width: 100%; padding: 12px 0; border-radius: 14px;
+  border: 1.5px solid var(--border2); background: transparent;
+  color: var(--text); font-weight: 800; font-size: 14px; cursor: pointer;
+  transition: background .12s;
+}
+.cs-confirm4-close:hover { background: #f5f7fa; }
+
+/* Divider */
+.cs-divider { height: 8px; background: #f5f7fa; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 20px 0; }
+
+/* Back link */
+.cs-back { background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 700; font-family: inherit; color: var(--text); text-decoration: underline; padding: 0; }
+
+/* Sticky CTA footer — always visible at bottom of modal */
+.cs-footer {
+  flex-shrink: 0;
+  padding: 12px 20px 16px;
+  border-top: 1.5px solid var(--border);
+  background: #fff;
+}
+
+/* Total box step 2 */
+.cs-total-box { display: flex; align-items: center; gap: 14px; background: #f8faff; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+
+/* Policies */
+.cs-policies { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 11px; }
+.cs-policies a { color: #999; text-decoration: underline; font-weight: 600; }
+
+/* ✓ Field valid indicator */
+.cs-field-ok { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--cs-done); font-size: 16px; font-weight: 900; pointer-events: none; }
+
+/* Countdown pill in cart */
+.cs-cd-pill { display: inline-flex; align-items: center; gap: 6px; background: #0b172a; color: #fff; border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 900; letter-spacing: .03em; }
+.cs-cd-pill-time { font-variant-numeric: tabular-nums; color: #f59e0b; }
+
+/* Trust row (step 1 bottom) */
+.cs-trust-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 10px 0 4px; }
+.cs-trust-item { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: #64748b; }
+
+/* Exit intent overlay */
+.cs-exit-overlay { position: fixed; inset: 0; z-index: 10999; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.cs-exit-card { background: #fff; border-radius: 16px; padding: 28px 24px; max-width: 340px; width: 100%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.25); }
+.cs-exit-emoji { font-size: 44px; margin-bottom: 10px; }
+.cs-exit-title { font-size: 20px; font-weight: 900; color: #0b1220; margin: 0 0 8px; line-height: 1.2; }
+.cs-exit-sub { font-size: 13px; font-weight: 600; color: #64748b; margin: 0 0 20px; line-height: 1.5; }
+.cs-exit-stay { width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 15px; font-weight: 900; cursor: pointer; background: var(--primary); color: #fff; margin-bottom: 10px; }
+.cs-exit-leave { width: 100%; padding: 10px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; background: none; color: #aaa; }
+.cs-exit-leave:hover { color: #666; }
+
+/* ── Card form (inputs manuales, cada campo es una card) ── */
+.cs-card-form {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 14px; margin-bottom: 14px;
+}
+.cs-card-field {
+  position: relative;
+  border: 1.5px solid #e0e0e0; border-radius: 12px;
+  background: #fff; min-height: 56px;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 44px 0 14px;
+  transition: border-color .15s, box-shadow .15s; cursor: text;
+}
+.cs-card-field:focus-within { border-color: #555; box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
+.cs-card-field--err { border-color: #c0392b !important; }
+
+/* Label flotante */
+.cs-card-lbl {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 15px; color: #999; pointer-events: none;
+  transition: top .15s, font-size .15s, color .15s, transform .15s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: calc(100% - 50px); line-height: 1;
+}
+.cs-card-field--hv .cs-card-lbl,
+.cs-card-field:focus-within .cs-card-lbl {
+  top: 11px; transform: none; font-size: 11px; color: #888;
+}
+
+/* Input */
+.cs-card-inp {
+  border: none; outline: none; background: transparent;
+  font-size: 15px; font-weight: 600; color: #1a1a1a;
+  width: 100%; padding: 20px 0 6px; line-height: 1.2;
+  -webkit-appearance: none; appearance: none;
+  font-family: inherit; box-sizing: border-box;
+}
+.cs-card-field:not(.cs-card-field--hv):not(:focus-within) .cs-card-inp {
+  padding: 0;
+}
+
+/* Iconos derecha */
+.cs-card-ico {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  color: #bbb; pointer-events: none;
+}
+.cs-card-ico--lock { font-size: 16px; }
+.cs-card-ico--cvv {
+  width: 20px; height: 20px;
+  border: 1.5px solid #ccc; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #888;
+}
+
+/* Botón limpiar nombre */
+.cs-card-clear {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none; color: #aaa;
+  font-size: 16px; cursor: pointer; line-height: 1; padding: 4px;
+}
+.cs-card-clear:hover { color: #555; }
+
+/* Error inline */
+.cs-card-err {
+  font-size: 11px; color: #c0392b; font-weight: 700;
+  margin-top: 2px; padding-bottom: 6px;
+}
+
+/* Auto-float: MP manages placeholder, so field always looks "filled" once mounted */
+.cs-card-field--auto .cs-card-inp::placeholder { color: #999; font-weight: 400; }
+.cs-card-field--auto .cs-card-inp:not(:placeholder-shown) ~ .cs-card-lbl,
+.cs-card-field--auto .cs-card-inp:focus ~ .cs-card-lbl {
+  top: 11px; transform: none; font-size: 11px; color: #888;
+}
+
+/* Fila de dos campos */
+.cs-card-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* Select (Documento) */
+.cs-card-field--sel { padding-right: 32px; }
+.cs-card-sel { appearance: none; -webkit-appearance: none; cursor: pointer; }
+.cs-card-arrow {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: #aaa; pointer-events: none;
+}
+
+.mp-loading { text-align: center; padding: 24px; color: #aaa; font-size: 13px; font-weight: 600; }
+.mp-not-ready { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: 700; color: #7c5a00; }
+
+/* ══════ Mercado Pago panel (step 2) ══════ */
+.cs-mp-panel {
+  margin-top: 10px;
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+  border: 1.5px solid #009ee3;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 20px rgba(0,158,227,.10);
+}
+.cs-mp-panel-head {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dbeafe;
+}
+.cs-mp-logo-wrap { flex-shrink: 0; }
+.cs-mp-head-txt { flex: 1; min-width: 0; }
+.cs-mp-head-title {
+  font-size: 14px; font-weight: 900; color: #0b1220;
+  line-height: 1.2;
+}
+.cs-mp-head-sub {
+  font-size: 11.5px; font-weight: 700; color: #475569;
+  margin-top: 3px; line-height: 1.3;
+}
+.cs-mp-benefits {
+  list-style: none;
+  margin: 12px 0 10px;
+  padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cs-mp-benefits li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12.5px; font-weight: 700; color: #1e293b;
+  line-height: 1.4;
+}
+.cs-mp-check {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #009ee3; color: #fff;
+  border-radius: 50%;
+  font-size: 11px; font-weight: 900;
+  margin-top: 1px;
+}
+.cs-mp-trust {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; flex-wrap: wrap;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 2px;
+}
+.cs-mp-trust-item {
+  font-size: 10.5px; font-weight: 900;
+  color: #475569; letter-spacing: .02em;
+}
+.cs-mp-trust-dot { color: #cbd5e1; font-weight: 900; }
+
+/* Banner envío gratis — hereda color de la landing */
+.cs-ship-banner {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px;
+  background: var(--cs-accent-bg);
+  border-bottom: 1px solid var(--cs-accent-border);
+  flex-wrap: wrap;
+}
+.cs-ship-banner-text {
+  font-size: 12.5px; font-weight: 800;
+  color: var(--cs-done);
+}
+
+/* ══════ Interstitial MP (step 3) ══════ */
+@keyframes csSpin { to { transform: rotate(360deg); } }
+@keyframes csCheckPop {
+  0%   { transform: scale(0); opacity: 0; }
+  65%  { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes csPulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(0,158,227,.5); }
+  70% { box-shadow: 0 0 0 18px rgba(0,158,227,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,158,227,0); }
+}
+@keyframes csFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cs-mp-inter {
+  padding: 28px 22px 24px;
+  text-align: center;
+  animation: csFadeUp .35s ease forwards;
+}
+.cs-mp-inter-logo {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 72px; height: 72px;
+  background: #009ee3;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  animation: csPulseRing 2s ease-out infinite;
+}
+.cs-mp-inter-check {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: #10b981; color: #fff;
+  font-size: 28px; font-weight: 900;
+  margin: 0 auto 12px;
+  box-shadow: 0 10px 24px rgba(16,185,129,.35);
+  animation: csCheckPop .42s cubic-bezier(.22,1,.36,1) .1s both;
+}
+.cs-mp-inter-title {
+  font-size: 20px; font-weight: 900;
+  color: #0b1220;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+.cs-mp-inter-sub {
+  font-size: 13.5px; font-weight: 600;
+  color: #64748b;
+  margin: 0 0 20px;
+  line-height: 1.5;
+  max-width: 360px;
+  margin-left: auto; margin-right: auto;
+}
+.cs-mp-inter-card {
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+  border: 1.5px solid #009ee3;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 0 auto 18px;
+  max-width: 380px;
+  box-shadow: 0 10px 28px rgba(0,158,227,.12);
+}
+.cs-mp-inter-brand {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding-bottom: 12px; margin-bottom: 12px;
+  border-bottom: 1px dashed #bae6fd;
+}
+.cs-mp-inter-brand-txt {
+  font-size: 11px; font-weight: 800;
+  color: #0369a1;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cs-mp-inter-total-lbl {
+  font-size: 11px; font-weight: 800;
+  color: #64748b;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.cs-mp-inter-total {
+  font-size: 30px; font-weight: 1000;
+  color: #0b1220;
+  letter-spacing: -.02em;
+  margin-top: 2px;
+  line-height: 1;
+}
+.cs-mp-inter-name {
+  font-size: 12.5px; font-weight: 700;
+  color: #475569;
+  margin-top: 8px;
+}
+.cs-mp-inter-spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid #e0f2fe;
+  border-top-color: #009ee3;
+  border-radius: 50%;
+  animation: csSpin .9s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+.cs-mp-inter-count {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+  font-size: 13px; font-weight: 800;
+  color: #0369a1;
+  margin-bottom: 16px;
+}
+.cs-mp-inter-cta {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 15px 18px;
+  border: none;
+  border-radius: 14px;
+  background: #009ee3;
+  color: #fff;
+  font-size: 15.5px; font-weight: 900;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  box-shadow: 0 10px 24px rgba(0,158,227,.30);
+  transition: transform .12s, box-shadow .18s;
+}
+.cs-mp-inter-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0,158,227,.38);
+}
+.cs-mp-inter-trust {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+.cs-mp-inter-trust-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 800;
+  color: #475569;
+  letter-spacing: .02em;
+}
+.cs-mp-inter-back {
+  background: none; border: none; cursor: pointer;
+  font-size: 12.5px; font-weight: 700;
+  color: #94a3b8;
+  text-decoration: underline;
+  margin-top: 14px;
+  padding: 6px;
+}
+
+/* ── Payment detail view (replace accordion with nav pattern) ── */
+.cs-pay-detail {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.cs-pay-view-hdr {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px;
+  border-bottom: 1.5px solid #f1f5f9;
+  background: #fafbfc;
+}
+.cs-pay-view-back {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border: none; background: none; cursor: pointer;
+  color: #64748b; border-radius: 7px; flex-shrink: 0;
+  transition: background .12s, color .12s;
+}
+.cs-pay-view-back:hover { background: #e2e8f0; color: #1e293b; }
+.cs-pay-view-hdr-ttl {
+  font-size: 13.5px; font-weight: 800; color: #1a1a1a; flex: 1;
+}
+.cs-pay-change {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; color: #94a3b8;
+  text-decoration: underline; text-underline-offset: 2px;
+  padding: 4px 6px; transition: color .15s;
+}
+.cs-pay-change:hover { color: #475569; }
+
+/* Dark CTA for payment step */
+.cs-cta--dark { background: #1e293b !important; }
+.cs-cta--dark:hover:not(:disabled) { background: #0f172a !important; transform: translateY(-1px); }

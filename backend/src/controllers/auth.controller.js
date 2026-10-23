@@ -146,11 +146,9 @@ async function forgotPassword(req, res, next) {
         user.resetPasswordExpires = Date.now() + 3600000; 
         await user.save();
 
-        // 🔴 AQUÍ ESTABA EL ERROR. 
-        // Vamos a forzar tu dominio real para que no falle nunca más.
-        const frontendUrl = "https://boomhauss.com.ar"; 
-        
-        // El link final quedará: https://boomhauss.com.ar/reset-password/TOKEN
+        // Dominio del frontend: FRONTEND_URL si está definido; si no, el actual.
+        // El link final queda: https://amelor.com.ar/reset-password/TOKEN
+        const frontendUrl = (process.env.FRONTEND_URL || "https://amelor.com.ar").replace(/\/+$/, "");
         const resetUrl = `${frontendUrl}/reset-password/${token}`;
 
         // Enviar email

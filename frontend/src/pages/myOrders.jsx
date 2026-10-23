@@ -1,23 +1,15 @@
-// frontend/src/pages/MyOrders.jsx
+// frontend/src/pages/myOrders.jsx — historial del cliente.
+// La lógica de carga y de subida de comprobante es la de siempre; la vista
+// se apoya en OrderCard (presentacional) y en los estados compartidos.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-
-function money(n) {
-    const num = Number(n);
-    if (Number.isNaN(num)) return '$0.00';
-    return `$${num.toFixed(2)}`;
-}
-
-function formatDate(d) {
-    if (!d) return '—';
-    try {
-        return new Date(d).toLocaleString('es-AR');
-    } catch {
-        return '—';
-    }
-}
+import StatePanel from '../components/ui/StatePanel.jsx';
+import { SkeletonGroup } from '../components/ui/Skeleton.jsx';
+import OrderCard, { OrderCardSkeleton } from '../components/orders/OrderCard.jsx';
+import { isPaymentSettled, money, orderSteps } from '../components/orders/orderStatus.js';
+import './myOrders.css';
 
 export default function MyOrders() {
     const [orders, setOrders] = useState([]);
@@ -68,7 +60,6 @@ export default function MyOrders() {
 
     useEffect(() => {
         fetchMyOrders();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const totalOrders = orders.length;
@@ -76,6 +67,13 @@ export default function MyOrders() {
     const totalSpent = useMemo(() => {
         return (orders || []).reduce((acc, o) => acc + (Number(o.totalAmount) || 0), 0);
     }, [orders]);
+
+    // Pedidos que todavía esperan algo (pago o envío): lo primero que el
+    // cliente quiere saber al entrar.
+    const inProgress = useMemo(
+        () => orders.filter((o) => orderSteps(o).some((s) => s.state === 'current')).length,
+        [orders]
+    );
 
     function toggleExpand(orderId) {
         setExpandedId((cur) => (cur === orderId ? null : orderId));
@@ -88,9 +86,7 @@ export default function MyOrders() {
         selectedOrderIdRef.current = order._id;
 
         // ✅ si está verificado, no dejamos subir
-        const verified =
-            Boolean(order.paymentProofVerified) ||
-            String(order.paymentStatus || '').toLowerCase() === 'confirmed';
+        const verified = isPaymentSettled(order);
 
         if (verified) {
             setUploadError('Este pedido ya fue verificado. No necesitás subir otro comprobante.');
@@ -145,9 +141,7 @@ export default function MyOrders() {
 
     async function uploadPaymentProof(order, fileOverride = null) {
         // ✅ si está verificado, bloqueamos
-        const verified =
-            Boolean(order.paymentProofVerified) ||
-            String(order.paymentStatus || '').toLowerCase() === 'confirmed';
+        const verified = isPaymentSettled(order);
 
         if (verified) {
             setUploadError('Este pedido ya fue verificado. No necesitás subir otro comprobante.');
@@ -222,214 +216,134 @@ export default function MyOrders() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const header = (
+        <header className="mo-head">
+            <p className="mo-eyebrow">Tu cuenta</p>
+            <h1 className="mo-title">Mis pedidos</h1>
+        </header>
+    );
+
     if (loading) {
         return (
-            <main style={{ padding: '1.5rem' }}>
-                <h1>Mis pedidos</h1>
-                <p>Cargando...</p>
+            <main className="mo">
+                {header}
+                <SkeletonGroup label="Cargando tus pedidos…" className="mo-list">
+                    <OrderCardSkeleton />
+                    <OrderCardSkeleton />
+                    <OrderCardSkeleton />
+                </SkeletonGroup>
             </main>
         );
     }
 
     if (error) {
         return (
-            <main style={{ padding: '1.5rem' }}>
-                <h1>Mis pedidos</h1>
-                <p style={{ color: 'tomato' }}>{error}</p>
-                <button className="btn" onClick={fetchMyOrders}>
-                    Reintentar
-                </button>
-                <div style={{ marginTop: '1rem' }}>
-                    <Link to="/">← Volver</Link>
-                </div>
+            <main className="mo">
+                {header}
+                <StatePanel
+                    tone="error"
+                    size="inline"
+                    eyebrow="Algo falló"
+                    title="No pudimos cargar tus pedidos"
+                    actions={
+                        <>
+                            <button type="button" className="btn btn-primary" onClick={fetchMyOrders}>
+                                Reintentar
+                            </button>
+                            <Link className="btn btn-ghost" to="/">
+                                Ir al inicio
+                            </Link>
+                        </>
+                    }
+                >
+                    <p>{error} Revisá tu conexión y probá de nuevo.</p>
+                </StatePanel>
+            </main>
+        );
+    }
+
+    if (!orders.length) {
+        return (
+            <main className="mo">
+                {header}
+                <StatePanel
+                    icon="receipt"
+                    size="inline"
+                    eyebrow="Todavía nada por acá"
+                    title="Todavía no hiciste pedidos"
+                    actions={
+                        <Link className="btn btn-primary" to="/products">
+                            Ver productos
+                        </Link>
+                    }
+                >
+                    <p>Cuando compres, vas a poder seguir el pago y el envío desde esta página.</p>
+                </StatePanel>
             </main>
         );
     }
 
     return (
-        <main style={{ padding: '1.5rem' }}>
+        <main className="mo">
             {/* input oculto reutilizable */}
             <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*,application/pdf"
-                style={{ display: 'none' }}
+                hidden
+                tabIndex={-1}
+                aria-hidden="true"
                 onChange={onFileChange}
             />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                <div>
-                    <h1 style={{ margin: '0.65rem 0 0.25rem', letterSpacing: '-0.02em' }}>Mis pedidos</h1>
-                    <div className="muted">
-                        Pedidos: <strong>{totalOrders}</strong> — Total gastado:{' '}
-                        <strong>{money(totalSpent)}</strong>
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <button className="btn" onClick={fetchMyOrders}>
-                        Actualizar
-                    </button>
-                    <Link className="btn" to="/">
-                        Volver
-                    </Link>
-                </div>
+            <div className="mo-top">
+                {header}
+                <button type="button" className="mo-refresh" onClick={fetchMyOrders}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" />
+                    </svg>
+                    Actualizar
+                </button>
             </div>
 
-            {uploadError ? (
-                <div style={{ marginTop: '0.9rem' }} className="alert alert-warn">
-                    {uploadError}
+            <dl className="mo-stats">
+                <div>
+                    <dt>Pedidos</dt>
+                    <dd>{totalOrders}</dd>
                 </div>
-            ) : null}
-
-            {!orders.length ? (
-                <div style={{ marginTop: '1rem' }} className="card">
-                    <p style={{ margin: 0 }}>Todavía no tenés pedidos.</p>
+                <div>
+                    <dt>En curso</dt>
+                    <dd>{inProgress}</dd>
                 </div>
-            ) : (
-                <section style={{ marginTop: '1rem', display: 'grid', gap: '0.85rem' }}>
-                    {orders.map((o) => {
-                        const isExpanded = expandedId === o._id;
+                <div>
+                    <dt>Total</dt>
+                    <dd>{money(totalSpent)}</dd>
+                </div>
+            </dl>
 
-                        const hasProof = Boolean(o.paymentProofUrl);
-                        const verified =
-                            Boolean(o.paymentProofVerified) ||
-                            String(o.paymentStatus || '').toLowerCase() === 'confirmed';
+            <div className="mo-alert" role="alert">
+                {uploadError ? <p>{uploadError}</p> : null}
+            </div>
 
-                        const proofLabel = verified ? 'Verificado ✅' : hasProof ? 'Subido ✅' : 'Pendiente';
+            <section className="mo-list" aria-label="Historial de pedidos">
+                {orders.map((o, i) => (
+                    <OrderCard
+                        key={o._id}
+                        order={o}
+                        index={i}
+                        expanded={expandedId === o._id}
+                        onToggle={() => toggleExpand(o._id)}
+                        onUpload={() => openFilePicker(o)}
+                        uploading={uploadingId === o._id}
+                        preview={selected.orderId === o._id ? selected.previewUrl : null}
+                    />
+                ))}
+            </section>
 
-                        const payLabel = verified ? 'Pago confirmado ✅' : `Pago: ${o.paymentStatus || 'pending'}`;
-
-                        return (
-                            <article key={o._id} className="card" style={{ padding: '1.1rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                                    <div style={{ display: 'grid', gap: '0.35rem' }}>
-                                        <div className="muted">
-                                            <strong>Pedido:</strong> {o._id}
-                                        </div>
-                                        <div className="muted">
-                                            <strong>Fecha:</strong> {formatDate(o.createdAt)}
-                                        </div>
-                                        <div className="muted">
-                                            <strong>Total:</strong> {money(o.totalAmount)}
-                                        </div>
-                                        <div className="muted">
-                                            <strong>Envío:</strong> {o.shippingMethod || '—'} — {o.shippingStatus || 'pending'}
-                                        </div>
-
-                                        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
-                                            <span className="badge">{payLabel}</span>
-                                            <span className="badge">Comprobante: {proofLabel}</span>
-                                        </div>
-                                    </div>
-
-                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                        <button className="btn" type="button" onClick={() => toggleExpand(o._id)}>
-                                            {isExpanded ? 'Ocultar' : 'Ver'}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={() => openFilePicker(o)}
-                                            disabled={verified || uploadingId === o._id}
-                                            title={verified ? 'Este pedido ya fue verificado' : 'Subir comprobante'}
-                                        >
-                                            {uploadingId === o._id ? 'Subiendo...' : verified ? 'Verificado ✅' : hasProof ? 'Re-subir' : 'Subir comprobante'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {isExpanded ? (
-                                    <div style={{ marginTop: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border)' }}>
-                                        <div style={{ display: 'grid', gap: '0.35rem' }}>
-                                            <div className="muted">
-                                                <strong>Dirección:</strong> {o.shippingAddress || '—'}
-                                            </div>
-
-                                            {o.paymentProofUrl ? (
-                                                <div className="muted">
-                                                    <strong>Comprobante:</strong>{' '}
-                                                    <a href={o.paymentProofUrl} target="_blank" rel="noreferrer">
-                                                        Ver archivo
-                                                    </a>
-                                                </div>
-                                            ) : null}
-
-                                            {selected.previewUrl && selected.orderId === o._id ? (
-                                                <div style={{ marginTop: '0.5rem' }}>
-                                                    <div className="muted" style={{ marginBottom: '0.35rem' }}>
-                                                        Preview (imagen):
-                                                    </div>
-                                                    <img
-                                                        src={selected.previewUrl}
-                                                        alt="Preview comprobante"
-                                                        style={{
-                                                            width: 'min(380px, 100%)',
-                                                            borderRadius: '12px',
-                                                            border: '1px solid var(--border)'
-                                                        }}
-                                                    />
-                                                </div>
-                                            ) : null}
-
-                                            <div style={{ marginTop: '0.85rem' }}>
-                                                <div className="muted" style={{ marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                    Productos
-                                                </div>
-                                                <div style={{ display: 'grid', gap: '0.6rem' }}>
-                                                    {(o.items || []).map((it, idx) => {
-                                                        const itemTotal = it.bundleTotal
-                                                            ? Number(it.bundleTotal)
-                                                            : (Number(it.price) || 0) * (Number(it.quantity) || 1);
-                                                        const hasDiscount = it.compareAtPrice && Number(it.compareAtPrice) > itemTotal;
-                                                        return (
-                                                            <div key={idx} style={{
-                                                                display: 'flex', gap: '0.75rem', alignItems: 'center',
-                                                                background: 'rgba(255,255,255,0.04)',
-                                                                border: '1px solid var(--border)',
-                                                                borderRadius: 12,
-                                                                padding: '10px 12px',
-                                                            }}>
-                                                                {/* Imagen */}
-                                                                {it.imageUrl && (
-                                                                    <div style={{ width: 52, height: 52, borderRadius: 9, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
-                                                                        <img src={it.imageUrl} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                                                    </div>
-                                                                )}
-                                                                {/* Info */}
-                                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                                    <div style={{ fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.3 }}>
-                                                                        {it.productName || it.name || 'Producto'}
-                                                                    </div>
-                                                                    <div className="muted" style={{ fontSize: '0.75rem', marginTop: 3 }}>
-                                                                        Cantidad: <strong>{it.quantity}</strong>
-                                                                        {' · '}
-                                                                        {money(it.price)} c/u
-                                                                    </div>
-                                                                </div>
-                                                                {/* Total */}
-                                                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                                                    {hasDiscount && (
-                                                                        <div style={{ fontSize: '0.72rem', textDecoration: 'line-through', color: 'var(--muted)', fontWeight: 700 }}>
-                                                                            {money(it.compareAtPrice)}
-                                                                        </div>
-                                                                    )}
-                                                                    <div style={{ fontWeight: 900, fontSize: '0.9rem' }}>{money(itemTotal)}</div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </article>
-                        );
-                    })}
-                </section>
-            )}
+            <p className="mo-help">
+                ¿Algo no coincide? Escribinos con el número de pedido o mirá{' '}
+                <Link to="/returns">cambios y devoluciones</Link>.
+            </p>
         </main>
     );
 }

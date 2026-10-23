@@ -28,6 +28,8 @@ const AbandonedCartSchema = new mongoose.Schema(
     contactedAt:     { type: Date },
     recoveredAt:     { type: Date },
     adminNotes:      { type: String },
+    // Cuándo se mandó el mail de recuperación (jobs/abandonedCartReminder.js)
+    reminderSentAt:  { type: Date, default: null },
 
     // TTL: se borra solo a los 45 días de creado
     createdAt: { type: Date, default: Date.now, expires: '45d' },

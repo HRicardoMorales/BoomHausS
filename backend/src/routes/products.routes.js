@@ -5,6 +5,7 @@ const {
     getSingleProduct,
     getProducts,
     getProductSlugs,
+    getBestsellers,
     getProductById,
     getProductBySlug,
     getAllProducts,
@@ -13,6 +14,7 @@ const {
 } = require('../controllers/products.controller');
 
 const { authRequired, adminRequired } = require('../middlewares/authMiddleware');
+const validateObjectId = require('../middlewares/validateObjectId');
 
 const router = Router();
 
@@ -25,6 +27,9 @@ router.get('/', getProducts);
 // GET /api/products/slugs (público — todos los slugs para deduplicación en home)
 router.get('/slugs', getProductSlugs);
 
+// GET /api/products/bestsellers (público — antes de /:id para no chocar)
+router.get('/bestsellers', getBestsellers);
+
 // GET /api/products/all (admin)
 router.get('/all', authRequired, adminRequired, getAllProducts);
 
@@ -35,9 +40,9 @@ router.get('/slug/:slug', getProductBySlug);
 router.post('/', authRequired, adminRequired, createProduct);
 
 // PATCH /api/products/:id (admin)
-router.patch('/:id', authRequired, adminRequired, updateProduct);
+router.patch('/:id', authRequired, adminRequired, validateObjectId(), updateProduct);
 
 // GET /api/products/:id (público)
-router.get('/:id', getProductById);
+router.get('/:id', validateObjectId(), getProductById);
 
 module.exports = router;

@@ -5,14 +5,14 @@
    Mobile-first · Breakpoint: 768px
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+@import "../../styles/fonts-montserrat.css";
 
 /* Sobrescribe la regla global de index.css que aplica "Cormorant Garamond"
    (serif elegante) a todos los h1-h6 del proyecto. Dentro de esta landing
    queremos sans-serif (Montserrat) para que los títulos no se vean
    estilizados. */
 .led-wrap :is(h1, h2, h3, h4, h5, h6) {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
 }
 
 /* ── Variables ─────────────────────────────────────────────── */
@@ -27,7 +27,7 @@
   --led-green:      #22C55E;
   --led-red:        #EF4444;
 
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
   color: var(--led-text);
   background: var(--led-white);
   overflow-x: hidden;
@@ -228,7 +228,7 @@
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
-.led-price-original { font-size: 16px; font-weight: 500; color: #999; text-decoration: line-through; }
+.led-price-original { font-size: 16px; font-weight: 500; color: #6e6e6e; text-decoration: line-through; }
 .led-price-sale     { font-size: 26px; font-weight: 700; color: #000; }
 .led-badge-discount {
   background: var(--led-pink);
@@ -252,7 +252,8 @@
 
 /* Target section (Este aparato es para vos si…) */
 .led-target-section { margin: 0 0 20px; }
-.led-target-title   { margin: 0 0 8px; }
+/* h2 por jerarquía (va bajo el h1), con la caja visual del h3 que era. */
+.led-target-title   { margin: 0 0 8px; font-size: 1.17em; font-weight: bold; color: inherit; letter-spacing: normal; }
 .led-target-list {
   list-style: none;
   padding: 0;
@@ -272,9 +273,13 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--led-red);
+  color: #c81e1e; /* --led-red da 3,8:1 sobre blanco */
   margin-bottom: 20px;
-  animation: led-pulse 2s ease-in-out infinite;
+}
+/* El parpadeo va en el punto (decorativo); el texto queda fijo y legible. */
+.led-urgency > [aria-hidden="true"] { animation: led-pulse 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .led-urgency > [aria-hidden="true"] { animation: none; }
 }
 @keyframes led-pulse {
   0%, 100% { opacity: 1; }
@@ -816,7 +821,7 @@
 }
 .led-sc-footer-note {
   font-size: .72rem;
-  color: rgba(11, 18, 32, .40);
+  color: rgba(11, 18, 32, .62);
   margin: 0 0 14px;
   font-style: italic;
 }
@@ -838,13 +843,13 @@
 .led-sc-stat-val {
   font-size: 1.10rem;
   font-weight: 900;
-  color: #c87878;
+  color: #a64b4b;
   letter-spacing: -.01em;
 }
 .led-sc-stat-lbl {
   font-size: .62rem;
   font-weight: 800;
-  color: rgba(11, 18, 32, .45);
+  color: rgba(11, 18, 32, .62);
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -941,7 +946,7 @@
 }
 .led-lights-nm {
   font-size: 11px;
-  color: rgba(46, 42, 57, 0.5);
+  color: rgba(46, 42, 57, 0.72);
   font-weight: 500;
   margin-top: -4px;
 }
@@ -1070,7 +1075,7 @@
   padding: 13px 10px 13px 14px;
   font-size: 13px;
   font-weight: 600;
-  color: #E8640A;
+  color: #b84c05;
   line-height: 1.4;
   display: flex;
   align-items: center;
@@ -1187,7 +1192,7 @@
 .led-faq-sub {
   font-size: 13px;
   text-align: center;
-  color: rgba(46, 42, 57, 0.7);
+  color: rgba(46, 42, 57, 0.82);
   margin-bottom: 24px;
 }
 .led-faq-list {
@@ -1314,7 +1319,7 @@
   font-weight: 900;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: #c87878;
+  color: #a64b4b;
   background: rgba(200, 120, 120, .08);
   border: 1px solid rgba(200, 120, 120, .20);
   padding: 4px 12px;
@@ -1332,7 +1337,7 @@
 .led-vstrip-sub {
   font-size: .88rem;
   font-weight: 600;
-  color: rgba(11, 18, 32, .50);
+  color: rgba(11, 18, 32, .66);
   margin: 0;
 }
 .led-vstrip-row {
@@ -1380,7 +1385,7 @@
   text-align: center;
   font-size: .66rem;
   font-weight: 700;
-  color: rgba(200, 120, 120, .85);
+  color: #a64b4b;
   letter-spacing: .01em;
   line-height: 1.35;
   padding: 0 4px;
@@ -1463,105 +1468,6 @@
   justify-content: center;
   gap: 14px;
   margin-top: 16px;
-}
-
-/* ── Footer (lp-footer-*) ──────────────────────────────────── */
-.lp-footer { font-family: inherit; background: #8B1A4A; }
-.lp-footer-body { padding: 28px 20px; padding-bottom: max(100px, calc(env(safe-area-inset-bottom) + 100px)); }
-.lp-footer-brand { text-align: center; margin-bottom: 20px; }
-.lp-footer-logo { font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: -.02em; line-height: 1; }
-.lp-footer-tagline { font-size: .75rem; color: rgba(255,255,255,.45); margin: 5px 0 0; }
-.lp-footer-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-bottom: 20px; }
-.lp-footer-ti { display: flex; align-items: center; gap: 5px; font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.70); }
-.lp-footer-ti > span { font-size: .90rem; line-height: 1; }
-.lp-footer-pay { text-align: center; margin-bottom: 18px; }
-.lp-footer-pay-label { font-size: .60rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.30); display: block; margin-bottom: 8px; }
-.lp-footer-pay-row { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
-.lp-pay-chip { font-size: .66rem; font-weight: 700; color: rgba(255,255,255,.55); background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15); padding: 4px 10px; border-radius: 6px; }
-.lp-footer-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-.lp-footer-bottom > span { font-size: .66rem; color: rgba(255,255,255,.32); }
-
-/* ── Footer viejo (unused — kept for reference) ─────────────── */
-.led-footer {
-  background: #111;
-  font-family: 'Montserrat', sans-serif;
-}
-.led-footer-body {
-  padding: 28px 20px;
-  padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 32px));
-}
-.led-footer-brand {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.led-footer-logo {
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: -.02em;
-  line-height: 1;
-}
-.led-footer-tagline {
-  font-size: .75rem;
-  color: rgba(255, 255, 255, .45);
-  margin: 5px 0 0;
-}
-.led-footer-trust-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px 18px;
-  margin-bottom: 20px;
-}
-.led-footer-ti {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: .78rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, .70);
-}
-.led-footer-ti > span { font-size: .90rem; line-height: 1; }
-.led-footer-pay {
-  text-align: center;
-  margin-bottom: 18px;
-}
-.led-footer-pay-label {
-  font-size: .60rem;
-  font-weight: 800;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, .30);
-  display: block;
-  margin-bottom: 8px;
-}
-.led-footer-pay-row {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.led-footer-pay-chip {
-  height: 20px;
-  width: auto;
-  max-width: 68px;
-  object-fit: contain;
-  display: block;
-  filter: brightness(0) invert(1) opacity(0.7);
-}
-.led-footer-pay-chip[src=""] { display: none; }
-.led-footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, .12);
-  padding-top: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-}
-.led-footer-bottom > span {
-  font-size: .66rem;
-  color: rgba(255, 255, 255, .32);
 }
 
 /* ── Photo Reviews Carousel (post cómo usar) ────────────────── */
@@ -1720,7 +1626,7 @@
 }
 .led-bundle-perks {
   font-size: 11px;
-  color: rgba(46,42,57,.6);
+  color: rgba(46,42,57,.72);
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
 }
@@ -1739,7 +1645,7 @@
 }
 .led-bundle-compare {
   font-size: 11.5px;
-  color: #bbb;
+  color: #6f6c78;
   text-decoration: line-through;
   font-weight: 500;
   white-space: nowrap;
@@ -1809,7 +1715,7 @@
 .led-bundle-item-name {
   font-size: 9px;
   font-weight: 600;
-  color: rgba(46,42,57,.55);
+  color: rgba(46,42,57,.72);
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   width: clamp(54px, 18vw, 76px);
@@ -1829,6 +1735,6 @@
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(46,42,57,.55);
+  color: rgba(46,42,57,.72);
   font-family: 'Montserrat', sans-serif;
 }

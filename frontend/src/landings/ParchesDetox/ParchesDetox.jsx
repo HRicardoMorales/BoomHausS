@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import mc from '../parches-detox';
 import './ParchesDetox.css';
+import SafeImg from '../../components/SafeImg';
+import { HERO_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS, STEP_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes ─────────────────────────────────────────────── */
 const PRODUCT_SLUG  = 'parches-detox';
@@ -200,41 +202,6 @@ function PdxStatsCircles({ items }) {
   );
 }
 
-/* ── Subcomponente: Antes/Después slider ─────────────────── */
-function BeforeAfterSlider({ imgBefore, imgAfter }) {
-  const containerRef = useRef(null);
-  const handleSlider = (e) => {
-    if (containerRef.current) {
-      containerRef.current.style.setProperty('--pdx-ba-pos', `${e.target.value}%`);
-    }
-  };
-  return (
-    <div className="pdx-ba-wrap">
-      <div className="pdx-ba-container" ref={containerRef} style={{ '--pdx-ba-pos': '50%' }}>
-        <div className="pdx-ba-imgs">
-          <img className="pdx-ba-after"  src={imgAfter}  alt="Parche al despertar — oscuro" />
-          <img className="pdx-ba-before" src={imgBefore} alt="Parche antes de usar — blanco" />
-        </div>
-        <span className="pdx-ba-badge pdx-ba-badge--before">Antes de dormir</span>
-        <span className="pdx-ba-badge pdx-ba-badge--after">Al despertar</span>
-        <input
-          type="range" min="0" max="100" defaultValue="50"
-          onInput={handleSlider}
-          className="pdx-ba-range"
-          aria-label="Comparar antes y después"
-        />
-        <div className="pdx-ba-line" />
-        <div className="pdx-ba-handle">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M6 9H12M6 9L4 7M6 9L4 11M12 9L14 7M12 9L14 11"
-              stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── Componente principal ─────────────────────────────────── */
 export default function ParchesDetoxLanding() {
   const [product, setProduct]             = useState(null);
@@ -372,7 +339,8 @@ export default function ParchesDetoxLanding() {
 
   return (
     <>
-      <div className="pdx-wrap">
+      <main className="pdx-wrap">
+        <title>{mc.pageTitle}</title>
 
         {/* ══ S1 — ANNOUNCEMENT BAR ══ */}
         <div className="pdx-ann-bar">
@@ -389,11 +357,13 @@ export default function ParchesDetoxLanding() {
             <div className="pdx-gallery">
               <div className="pdx-gallery-main">
                 {productImages[activeImg]?.src && (
-                  <img
+                  <SafeImg
                     src={productImages[activeImg].src}
                     alt={productImages[activeImg].alt}
-                    loading="eager"
-                    decoding="async"
+                    width={800}
+                    height={800}
+                    sizes={HERO_SIZES}
+                    priority
                   />
                 )}
               </div>
@@ -407,7 +377,7 @@ export default function ParchesDetoxLanding() {
                     onKeyDown={e => e.key === 'Enter' && setActiveImg(i)}
                     aria-label={`Imagen ${i + 1}`}
                   >
-                    <img src={img.src} alt={img.alt} />
+                    <SafeImg src={img.src} alt="" width={60} height={60} sizes="60px" widths={THUMB_WIDTHS} />
                   </div>
                 ))}
               </div>
@@ -465,7 +435,7 @@ export default function ParchesDetoxLanding() {
                         <div className="pdx-bundle-row">
                           <div className="pdx-bundle-mini-img">
                             {(b.img || productImages[0]?.src) && (
-                              <img src={b.img || productImages[0].src} alt={b.label} />
+                              <SafeImg src={b.img || productImages[0].src} alt="" width={54} height={54} sizes="54px" widths={THUMB_WIDTHS} />
                             )}
                           </div>
                           <div className="pdx-bundle-info">
@@ -510,15 +480,15 @@ export default function ParchesDetoxLanding() {
               {/* Trust badges */}
               <div className="pdx-trust-badges">
                 <div className="pdx-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="Garantía" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, borderRadius: 8 }} />
                   <span>Garantía devolución<br />90 días</span>
                 </div>
                 <div className="pdx-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" alt="Envío" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131541.485.png?v=1719749753" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, borderRadius: 8 }} />
                   <span>Envío gratis<br />en todos los pedidos</span>
                 </div>
                 <div className="pdx-trust-item">
-                  <img src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="Garantía" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                  <SafeImg src="//www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-06-30T131118.961.png?v=1719749489" alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: 44, height: 44, borderRadius: 8 }} />
                   <span>Garantía devolución<br />90 días</span>
                 </div>
               </div>
@@ -526,7 +496,7 @@ export default function ParchesDetoxLanding() {
               {/* Medios de pago */}
               <div className="pdx-payment-block">
                 <div className="pdx-payment-grid">
-                  <img className="pdx-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/3840px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} />
+                  <img className="pdx-pay-chip" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mercado_Pago.svg/250px-Mercado_Pago.svg.png" alt="MercadoPago" style={{ height: 22 }} loading="lazy" decoding="async" />
                   <svg className="pdx-pay-chip" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 38 24" width="38" height="24" aria-label="Visa"><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"/></svg>
                   <svg className="pdx-pay-chip" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" role="img" width="38" height="24" aria-label="Mastercard"><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"/><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"/><circle fill="#EB001B" cx="15" cy="12" r="7"/><circle fill="#F79E1B" cx="23" cy="12" r="7"/><path fill="#FF5F00" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"/></svg>
                 </div>
@@ -535,7 +505,7 @@ export default function ParchesDetoxLanding() {
               {/* Hero review */}
               <div className="pdx-hero-review">
                 <div className="pdx-hr-avatar">
-                  <img src={heroReviews[hrIdx].avatar} alt={heroReviews[hrIdx].name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  <SafeImg src={heroReviews[hrIdx].avatar} alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 </div>
                 <div className="pdx-hr-content">
                   <div className="pdx-hr-top">
@@ -587,7 +557,7 @@ export default function ParchesDetoxLanding() {
                     {v.src
                       ? /\.(mp4|webm|ogg|mov)(\?|$)/i.test(v.src)
                         ? <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
-                        : <img src={v.src} alt={v.benefit || `Video ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
+                        : <SafeImg src={v.src} alt={v.benefit || `Video ${i + 1}`} width={300} height={533} sizes="(min-width: 900px) 300px, 33vw" widths={[240, 360, 480]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
                       : <div className="pdx-vstrip-ph"><span className="pdx-vstrip-ph-ico">🌙</span></div>
                     }
                   </div>
@@ -611,10 +581,12 @@ export default function ParchesDetoxLanding() {
         <div className="pdx-feat-section" style={{ background: '#fff' }}>
           <div className="pdx-feat-inner">
             <div className="pdx-feat-img">
-              <img
+              <SafeImg
                 src="https://cdn.shopify.com/s/files/1/0698/1468/1858/files/KINOKI001.webp?v=1728712902"
                 alt="Problemas que resuelven los Parches Detox"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -630,10 +602,12 @@ export default function ParchesDetoxLanding() {
         <div className="pdx-feat-section" style={{ background: 'var(--pdx-section-green)' }}>
           <div className="pdx-feat-inner pdx-feat-reverse">
             <div className="pdx-feat-img">
-              <img
+              <SafeImg
                 src="https://cdn.shopify.com/s/files/1/0698/1468/1858/files/PARCHE-BENEFICIOS_480x480_1_2abefb24-0283-4d39-9697-0ef9537237f2.webp?v=1727546498"
                 alt="Beneficios de los Parches Detox"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -649,10 +623,12 @@ export default function ParchesDetoxLanding() {
         <div className="pdx-feat-section" style={{ background: '#fff' }}>
           <div className="pdx-feat-inner">
             <div className="pdx-feat-img">
-              <img
+              <SafeImg
                 src="https://cdn.shopify.com/s/files/1/0778/4303/8517/files/508979000853398631-bf837f33-9e47-4290-8463-4662db21bf9f.gif"
                 alt="Transformación nocturna con Parches Detox"
-                loading="lazy"
+                width={600}
+                height={600}
+                sizes={FEATURE_SIZES}
                 style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
               />
             </div>
@@ -667,20 +643,21 @@ export default function ParchesDetoxLanding() {
 
         {/* ══ S9 — IMAGEN INGREDIENTES ══ */}
         <section className="pdx-ingredients-section">
-          <img
+          <SafeImg
             src="https://nesimu.com/cdn/shop/files/imgi_253_Transformacion_Visible_Nocturna_-_Ad_1_1.webp?v=1770704798&width=1500"
             alt="Ingredientes naturales de los Parches Detox"
             className="pdx-ingredients-img"
-            loading="lazy"
+            sizes="(min-width: 1100px) 1100px, 100vw"
           />
         </section>
 
         {/* ══ S8 — BANNER KINOKI ══ */}
         <div className="pdx-kinoki-banner">
-          <img
+          <SafeImg
             src="https://cdn.shopify.com/s/files/1/0698/1468/1858/files/KINOKI002_1.webp?v=1728713376"
             alt="Parches Kinoki — beneficios"
-            loading="lazy"
+            sizes="min(648px, calc(100vw - 32px))"
+            widths={[360, 648, 960, 1296]}
           />
         </div>
 
@@ -705,7 +682,7 @@ export default function ParchesDetoxLanding() {
               <div className="pdx-rev-card">
                 <div className="pdx-review-img-wrap">
                   {REVIEWS[reviewIdx].reviewImg
-                    ? <img src={REVIEWS[reviewIdx].reviewImg} alt={`Reseña de ${REVIEWS[reviewIdx].name}`} loading="lazy" />
+                    ? <SafeImg src={REVIEWS[reviewIdx].reviewImg} alt={`Foto de la reseña de ${REVIEWS[reviewIdx].name}`} sizes="min(520px, 88vw)" widths={REVIEW_WIDTHS} />
                     : <div className="pdx-review-img-ph">🌿</div>
                   }
                 </div>
@@ -721,7 +698,7 @@ export default function ParchesDetoxLanding() {
                 <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}>‹</button>
                 <div className="pdx-rev-dots">
                   {REVIEWS.map((_, i) => (
-                    <button key={i} className={`pdx-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} />
+                    <button key={i} type="button" className={`pdx-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} aria-label={`Ver reseña ${i + 1} de ${REVIEWS.length}`} aria-current={i === reviewIdx || undefined} />
                   ))}
                 </div>
                 <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}>›</button>
@@ -740,7 +717,7 @@ export default function ParchesDetoxLanding() {
                 <div key={i} className="pdx-step-item">
                   <div className="pdx-step-img-wrap">
                     {step.img
-                      ? <img src={step.img} alt={step.title} />
+                      ? <SafeImg src={step.img} alt="" width={90} height={90} sizes="90px" widths={STEP_WIDTHS} />
                       : <span className="pdx-step-img-ph">{step.num}</span>
                     }
                   </div>
@@ -760,10 +737,11 @@ export default function ParchesDetoxLanding() {
           <div className="pdx-container">
             <div className="pdx-guarantee">
               <div className="pdx-guarantee-icon">
-                <img
+                <SafeImg
                   src="https://img.icons8.com/ios_filled/1200/guarantee.jpg"
                   alt="Garantía 90 días"
-                  loading="lazy"
+                  width={160}
+                  height={160}
                   style={{ width: 160, height: 160, objectFit: 'contain' }}
                 />
               </div>
@@ -803,10 +781,10 @@ export default function ParchesDetoxLanding() {
           </div>
         </div>
 
-      </div>{/* /pdx-wrap */}
+      </main>{/* /pdx-wrap */}
 
       {/* Sticky CTA bar */}
-      <div className={`pdx-sticky-bar${stickyVisible ? ' pdx-visible' : ''}`} aria-hidden={!stickyVisible}>
+      <div className={`pdx-sticky-bar${stickyVisible ? ' pdx-visible' : ''}`} aria-hidden={!stickyVisible} inert={!stickyVisible}>
         <button className="pdx-btn-cta" onClick={handleBuy} disabled={soldOut}>
           {soldOut ? 'AGOTADO' : 'QUIERO PROBAR ESTA NOCHE 🌙'}
         </button>

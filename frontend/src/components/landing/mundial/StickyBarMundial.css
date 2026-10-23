@@ -1,0 +1,142 @@
+/* Barra fija inferior con progreso hacia el mínimo. Scopeado bajo :where(.ml-page). */
+/* === STICKY BAR (con progress + animación de entrada) === */
+:where(.ml-page) .ml-sticky {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  width: min(calc(100% - 24px), 560px);
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(11,18,32,.10);
+  box-shadow: 0 22px 54px rgba(2,8,23,0.22);
+  border-radius: 999px;
+  padding: 9px 10px 9px 20px;
+  overflow: hidden;
+  transform: translate(-50%, 120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .45s cubic-bezier(.2,.9,.25,1.1), opacity .3s ease;
+}
+:where(.ml-page) .ml-sticky.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+/* Progress bar — línea sutil en el borde inferior del sticky */
+:where(.ml-page) .ml-sticky-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B4D3E 0%, #059669 50%, #5EEAD4 100%);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform .12s linear;
+  border-radius: 0 0 999px 999px;
+  opacity: .85;
+}
+:where(.ml-page) .ml-sticky-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+:where(.ml-page) .ml-sticky-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .62rem;
+  font-weight: 1000;
+  letter-spacing: .12em;
+  color: rgba(11,18,32,.55);
+}
+:where(.ml-page) .ml-sticky.has-cart .ml-sticky-label { color: #1B4D3E; }
+:where(.ml-page) .ml-sticky-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1B4D3E;
+  box-shadow: 0 0 0 0 rgba(27,77,62,.55);
+  animation: mlDotPulse 1.8s ease-out infinite;
+}
+@keyframes mlDotPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(27,77,62,.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(27,77,62,0); }
+  100% { box-shadow: 0 0 0 0 rgba(27,77,62,0); }
+}
+:where(.ml-page) .ml-sticky.has-cart .ml-sticky-btn {
+  background: linear-gradient(135deg, #059669 0%, #1B4D3E 100%);
+}
+:where(.ml-page) .ml-sticky-price {
+  font-size: 1.2rem;
+  font-weight: 1100;
+  color: rgba(11,18,32,.92);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+:where(.ml-page) .ml-sticky-ctas { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+:where(.ml-page) .ml-sticky-wa {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #25D366;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(37,211,102,.35);
+  transition: transform .15s ease;
+  font-family: inherit;
+}
+:where(.ml-page) .ml-sticky-wa:hover { transform: scale(1.06); }
+:where(.ml-page) .ml-sticky-btn {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #1B4D3E 0%, #0F2D24 100%);
+  color: #fff;
+  font-weight: 1000;
+  font-size: .92rem;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(27,77,62,.32);
+  transition: transform .15s ease, box-shadow .15s ease;
+  letter-spacing: .01em;
+  font-family: inherit;
+  white-space: nowrap;
+}
+:where(.ml-page) .ml-sticky-btn:hover { transform: translateY(-1px); }
+/* Estado "bajo mínimo": ámbar/rojo, progress naranja */
+:where(.ml-page) .ml-sticky.is-under-min .ml-sticky-label {
+  color: #B45309;
+}
+:where(.ml-page) .ml-sticky.is-under-min .ml-sticky-dot {
+  background: #F59E0B;
+  box-shadow: 0 0 0 0 rgba(245,158,11,.55);
+}
+:where(.ml-page) .ml-sticky.is-under-min .ml-sticky-progress {
+  background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 50%, #FDE68A 100%);
+}
+:where(.ml-page) .ml-sticky.is-under-min .ml-sticky-btn {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  box-shadow: 0 10px 26px rgba(245,158,11,.35);
+}
+@media (max-width: 520px) {
+  :where(.ml-page) .ml-sticky {
+    padding: 7px 8px 7px 16px;
+    gap: 8px;
+    bottom: 12px;
+    width: calc(100% - 16px);
+  }
+  :where(.ml-page) .ml-sticky-label { font-size: .56rem; letter-spacing: .08em; }
+  :where(.ml-page) .ml-sticky-price { font-size: 1rem; }
+  :where(.ml-page) .ml-sticky-btn { padding: 9px 13px; font-size: .78rem; }
+  :where(.ml-page) .ml-sticky-wa { width: 38px; height: 38px; font-size: 1.05rem; }
+  :where(.ml-page) .ml-sticky-ctas { gap: 6px; }
+}

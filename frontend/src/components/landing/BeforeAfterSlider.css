@@ -1,0 +1,135 @@
+/* BeforeAfterSlider — prefijo lp-ba para no chocar con los .ba-* inline de
+   ProductDetail. Pensado para ir sobre una banda oscura. */
+
+.lp-ba { margin: 0; padding: 4px 0 8px; }
+
+.lp-ba__frame {
+  --ba-pos: 50%;
+  position: relative;
+  display: grid;
+  width: 100%;
+  max-width: 680px;
+  min-height: 280px;
+  max-height: 460px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+  cursor: col-resize;
+  touch-action: pan-y; /* el gesto horizontal es del slider, el vertical scrollea */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Las dos capas ocupan la misma celda de la grilla → mismo tamaño exacto. */
+.lp-ba__layer { grid-area: 1 / 1; min-height: 280px; }
+.lp-ba__layer > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  pointer-events: none;
+}
+.lp-ba__layer--before {
+  position: relative;
+  z-index: 1;
+  clip-path: inset(0 calc(100% - var(--ba-pos)) 0 0);
+}
+
+.lp-ba__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.07);
+}
+.lp-ba__layer--before .lp-ba__placeholder { background: rgba(0, 0, 0, 0.1); }
+.lp-ba__placeholder-icon { font-size: 3rem; }
+.lp-ba__placeholder-text { color: rgba(255, 255, 255, 0.6); font-size: 0.75rem; font-weight: 700; }
+
+.lp-ba__badge {
+  position: absolute;
+  bottom: 14px;
+  z-index: 4;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+.lp-ba__badge--before { left: 14px; }
+.lp-ba__badge--after { right: 14px; }
+
+/* Range real pero invisible: solo para teclado y lectores de pantalla.
+   El puntero lo maneja el frame. */
+.lp-ba__range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  appearance: none;
+}
+
+.lp-ba__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--ba-pos);
+  z-index: 5;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.lp-ba__handle {
+  position: absolute;
+  top: 50%;
+  left: var(--ba-pos);
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  color: #1e293b;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.lp-ba__frame:active .lp-ba__handle { transform: translate(-50%, -50%) scale(1.08); }
+.lp-ba__range:focus-visible ~ .lp-ba__handle {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(15, 23, 42, 0.85), 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.lp-ba__hint {
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .lp-ba__frame { max-height: 280px; border-radius: 12px; }
+  .lp-ba__layer > img { max-height: 280px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-ba__handle { transition: none; }
+}

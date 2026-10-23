@@ -3,6 +3,7 @@ const { Router } = require('express');
 const router = Router();
 const Order = require('../models/order');
 const { authRequired, adminOnly } = require('../middlewares/authMiddleware');
+const logger = require('../utils/logger').child('metrics');
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const APPROVED = ['approved', 'confirmed'];
@@ -125,7 +126,7 @@ router.get('/kpis', async (req, res) => {
       shipped_count:  countShipped(cur),
     });
   } catch (err) {
-    console.error('[metrics/kpis]', err);
+    logger.error('Error en /api/metrics/kpis', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener KPIs' });
   }
 });
@@ -187,7 +188,7 @@ router.get('/chart', async (req, res) => {
 
     res.json({ labels, serie_iniciados, serie_completados });
   } catch (err) {
-    console.error('[metrics/chart]', err);
+    logger.error('Error en /api/metrics/chart', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener gráfico' });
   }
 });
@@ -210,7 +211,7 @@ router.get('/funnel', async (req, res) => {
       ],
     });
   } catch (err) {
-    console.error('[metrics/funnel]', err);
+    logger.error('Error en /api/metrics/funnel', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener embudo' });
   }
 });
@@ -248,7 +249,7 @@ router.get('/payments', async (req, res) => {
 
     res.json({ payments });
   } catch (err) {
-    console.error('[metrics/payments]', err);
+    logger.error('Error en /api/metrics/payments', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener pagos' });
   }
 });
@@ -268,7 +269,7 @@ router.get('/pay-methods', async (req, res) => {
 
     res.json({ mp, cod: 100 - mp });
   } catch (err) {
-    console.error('[metrics/pay-methods]', err);
+    logger.error('Error en /api/metrics/pay-methods', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener métodos de pago' });
   }
 });
@@ -299,7 +300,7 @@ router.get('/pages', async (req, res) => {
       ],
     });
   } catch (err) {
-    console.error('[metrics/pages]', err);
+    logger.error('Error en /api/metrics/pages', err, { reqId: req.id });
     res.status(500).json({ ok: false, message: 'Error al obtener páginas' });
   }
 });

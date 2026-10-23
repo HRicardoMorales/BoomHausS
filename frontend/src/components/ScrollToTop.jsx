@@ -18,7 +18,7 @@ export default function ScrollToTop() {
         try {
             el.scrollTo({ top: 0, left: 0, behavior: "instant" }); // "instant" evita la animación lenta
             el.scrollTop = 0; // Método antiguo para asegurar compatibilidad
-        } catch (e) {
+        } catch {
             el.scrollTop = 0;
         }
     });

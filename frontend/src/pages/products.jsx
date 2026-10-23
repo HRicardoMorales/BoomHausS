@@ -1,117 +1,89 @@
 // frontend/src/pages/products.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api, { baseURL } from "../services/api";
+import StatePanel from "../components/ui/StatePanel.jsx";
+import Skeleton, { SkeletonGroup } from "../components/ui/Skeleton.jsx";
+import "./products.css";
 
+/**
+ * /products resuelve el producto principal y redirige a su detalle.
+ * Mientras tanto muestra un esqueleto con la forma de ProductDetail (galería
+ * + info) para que la transición no "salte"; si falla, un estado de error
+ * con reintento. El panel de diagnóstico (URL de la API) solo existe en dev:
+ * antes se le mostraba al cliente.
+ */
 export default function Products() {
     const navigate = useNavigate();
-
-    const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState("");
-
-    const calledUrl = useMemo(() => `${baseURL}/products/single`, []);
-
-    async function load() {
-        setLoading(true);
-        setErrMsg("");
-
-        try {
-            const res = await api.get("/products/single");
-            const product = res.data?.data;
-
-            if (!product?._id) {
-                setErrMsg(res.data?.message || "No se encontró el producto único.");
-                setLoading(false);
-                return;
-            }
-
-            // ✅ Éxito: redirige al detalle inmediatamente
-            navigate(`/products/${product._id}`, { replace: true });
-        } catch (err) {
-            const msg =
-                err?.response?.data?.message ||
-                err?.message ||
-                "No se pudo abrir la tienda.";
-            setErrMsg(msg);
-            setLoading(false);
-        }
-    }
+    // Cada reintento suma 1 y vuelve a disparar el efecto.
+    const [attempt, setAttempt] = useState(0);
 
     useEffect(() => {
-        load();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        let cancelled = false;
+        api.get("/products/single")
+            .then((res) => {
+                if (cancelled) return;
+                const product = res.data?.data;
+                if (product?._id) navigate(`/products/${product._id}`, { replace: true });
+                else setErrMsg(res.data?.message || "No se encontró el producto.");
+            })
+            .catch((err) => {
+                if (!cancelled) setErrMsg(err?.response?.data?.message || err?.message || "No se pudo abrir la tienda.");
+            });
+        return () => { cancelled = true; };
+    }, [attempt, navigate]);
 
-    // 🎨 RENDERIZADO CONDICIONAL
+    const retry = () => {
+        setErrMsg("");
+        setAttempt((n) => n + 1);
+    };
 
-    // 1. Si está cargando, mostramos una pantalla limpia y simple.
-    if (loading) {
+    if (!errMsg) {
         return (
             <main className="section">
-                <div className="container" style={{ textAlign: "center", padding: "4rem 0" }}>
-                    <h1 className="reveal">Cargando tienda...</h1>
-                    <p className="muted">Estamos preparando tus productos.</p>
-                </div>
+                <SkeletonGroup label="Cargando la tienda…" className="container products-skel">
+                    <Skeleton className="products-skel__media" height="auto" radius="var(--radius-xl)" />
+                    <div className="products-skel__info">
+                        <Skeleton height={14} width="32%" />
+                        <Skeleton height={34} width="88%" />
+                        <Skeleton height={34} width="60%" />
+                        <Skeleton height={18} width="44%" style={{ marginTop: 8 }} />
+                        <Skeleton height={64} radius="var(--radius-md)" style={{ marginTop: 12 }} />
+                        <Skeleton height={64} radius="var(--radius-md)" />
+                        <Skeleton height={54} radius={999} style={{ marginTop: 12 }} />
+                    </div>
+                </SkeletonGroup>
             </main>
         );
     }
 
-    // 2. Si llegamos aquí, es porque loading es false.
-    // Si no redirigió, significa que hubo un ERROR. Mostramos el panel de debug.
     return (
         <main className="section">
             <div className="container">
-                <section className="card reveal" style={{ padding: "1.2rem" }}>
-                    <span className="badge" style={{ background: "#ff4d4d", color: "white" }}>Error</span>
-                    <h1 style={{ marginTop: ".6rem" }}>
-                        No se pudo abrir la tienda
-                    </h1>
-
-                    <p style={{ marginTop: ".35rem", fontWeight: 900, color: "#ff4d4d" }}>
-                        {errMsg}
-                    </p>
-
-                    {/* Panel de Debug (Solo visible si hay error) */}
-                    <div
-                        className="card"
-                        style={{
-                            marginTop: "2rem",
-                            padding: "1rem",
-                            borderRadius: 16,
-                            border: "1px solid var(--border)",
-                            background: "rgba(0,0,0,0.02)"
-                        }}
-                    >
-                        <div style={{ fontWeight: 950, marginBottom: ".35rem" }}>
-                            Debug rápido
-                        </div>
-                        <div className="muted" style={{ wordBreak: "break-all", fontSize: "0.9rem" }}>
-                            <div>API base: {baseURL}</div>
-                            <div>URL llamada: {calledUrl}</div>
-                        </div>
-                    </div>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: ".6rem",
-                            flexWrap: "wrap",
-                            marginTop: "1.5rem",
-                        }}
-                    >
-                        <button className="btnPrimary" onClick={load}>
-                            Reintentar →
-                        </button>
-
-                        <a className="btn" href={calledUrl} target="_blank" rel="noreferrer">
-                            Abrir API Directa →
-                        </a>
-
-                        <Link className="btn" to="/">
-                            Volver al inicio
-                        </Link>
-                    </div>
-                </section>
+                <StatePanel
+                    tone="error"
+                    as="h1"
+                    eyebrow="Tienda"
+                    title="No pudimos abrir la tienda"
+                    actions={
+                        <>
+                            <button type="button" className="btn btn-primary" onClick={retry}>
+                                Reintentar
+                            </button>
+                            <Link className="btn btn-ghost" to="/">
+                                Volver al inicio
+                            </Link>
+                        </>
+                    }
+                >
+                    <p>Puede ser la conexión o un momento de mantenimiento. Probá de nuevo en unos segundos.</p>
+                    {import.meta.env.DEV && (
+                        <pre className="products-debug">
+                            {`${errMsg}\nGET ${baseURL}/products/single`}
+                        </pre>
+                    )}
+                </StatePanel>
             </div>
         </main>
     );

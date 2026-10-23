@@ -5,7 +5,7 @@
    Mobile-first · Breakpoint: 768px
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Inter: self-hosted global (src/styles/fonts.css). */
 
 /* ── Variables ─────────────────────────────────────────────── */
 .ipl-wrap {
@@ -230,10 +230,10 @@
   border-radius: 20px;
   font-family: 'Inter', sans-serif;
 }
-.ipl-bundle-perks { font-size: 11px; color: rgba(46,42,57,.6); font-family: 'Inter', sans-serif; font-weight: 500; }
+.ipl-bundle-perks { font-size: 11px; color: rgba(46,42,57,.72); font-family: 'Inter', sans-serif; font-weight: 500; }
 .ipl-bundle-price-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .ipl-bundle-price { font-size: 15px; font-weight: 800; color: #111; white-space: nowrap; }
-.ipl-bundle-compare { font-size: 11.5px; color: #bbb; font-weight: 500; text-decoration: line-through; white-space: nowrap; }
+.ipl-bundle-compare { font-size: 11.5px; color: #6f6c78; font-weight: 500; text-decoration: line-through; white-space: nowrap; }
 
 .ipl-bundle-extras-wrap { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .ipl-bundle-thumbs { display: flex; align-items: flex-start; gap: 6px; flex-wrap: nowrap; }
@@ -269,7 +269,7 @@
 .ipl-bundle-item-name {
   font-size: 9px;
   font-weight: 600;
-  color: rgba(46,42,57,.55);
+  color: rgba(46,42,57,.72);
   text-align: center;
   width: clamp(54px, 18vw, 76px);
   white-space: normal;
@@ -288,7 +288,7 @@
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(46,42,57,.55);
+  color: rgba(46,42,57,.72);
 }
 
 /* Urgency */
@@ -555,7 +555,7 @@
 .ipl-ctabs-desc {
   text-align: center;
   font-size: 14px;
-  color: rgba(46,42,57,.55);
+  color: rgba(46,42,57,.72);
   margin: 0 0 22px;
 }
 .ipl-ctabs-nav {
@@ -574,7 +574,7 @@
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 13.5px;
-  color: rgba(46,42,57,.4);
+  color: rgba(46,42,57,.70);
   cursor: pointer;
   padding: 8px 16px 10px;
   transition: color .18s, border-color .18s;
@@ -584,7 +584,7 @@
   color: var(--ipl-accent);
   border-bottom-color: var(--ipl-accent);
 }
-.ipl-ctab-btn:hover:not(.active) { color: rgba(46,42,57,.7); }
+.ipl-ctab-btn:hover:not(.active) { color: rgba(46,42,57,.88); }
 .ipl-ctab-images {
   display: flex;
   justify-content: center;
@@ -622,7 +622,7 @@
   font-size: 12.5px;
   line-height: 1.5;
 }
-.ipl-ctab-point--bad  { color: rgba(46,42,57,.55); font-weight: 500; }
+.ipl-ctab-point--bad  { color: rgba(46,42,57,.72); font-weight: 500; }
 .ipl-ctab-point--good { color: #111; font-weight: 700; }
 .ipl-ctab-icon { font-size: 17px; }
 
@@ -774,7 +774,7 @@
 .ipl-footer-tagline { font-size: 13px; margin: 4px 0 0; }
 .ipl-footer-trust-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
 .ipl-footer-ti { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
-.ipl-footer-bottom { font-size: 12px; color: rgba(255,255,255,0.4); padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
+.ipl-footer-bottom { font-size: 12px; color: rgba(255,255,255,0.6); padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
 
 /* ── Antes/Después por zona (S3.5) ──────────────────────── */
 .ipl-wkprog-section {
@@ -900,7 +900,7 @@
 .ipl-vstrip-sub {
   font-size: .88rem;
   font-weight: 600;
-  color: rgba(46,42,57,.50);
+  color: rgba(46,42,57,.72);
   margin: 0;
 }
 .ipl-vstrip-row {

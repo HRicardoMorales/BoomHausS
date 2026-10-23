@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { isDbReady } = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
+const requestLogger = require('./middlewares/requestLogger');
 
 const productsRoutes = require('./routes/products.routes');
 const healthRoutes = require('./routes/health.routes');
@@ -25,12 +26,15 @@ const couponsRoutes = require('./routes/coupons.routes');
 const metricsRoutes = require('./routes/metrics');
 const trackRoutes   = require('./routes/track.routes');
 
-const AbandonedCart = require('./models/AbandonedCart');
-const { authRequired, adminOnly } = require('./middlewares/authMiddleware');
+const abandonedCarts = require('./routes/abandonedCarts.routes');
+const logger = require('./utils/logger').child('app');
 
 const app = express();
 
 app.set('trust proxy', 1);
+
+// Access log + X-Request-Id (ver middlewares/requestLogger.js)
+app.use(requestLogger);
 app.disable('x-powered-by');
 
 connectDB();
@@ -46,6 +50,12 @@ const allowedExact = new Set(
   [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'https://amelor.com.ar',
+    'https://www.amelor.com.ar',
+    // dominios anteriores: se mantienen mientras redirijan a la tienda
+    'https://boomhauss.com.ar',
+    'https://www.boomhauss.com.ar',
+    'https://boomhauss-frontend.vercel.app',
     process.env.CLIENT_URL, // por si lo usás
   ].filter(Boolean)
 );
@@ -72,9 +82,13 @@ function isAllowedOrigin(origin) {
     // solo http/https
     if (protocol !== 'http:' && protocol !== 'https:') return false;
 
-    // ✅ permite cualquier dominio de Vercel que empiece con boom-haus-
-    // ej: boom-haus-xxxxx-ricardo-morales-projects.vercel.app
-    if (hostname.startsWith('boom-haus-') && hostname.endsWith('.vercel.app')) return true;
+    // ✅ previews de Vercel de ESTE proyecto (scope ricardo-morales-projects)
+    // ej: boom-haus-s-git-nightly-portfolio-ricardo-morales-projects.vercel.app
+    if (
+      protocol === 'https:' &&
+      hostname.startsWith('boom-haus-') &&
+      hostname.endsWith('-ricardo-morales-projects.vercel.app')
+    ) return true;
 
     // ✅ si tenés el dominio production estable (recomendado)
     if (hostname === 'boom-haus.vercel.app') return true;
@@ -85,15 +99,12 @@ function isAllowedOrigin(origin) {
   }
 }
 
-// Busca donde tengas configurado 'cors' y cámbialo por esto:
-
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",                 // Tu PC local
-    "https://boomhauss-frontend.vercel.app", // Tu link viejo de Vercel
-    "https://boomhauss.com.ar",              // 👈 ESTE ES EL NUEVO QUE FALTABA
-    "https://www.boomhauss.com.ar"           // El mismo con www
-  ],
+  // Antes era una lista fija que no incluía amelor.com.ar ni las previews;
+  // ahora usa isAllowedOrigin (exactos + CLIENT_URL(S) + previews del proyecto).
+  origin(origin, cb) {
+    cb(null, isAllowedOrigin(origin));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
@@ -151,10 +162,11 @@ app.use('/api', (req, res, next) => {
     if (isDbReady()) return next();
 
     const isWebhook = req.path.startsWith('/webhooks/');
-    const tag = isWebhook ? '⚠️ DB gate 503 [WEBHOOK — proveedor reintentara]' : '⚠️ DB gate 503';
-    console.warn(
-        `${tag} ${req.method} /api${req.path} (mongoose.readyState=${mongoose.connection.readyState})`
-    );
+    const tag = isWebhook ? 'DB gate 503 [WEBHOOK — proveedor reintentará]' : 'DB gate 503';
+    logger.warn(`${tag} ${req.method} /api${req.path}`, {
+        readyState: mongoose.connection.readyState,
+        reqId: req.id,
+    });
 
     res.set('Retry-After', '5');
     return res.status(503).json({
@@ -177,137 +189,9 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api/coupons', couponsRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/track',   trackRoutes);
+app.use('/api/abandoned-cart',  abandonedCarts.captureRouter);
+app.use('/api/abandoned-carts', abandonedCarts.adminRouter);
 
-// ──────────────────────────────────────────────────────────────
-//  CARRITOS ABANDONADOS
-// ──────────────────────────────────────────────────────────────
-
-// POST /api/abandoned-cart  (captura silenciosa desde el checkout)
-app.post('/api/abandoned-cart', async (req, res) => {
-  try {
-    const {
-      email, phone, name,
-      address, city, province, postalCode,
-      items, total, totalItems,
-      step, landingSource, paymentMethod,
-    } = req.body || {};
-
-    // Necesitamos al menos un dato de contacto para identificar al cliente
-    const cleanEmail = (email || '').trim().toLowerCase();
-    const cleanPhone = (phone || '').replace(/[^\d+]/g, '');
-    if (!cleanEmail && !cleanPhone) {
-      return res.status(400).json({ ok: false, error: 'Falta contacto' });
-    }
-
-    // Buscar registro existente: primero por teléfono, si no por email
-    let existing = null;
-    if (cleanPhone) {
-      existing = await AbandonedCart.findOne({ phone: cleanPhone });
-    }
-    if (!existing && cleanEmail) {
-      existing = await AbandonedCart.findOne({ email: cleanEmail });
-    }
-
-    // Solo guardamos campos que realmente llegaron (para no borrar datos previos)
-    const setFields = {};
-    if (cleanEmail) setFields.email = cleanEmail;
-    if (cleanPhone) setFields.phone = cleanPhone;
-    if (name)        setFields.name = String(name).trim();
-    if (address)     setFields.address = String(address).trim();
-    if (city)        setFields.city = String(city).trim();
-    if (province)    setFields.province = String(province).trim();
-    if (postalCode)  setFields.postalCode = String(postalCode).trim();
-    if (Array.isArray(items) && items.length) {
-      setFields.items = items;
-      setFields.totalItems = totalItems != null
-        ? Number(totalItems)
-        : items.reduce((a, it) => a + (Number(it?.quantity) || 0), 0);
-    }
-    if (total != null)        setFields.totalAmount = Number(total) || 0;
-    if (step)                 setFields.step = String(step);
-    if (landingSource)        setFields.landingSource = String(landingSource);
-    if (paymentMethod)        setFields.paymentMethod = String(paymentMethod);
-    // Si vuelve a interactuar, lo reactivamos como pendiente
-    setFields.recovered = false;
-
-    if (existing) {
-      await AbandonedCart.findByIdAndUpdate(existing._id, { $set: setFields });
-    } else {
-      await AbandonedCart.create(setFields);
-    }
-
-    res.json({ ok: true });
-  } catch (error) {
-    console.error('❌ Error guardando carrito abandonado:', error);
-    res.status(500).json({ ok: false, error: 'Error' });
-  }
-});
-
-// GET /api/abandoned-carts  (listar — query: ?all=1, ?limit=100)
-app.get('/api/abandoned-carts', authRequired, adminOnly, async (req, res) => {
-  try {
-    const showAll = req.query.all === '1' || req.query.all === 'true';
-    const limit = Math.min(Number(req.query.limit) || 100, 500);
-    const query = showAll ? {} : { recovered: false };
-
-    const carts = await AbandonedCart.find(query)
-      .sort({ updatedAt: -1, createdAt: -1 })
-      .limit(limit);
-    res.json({ ok: true, data: carts });
-  } catch (error) {
-    console.error('❌ Error listando abandoned carts:', error);
-    res.status(500).json({ ok: false, error: 'Error al obtener carritos' });
-  }
-});
-
-// POST /api/abandoned-carts/:id/recover  (marcar como recuperado/descartado)
-app.post('/api/abandoned-carts/:id/recover', authRequired, adminOnly, async (req, res) => {
-  try {
-    await AbandonedCart.findByIdAndUpdate(req.params.id, {
-      recovered: true,
-      recoveredAt: new Date(),
-    });
-    res.json({ ok: true });
-  } catch (error) {
-    res.status(500).json({ ok: false, error: 'Error' });
-  }
-});
-
-// POST /api/abandoned-carts/:id/reopen  (volver a pendiente)
-app.post('/api/abandoned-carts/:id/reopen', authRequired, adminOnly, async (req, res) => {
-  try {
-    await AbandonedCart.findByIdAndUpdate(req.params.id, {
-      recovered: false,
-      recoveredAt: null,
-    });
-    res.json({ ok: true });
-  } catch (error) {
-    res.status(500).json({ ok: false, error: 'Error' });
-  }
-});
-
-// POST /api/abandoned-carts/:id/contacted  (registrar que fue contactado)
-app.post('/api/abandoned-carts/:id/contacted', authRequired, adminOnly, async (req, res) => {
-  try {
-    await AbandonedCart.findByIdAndUpdate(req.params.id, {
-      contactedAt: new Date(),
-      ...(req.body?.notes ? { adminNotes: String(req.body.notes) } : {}),
-    });
-    res.json({ ok: true });
-  } catch (error) {
-    res.status(500).json({ ok: false, error: 'Error' });
-  }
-});
-
-// DELETE /api/abandoned-carts/:id
-app.delete('/api/abandoned-carts/:id', authRequired, adminOnly, async (req, res) => {
-  try {
-    await AbandonedCart.findByIdAndDelete(req.params.id);
-    res.json({ ok: true });
-  } catch (error) {
-    res.status(500).json({ ok: false, error: 'Error' });
-  }
-});
 // ✅ errors al final
 app.use(errorHandler);
 

@@ -1,0 +1,208 @@
+/* ReviewsWithBars — prefijo lp-rwb (ProductDetail y Mundial tienen .rv-* inline
+   y el CSS de los chunks lazy queda global). */
+
+.lp-rwb {
+  --rwb-ink: rgba(11, 18, 32, 0.92);
+  --rwb-text: rgba(11, 18, 32, 0.7);
+  --rwb-muted: rgba(11, 18, 32, 0.62);
+  --rwb-accent: rgba(27, 77, 62, 0.95);
+  --rwb-bar: linear-gradient(90deg, #1b4d3e, #2f855a);
+  --rwb-quote: #c53030;
+  width: 100%;
+}
+.lp-rwb--wine {
+  --rwb-accent: rgba(139, 26, 74, 0.95);
+  --rwb-bar: linear-gradient(90deg, #8b1a4a, #c2185b);
+  --rwb-quote: #ad1457;
+}
+
+/* ---------- Resumen ---------- */
+.lp-rwb__summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 0 0 8px;
+}
+@media (min-width: 640px) {
+  .lp-rwb__summary { flex-direction: row; align-items: flex-start; justify-content: center; gap: 40px; }
+}
+.lp-rwb__score { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+.lp-rwb__score-num {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--rwb-ink);
+  font-variant-numeric: tabular-nums;
+}
+.lp-rwb__score-count { font-size: 0.8rem; font-weight: 700; color: var(--rwb-muted); }
+
+.lp-rwb__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lp-rwb__bar-row { display: flex; align-items: center; gap: 8px; }
+.lp-rwb__bar-label {
+  min-width: 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  color: rgba(11, 18, 32, 0.65);
+}
+.lp-rwb__bar-track {
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(11, 18, 32, 0.1);
+}
+.lp-rwb__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--rwb-bar);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lp-rwb__bar-pct { min-width: 30px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; color: var(--rwb-muted); }
+
+/* ---------- Carrusel ---------- */
+.lp-rwb__carousel { position: relative; margin-top: 28px; }
+
+.lp-rwb__row {
+  position: relative; /* offsetParent de los slides para calcular el centro */
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding: 10px 6px 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.lp-rwb__row::-webkit-scrollbar { display: none; }
+
+.lp-rwb__slide { flex: 0 0 auto; width: min(520px, 88vw); scroll-snap-align: center; }
+
+.lp-rwb__card {
+  overflow: hidden;
+  border: 1px solid rgba(2, 8, 23, 0.1);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 22px 70px rgba(10, 20, 40, 0.16);
+}
+.lp-rwb__media { position: relative; width: 100%; aspect-ratio: 4 / 3; background: #f1f5f9; }
+.lp-rwb__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lp-rwb__ph { display: grid; place-items: center; width: 100%; height: 100%; font-size: 3rem; background: #f0f4f8; }
+.lp-rwb__quote {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--rwb-quote);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--rwb-quote) 35%, transparent);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.lp-rwb__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 160px;
+  padding: 16px 16px 18px;
+  text-align: center;
+}
+.lp-rwb__title {
+  margin: 0;
+  font-family: inherit; /* h3: no heredar la serif global de los títulos */
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--rwb-ink);
+}
+.lp-rwb__text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.6;
+  color: var(--rwb-text);
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+.lp-rwb__name { margin: 4px 0 0; font-size: 0.85rem; font-weight: 900; color: rgba(11, 18, 32, 0.62); }
+
+.lp-rwb__nav {
+  position: absolute;
+  top: 45%;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(2, 8, 23, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 18px 55px rgba(10, 20, 40, 0.18);
+  color: var(--rwb-ink);
+  font-size: 24px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: opacity 0.18s ease;
+}
+.lp-rwb__nav:disabled { opacity: 0.35; cursor: default; }
+.lp-rwb__nav--prev { left: -8px; }
+.lp-rwb__nav--next { right: -8px; }
+@media (max-width: 560px) {
+  .lp-rwb__nav { display: none; }
+}
+
+/* Puntos: el botón es el área táctil (24 px), el punto visible es ::before. */
+.lp-rwb__dots { display: flex; justify-content: center; margin-top: 4px; }
+.lp-rwb__dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.lp-rwb__dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(2, 8, 23, 0.18);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.lp-rwb__dot.is-active::before { background: var(--rwb-accent); transform: scale(1.25); }
+
+.lp-rwb__nav:focus-visible,
+.lp-rwb__dot:focus-visible {
+  outline: 2px solid var(--rwb-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-rwb__bar-fill,
+  .lp-rwb__dot::before,
+  .lp-rwb__nav { transition: none; }
+}

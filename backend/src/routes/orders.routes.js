@@ -15,9 +15,13 @@ const {
 
 const { authRequired, adminOnly } = require("../middlewares/authMiddleware");
 const { uploadPaymentProof } = require("../middlewares/uploadMiddleware");
+const validateObjectId = require("../middlewares/validateObjectId");
+const { validate } = require("../middlewares/validate");
+const { createOrderBody } = require("../validation/orders.schemas");
 const { MercadoPagoConfig, Payment } = require("mercadopago");
 const Order = require("../models/order");
 const { sendPurchaseEvent } = require("../services/metaCapi");
+const logger = require('../utils/logger').child('orders');
 
 /**
  * Público:
@@ -61,12 +65,12 @@ router.post("/card-payment", async (req, res) => {
       body: {
         transaction_amount: Number(amount),
         token,
-        description: "Compra en BoomHausS",
+        description: "Compra en Amelor",
         installments: Number(installments) || 1,
         payment_method_id: paymentMethodId,
         issuer_id: issuerId ? Number(issuerId) : undefined,
         payer: {
-          email: email || "comprador@boomhauss.com",
+          email: email || "comprador@amelor.com.ar",
           identification: {
             type: identificationType || "DNI",
             number: String(identificationNumber || ""),
@@ -84,7 +88,7 @@ router.post("/card-payment", async (req, res) => {
           sendPurchaseEvent(updatedOrder, { ip: req.ip, userAgent: req.headers['user-agent'] });
         }
       } catch (dbErr) {
-        console.warn("No se pudo actualizar el estado del pedido:", dbErr.message);
+        logger.warn("No se pudo actualizar el estado del pedido", dbErr);
       }
     }
 
@@ -95,7 +99,7 @@ router.post("/card-payment", async (req, res) => {
       paymentId: result.id,
     });
   } catch (err) {
-    console.error("MP card payment error:", err);
+    logger.error("Error en pago con tarjeta (MP)", err, { reqId: req.id });
     res.status(500).json({
       ok: false,
       message: err?.cause?.[0]?.description || err.message || "Error al procesar el pago",
@@ -105,9 +109,9 @@ router.post("/card-payment", async (req, res) => {
 
 /**
  * Público:
- * - Crear orden
+ * - Crear orden (zod valida solo contacto/envío; ítems y total los resuelve el controller)
  */
-router.post("/", createOrder);
+router.post("/", validate({ body: createOrderBody }), createOrder);
 
 /**
  * User:
@@ -122,6 +126,7 @@ router.get("/my", authRequired, getMyOrders);
 router.post(
   "/:id/payment-proof",
   authRequired,
+  validateObjectId(),
   uploadPaymentProof,
   uploadPaymentProofController
 );
@@ -136,18 +141,18 @@ router.get("/", authRequired, adminOnly, getOrders);
  * Admin:
  * - Actualizar estados (pago/envío)
  */
-router.patch("/:id", authRequired, adminOnly, updateOrderStatus);
+router.patch("/:id", authRequired, adminOnly, validateObjectId(), updateOrderStatus);
 
 /**
  * Admin:
  * - Aprobar comprobante
  */
-router.patch("/:id/verify", authRequired, adminOnly, verifyPaymentProofController);
+router.patch("/:id/verify", authRequired, adminOnly, validateObjectId(), verifyPaymentProofController);
 
 /**
  * Admin:
  * - Rechazar comprobante (con reason opcional)
  */
-router.patch("/:id/reject", authRequired, adminOnly, rejectPaymentProofController);
+router.patch("/:id/reject", authRequired, adminOnly, validateObjectId(), rejectPaymentProofController);
 
 module.exports = router;

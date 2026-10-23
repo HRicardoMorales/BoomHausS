@@ -3,6 +3,8 @@
 // puede detectar sintaxis ESM y romper con: "require is not defined in ES module scope".
 
 const Product = require('../models/Product');
+const logger = require('../utils/logger').child('products');
+const { getBestsellerIds } = require('../services/bestsellers');
 
 // GET /api/products/single
 async function getSingleProduct(req, res) {
@@ -22,7 +24,7 @@ async function getSingleProduct(req, res) {
 
         return res.json({ ok: true, data: product });
     } catch (err) {
-        console.error('getSingleProduct error:', err);
+        logger.error('Error en getSingleProduct', err, { reqId: req.id });
         return res.status(500).json({ ok: false, message: err.message || 'Server error' });
     }
 }
@@ -43,6 +45,17 @@ async function getProducts(req, res, next) {
     try {
         const products = await Product.find({ isActive: true });
         res.json({ ok: true, data: products });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// GET /api/products/bestsellers (público — ids/slugs ordenados por ventas pagas)
+async function getBestsellers(req, res, next) {
+    try {
+        const ids = await getBestsellerIds();
+        res.set('Cache-Control', 'public, max-age=600');
+        res.json({ ok: true, data: ids });
     } catch (error) {
         next(error);
     }
@@ -100,10 +113,30 @@ async function getAllProducts(req, res, next) {
     }
 }
 
+// Textos del hero editables desde el admin. Se normalizan acá (string, trim,
+// topes) en vez de rechazar: el form manda una línea por bullet y puede venir
+// con líneas vacías o de más.
+const MAX_HIGHLIGHTS = 6;
+const MAX_HIGHLIGHT_LEN = 80;
+const MAX_SUBTITLE_LEN = 120;
+
+function normalizeSubtitle(value) {
+    return typeof value === 'string' ? value.trim().slice(0, MAX_SUBTITLE_LEN) : '';
+}
+
+function normalizeHighlights(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+        .filter((h) => typeof h === 'string')
+        .map((h) => h.trim().slice(0, MAX_HIGHLIGHT_LEN))
+        .filter(Boolean)
+        .slice(0, MAX_HIGHLIGHTS);
+}
+
 // POST /api/products
 async function createProduct(req, res, next) {
     try {
-        const { name, description, price, category, slug, images, compareAtPrice, isActive, bundles } = req.body;
+        const { name, description, price, category, slug, images, compareAtPrice, isActive, bundles, subtitle, highlights } = req.body;
 
         if (!name || price === undefined) {
             const err = new Error('Nombre y precio son obligatorios.');
@@ -127,6 +160,8 @@ async function createProduct(req, res, next) {
             compareAtPrice: compareAtPrice ?? undefined,
             isActive: isActive ?? true,
             bundles: Array.isArray(bundles) ? bundles : [],
+            subtitle: normalizeSubtitle(subtitle),
+            highlights: normalizeHighlights(highlights),
         };
 
         // si mandan slug, que sea único
@@ -150,7 +185,7 @@ async function createProduct(req, res, next) {
 async function updateProduct(req, res, next) {
     try {
         const { id } = req.params;
-        const { name, description, price, category, images, isActive, slug, compareAtPrice, bundles } = req.body;
+        const { name, description, price, category, images, isActive, slug, compareAtPrice, bundles, subtitle, highlights } = req.body;
 
         const product = await Product.findById(id);
         if (!product) {
@@ -167,6 +202,8 @@ async function updateProduct(req, res, next) {
         if (isActive !== undefined) product.isActive = isActive;
         if (compareAtPrice !== undefined) product.compareAtPrice = compareAtPrice;
         if (bundles !== undefined) product.bundles = Array.isArray(bundles) ? bundles : [];
+        if (subtitle !== undefined) product.subtitle = normalizeSubtitle(subtitle);
+        if (highlights !== undefined) product.highlights = normalizeHighlights(highlights);
 
         if (slug !== undefined) {
             const nextSlug = String(slug || '').trim();
@@ -192,9 +229,12 @@ module.exports = {
     getSingleProduct,
     getProducts,
     getProductSlugs,
+    getBestsellers,
     getProductById,
     getProductBySlug,
     getAllProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    normalizeHighlights,
+    normalizeSubtitle
 };

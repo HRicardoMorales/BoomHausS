@@ -1,23 +1,10 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext.jsx';
+import { useCart } from '../hooks/useCart';
 import { clearAuth, getStoredAuth, isAdmin } from '../utils/auth';
+import './navbar.css';
+import { STORE_NAME } from "../config/brand.js";
 
-function Marquee({ items }) {
-    const repeated = [...items, ...items, ...items];
-    return (
-        <div className="marquee-bar" style={{ width: '100%', overflow: 'hidden' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 28, padding: '10px 18px', whiteSpace: 'nowrap', animation: 'marquee 18s linear infinite', willChange: 'transform' }}>
-                {repeated.map((text, idx) => (
-                    <span key={`${text}-${idx}`} style={{ fontWeight: 950, letterSpacing: '-0.01em', display: 'inline-flex', alignItems: 'center', gap: 16 }}>
-                        {text} <span style={{ opacity: 0.55 }}>•</span>
-                    </span>
-                ))}
-            </div>
-            <style>{`@keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-33.333%); } }`}</style>
-        </div>
-    );
-}
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -35,10 +22,26 @@ export default function Navbar() {
         setCurrentUser(user || null);
     }
 
-    useEffect(() => { refreshUser(); }, [location.pathname]);
+    // Al cambiar de ruta: refrescar usuario y cerrar el menú lateral.
+    // Se ajusta el estado durante el render (patrón recomendado por React)
+    // en lugar de en un useEffect, evitando un render intermedio.
+    const [prevPath, setPrevPath] = useState(location.pathname);
+    if (prevPath !== location.pathname) {
+        setPrevPath(location.pathname);
+        setCurrentUser(getStoredAuth().user || null);
+        setOpen(false);
+    }
+
     useEffect(() => { window.addEventListener('auth:changed', refreshUser); return () => window.removeEventListener('auth:changed', refreshUser); }, []);
     useEffect(() => { function onFocus() { refreshUser(); } window.addEventListener('focus', onFocus); return () => window.removeEventListener('focus', onFocus); }, []);
-    useEffect(() => setOpen(false), [location.pathname]); // Cerrar menú al cambiar de página
+
+    // Escape cierra el menú móvil (patrón disclosure de WAI-ARIA).
+    useEffect(() => {
+        if (!open) return undefined;
+        function onKey(e) { if (e.key === 'Escape') setOpen(false); }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [open]);
 
     const admin = isAdmin(currentUser);
 
@@ -48,24 +51,24 @@ export default function Navbar() {
         navigate('/login');
     }
 
-    const storeName = import.meta.env.VITE_STORE_NAME || 'Amelor';
+    const storeName = STORE_NAME;
     const linkBase = ({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`;
 
     return (
-        <header style={{ position: 'sticky', top: 0, zIndex: 9000, background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+        <header className="site-header">
             {/* =========================
                 NAVBAR DESKTOP (PC)
                ========================= */}
-            <div className="container nav-desktop-container" style={{ padding: '0.85rem 0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'space-between' }}>
+            <div className="container nav-desktop-container">
+                <div className="nav-desktop-row">
 
                     {/* Brand Desktop */}
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                        <img src="/logo-navbar.png" alt={storeName} style={{ height: 74, width: 'auto', objectFit: 'contain' }} />
+                    <Link to="/" className="nav-brand">
+                        <img src="/logo-navbar.webp" alt={storeName} width={148} height={74} decoding="async" className="nav-brand__logo" />
                     </Link>
 
                     {/* Menú Desktop */}
-                    <nav className="nav-desktop" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <nav className="nav-desktop" aria-label="Principal">
                         <NavLink className={linkBase} to="/">Inicio</NavLink>
                         <NavLink className={linkBase} to="/products">Tienda</NavLink>
                         <NavLink className={({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''} ${cartCount > 0 ? 'cart-highlight' : ''}`} to="/cart">
@@ -81,17 +84,17 @@ export default function Navbar() {
                             </>
                         ) : null}
 
-                        <div style={{ width: 1, height: 26, background: '#e2e8f0', margin: '0 0.35rem' }} />
+                        <div className="nav-divider" aria-hidden="true" />
 
                         {!currentUser ? (
                             <>
                                 <NavLink className={linkBase} to="/login">Login</NavLink>
-                                <NavLink className="btn btn-primary" to="/register" style={{padding: '8px 16px', fontSize: '0.9rem'}}>Registrarse →</NavLink>
+                                <NavLink className="btn btn-primary nav-cta" to="/register">Registrarse →</NavLink>
                             </>
                         ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-                                <span className="muted" style={{ fontWeight: 900, fontSize: '0.9rem', color: '#334155' }}>{currentUser.name || currentUser.email}</span>
-                                <button className="btn btn-ghost" type="button" onClick={logout} style={{color: '#ef4444'}}>Salir</button>
+                            <div className="nav-user">
+                                <span className="nav-user__name">{currentUser.name || currentUser.email}</span>
+                                <button className="btn btn-ghost nav-logout" type="button" onClick={logout}>Salir</button>
                             </div>
                         )}
                     </nav>
@@ -105,153 +108,58 @@ export default function Navbar() {
                 <nav className="mobile-nav">
                     <div className="mn-left">
                         {/* Botón Menú Hamburguesa */}
-                        <button className="mn-btn" type="button" onClick={() => setOpen(!open)} aria-label="Abrir menú">
+                        <button className="mn-btn" type="button" onClick={() => setOpen((v) => !v)} aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} aria-controls="mobile-menu">
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                         </button>
                     </div>
                     
                     <div className="mn-center">
                         <Link to="/" className="mn-brand">
-                            <img src="/logo-navbar.png" alt={storeName} style={{ height: 58, width: 'auto', maxWidth: 180, objectFit: 'contain', display: 'block' }} />
+                            <img src="/logo-navbar.webp" alt={storeName} width={116} height={58} decoding="async" className="mn-brand__logo" />
                         </Link>
                     </div>
                     
                     <div className="mn-right">
                         {/* Botón Usuario / Mis Pedidos */}
-                        <Link to={currentUser ? "/my-orders" : "/login"} className="mn-btn">
+                        <Link to={currentUser ? "/my-orders" : "/login"} className="mn-btn" aria-label={currentUser ? 'Mis pedidos' : 'Ingresar'}>
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         </Link>
                         
                         {/* Botón Carrito */}
-                        <Link to="/cart" className="mn-btn mn-cart-btn">
+                        <Link to="/cart" className="mn-btn mn-cart-btn" aria-label={cartCount > 0 ? `Carrito, ${cartCount} ${cartCount === 1 ? 'producto' : 'productos'}` : 'Carrito'}>
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                            {cartCount > 0 && <span className="mn-badge">{cartCount}</span>}
+                            {cartCount > 0 && <span className="mn-badge" aria-hidden="true">{cartCount}</span>}
                         </Link>
                     </div>
                 </nav>
 
                 {/* Menú Desplegable Móvil */}
                 {open && (
-                    <div className="mobile-menu-dropdown card" style={{ margin: '0', borderRadius: '0 0 16px 16px', borderTop: 'none', padding: '1rem', background: 'white', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
-                        <div style={{ display: 'grid', gap: '0.5rem' }}>
+                    <div id="mobile-menu" className="mobile-menu-dropdown card">
+                        <nav className="mobile-menu__list" aria-label="Menú">
                             <NavLink className={linkBase} to="/">Inicio</NavLink>
                             <NavLink className={linkBase} to="/products">Tienda</NavLink>
                             <NavLink className={linkBase} to="/cart">Carrito ({cartCount})</NavLink>
                             {currentUser ? <NavLink className={linkBase} to="/my-orders">Mis pedidos</NavLink> : null}
                             {admin ? (
                                 <>
-                                    <div style={{ height: 1, background: '#eee', margin: '0.25rem 0' }} />
+                                    <div className="mobile-menu__sep mobile-menu__sep--tight" aria-hidden="true" />
                                     <NavLink className={linkBase} to="/admin">🛠 Admin Home</NavLink>
                                     <NavLink className={linkBase} to="/admin/orders">📦 Pedidos</NavLink>
                                     <NavLink className={linkBase} to="/admin/products">🏷 Productos</NavLink>
                                 </>
                             ) : null}
-                            <div style={{ height: 1, background: '#eee', margin: '0.5rem 0' }} />
+                            <div className="mobile-menu__sep" aria-hidden="true" />
                             {!currentUser ? (
-                                <><NavLink className={linkBase} to="/login">Ingresar</NavLink><NavLink className="btn btn-primary" to="/register" style={{justifyContent:'center'}}>Registrarse</NavLink></>
+                                <><NavLink className={linkBase} to="/login">Ingresar</NavLink><NavLink className="btn btn-primary mobile-menu__cta" to="/register">Registrarse</NavLink></>
                             ) : (
-                                <button className="btn btn-ghost" onClick={logout} style={{justifyContent:'flex-start', color:'red'}}>Cerrar Sesión</button>
+                                <button className="btn btn-ghost mobile-menu__logout" type="button" onClick={logout}>Cerrar Sesión</button>
                             )}
-                        </div>
+                        </nav>
                     </div>
                 )}
             </div>
 
-            <style>{`
-                /* === ESTILOS CORREGIDOS (PARA FONDO BLANCO) === */
-                .nav-link { 
-                    position: relative; 
-                    text-decoration: none; 
-                    /* CAMBIO CLAVE: Color oscuro para que se vea en fondo blanco */
-                    color: #334155; 
-                    padding: 10px 12px; 
-                    border-radius: 12px; 
-                    border: 1px solid transparent; 
-                    transition: all .18s ease; 
-                    font-weight: 700; 
-                    letter-spacing: -0.01em; 
-                    display: inline-flex; 
-                    align-items: center; 
-                    gap: 8px; 
-                }
-
-                .nav-link:hover { 
-                    background: #f1f5f9; /* Gris muy clarito al pasar el mouse */
-                    color: #0f172a;
-                }
-                
-                .nav-link--active { 
-                    background: #e2e8f0; /* Gris más fuerte para el activo */
-                    color: #0f172a;
-                    font-weight: 850;
-                }
-                
-                /* Estilo del botón carrito resaltado */
-                .cart-highlight {
-                    background: #fdf3f2 !important;
-                    color: #C8928B !important;
-                    border: 1px solid #DDB7B1 !important;
-                }
-
-                .nav-pill {
-                    display: inline-grid;
-                    place-items: center;
-                    min-width: 22px;
-                    height: 22px;
-                    padding: 0 8px;
-                    border-radius: 999px;
-                    background: #C8928B;
-                    color: white;
-                    font-size: 0.82rem;
-                    font-weight: 700;
-                    line-height: 1;
-                }
-
-                /* === RESPONSIVE LOGIC === */
-                .mobile-nav-container { display: none; }
-                .nav-desktop-container { display: block; }
-                .desktop-only { display: block; }
-
-                @media (max-width: 980px) {
-                    .nav-desktop-container { display: none !important; }
-                    .mobile-nav-container { display: block; }
-                    .desktop-only { display: none; }
-                    
-                    /* Ajuste links dentro del menu dropdown movil */
-                    .nav-link { width: 100%; } 
-                }
-
-                /* === DISEÑO MOBILE === */
-                .mobile-nav {
-                    display: flex; align-items: center;
-                    position: relative;
-                    padding: 8px 16px; min-height: 62px;
-                    background: #fff; border-bottom: 1px solid #eee;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                }
-                .mn-left { flex: 1; display: flex; align-items: center; }
-                .mn-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
-                .mn-center {
-                    position: absolute; left: 50%; transform: translateX(-50%);
-                    display: flex; align-items: center; justify-content: center;
-                }
-
-                .mn-brand { text-decoration: none; display: flex; align-items: center; justify-content: center; }
-                
-                .mn-btn {
-                    background: none; border: none; padding: 4px; color: #333;
-                    cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center;
-                }
-                .mn-cart-btn { color: #000; }
-                
-                .mn-badge {
-                    position: absolute; top: 0; right: 0;
-                    background: #C8928B; color: white;
-                    font-size: 0.65rem; width: 16px; height: 16px;
-                    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                    font-weight: bold; transform: translate(25%, -25%);
-                }
-            `}</style>
         </header>
     );
 }

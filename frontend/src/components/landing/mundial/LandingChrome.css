@@ -1,0 +1,39 @@
+/* Encabezados de sección (SectionHeader). Scopeado bajo :where(.ml-page). */
+/* === SECTION HEADERS === */
+:where(.ml-page) .ml-sec-head { text-align: center; margin: 6px auto 28px; max-width: 720px; }
+:where(.ml-page) .ml-sec-kicker {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 1000;
+  letter-spacing: .14em;
+  color: #1B4D3E;
+  background: rgba(94,234,212,.18);
+  border: 1px solid rgba(27,77,62,.18);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+:where(.ml-page) .ml-sec-kicker.is-light {
+  color: #5EEAD4;
+  background: rgba(94,234,212,.10);
+  border-color: rgba(94,234,212,.30);
+}
+:where(.ml-page) .ml-sec-title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 1100;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: rgba(11,18,32,.92);
+  text-transform: uppercase;
+}
+:where(.ml-page) .ml-sec-title.is-light { color: #fff; }
+:where(.ml-page) .ml-sec-sub {
+  margin: 12px auto 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: rgba(11,18,32,.62);
+  line-height: 1.55;
+  max-width: 560px;
+}
+:where(.ml-page) .ml-sec-sub.is-light { color: rgba(255,255,255,.78); }

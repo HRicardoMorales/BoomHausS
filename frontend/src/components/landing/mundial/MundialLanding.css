@@ -1,0 +1,123 @@
+/* Landing Mundial: base de la página (bandas, olas), botones compartidos,
+   toast de mínimo y scroll-reveal. Cada sección trae su CSS junto a su
+   módulo; todo scopeado bajo :where(.ml-page). Se importa último en
+   pages/MundialLanding.jsx. */
+.ml-page { background: #F7FBF9; padding-bottom: 90px; }
+.ml-page .pd-band-inner { width: min(var(--container), calc(100% - 2rem)); margin: 0 auto; }
+
+/* 📏 COMPACT: reduce vertical padding de cada banda y altura de los waves
+   para que la landing no sea tan larga de scrollear */
+.ml-page .pd-band { padding: 36px 0; }
+@media (max-width: 520px) { .ml-page .pd-band { padding: 30px 0; } }
+/* Primera banda (hero) más compacta — el usuario entra y lo primero que ve */
+.ml-page .pd-band:first-of-type { padding: 20px 0 24px; }
+@media (max-width: 520px) {
+  .ml-page .pd-band:first-of-type { padding: 14px 0 20px; }
+}
+/* Olas compartidas (components/landing/WaveSeparator) más bajas acá:
+   caja fija y la ola apoyada abajo, como la copia local que reemplazan. */
+.ml-page .lwave { height: 60px; }
+.ml-page .lwave-svg { position: absolute; bottom: 0; left: 0; max-height: 2.2rem; }
+@media (min-width: 1000px) {
+  .ml-page .lwave { height: 72px; }
+  .ml-page .lwave-svg { max-height: 3.2rem; }
+}
+
+/* Section headers: menos margen inferior */
+.ml-page .ml-sec-head { margin: 2px auto 18px; }
+
+/* Override: la banda azul del pd-band usa radial-gradient, lo que hace
+   que el borde top NO sea uniforme y nunca matchee contra el wave.
+   Forzamos un linear-gradient vertical que termina en #0F2D24 arriba y
+   abajo — idéntico color que el wave separator. */
+.ml-page .pd-band--blue {
+  background: linear-gradient(180deg, #0F2D24 0%, #153D31 40%, #153D31 60%, #0F2D24 100%);
+}
+.ml-page .pd-band--light { background: #F7FBF9; }
+
+/* === BUTTONS === */
+:where(.ml-page) .ml-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  font-weight: 1000;
+  font-size: .98rem;
+  letter-spacing: .01em;
+  cursor: pointer;
+  border: none;
+  transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+  font-family: inherit;
+}
+:where(.ml-page) .ml-btn--primary {
+  background: linear-gradient(135deg, #1B4D3E 0%, #153D31 60%, #0F2D24 100%);
+  color: #fff;
+  box-shadow: 0 14px 40px rgba(27,77,62,.32);
+}
+:where(.ml-page) .ml-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 18px 48px rgba(27,77,62,.40); }
+:where(.ml-page) .ml-btn--primary:active { transform: translateY(0); }
+:where(.ml-page) .ml-btn--ghost {
+  background: rgba(255,255,255,.92);
+  color: rgba(11,18,32,.85);
+  border: 1.5px solid rgba(11,18,32,.14);
+  box-shadow: 0 6px 20px rgba(11,18,32,.06);
+}
+:where(.ml-page) .ml-btn--ghost:hover { border-color: rgba(11,18,32,.30); transform: translateY(-1px); }
+:where(.ml-page) .ml-btn--small { padding: 11px 16px; font-size: .9rem; border-radius: 12px; }
+:where(.ml-page) .ml-btn--big { padding: 18px 26px; font-size: 1.1rem; }
+:where(.ml-page) .ml-btn-arrow { font-size: 1.1em; }
+
+/* === TOAST: aviso de mínimo de compra === */
+:where(.ml-page) .ml-min-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 86px;
+  transform: translateX(-50%);
+  z-index: 110;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px 12px 16px;
+  max-width: min(calc(100% - 24px), 480px);
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 1.5px solid #F59E0B;
+  border-radius: 14px;
+  color: #78350F;
+  font-size: .84rem;
+  font-weight: 800;
+  line-height: 1.35;
+  box-shadow: 0 22px 54px rgba(245,158,11,.40);
+  animation: ml-min-toast-in .32s cubic-bezier(.2,.9,.25,1.1);
+}
+:where(.ml-page) .ml-min-toast-ico { font-size: 1.1rem; flex-shrink: 0; line-height: 1.2; }
+:where(.ml-page) .ml-min-toast-txt { flex: 1; min-width: 0; }
+:where(.ml-page) .ml-min-toast-close {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(120,53,15,.12);
+  color: #78350F;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  font-family: inherit;
+}
+:where(.ml-page) .ml-min-toast-close:hover { background: rgba(120,53,15,.22); }
+@keyframes ml-min-toast-in {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}
+@media (max-width: 520px) {
+  :where(.ml-page) .ml-min-toast { bottom: 72px; font-size: .78rem; padding: 10px 12px; }
+}
+
+/* === scroll-reveal anim (igual que ProductDetail) === */
+:where(.ml-page) .anim-el { opacity: 1; transform: none; }
+:where(.ml-page) .anim-hidden { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+:where(.ml-page) .anim-hidden.in-view { opacity: 1; transform: translateY(0); }

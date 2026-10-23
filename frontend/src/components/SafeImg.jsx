@@ -15,14 +15,18 @@
 //   name       Nombre del producto — se muestra en el placeholder.
 //   alt        Alt text para accesibilidad (default: name).
 //   className  Se pasa tanto al <img> como al <div> fallback.
-//   style, loading, decoding, referrerPolicy, crossOrigin — passthrough a <img>.
+//   width, height  Dimensiones intrínsecas (reservan espacio → sin CLS).
+//   sizes      Atributo `sizes` para el srcset (default "100vw").
+//   widths     Anchos del srcset. Solo aplica a CDNs transformables
+//              (Cloudinary, Pexels; ver utils/imageCdn.js). `false` lo apaga.
+//   priority   Imagen above-the-fold (LCP): loading="eager" + fetchpriority="high".
+//              Sin priority: loading="lazy" y decoding="async" por defecto.
+//   style, loading, decoding, referrerPolicy, crossOrigin, draggable — passthrough.
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { responsiveImage, DEFAULT_WIDTHS } from '../utils/imageCdn.js';
 
-// Monograma de marca (primer caracter de VITE_STORE_NAME). Sale del env
-// para que se auto-sincronice si cambia el nombre de la tienda.
-const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'Amelor';
-const BRAND_MONO = String(STORE_NAME).trim().charAt(0).toUpperCase() || 'A';
+import { BRAND_MONOGRAM as BRAND_MONO } from '../config/brand.js';
 
 export default function SafeImg({
     src,
@@ -30,17 +34,23 @@ export default function SafeImg({
     alt,
     className = '',
     style,
+    width,
+    height,
+    sizes = '100vw',
+    widths = DEFAULT_WIDTHS,
+    priority = false,
     loading,
     decoding,
     referrerPolicy,
     crossOrigin,
+    draggable,
 }) {
-    const [failed, setFailed] = useState(false);
+    // Guardamos QUÉ src falló en vez de un booleano: si el mismo <SafeImg> se
+    // reutiliza con otra URL (ej. carousel), el fallback se resetea solo,
+    // sin un useEffect que dispare un render extra.
+    const [failedSrc, setFailedSrc] = useState(null);
+    const failed = failedSrc !== null && failedSrc === src;
     const hasSrc = src && String(src).trim();
-
-    // Reset failed cuando cambia src (el mismo <SafeImg> puede reutilizarse
-    // con nueva URL, ej. carousel de imagenes).
-    useEffect(() => { setFailed(false); }, [src]);
 
     if (!hasSrc || failed) {
         const label = name || alt || 'Producto';
@@ -106,17 +116,25 @@ export default function SafeImg({
         );
     }
 
+    const responsive = widths ? responsiveImage(src, { widths }) : { src, srcSet: undefined };
+
     return (
         <img
-            src={src}
-            alt={alt || name || ''}
+            src={responsive.src}
+            srcSet={responsive.srcSet}
+            sizes={responsive.srcSet ? sizes : undefined}
+            alt={alt ?? name ?? ''}
             className={className}
             style={style}
-            loading={loading}
-            decoding={decoding}
+            width={width}
+            height={height}
+            loading={loading ?? (priority ? 'eager' : 'lazy')}
+            decoding={decoding ?? (priority ? undefined : 'async')}
+            fetchPriority={priority ? 'high' : undefined}
             referrerPolicy={referrerPolicy}
             crossOrigin={crossOrigin}
-            onError={() => setFailed(true)}
+            draggable={draggable}
+            onError={() => setFailedSrc(src)}
         />
     );
 }

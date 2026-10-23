@@ -1,12 +1,13 @@
 ﻿// frontend/src/services/api.js
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
+import logger from "../utils/logger";
 
 // 🚀 CONFIGURACIÓN ÚNICA (Backend en Render)
 // Esta es la única URL que usará el sistema, sin importar dónde estés.
 export const baseURL = "https://boomhauss.onrender.com/api";
 
-console.log("🔗 API Conectada exclusivamente a:", baseURL);
+logger.debug("[api] baseURL:", baseURL);
 
 const api = axios.create({
     baseURL,
@@ -55,13 +56,13 @@ api.interceptors.response.use(
 // ----------------------------------------------------------------------
 export async function warmUpApi() {
     try {
-        console.log("⏳ Contactando a Render para despertar el servidor...");
+        logger.debug("[api] warm-up: despertando el servidor de Render…");
         // Intentamos un endpoint ligero
         await api.get("/products?limit=1"); 
-        console.log("✅ Servidor Render respondió.");
+        logger.debug("[api] warm-up OK");
         return true;
     } catch (e) {
-        console.error("⚠️ El servidor de Render parece apagado o lento:", e.message);
+        logger.warn("[api] warm-up falló (servidor apagado o lento):", e.message);
         return false;
     }
 }
