@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { moneyARS } from "./utils";
+import { moneyARSTight } from "../../../utils/pricing.js";
 import "./StickyBarMundial.css";
 
 /* =========================
@@ -33,7 +33,7 @@ export function StickyBarMundial({ kitPrice, onBuy, onWhatsapp, cartCount, cartT
 
   let label;
   if (underMin) {
-    label = `FALTAN ${moneyARS(missing)}`;
+    label = `FALTAN ${moneyARSTight(missing)}`;
   } else if (hasCart) {
     label = `TU PEDIDO · ${cartCount} ${cartCount === 1 ? "ítem" : "ítems"} · ENVÍO GRATIS ✓`;
   } else {
@@ -59,7 +59,7 @@ export function StickyBarMundial({ kitPrice, onBuy, onWhatsapp, cartCount, cartT
           {hasCart && <span className="ml-sticky-dot" aria-hidden="true" />}
           {label}
         </div>
-        <div className="ml-sticky-price">{moneyARS(priceToShow)}</div>
+        <div className="ml-sticky-price">{moneyARSTight(priceToShow)}</div>
       </div>
       <div className="ml-sticky-ctas">
         <button type="button" className="ml-sticky-wa" onClick={onWhatsapp} aria-label="WhatsApp">

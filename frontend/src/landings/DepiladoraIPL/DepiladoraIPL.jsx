@@ -5,6 +5,7 @@ import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './DepiladoraIPL.css';
 import SafeImg from '../../components/SafeImg';
+import { moneyARS } from '../../utils/pricing.js';
 import { HERO_SIZES, HALF_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, HALF_WIDTHS, COMP_WIDTHS, REVIEW_WIDTHS, STEP_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes ───────────────────────────────────────────── */
@@ -376,8 +377,6 @@ export default function DepiladoraIPL() {
   const discountPct = compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 55;
   const soldOut    = product?.stock === 0;
 
-  const fmt = (n) =>
-    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
   const BUNDLES = useMemo(() => [
     {
@@ -491,10 +490,10 @@ export default function DepiladoraIPL() {
               <h1 className="ipl-product-title">Depiladora IPL Profesional de Amelor</h1>
 
               <div className="ipl-pricing">
-                <span className="ipl-price-original">{fmt(compareAt)}</span>
-                <span className="ipl-price-sale">{fmt(price)}</span>
+                <span className="ipl-price-original">{moneyARS(compareAt)}</span>
+                <span className="ipl-price-sale">{moneyARS(price)}</span>
                 <span className="ipl-badge-discount">{discountPct}% OFF</span>
-                <span className="ipl-cuotas">3 cuotas sin interés de <strong>{fmt(Math.ceil(price / 3))}</strong></span>
+                <span className="ipl-cuotas">3 cuotas sin interés de <strong>{moneyARS(Math.ceil(price / 3))}</strong></span>
               </div>
 
               <ul className="ipl-benefits">
@@ -524,8 +523,8 @@ export default function DepiladoraIPL() {
                           <span className="ipl-bundle-perks">{b.perks}</span>
                         </div>
                         <div className="ipl-bundle-price-col">
-                          <span className="ipl-bundle-price">{fmt(b.bundlePrice)}</span>
-                          <span className="ipl-bundle-compare">{fmt(b.comparePrice)}</span>
+                          <span className="ipl-bundle-price">{moneyARS(b.bundlePrice)}</span>
+                          <span className="ipl-bundle-compare">{moneyARS(b.comparePrice)}</span>
                         </div>
                       </div>
 

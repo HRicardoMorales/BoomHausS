@@ -1,4 +1,7 @@
 // Formato de precios y descuentos compartido (es-AR, sin decimales).
+// Única fuente de verdad para mostrar plata: no crear otros `Intl.NumberFormat`
+// de moneda en componentes (antes había 15 copias, varias creando el formatter
+// en cada render).
 
 const ARS = new Intl.NumberFormat("es-AR", {
   style: "currency",
@@ -6,8 +9,20 @@ const ARS = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 });
 
-/** "$ 12.345" — valores no numéricos se muestran como $ 0. */
-export const moneyARS = (n) => ARS.format(Number(n) || 0);
+/** Número finito o 0: `undefined`, `null`, `NaN`, `Infinity` y basura → 0. */
+const toAmount = (n) => {
+  const num = typeof n === "string" && n.trim() === "" ? 0 : Number(n);
+  return Number.isFinite(num) ? num : 0;
+};
+
+/** "$ 12.345" (espacio duro, como lo escribe Intl). Valores inválidos → "$ 0". */
+export const moneyARS = (n) => ARS.format(toAmount(n));
+
+/**
+ * "$12.345" sin espacio: para precios grandes en tipografía display (héroe de
+ * la ficha, bundles, landing mayorista), donde el espacio parte el número.
+ */
+export const moneyARSTight = (n) => moneyARS(n).replace(/\s/g, "");
 
 /**
  * Porcentaje de descuento entero entre el precio actual y el de lista.

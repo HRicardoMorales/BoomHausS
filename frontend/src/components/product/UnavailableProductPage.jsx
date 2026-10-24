@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
 import SafeImg from "../SafeImg";
+import { moneyARS as money } from "../../utils/pricing.js";
 
 /* =========================
    UnavailableProductPage
@@ -28,10 +29,6 @@ export default function UnavailableProductPage({ isNetworkError, onRetry }) {
       })
       .catch(() => setSuggestions([]));
   }, []);
-
-  const money = (n) => new Intl.NumberFormat("es-AR", {
-    style: "currency", currency: "ARS", maximumFractionDigits: 0,
-  }).format(Number(n) || 0);
 
   return (
     <main className="section">

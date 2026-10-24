@@ -10,12 +10,6 @@ export const FALLBACK_IMG =
   </svg>
 `);
 
-export function moneyARS(n) {
-  const num = Number(n);
-  if (!Number.isFinite(num)) return "$0";
-  return `$${Math.round(num).toLocaleString("es-AR")}`;
-}
-
 /* Hash determinístico pequeño — para valores "reales" pero estables */
 function seedHash(str = "") {
   let h = 0;

@@ -6,6 +6,7 @@ import api from '../../services/api';
 import mc from '../parches-detox';
 import './ParchesDetox.css';
 import SafeImg from '../../components/SafeImg';
+import { moneyARS } from '../../utils/pricing.js';
 import { HERO_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS, STEP_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes ─────────────────────────────────────────────── */
@@ -272,8 +273,6 @@ export default function ParchesDetoxLanding() {
 
   const soldOut = product?.stock === 0;
 
-  const fmt = (n) =>
-    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
   /* Bundles desde config */
   const BUNDLES = (mc.bundles || []).map((b, i) => ({
@@ -394,10 +393,10 @@ export default function ParchesDetoxLanding() {
               <h1 className="pdx-product-title">Parches Desintoxicantes Plantares Detox </h1>
 
               <div className="pdx-pricing">
-                <span className="pdx-price-original">{fmt(compareAt)}</span>
-                <span className="pdx-price-sale">{fmt(price)}</span>
+                <span className="pdx-price-original">{moneyARS(compareAt)}</span>
+                <span className="pdx-price-sale">{moneyARS(price)}</span>
                 <span className="pdx-badge-discount">{discountPct}% OFF</span>
-                <span className="pdx-cuotas">3 cuotas sin interés de <strong>{fmt(Math.ceil(price / 3))}</strong></span>
+                <span className="pdx-cuotas">3 cuotas sin interés de <strong>{moneyARS(Math.ceil(price / 3))}</strong></span>
               </div>
 
               <ul className="pdx-benefits">
@@ -453,9 +452,9 @@ export default function ParchesDetoxLanding() {
                             {b.compareAt > b.price && (
                               <span className="pdx-bundle-pct-badge">-{Math.round(((b.compareAt - b.price) / b.compareAt) * 100)}%</span>
                             )}
-                            <span className="pdx-bundle-now">{fmt(b.price)}</span>
+                            <span className="pdx-bundle-now">{moneyARS(b.price)}</span>
                             {b.compareAt > b.price && (
-                              <span className="pdx-bundle-was">{fmt(b.compareAt)}</span>
+                              <span className="pdx-bundle-was">{moneyARS(b.compareAt)}</span>
                             )}
                           </div>
                         </div>

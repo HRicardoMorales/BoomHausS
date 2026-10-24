@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
 import { responsiveImage } from "../../../utils/imageCdn";
 import { SectionHeader } from "./LandingChrome";
-import { FALLBACK_IMG, getStockFor, moneyARS } from "./utils";
+import { FALLBACK_IMG, getStockFor } from "./utils";
+import { moneyARSTight } from "../../../utils/pricing.js";
 import "./ProductCatalog.css";
 
 /* =========================
@@ -62,17 +63,17 @@ function ProductCard({ cfg, productData, onAdd, onBuy }) {
 
         <div className="ml-prod-priceRow">
           {liveCompare > livePrice && (
-            <span className="ml-prod-was">{moneyARS(liveCompare)}</span>
+            <span className="ml-prod-was">{moneyARSTight(liveCompare)}</span>
           )}
-          <span className="ml-prod-now">{moneyARS(livePrice)}</span>
+          <span className="ml-prod-now">{moneyARSTight(livePrice)}</span>
           <span className="ml-prod-perPack">/pack x{cfg.unitsPerPack}</span>
         </div>
 
         <div className="ml-prod-margin">
-          Venta sugerida: <strong>{moneyARS(cfg.suggestedResale)}</strong>/u
+          Venta sugerida: <strong>{moneyARSTight(cfg.suggestedResale)}</strong>/u
           &nbsp;·&nbsp;Ganancia:{" "}
           <strong className="ml-prod-margin-profit">
-            {moneyARS(cfg.suggestedResale * cfg.unitsPerPack - livePrice)}
+            {moneyARSTight(cfg.suggestedResale * cfg.unitsPerPack - livePrice)}
           </strong>
           /pack
         </div>
@@ -94,10 +95,10 @@ function ProductCard({ cfg, productData, onAdd, onBuy }) {
         <div className="ml-prod-totalRow">
           <div className="ml-prod-total">
             <span>Total ({totalUnits} u)</span>
-            <strong>{moneyARS(totalCost)}</strong>
+            <strong>{moneyARSTight(totalCost)}</strong>
           </div>
           <div className="ml-prod-totalProfit">
-            +{moneyARS(totalProfit)} ganancia
+            +{moneyARSTight(totalProfit)} ganancia
           </div>
         </div>
 
@@ -275,7 +276,7 @@ export function KitHighlight({ products, onBuyKit, onAddKit }) {
               e.currentTarget.src = FALLBACK_IMG;
             }}
           />
-          <div className="ml-kit-saveBadge">AHORRÁS {moneyARS(ahorro)}</div>
+          <div className="ml-kit-saveBadge">AHORRÁS {moneyARSTight(ahorro)}</div>
         </div>
 
         <div className="ml-kit-content">
@@ -285,11 +286,11 @@ export function KitHighlight({ products, onBuyKit, onAddKit }) {
           <div className="ml-kit-topBlock">
             <div className="ml-kit-priceRow">
               {liveCompare > livePrice && (
-                <span className="ml-kit-was">{moneyARS(liveCompare)}</span>
+                <span className="ml-kit-was">{moneyARSTight(liveCompare)}</span>
               )}
-              <span className="ml-kit-now">{moneyARS(livePrice)}</span>
+              <span className="ml-kit-now">{moneyARSTight(livePrice)}</span>
               <span className="ml-kit-profitPill">
-                +{moneyARS(cfg.kitProfit.netProfit)} ganancia
+                +{moneyARSTight(cfg.kitProfit.netProfit)} ganancia
               </span>
             </div>
             <div className="ml-kit-ctas">
@@ -338,12 +339,12 @@ export function KitHighlight({ products, onBuyKit, onAddKit }) {
           <div className="ml-kit-profitMini">
             <div className="ml-kit-profitMini-col">
               <span>Invertís</span>
-              <strong>{moneyARS(livePrice)}</strong>
+              <strong>{moneyARSTight(livePrice)}</strong>
             </div>
             <div className="ml-kit-profitMini-arrow" aria-hidden="true">→</div>
             <div className="ml-kit-profitMini-col ml-kit-profitMini-col--hi">
               <span>Te queda</span>
-              <strong>+{moneyARS(cfg.kitProfit.netProfit)}</strong>
+              <strong>+{moneyARSTight(cfg.kitProfit.netProfit)}</strong>
             </div>
             <div className="ml-kit-profitMini-badge">+{cfg.kitProfit.marginPct}%</div>
           </div>

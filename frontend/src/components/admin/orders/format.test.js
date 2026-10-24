@@ -12,7 +12,7 @@ const nbsp = (s) => s.replace(/\u00a0/g, " ");
 describe("formatos", () => {
   it("money y formatDate toleran basura", () => {
     expect(nbsp(money(12500))).toBe("$ 12.500");
-    expect(money("x")).toBe("$0");
+    expect(nbsp(money("x"))).toBe("$ 0");
     expect(formatDate(null)).toBe("—");
     expect(formatDate("no-es-fecha")).toBe("—");
   });

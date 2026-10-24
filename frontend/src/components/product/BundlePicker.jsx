@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { moneyARS } from "./format";
+import { moneyARSTight } from "../../utils/pricing.js";
 import PaymentIcons from "./PaymentIcons";
 import HeroAccordions from "./HeroAccordions";
 
@@ -55,11 +55,11 @@ export default function BundlePicker({ bundles, selectedIdx, onSelect, onBuyNow,
                   <span className="bnd2-prices">
                     {opt.compareAt > 0 && (
                       <span className="bnd2-was">
-                        <span className="sr-only">Antes </span>{moneyARS(opt.compareAt)}
+                        <span className="sr-only">Antes </span>{moneyARSTight(opt.compareAt)}
                       </span>
                     )}
                     <span className="bnd2-now">
-                      {opt.compareAt > 0 && <span className="sr-only">, ahora </span>}{moneyARS(opt.price)}
+                      {opt.compareAt > 0 && <span className="sr-only">, ahora </span>}{moneyARSTight(opt.price)}
                     </span>
                   </span>
                 )}

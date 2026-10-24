@@ -2,6 +2,7 @@
 // Lógica pura del panel de ventas (pedidos y carritos abandonados):
 // formatos, links de WhatsApp, textos para copiar, estadísticas y filtros.
 // Sin React ni red, así se testea con datos de ejemplo.
+import { moneyARS as money } from '../../../utils/pricing.js';
 
 export const PAYMENT_LABELS = { pending: 'Pendiente', proof_uploaded: 'Comprobante', approved: 'Aprobado', confirmed: 'Confirmado', rejected: 'Rechazado', cancelled: 'Cancelado' };
 export const SHIPPING_LABELS = { pending: 'Pendiente', shipped: 'En camino', delivered: 'Entregado', cancelled: 'Cancelado' };
@@ -29,13 +30,7 @@ const CART_STEP_LABELS = {
   checkout_page: 'Checkout',
 };
 
-const moneyFmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-export function money(n) {
-  const num = Number(n);
-  if (Number.isNaN(num)) return '$0';
-  return moneyFmt.format(num);
-}
+export { money };
 
 export function formatDate(d) {
   if (!d) return '—';

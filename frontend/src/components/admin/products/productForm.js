@@ -2,6 +2,7 @@
 // Lógica pura del editor de productos del admin: formato, ida y vuelta entre
 // el producto de la API y el formulario, payload validado, "sin guardar" y
 // sincronización con los configs de las landings. Sin React ni red: se testea sola.
+import { moneyARS as money } from '../../../utils/pricing.js';
 
 /** Packs editables: lo que se compara para saber si hay cambios sin guardar. */
 const BUNDLE_TEXT_FIELDS = ['label', 'badge', 'benefit'];
@@ -27,12 +28,7 @@ export const EMPTY_FORM = Object.freeze({
   subtitle: '', highlightsText: '',
 });
 
-const ars = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-export function money(n) {
-  const num = Number(n);
-  return Number.isFinite(num) ? ars.format(num) : ars.format(0);
-}
+export { money };
 
 export function sanitizeSlug(s) {
   return String(s ?? '').trim().toLowerCase()
