@@ -2,8 +2,7 @@
 // Lógica pura del panel de ventas (pedidos y carritos abandonados):
 // formatos, links de WhatsApp, textos para copiar, estadísticas y filtros.
 // Sin React ni red, así se testea con datos de ejemplo.
-
-export const HOUR_MS = 60 * 60 * 1000;
+import { moneyARS as money } from '../../../utils/pricing.js';
 
 export const PAYMENT_LABELS = { pending: 'Pendiente', proof_uploaded: 'Comprobante', approved: 'Aprobado', confirmed: 'Confirmado', rejected: 'Rechazado', cancelled: 'Cancelado' };
 export const SHIPPING_LABELS = { pending: 'Pendiente', shipped: 'En camino', delivered: 'Entregado', cancelled: 'Cancelado' };
@@ -22,7 +21,7 @@ export const SHIP_METHOD_MAP = {
   retiro_oficina: 'Retiro en oficina',
 };
 
-export const CART_STEP_LABELS = {
+const CART_STEP_LABELS = {
   cart: 'Carrito',
   info: 'Datos personales',
   shipping: 'Envío',
@@ -31,13 +30,7 @@ export const CART_STEP_LABELS = {
   checkout_page: 'Checkout',
 };
 
-const moneyFmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-export function money(n) {
-  const num = Number(n);
-  if (Number.isNaN(num)) return '$0';
-  return moneyFmt.format(num);
-}
+export { money };
 
 export function formatDate(d) {
   if (!d) return '—';
@@ -47,7 +40,7 @@ export function formatDate(d) {
 }
 
 /** Minutos desde `d` hasta `now`; null si la fecha no sirve o es futura. */
-export function minutesSince(d, now = Date.now()) {
+function minutesSince(d, now = Date.now()) {
   if (!d) return null;
   const mins = Math.round((now - new Date(d).getTime()) / 60000);
   return Number.isNaN(mins) || mins < 0 ? null : mins;
@@ -157,33 +150,7 @@ export function orderItemTotal(it) {
   return it?.bundleTotal ? Number(it.bundleTotal) : (Number(it?.price) || 0) * (Number(it?.quantity) || 1);
 }
 
-export function sortNewestFirst(list) {
-  const t = (o) => new Date(o?.createdAt || 0).getTime() || 0;
-  return [...(list || [])].sort((a, b) => t(b) - t(a));
-}
-
-export function computeOrderStats(orders) {
-  const count = (fn) => orders.filter(fn).length;
-  return {
-    total: orders.reduce((a, o) => a + (Number(o.totalAmount) || 0), 0),
-    approved: count((o) => o.paymentStatus === 'approved' || o.paymentStatus === 'confirmed'),
-    review: count((o) => o.paymentStatus === 'proof_uploaded'),
-    pending: count((o) => o.paymentStatus === 'pending'),
-    shipped: count((o) => o.shippingStatus === 'shipped'),
-    delivered: count((o) => o.shippingStatus === 'delivered'),
-  };
-}
-
 const matches = (fields, q) => fields.some((f) => String(f ?? '').toLowerCase().includes(q));
-
-export function filterOrders(orders, { status = 'todos', query = '' } = {}) {
-  const q = query.trim().toLowerCase();
-  return orders.filter((o) => {
-    if (status !== 'todos' && o.paymentStatus !== status) return false;
-    if (!q) return true;
-    return matches([o._id, o.customerName, o.customerEmail, o.customerPhone, o.customerDni, ...(o.items || []).map((i) => i.name)], q);
-  });
-}
 
 export function computeCartStats(carts, now = Date.now()) {
   const pending = carts.filter((c) => !c.recovered);

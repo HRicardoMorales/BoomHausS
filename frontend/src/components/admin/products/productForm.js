@@ -2,6 +2,7 @@
 // Lógica pura del editor de productos del admin: formato, ida y vuelta entre
 // el producto de la API y el formulario, payload validado, "sin guardar" y
 // sincronización con los configs de las landings. Sin React ni red: se testea sola.
+import { moneyARS as money } from '../../../utils/pricing.js';
 
 /** Packs editables: lo que se compara para saber si hay cambios sin guardar. */
 const BUNDLE_TEXT_FIELDS = ['label', 'badge', 'benefit'];
@@ -27,12 +28,7 @@ export const EMPTY_FORM = Object.freeze({
   subtitle: '', highlightsText: '',
 });
 
-const ars = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-export function money(n) {
-  const num = Number(n);
-  return Number.isFinite(num) ? ars.format(num) : ars.format(0);
-}
+export { money };
 
 export function sanitizeSlug(s) {
   return String(s ?? '').trim().toLowerCase()
@@ -87,13 +83,13 @@ export function findLandingForSlug(slug, configs) {
 }
 
 /** Imágenes del config: `images` o, si no hay, las de los bloques de historia. */
-export function extractImages(config) {
+function extractImages(config) {
   if (Array.isArray(config.images) && config.images.length) return config.images;
   if (Array.isArray(config.storyBlocks)) return config.storyBlocks.map((b) => b.img).filter(Boolean).slice(0, 4);
   return [];
 }
 
-export function guessCategory(landingSlug) {
+function guessCategory(landingSlug) {
   if (landingSlug.includes('mochila')) return 'mascotas';
   if (/lampara|nebuliz|porta/.test(landingSlug)) return 'hogar';
   if (/soporte|nasal/.test(landingSlug)) return 'salud';

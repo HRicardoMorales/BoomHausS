@@ -8,6 +8,7 @@ import mc from '../escultor-led';
 import './LuxCoveLED.css';
 import LandingFooter from '../../components/landing/LandingFooter.jsx';
 import SafeImg from '../../components/SafeImg';
+import { moneyARS } from '../../utils/pricing.js';
 import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS, REVIEW_WIDTHS } from '../../components/landing/imageSizes';
 import useNearViewport from '../../hooks/useNearViewport';
 import { preloadImage } from '../../utils/preloadImage';
@@ -498,8 +499,6 @@ export default function LuxCoveLED() {
   // Nombre para mostrar en UI y carrito. Prioridad: BD > config fallback > literal.
   const displayName = product?.name || mc.checkoutName || 'Escultor Facial LED';
 
-  const fmt = (n) =>
-    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
   const productImages = useMemo(() => [
     { src: heroImg || "https://pbs.twimg.com/media/HK-ZytcXMAAunJK?format=jpg&name=small", alt: `${displayName} — Vista principal` },
@@ -612,10 +611,10 @@ export default function LuxCoveLED() {
               <h1 className="led-product-title">{displayName} de Amelor</h1>
 
               <div className="led-pricing">
-                <span className="led-price-original">{fmt(compareAt)}</span>
-                <span className="led-price-sale">{fmt(price)}</span>
+                <span className="led-price-original">{moneyARS(compareAt)}</span>
+                <span className="led-price-sale">{moneyARS(price)}</span>
                 <span className="led-badge-discount">{discountPct}% OFF</span>
-                <span className="led-cuotas">3 cuotas sin interés de <strong>{fmt(Math.ceil(price / 3))}</strong></span>
+                <span className="led-cuotas">3 cuotas sin interés de <strong>{moneyARS(Math.ceil(price / 3))}</strong></span>
               </div>
 
               <div className="led-target-section">
@@ -642,8 +641,8 @@ export default function LuxCoveLED() {
                           <span className="led-bundle-perks">{b.perks}</span>
                         </div>
                         <div className="led-bundle-price-col">
-                          <span className="led-bundle-price">{fmt(b.bundlePrice)}</span>
-                          <span className="led-bundle-compare">{fmt(b.comparePrice)}</span>
+                          <span className="led-bundle-price">{moneyARS(b.bundlePrice)}</span>
+                          <span className="led-bundle-compare">{moneyARS(b.comparePrice)}</span>
                         </div>
                       </div>
 

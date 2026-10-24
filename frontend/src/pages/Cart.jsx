@@ -4,16 +4,8 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import SafeImg from '../components/SafeImg.jsx';
 import StatePanel from '../components/ui/StatePanel.jsx';
+import { moneyARS } from '../utils/pricing.js';
 
-function money(n) {
-    const num = Number(n);
-    if (Number.isNaN(num)) return '$0';
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
-}
-
-function moneyARS(n) {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(n) || 0);
-}
 
 // Identifica items que provienen de la landing de la lámpara magnética
 function isLamparaItem(it) {
@@ -153,12 +145,12 @@ function Cart() {
                                                         {it.name}
                                                     </div>
                                                     <div style={{ fontWeight: 900 }}>
-                                                        {money(lineTotal)}
+                                                        {moneyARS(lineTotal)}
                                                     </div>
                                                 </div>
 
                                                 <div className="muted" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', fontSize: '0.9rem' }}>
-                                                    <span>{money(price)} c/u</span>
+                                                    <span>{moneyARS(price)} c/u</span>
                                                     <button
                                                         type="button"
                                                         className="btn btn-ghost"
@@ -270,7 +262,7 @@ function Cart() {
                                     <span>Productos:</span> <strong>{totalItems}</strong>
                                 </div>
                                 <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>Subtotal:</span> <strong>{money(totalPrice)}</strong>
+                                    <span>Subtotal:</span> <strong>{moneyARS(totalPrice)}</strong>
                                 </div>
                                 <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <span>Envío:</span> <strong>A coordinar</strong>
@@ -280,7 +272,7 @@ function Cart() {
                             <div style={{ marginTop: '0.9rem', paddingTop: '0.9rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div className="muted" style={{ fontWeight: 900 }}>Total</div>
                                 <div style={{ fontWeight: 950, fontSize: '1.6rem', letterSpacing: '-0.04em' }}>
-                                    {money(totalPrice)}
+                                    {moneyARS(totalPrice)}
                                 </div>
                             </div>
 

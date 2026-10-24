@@ -1,7 +1,7 @@
 ﻿// frontend/src/services/api.js
 import axios from "axios";
 import { clearAuth, getStoredAuth } from "../utils/auth";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 
 // 🚀 CONFIGURACIÓN ÚNICA (Backend en Render)
 // Esta es la única URL que usará el sistema, sin importar dónde estés.

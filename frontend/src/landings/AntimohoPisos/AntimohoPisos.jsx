@@ -22,6 +22,7 @@ import { trackWithCapi } from '../../lib/metaPixel';
 import api from '../../services/api';
 import './AntimohoPisos.css';
 import SafeImg from '../../components/SafeImg';
+import { moneyARS } from '../../utils/pricing.js';
 import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS } from '../../components/landing/imageSizes';
 
 /* ── Constantes de producto ──────────────────────────────────────────── */
@@ -211,10 +212,6 @@ function ImgPlaceholder({ label, style = {} }) {
 
 function BrandLogo() {
   return <>{BRAND_NAME}<sup className="amp-logo-tm">™</sup></>;
-}
-
-function fmtARS(n) {
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 }
 
 /* ── Countdown de la barra roja (reinicia — típico de "oferta activa") ─ */
@@ -443,8 +440,8 @@ export default function AntimohoPisos() {
                         <span className="amp-bundle-off">{b.pctLabel}</span>
                       </div>
                       <div className="amp-bundle-price-col">
-                        <span className="amp-bundle-price">{fmtARS(b.price)}</span>
-                        <span className="amp-bundle-compare">{fmtARS(b.compareAt)}</span>
+                        <span className="amp-bundle-price">{moneyARS(b.price)}</span>
+                        <span className="amp-bundle-compare">{moneyARS(b.compareAt)}</span>
                       </div>
                     </div>
                   </label>
@@ -692,7 +689,7 @@ export default function AntimohoPisos() {
         </div>
         <div className="amp-sticky-info">
           <div className="amp-sticky-name">{bundle.label}</div>
-          <div className="amp-sticky-price"><strong>{fmtARS(bundle.price)}</strong> · Garantía {GUARANTEE_DAYS} días</div>
+          <div className="amp-sticky-price"><strong>{moneyARS(bundle.price)}</strong> · Garantía {GUARANTEE_DAYS} días</div>
         </div>
         <button className="amp-cta-btn" onClick={scrollToBundles}>Elegir opción</button>
       </div>

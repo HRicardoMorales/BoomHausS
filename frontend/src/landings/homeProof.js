@@ -20,7 +20,7 @@ function uniqueLandings(configs) {
 }
 
 /* Los títulos de las landings vienen en MAYÚSCULAS de anuncio. */
-export function sentenceCase(text = "") {
+function sentenceCase(text = "") {
   const t = String(text).trim();
   if (!t || t !== t.toUpperCase()) return t;
   const lower = t.toLocaleLowerCase("es-AR");
@@ -94,7 +94,7 @@ export function collectProofVideos(configs = LANDING_CONFIGS, { max = 6 } = {}) 
  * para renderizar sin `dangerouslySetInnerHTML`. Cualquier otra etiqueta se
  * descarta (queda solo su texto).
  */
-export function parseStrong(html = "") {
+function parseStrong(html = "") {
   const out = [];
   const re = /<strong>([\s\S]*?)<\/strong>/gi;
   const clean = (s) => s.replace(/<[^>]*>/g, "");

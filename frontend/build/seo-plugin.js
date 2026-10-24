@@ -15,20 +15,20 @@
 const PUBLIC_ROUTES = ["/", "/products", "/terms", "/privacy", "/returns"];
 const PRIVATE_PREFIXES = ["/admin", "/checkout", "/cart", "/my-orders", "/success-payment", "/reset-password"];
 
-export function resolveSiteUrl(env = process.env) {
+function resolveSiteUrl(env = process.env) {
   const raw = env.SITE_URL || env.VERCEL_PROJECT_PRODUCTION_URL || "";
   if (!raw) return "";
   const withProtocol = /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
   return withProtocol.replace(/\/+$/, "");
 }
 
-export function buildRobots(siteUrl) {
+function buildRobots(siteUrl) {
   const lines = ["User-agent: *", "Allow: /", ...PRIVATE_PREFIXES.map((p) => `Disallow: ${p}`)];
   if (siteUrl) lines.push("", `Sitemap: ${siteUrl}/sitemap.xml`);
   return lines.join("\n") + "\n";
 }
 
-export function buildSitemap(siteUrl) {
+function buildSitemap(siteUrl) {
   const urls = PUBLIC_ROUTES.map((path) => `  <url><loc>${siteUrl}${path === "/" ? "/" : path}</loc></url>`);
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',

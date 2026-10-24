@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MC from "../../../landings/mundial-revendedores.js";
-import { moneyARS } from "./utils";
+import { moneyARSTight } from "../../../utils/pricing.js";
 import "./ProfitCalculator.css";
 
 /* =========================
@@ -72,12 +72,12 @@ export function ProfitCalculator({ onBuyNow }) {
           <div className="ml-calc-hero-eq">
             <div className="ml-calc-hero-col">
               <div className="ml-calc-hero-lbl">PONÉS</div>
-              <div className="ml-calc-hero-val ml-calc-hero-val--cost">{moneyARS(calc.inversion)}</div>
+              <div className="ml-calc-hero-val ml-calc-hero-val--cost">{moneyARSTight(calc.inversion)}</div>
             </div>
             <div className="ml-calc-hero-arrow" aria-hidden="true">→</div>
             <div className="ml-calc-hero-col">
               <div className="ml-calc-hero-lbl">GANÁS</div>
-              <div className="ml-calc-hero-val ml-calc-hero-val--profit">+{moneyARS(calc.ganancia)}</div>
+              <div className="ml-calc-hero-val ml-calc-hero-val--profit">+{moneyARSTight(calc.ganancia)}</div>
             </div>
           </div>
           <div className="ml-calc-hero-mult">
@@ -104,15 +104,15 @@ export function ProfitCalculator({ onBuyNow }) {
         <div className="ml-calc-mini">
           <div className="ml-calc-mini-item">
             <span className="ml-calc-mini-lbl">Cada unidad te cuesta</span>
-            <span className="ml-calc-mini-val">{moneyARS(calc.porUnidad)}</span>
+            <span className="ml-calc-mini-val">{moneyARSTight(calc.porUnidad)}</span>
           </div>
           <div className="ml-calc-mini-item">
             <span className="ml-calc-mini-lbl">Podés venderla a</span>
-            <span className="ml-calc-mini-val">{moneyARS(product.suggestedResale)}</span>
+            <span className="ml-calc-mini-val">{moneyARSTight(product.suggestedResale)}</span>
           </div>
           <div className="ml-calc-mini-item ml-calc-mini-item--hi">
             <span className="ml-calc-mini-lbl">Ganás por unidad</span>
-            <span className="ml-calc-mini-val">+{moneyARS(calc.gananciaPorUnidad)}</span>
+            <span className="ml-calc-mini-val">+{moneyARSTight(calc.gananciaPorUnidad)}</span>
           </div>
         </div>
 
@@ -122,7 +122,7 @@ export function ProfitCalculator({ onBuyNow }) {
           className="ml-calc-go"
           onClick={() => onBuyNow?.(product, packs)}
         >
-          <span>Comprar {packs} pack{packs > 1 ? "s" : ""} · {moneyARS(calc.inversion)}</span>
+          <span>Comprar {packs} pack{packs > 1 ? "s" : ""} · {moneyARSTight(calc.inversion)}</span>
           <span className="ml-calc-go-arrow" aria-hidden="true">→</span>
         </button>
         <div className="ml-calc-go-sub">

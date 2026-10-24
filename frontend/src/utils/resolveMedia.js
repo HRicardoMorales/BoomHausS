@@ -41,4 +41,3 @@ export function resolveMedia(url) {
   return { type: "image", src: url };
 }
 
-export default resolveMedia;

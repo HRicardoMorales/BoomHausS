@@ -7,9 +7,7 @@ export const PROVINCES = [
   "Santiago del Estero","Tierra del Fuego","Tucumán",
 ];
 
-export function money(n) {
-  return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(Number(n) || 0);
-}
+export { moneyARS as money } from "../../utils/pricing.js";
 
 // Misma función que usa el CartContext (antes había una copia acá).
 export { calcItemTotal } from "../../utils/cartMath";

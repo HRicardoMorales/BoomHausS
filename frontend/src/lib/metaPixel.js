@@ -32,6 +32,7 @@ import api from '../services/api';
 // Guard de Purchase en localStorage — 30 días
 const PURCHASE_GUARD_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
+/** @public */
 export function generateEventId() {
     try { if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID(); } catch { /* best-effort: se ignora */ }
     return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -61,6 +62,7 @@ function fbqReady() {
 
 // track — solo Pixel browser. Usar cuando NO se quiere respaldo server-side.
 // Reservado para PageView. Para eventos de funnel usar trackWithCapi.
+/** @public API del Pixel: se conserva aunque hoy no tenga llamadas (tracking, no se toca). */
 export function track(eventName, params = {}, eventID) {
     if (!fbqReady()) return;
     const eid = eventID || generateEventId();

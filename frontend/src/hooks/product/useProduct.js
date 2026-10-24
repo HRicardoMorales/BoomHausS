@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../../services/api";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 /**
  * Trae un producto por slug (landings `/lp/:slug`) o por id (`/products/:id`).
@@ -52,4 +52,3 @@ export function useProduct({ id, slug }) {
   return { ...state, retry };
 }
 
-export default useProduct;

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   money, formatDate, relativeTime, isHotCart, cartStepLabel, cartItemCount, waPhone,
-  orderWaLink, cartWaLink, orderClipboardText, cartClipboardText, sortNewestFirst,
-  computeOrderStats, filterOrders, computeCartStats, filterCarts,
+  orderWaLink, cartWaLink, orderClipboardText, cartClipboardText,
+  computeCartStats, filterCarts,
 } from "./format.js";
 
 const NOW = new Date("2026-10-21T12:00:00Z").getTime();
@@ -12,7 +12,7 @@ const nbsp = (s) => s.replace(/\u00a0/g, " ");
 describe("formatos", () => {
   it("money y formatDate toleran basura", () => {
     expect(nbsp(money(12500))).toBe("$ 12.500");
-    expect(money("x")).toBe("$0");
+    expect(nbsp(money("x"))).toBe("$ 0");
     expect(formatDate(null)).toBe("—");
     expect(formatDate("no-es-fecha")).toBe("—");
   });
@@ -80,30 +80,7 @@ describe("textos para copiar", () => {
   });
 });
 
-describe("estadísticas y filtros", () => {
-  const orders = [
-    { _id: "1", customerName: "Ana", paymentStatus: "approved", shippingStatus: "shipped", totalAmount: 100, createdAt: minsAgo(30), items: [{ name: "Lámpara" }] },
-    { _id: "2", customerName: "Beto", paymentStatus: "proof_uploaded", shippingStatus: "pending", totalAmount: "50", createdAt: minsAgo(10) },
-    { _id: "3", customerName: "Caro", paymentStatus: "confirmed", shippingStatus: "delivered", totalAmount: null, createdAt: minsAgo(90), customerDni: 30111222 },
-  ];
-
-  it("ordena del más nuevo al más viejo sin mutar la entrada", () => {
-    expect(sortNewestFirst(orders).map((o) => o._id)).toEqual(["2", "1", "3"]);
-    expect(orders[0]._id).toBe("1");
-    expect(sortNewestFirst(undefined)).toEqual([]);
-  });
-
-  it("computeOrderStats suma y cuenta por estado", () => {
-    expect(computeOrderStats(orders)).toEqual({ total: 150, approved: 2, review: 1, pending: 0, shipped: 1, delivered: 1 });
-  });
-
-  it("filterOrders combina estado y búsqueda (también por producto y DNI numérico)", () => {
-    expect(filterOrders(orders, { status: "approved" }).map((o) => o._id)).toEqual(["1"]);
-    expect(filterOrders(orders, { query: "lámp" }).map((o) => o._id)).toEqual(["1"]);
-    expect(filterOrders(orders, { query: "30111" }).map((o) => o._id)).toEqual(["3"]);
-    expect(filterOrders(orders, { status: "approved", query: "beto" })).toEqual([]);
-  });
-
+describe("estadísticas y filtros de carritos", () => {
   it("computeCartStats solo cuenta como pendientes los no recuperados", () => {
     const carts = [
       { phone: "1", totalAmount: 100, updatedAt: minsAgo(5) },

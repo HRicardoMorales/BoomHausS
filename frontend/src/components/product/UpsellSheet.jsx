@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import api from "../../services/api";
 import SafeImg from "../SafeImg";
 import { THUMB_WIDTHS } from "../landing/imageSizes";
-import { FALLBACK_IMG, moneyARS } from "./format";
+import { FALLBACK_IMG } from "./format";
+import { moneyARSTight } from "../../utils/pricing.js";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
 
 /* =========================
@@ -126,9 +127,9 @@ export default function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfi
                     {item.badge && <span className="ups-row-badge">{item.badge}</span>}
                     <p className="ups-row-name">{item.name}</p>
                     <div className="ups-row-prices">
-                      {saving > 0 && <s className="ups-row-was">{moneyARS(aCmpAt)}</s>}
-                      <span className="ups-row-now">{moneyARS(aPrice)}</span>
-                      {saving > 0 && <span className="ups-row-save">−{moneyARS(saving)}</span>}
+                      {saving > 0 && <s className="ups-row-was">{moneyARSTight(aCmpAt)}</s>}
+                      <span className="ups-row-now">{moneyARSTight(aPrice)}</span>
+                      {saving > 0 && <span className="ups-row-save">−{moneyARSTight(saving)}</span>}
                     </div>
                   </div>
                   <button type="button" aria-pressed={isSel}
@@ -148,8 +149,8 @@ export default function UpsellSheet({ mc, mainProduct, mainDisplayTotal, onConfi
             {selectedSet.size > 0 ? (
               <>
                 <button type="button" className="ups-sheet-btn-main" onClick={() => confirm(true)}>
-                  Agregar y pagar — {moneyARS(bundleTotal)}
-                  {bundleSaving > 0 && <span className="ups-sheet-btn-save"> · ahorrás {moneyARS(bundleSaving)}</span>}
+                  Agregar y pagar — {moneyARSTight(bundleTotal)}
+                  {bundleSaving > 0 && <span className="ups-sheet-btn-save"> · ahorrás {moneyARSTight(bundleSaving)}</span>}
                 </button>
                 <button type="button" className="ups-sheet-btn-skip" onClick={() => confirm(false)}>
                   No gracias, solo el producto

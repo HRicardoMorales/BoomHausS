@@ -2,7 +2,7 @@
 import { normalizeAuthResponse } from "../../utils/auth";
 
 export const MIN_PASSWORD = 6;
-export const DEFAULT_REDIRECT = "/my-orders";
+const DEFAULT_REDIRECT = "/my-orders";
 
 /**
  * El backend responde {token,user} plano o envuelto en {data}/{payload}:
