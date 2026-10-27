@@ -1,0 +1,169 @@
+/* frontend/src/pages/AdminCoupons.css — admin de cupones.
+   Cada cupón es un talón: el código en el "stub" con troquel punteado y
+   muescas, las condiciones en el cuerpo y el interruptor al costado. */
+
+.ac-page {
+  --ac-ink: var(--ink-900, #12161c);
+  --ac-muted: #5b6370;
+  --ac-line: rgba(18, 22, 28, 0.12);
+  --ac-paper: #fff;
+  --ac-bg: #f4f2ee;
+  --ac-live: #0f7a4b;
+  --ac-live-soft: #e6f4ec;
+  --ac-danger: #b42318;
+  background: var(--ac-bg);
+  min-height: 100vh;
+}
+.ac-wrap { max-width: 760px; padding-bottom: 64px; }
+
+/* ─── Encabezado ─── */
+.ac-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.ac-back { display: inline-block; font-size: 13px; font-weight: 700; color: var(--ac-muted); text-decoration: none; margin-bottom: 6px; }
+.ac-back:hover { color: var(--ac-ink); }
+.ac-title { margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; color: var(--ac-ink); }
+.ac-count { margin: 6px 0 0; font-size: 13px; font-weight: 600; color: var(--ac-muted); }
+.ac-count strong { color: var(--ac-live); font-weight: 800; }
+
+.ac-new, .ac-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px;
+  background: var(--ac-ink); color: #fff; font: inherit; font-weight: 800; font-size: 14px;
+  cursor: pointer; transition: transform var(--dur-fast, .15s) var(--ease-out, ease), background var(--dur-fast, .15s);
+}
+.ac-new:hover, .ac-submit:hover:not(:disabled) { background: #000; }
+.ac-new:active, .ac-submit:active:not(:disabled) { transform: translateY(1px); }
+.ac-new span { font-size: 18px; line-height: 1; }
+.ac-submit:disabled { opacity: .6; cursor: progress; }
+
+/* ─── Formulario ─── */
+.ac-form {
+  display: grid; gap: 14px; margin-bottom: 22px; padding: 18px 16px 16px;
+  background: var(--ac-paper); border: 1px solid var(--ac-line); border-radius: 18px;
+  box-shadow: 0 10px 30px -18px rgba(18, 22, 28, .35);
+  animation: ac-in var(--dur-base, .25s) var(--ease-out, ease) both;
+}
+@keyframes ac-in { from { opacity: 0; transform: translateY(-6px); } }
+.ac-form-head { display: flex; justify-content: space-between; align-items: baseline; }
+.ac-h2 { margin: 0; font-family: inherit; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; text-transform: none; color: var(--ac-ink); }
+.ac-link { background: none; border: 0; padding: 8px 4px; font: inherit; font-size: 13px; font-weight: 700; color: var(--ac-muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+.ac-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+@media (max-width: 520px) { .ac-row { grid-template-columns: 1fr; } }
+
+.ac-field { min-width: 0; }
+.ac-lbl { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; padding: 0; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ac-muted); }
+.ac-opt { font-weight: 600; letter-spacing: 0; text-transform: none; }
+.ac-hint { margin: 6px 0 0; font-size: 12px; color: var(--ac-muted); line-height: 1.4; }
+.ac-err { margin: 6px 0 0; font-size: 12.5px; font-weight: 700; color: var(--ac-danger); }
+
+.ac-inp {
+  width: 100%; min-height: 44px; padding: 10px 12px; box-sizing: border-box;
+  border: 1.5px solid var(--ac-line); border-radius: 10px; background: #fbfaf8;
+  font: inherit; font-size: 16px; /* 16px: iOS no hace zoom al enfocar */ font-weight: 600; color: var(--ac-ink);
+  transition: border-color var(--dur-fast, .15s), box-shadow var(--dur-fast, .15s);
+}
+.ac-inp::placeholder { color: #9aa1ab; font-weight: 500; }
+.ac-inp:focus { outline: none; border-color: var(--ac-ink); box-shadow: 0 0 0 3px rgba(18, 22, 28, .12); background: #fff; }
+.ac-field--error .ac-inp { border-color: var(--ac-danger); }
+.ac-inp--code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 18px; font-weight: 700; letter-spacing: .12em; }
+
+.ac-affix { position: relative; }
+.ac-affix::after { content: attr(data-affix); position: absolute; top: 50%; transform: translateY(-50%); font-weight: 800; color: var(--ac-muted); pointer-events: none; }
+.ac-affix[data-side="end"]::after { right: 12px; }
+.ac-affix[data-side="end"] .ac-inp { padding-right: 32px; }
+.ac-affix[data-side="start"]::after { left: 12px; }
+.ac-affix[data-side="start"] .ac-inp { padding-left: 26px; }
+
+/* Selector de tipo: segmentado con radios reales (teclado con flechas). */
+.ac-seg { margin: 0; padding: 0; border: 0; min-width: 0; }
+.ac-seg-opts { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; gap: 3px; border-radius: 12px; background: #ebe8e2; }
+.ac-seg-opt { position: relative; }
+.ac-seg-opt input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.ac-seg-opt span { display: flex; align-items: center; justify-content: center; min-height: 38px; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--ac-muted); white-space: pre; transition: background var(--dur-fast, .15s), color var(--dur-fast, .15s); }
+.ac-seg-opt input:checked + span { background: #fff; color: var(--ac-ink); box-shadow: 0 1px 3px rgba(18, 22, 28, .15); }
+.ac-seg-opt input:focus-visible + span { outline: var(--focus-outline, 2px solid currentColor); outline-offset: 1px; }
+
+.ac-server-err { font-size: 13px; font-weight: 700; color: var(--ac-danger); }
+.ac-server-err:empty { display: none; }
+.ac-submit { width: 100%; min-height: 48px; font-size: 15px; }
+
+/* ─── Lista de talones ─── */
+.ac-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+
+.ac-ticket {
+  --notch: 9px;
+  position: relative;
+  display: grid; grid-template-columns: minmax(140px, 32%) 1fr auto; align-items: stretch;
+  background: var(--ac-paper); border-radius: 14px;
+  box-shadow: 0 1px 0 var(--ac-line), 0 8px 24px -20px rgba(18, 22, 28, .5);
+  /* Muescas del troquel arriba y abajo, con el color del fondo de la página. */
+  -webkit-mask: radial-gradient(circle var(--notch) at var(--cut, 32%) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at var(--cut, 32%) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+          mask: radial-gradient(circle var(--notch) at var(--cut, 32%) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at var(--cut, 32%) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+  transition: opacity var(--dur-base, .25s);
+}
+.ac-ticket[aria-busy="true"] { opacity: .6; }
+
+.ac-stub {
+  display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0;
+  padding: 16px 16px 16px 18px; border-right: 2px dashed var(--ac-line);
+  color: var(--ac-muted);
+}
+.ac-ticket--live .ac-stub { background: var(--ac-live-soft); color: var(--ac-live); }
+.ac-code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.15rem; font-weight: 800; letter-spacing: .1em; color: var(--ac-ink); overflow-wrap: anywhere; }
+.ac-ticket:not(.ac-ticket--live) .ac-code { text-decoration: line-through; text-decoration-thickness: 1.5px; text-decoration-color: rgba(18, 22, 28, .35); }
+.ac-discount { font-size: 13px; font-weight: 700; }
+
+.ac-body { min-width: 0; padding: 14px 16px; display: grid; gap: 10px; align-content: center; }
+.ac-terms { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.ac-terms div { min-width: 0; }
+.ac-terms dt { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ac-muted); }
+.ac-terms dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 700; color: var(--ac-ink); font-variant-numeric: tabular-nums; }
+.ac-meter { display: block; width: 88px; height: 4px; margin-top: 5px; border-radius: 99px; background: var(--ac-line); overflow: hidden; }
+.ac-meter span { display: block; height: 100%; width: calc(var(--p) * 100%); background: var(--ac-ink); border-radius: inherit; }
+
+.ac-status { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.ac-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; background: #eeece8; color: #4a515b; }
+.ac-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ac-badge--live { background: var(--ac-live-soft); color: var(--ac-live); }
+.ac-badge--expired { background: #fdecea; color: var(--ac-danger); }
+.ac-badge--exhausted { background: #fdf3e2; color: #8a4b00; }
+
+.ac-actions { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; padding: 12px 14px 12px 0; }
+
+/* Interruptor: checkbox real con role="switch"; área táctil de 44 px. */
+.ac-switch { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--ac-muted); }
+.ac-switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.ac-switch input:disabled { cursor: progress; }
+.ac-switch-track { position: relative; width: 40px; height: 24px; flex-shrink: 0; border-radius: 999px; background: #c9cdd3; transition: background var(--dur-fast, .15s); }
+.ac-switch-track::before { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform var(--dur-base, .25s) var(--ease-spring, ease); }
+.ac-switch input:checked ~ .ac-switch-track { background: var(--ac-live); }
+.ac-switch input:checked ~ .ac-switch-track::before { transform: translateX(16px); }
+.ac-switch input:checked ~ .ac-switch-text { color: var(--ac-live); }
+.ac-switch input:focus-visible ~ .ac-switch-track { outline: var(--focus-outline, 2px solid currentColor); outline-offset: 2px; }
+.ac-switch-text { min-width: 56px; }
+
+.ac-delete { min-height: 36px; padding: 0 6px; background: none; border: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--ac-danger); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color var(--dur-fast, .15s); }
+.ac-delete:hover { text-decoration-color: currentColor; }
+.ac-delete:disabled { opacity: .5; cursor: progress; }
+
+/* Mobile: el stub arriba (troquel horizontal), condiciones y acciones abajo. */
+@media (max-width: 560px) {
+  .ac-ticket { grid-template-columns: 1fr auto; -webkit-mask: none; mask: none; }
+  .ac-stub { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between; border-right: 0; border-bottom: 2px dashed var(--ac-line); border-radius: 14px 14px 0 0; padding: 14px 16px; }
+  .ac-actions { padding: 6px 12px 10px 0; }
+}
+
+/* Carga */
+.ac-ticket--skeleton { min-height: 96px; background: linear-gradient(90deg, #ebe8e2 0%, #f6f4f0 50%, #ebe8e2 100%) 0 0 / 200% 100%; animation: ac-shimmer 1.3s linear infinite; }
+@keyframes ac-shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-form, .ac-ticket--skeleton { animation: none; }
+  .ac-switch-track::before { transition: none; }
+}
+
+/* El texto de StatePanel está pensado sobre blanco; sobre el fondo crema del
+   admin quedaba en 4,34:1. */
+.ac-page .state-panel__text { color: var(--ac-muted); }
