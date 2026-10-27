@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../../services/api";
 import SafeImg from "../SafeImg";
 import { moneyARS as money } from "../../utils/pricing.js";
+import "./UnavailableProductPage.css";
 
 /* =========================
    UnavailableProductPage
@@ -32,25 +33,6 @@ export default function UnavailableProductPage({ isNetworkError, onRetry }) {
 
   return (
     <main className="section">
-      <style>{`
-        .upx-wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px; text-align: center; }
-        .upx-icon { font-size: 3.2rem; margin-bottom: 18px; }
-        .upx-title { font-size: 1.6rem; font-weight: 900; color: #0A0A0A; margin: 0 0 10px; letter-spacing: -0.02em; }
-        .upx-sub { font-size: 1rem; color: #64748b; margin: 0 0 28px; line-height: 1.55; }
-        .upx-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
-        .upx-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 999px; background: #0A0A0A; color: #fff; font-weight: 700; text-decoration: none; border: none; cursor: pointer; font-family: inherit; font-size: .95rem; }
-        .upx-btn-primary:hover { background: #222; color: #fff; }
-        .upx-btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 999px; border: 1.5px solid #E8E2D9; color: #4A4A4A; font-weight: 700; text-decoration: none; background: transparent; cursor: pointer; font-family: inherit; font-size: .95rem; }
-        .upx-btn-ghost:hover { border-color: #0A0A0A; color: #0A0A0A; }
-        .upx-sugg-title { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #9B8B7A; margin: 0 0 18px; }
-        .upx-sugg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
-        .upx-sugg-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #EDE8DF; border-radius: 14px; background: #fff; text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
-        .upx-sugg-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.08); border-color: #C4B9AC; }
-        .upx-sugg-img { aspect-ratio: 1; background: #F9F5EE; border-radius: 10px; overflow: hidden; }
-        .upx-sugg-img img { width: 100%; height: 100%; object-fit: contain; padding: 8px; box-sizing: border-box; }
-        .upx-sugg-name { font-size: .85rem; font-weight: 700; color: #0A0A0A; text-align: left; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .upx-sugg-price { font-size: 1rem; font-weight: 900; color: #0A0A0A; text-align: left; }
-      `}</style>
       <div className="upx-wrap">
         <div className="upx-icon">{isNetworkError ? "📡" : "🔍"}</div>
         <h1 className="upx-title">
