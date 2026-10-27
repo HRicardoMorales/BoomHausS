@@ -9,8 +9,8 @@ import ConfirmDialog from "./ConfirmDialog.jsx";
  *   …
  *   return <>{…}{confirmDialog}</>;
  *
- * Por qué un hook y no un provider global: solo lo usa el admin, así el
- * código vive en los chunks lazy del panel y no suma bytes a la tienda.
+ * Por qué un hook y no un provider global: lo usan el admin y el carrito, así el
+ * código vive en esos chunks lazy y no suma bytes al entry de la tienda.
  *
  * Usa `<dialog>` nativo con `showModal()`: el navegador pone el resto de la
  * página inerte (foco y lector de pantalla quedan adentro), Esc dispara
