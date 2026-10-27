@@ -19,6 +19,7 @@ describe('CORS', () => {
     'https://www.amelor.com.ar',
     'http://localhost:5173',
     'https://boom-haus-s-git-nightly-portfolio-ricardo-morales-projects.vercel.app',
+    'https://boom-haus-s.vercel.app',
   ]) {
     it(`permite ${origin}`, async () => {
       assert.equal(await allowOriginFor(origin), origin);
@@ -29,6 +30,7 @@ describe('CORS', () => {
     'https://evil.example.com',
     'https://boom-haus-falso.vercel.app',
     'http://boom-haus-s-git-x-ricardo-morales-projects.vercel.app',
+    'http://boom-haus-s.vercel.app',
   ]) {
     it(`bloquea ${origin}`, async () => {
       assert.equal(await allowOriginFor(origin), undefined);

@@ -90,8 +90,12 @@ function isAllowedOrigin(origin) {
       hostname.endsWith('-ricardo-morales-projects.vercel.app')
     ) return true;
 
-    // ✅ si tenés el dominio production estable (recomendado)
-    if (hostname === 'boom-haus.vercel.app') return true;
+    // ✅ dominios de producción de Vercel del proyecto (boom-haus-s es el
+    // nombre real del proyecto; boom-haus se mantiene por compatibilidad)
+    if (
+      protocol === 'https:' &&
+      (hostname === 'boom-haus-s.vercel.app' || hostname === 'boom-haus.vercel.app')
+    ) return true;
 
     return false;
   } catch {
