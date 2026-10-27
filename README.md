@@ -176,6 +176,7 @@ npm run lint
 npm test          # Vitest: precios, carrito, estados de pedido, envíos
 npm run build
 npm run a11y      # axe sobre el build (requiere Chromium)
+npm run smoke     # E2E: 27 rutas × 390/1280 px — errores, <main>, desborde, ids duplicados
 npm run screenshots  # capturas del README en docs/screenshots (--images=live para fotos reales)
 
 # Backend
@@ -185,7 +186,9 @@ npm test          # node:test + supertest sobre app.js real, sin Mongo ni red (~
 
 Los tests del backend corren contra el `app.js` real con los modelos mockeados: verifican, por ejemplo, que una inyección `{"$ne": null}` devuelva 400 **sin llegar a llamar al modelo**. Se validaron con mutaciones de control (romper el código a propósito y comprobar que el test falla).
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → Vitest → build + tabla de tamaños gzip) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → knip → Vitest → build + tabla de tamaños gzip), **E2E** (build → `npm run smoke` en Chromium sobre todas las rutas, incluido el admin con sesión falsa, + axe WCAG 2.1 AA del recorrido de compra a 390 y 1280 px) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
+
+El smoke no se queda en "la página cargó": como `#root` tiene `overflow-x: clip`, un elemento más ancho que el celular no genera scroll sino que queda **cortado sin que nadie lo note**; el script busca elementos que se salen del viewport sin un ancestro que los recorte a propósito (carruseles), además de excepciones sin atrapar, `<main>` sin montar e `id` duplicados. Verificado inyectando cada falla en el build.
 
 ## Estructura del repo
 
@@ -207,8 +210,9 @@ frontend/
     landings/           # configs de cada landing (datos, no código)
     hooks/  utils/  context/  routes/  styles/
   scripts/a11y.mjs      # auditoría axe sobre el build
+  scripts/smoke.mjs     # E2E smoke de todas las rutas (CI)
   scripts/screenshots.mjs  # capturas mobile/desktop para el README
-  scripts/lib/harness.mjs  # preview + API mockeada compartidos por ambos
+  scripts/lib/harness.mjs  # preview + API mockeada compartidos por los tres
 .github/workflows/ci.yml
 ```
 

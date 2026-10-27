@@ -52,6 +52,33 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
+  e2e:
+    name: E2E · smoke y a11y en Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      # Versión de Chromium atada al playwright-core del lockfile.
+      - run: npx playwright-core install --with-deps --only-shell chromium
+      - run: npm run build
+      # Todas las rutas (tienda, landings y admin con sesión falsa) a 390 y 1280 px:
+      # pageerror, <main> montado, desborde horizontal e ids duplicados.
+      - run: npm run smoke
+      # axe WCAG 2.1 AA en el recorrido de compra; falla con violaciones serious/critical.
+      - name: a11y · 390 px
+        run: npm run a11y -- --routes=/,/products/mock-producto,/cart,/checkout --width=390
+      - name: a11y · 1280 px
+        run: npm run a11y -- --routes=/,/products/mock-producto,/cart,/checkout --width=1280
+
   backend:
     name: Backend · sintaxis y tests
     runs-on: ubuntu-latest
