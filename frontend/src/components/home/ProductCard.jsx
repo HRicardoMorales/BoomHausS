@@ -7,9 +7,8 @@ import { REVEAL_VIEWPORT, revealVariants } from "../motion/motionPresets.js";
 
 const MotionArticle = m.article;
 
-/* Hover: la card se levanta con un resorte (no una curva fija), así si el
-   mouse entra y sale rápido la animación se interrumpe sin saltos. */
-const HOVER = { y: -6, transition: { type: "spring", stiffness: 380, damping: 26 } };
+/* Tap: un apretón corto. El hover lo resuelve CSS (zoom de la foto y, si
+   hay segunda foto, cambio a la foto en uso). */
 const TAP = { scale: 0.985 };
 
 /**
@@ -26,20 +25,20 @@ export default function ProductCard({ product, index = 0, reveal = true }) {
   if (!(Number(product?.price) > 0)) return null;
 
   const img = product.images?.[0] || product.imageUrl || "";
+  const altImg = product.images?.[1] || "";
   const pct = discountPct(product.price, product.compareAtPrice);
   // `href` lo calcula `buildCatalog` (landing o ficha genérica).
   const href = product.href || `/products/${product._id}`;
 
   return (
     <MotionArticle
-      className="hc-card"
+      className={`hc-card${altImg ? " has-alt" : ""}`}
       initial={reveal && !reduce ? "hidden" : false}
       whileInView="shown"
       viewport={REVEAL_VIEWPORT}
       variants={revealVariants}
       custom={index}
       data-reveal=""
-      whileHover={HOVER}
       whileTap={TAP}
       onClick={() => navigate(href)}
     >
@@ -49,10 +48,22 @@ export default function ProductCard({ product, index = 0, reveal = true }) {
           name={product.name}
           alt={product.name}
           width={480}
-          height={480}
+          height={600}
           sizes="(min-width: 1024px) 300px, (max-width: 500px) 50vw, 33vw"
           widths={[240, 360, 480, 720]}
         />
+        {altImg && (
+          <SafeImg
+            className="hc-card-img-alt"
+            src={altImg}
+            name={product.name}
+            alt=""
+            width={480}
+            height={600}
+            sizes="(min-width: 1024px) 300px, (max-width: 500px) 50vw, 33vw"
+            widths={[240, 360, 480, 720]}
+          />
+        )}
         {pct > 0 && <span className="hc-badge-off">-{pct}%</span>}
       </div>
       <div className="hc-card-body">
@@ -69,7 +80,7 @@ export default function ProductCard({ product, index = 0, reveal = true }) {
           to={href}
           onClick={(e) => e.stopPropagation()}
         >
-          Ver oferta →
+          Ver producto
         </Link>
       </div>
     </MotionArticle>

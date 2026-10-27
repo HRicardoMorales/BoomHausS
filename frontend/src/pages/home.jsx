@@ -1,15 +1,17 @@
 // frontend/src/pages/home.jsx
 // Home / catálogo. La página solo orquesta: datos en `useCatalog`, reglas del
-// catálogo en `landings/catalog.js` y la UI en `components/home/*`.
+// catálogo en `landings/catalog.js`, identidad de belleza en
+// `components/home/beauty.js` y la UI en `components/home/*`.
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCatalog } from "../hooks/useCatalog.js";
 import { useBestsellerIds } from "../hooks/useBestsellerIds.js";
 import { rankBySales } from "../components/home/bestsellers.js";
-import { discountPct } from "../utils/pricing.js";
+import { beautyFirst, concernsWithProducts, isBeauty } from "../components/home/beauty.js";
 import HomeHero from "../components/home/HomeHero.jsx";
 import CountdownBar from "../components/home/CountdownBar.jsx";
-import SeenInStrip from "../components/home/SeenInStrip.jsx";
+import HomeConcerns from "../components/home/HomeConcerns.jsx";
+import HomeStatement from "../components/home/HomeStatement.jsx";
 import BestsellerCarousel from "../components/home/BestsellerCarousel.jsx";
 import LazySection from "../components/home/LazySection.jsx";
 import { lazyWithRetry } from "../utils/lazyWithRetry.js";
@@ -22,94 +24,85 @@ import {
   categoryLabel,
   productCategory,
 } from "../components/home/catalogCategories.js";
-import "../components/home/home.css";
 import "../components/home/home-hero.css";
+import "../components/home/home.css";
+import "../components/home/home-sections.css";
 import { STORE_NAME } from "../config/brand.js";
 
 /* Bajo el pliegue: chunks aparte (ver LazySection). Opiniones va sola porque
-   queda entre el carrusel y el catálogo; el resto es el cierre de la página. */
+   queda entre la vidriera y el catálogo; el resto es el cierre de la página. */
 const HomeReviews = lazyWithRetry(() => import("../components/home/HomeReviews.jsx"));
 const HomeClosing = lazyWithRetry(() => import("../components/home/HomeClosing.jsx"));
 
 const FEATURED_MAX = 8;
-const FEATURED_MIN_DISCOUNT = 5;
 
-const storeName = STORE_NAME;
 const whatsapp = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 const waLink = whatsapp
   ? `https://wa.me/${String(whatsapp).replace(/[^\d]/g, "")}?text=${encodeURIComponent(
-      `Hola! 👋 Quiero consultar sobre los productos de ${storeName}.`
+      `Hola, quiero consultar sobre los productos de ${STORE_NAME}.`
     )}`
   : null;
 
-/* Destacados: los de mayor descuento si hay al menos 3, si no los primeros. */
-function pickFeatured(products) {
-  const discounted = products
-    .filter((p) => discountPct(p.price, p.compareAtPrice) >= FEATURED_MIN_DISCOUNT)
-    .sort((a, b) => discountPct(b.price, b.compareAtPrice) - discountPct(a.price, a.compareAtPrice));
-  return (discounted.length >= 3 ? discounted : products).slice(0, FEATURED_MAX);
-}
-
-const maxDiscountOf = (products) =>
-  products.reduce((best, p) => Math.max(best, discountPct(p.price, p.compareAtPrice)), 0);
+const minPrice = (products) =>
+  products.reduce((min, p) => (p.price > 0 && (min === 0 || p.price < min) ? p.price : min), 0);
 
 export default function Home() {
   const { products, loading, fetchError, retryAttempt, retry } = useCatalog();
   const [activeCat, setActiveCat] = useState(ALL_CATEGORIES);
+  const concernsRef = useRef(null);
   const catalogRef = useRef(null);
 
+  const beauty = useMemo(() => beautyFirst(products.filter(isBeauty)), [products]);
+  const concerns = useMemo(() => concernsWithProducts(products), [products]);
   const categories = useMemo(() => categoriesOf(products), [products]);
-  const featured = useMemo(() => pickFeatured(products), [products]);
   const bestsellerIds = useBestsellerIds();
-  // Más vendidos reales si hay datos de ventas suficientes; si no, ofertas.
+  // Más vendidos reales si hay datos de ventas suficientes; si no, belleza primero.
   const bestsellers = useMemo(
     () => rankBySales(products, bestsellerIds, { max: FEATURED_MAX }),
     [products, bestsellerIds]
   );
-  const maxDiscount = useMemo(() => maxDiscountOf(products), [products]);
+  const showcase = useMemo(() => beautyFirst(products).slice(0, FEATURED_MAX), [products]);
   const filtered = useMemo(
-    () => (activeCat === ALL_CATEGORIES
+    () => beautyFirst(activeCat === ALL_CATEGORIES
       ? products
       : products.filter((p) => productCategory(p) === activeCat)),
     [products, activeCat]
   );
 
-  const scrollToCatalog = () =>
-    catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <main className="section hc-page">
+    <main className="hc-page">
       <HomeHero
-        storeName={storeName}
-        maxDiscount={maxDiscount}
-        products={featured}
+        product={beauty[0] || products[0]}
+        fromPrice={minPrice(beauty)}
         loading={loading}
-        onExplore={scrollToCatalog}
+        onExplore={() => scrollTo(concernsRef)}
+        onShopAll={() => scrollTo(catalogRef)}
       />
-      <SeenInStrip />
       <CountdownBar />
 
-      <div className="hc-wrap">
-        {!loading && bestsellers ? (
+      <HomeConcerns ref={concernsRef} items={concerns} />
+
+      {!loading && (bestsellers || showcase.length >= 2) && (
+        <div className="hc-wrap hc-block hc-block--tight-top">
           <BestsellerCarousel
-            eyebrow="Lo que más se lleva la gente"
-            title="Los más vendidos"
-            products={bestsellers}
+            title={bestsellers ? "Los más vendidos" : "Para empezar"}
+            subtitle={bestsellers
+              ? "Ordenados por las ventas reales de la tienda."
+              : "Una selección para arrancar tu rutina."}
+            products={bestsellers || showcase}
           />
-        ) : !loading && featured.length >= 2 ? (
-          <BestsellerCarousel
-            eyebrow="Selección de la semana"
-            title="Las ofertas que más rinden"
-            products={featured}
-          />
-        ) : null}
-      </div>
+        </div>
+      )}
+
+      <HomeStatement />
 
       <LazySection component={HomeReviews} minHeight={560} />
 
-      <div className="hc-wrap">
+      <div className="hc-wrap hc-block">
         <Reveal className="hc-sec-head" ref={catalogRef}>
-          <h2 className="hc-sec-title">Catálogo</h2>
+          <h2 className="hc-sec-title">Toda la tienda</h2>
           {!loading && !fetchError && (
             <span className="hc-sec-count">
               {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
@@ -124,9 +117,9 @@ export default function Home() {
 
         {/* Aviso de reintento: el cold start del backend puede tardar. */}
         {loading && retryAttempt > 0 && (
-          <div className="hc-retry" role="status">
-            ⏳ Contactando con el servidor… (intento {retryAttempt + 1} de 4)
-          </div>
+          <p className="hc-retry" role="status">
+            Despertando el servidor, puede tardar unos segundos (intento {retryAttempt + 1} de 4).
+          </p>
         )}
 
         <CatalogGrid
@@ -138,16 +131,15 @@ export default function Home() {
           onShowAll={() => setActiveCat(ALL_CATEGORIES)}
           waLink={waLink}
         />
-
       </div>
 
       <LazySection component={HomeClosing} minHeight={1600} waLink={waLink} />
 
       {!loading && (
-        <div className="hc-wrap hc-bottom-nav">
+        <nav className="hc-wrap hc-bottom-nav" aria-label="Tu compra">
           <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
           <Link className="btn btn-ghost" to="/cart">Ver carrito</Link>
-        </div>
+        </nav>
       )}
       {/* WhatsApp: botón global <WhatsAppButton /> desde App.jsx. */}
     </main>

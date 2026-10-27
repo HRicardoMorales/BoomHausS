@@ -4,12 +4,8 @@ import { useCountdown } from "../../hooks/useCountdown.js";
 export default function CountdownBar({ storageKey = "pd_countdown", minutes = 18 }) {
   const time = useCountdown(storageKey, minutes);
   return (
-    <div className="hc-cd-bar">
-      <span className="hc-cd-text">⚡ Oferta relámpago termina en</span>
-      <span className="hc-cd-sep" />
-      <span className="hc-cd-time">{time}</span>
-      <span className="hc-cd-sep" />
-      <span className="hc-cd-cta">Aprovechá ahora</span>
-    </div>
+    <p className="hc-cd-bar">
+      La oferta de hoy termina en <span className="hc-cd-time">{time}</span>
+    </p>
   );
 }

@@ -25,7 +25,7 @@ export default function Footer() {
     if (!whatsappNumber) return null;
     return buildWhatsAppLink({
       phone: whatsappNumber,
-      text: `Hola! 👋 Quería hacer una consulta sobre ${storeName}.`,
+      text: `Hola, quería hacer una consulta sobre ${storeName}.`,
     });
   }, [whatsappNumber, storeName]);
 
@@ -98,9 +98,9 @@ export default function Footer() {
         <div className="ft__bottom">
           <span className="ft__copy">© {new Date().getFullYear()} {storeName}. Todos los derechos reservados.</span>
           <div className="ft__trust">
-            <span className="ft__trust-badge"><span aria-hidden="true">🔒</span> Compra 100% segura</span>
-            <span className="ft__trust-badge"><span aria-hidden="true">🚚</span> Envíos a todo el país</span>
-            <span className="ft__trust-badge"><span aria-hidden="true">📦</span> Seguimiento en tiempo real</span>
+            <span className="ft__trust-badge">Compra 100% segura</span>
+            <span className="ft__trust-badge">Envíos a todo el país</span>
+            <span className="ft__trust-badge">Seguimiento en tiempo real</span>
           </div>
         </div>
 

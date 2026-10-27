@@ -6,6 +6,13 @@ import { useCountUp } from "../../hooks/useCountUp.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion.js";
 import { collectTransformations } from "../../landings/homeProof.js";
 import Reveal from "../motion/Reveal.jsx";
+import { BEAUTY_SLUGS } from "./beauty.js";
+
+/* Belleza primero; el resto conserva su orden. */
+const beautyRank = (id) => {
+  const i = BEAUTY_SLUGS.indexOf(id);
+  return i === -1 ? BEAUTY_SLUGS.length : i;
+};
 
 /*
  * Antes/después + estadísticas. Todo sale de las landings (`beforeAfter` y
@@ -14,7 +21,10 @@ import Reveal from "../motion/Reveal.jsx";
  * números que cuentan al entrar en pantalla.
  */
 export default function HomeTransformations() {
-  const items = useMemo(() => collectTransformations(), []);
+  const items = useMemo(
+    () => collectTransformations().sort((a, b) => beautyRank(a.id) - beautyRank(b.id)),
+    []
+  );
   const [activeId, setActiveId] = useState(items[0]?.id);
   const sectionRef = useRef(null);
   const visible = useNearViewport(sectionRef, { margin: -140 });
@@ -43,12 +53,11 @@ export default function HomeTransformations() {
       <div className="hp-inner">
         <Reveal as="header" className="hp-head hp-head--split">
           <div>
-            <p className="hp-eyebrow hp-eyebrow--ink">Resultados</p>
-            <h2 className="hp-title hp-title--ink" id={`${baseId}-title`}>
-              El cambio, <em>a la vista.</em>
+            <h2 className="hp-title" id={`${baseId}-title`}>
+              Antes y después
             </h2>
           </div>
-          <p className="hp-lede hp-lede--ink">
+          <p className="hp-lede">
             Fotos de antes y después y lo que cuentan quienes ya lo usan. Elegí un producto y
             arrastrá la línea.
           </p>

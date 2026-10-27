@@ -1,0 +1,128 @@
+/* Home — "Por lo que buscás" (hk-) y la franja de pausa (hs-). Van en el
+   chunk inicial con el hero: están en los primeros tres pantallazos. */
+
+/* ================= POR LO QUE BUSCÁS ================= */
+.hk-head {
+  display: grid; gap: 12px;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+@media (min-width: 900px) {
+  .hk-head { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; gap: 48px; }
+}
+.hk-title {
+  margin: 0;
+  font-family: var(--h-display);
+  font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--h-ink);
+}
+.hk-lede { margin: 0; max-width: 40ch; font-size: 1.05rem; line-height: 1.55; color: var(--h-ink); }
+
+/* Mobile: tira deslizable que respeta el margen de la página. */
+.hk-list {
+  list-style: none; margin: 0; padding: 0 var(--h-gutter) 8px;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 74%;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--h-gutter);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.hk-list::-webkit-scrollbar { display: none; }
+.hk-item { scroll-snap-align: start; }
+@media (min-width: 640px) { .hk-list { grid-auto-columns: 44%; } }
+@media (min-width: 1000px) {
+  .hk-list {
+    width: min(var(--h-max), calc(100% - 2 * var(--h-gutter)));
+    margin: 0 auto; padding: 0;
+    grid-auto-flow: row; grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    overflow: visible;
+  }
+  /* Columnas escalonadas: la grilla respira como una página de revista. */
+  .hk-item:nth-child(even) { margin-top: 72px; }
+}
+
+.hk-link {
+  display: flex; flex-direction: column;
+  color: var(--h-ink); text-decoration: none;
+}
+.hk-img {
+  position: relative; display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--h-field-2);
+}
+.hk-img img,
+.hk-img .safeimg-fallback {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 1s var(--h-ease);
+}
+.hk-img--product img { object-fit: contain; padding: 14%; box-sizing: border-box; mix-blend-mode: multiply; }
+.hk-link:hover .hk-img img { transform: scale(1.06); }
+.hk-link:focus-visible { outline: 3px solid var(--h-accent); outline-offset: 4px; }
+
+.hk-name {
+  margin-top: 16px;
+  font-family: var(--h-display);
+  font-weight: 500;
+  font-size: clamp(1.6rem, 2.2vw, 2rem);
+  line-height: 1.05;
+}
+.hk-text { margin-top: 6px; font-size: .98rem; line-height: 1.5; color: var(--h-ink-2); }
+.hk-meta {
+  margin-top: 12px;
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: .98rem;
+}
+.hk-arrow { transition: transform .3s var(--h-ease); }
+.hk-link:hover .hk-arrow { transform: translateX(6px); }
+
+/* ================= FRANJA DE PAUSA ================= */
+.hs {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--h-field-2);
+  color: var(--h-ink);
+  padding-block: clamp(88px, 14vw, 200px);
+}
+.hs--photo { color: #fff; min-height: min(92vh, 860px); display: flex; align-items: flex-end; }
+.hs-media { position: absolute; inset: 0; z-index: -1; }
+.hs-media img { width: 100%; height: 100%; object-fit: cover; }
+/* Velo neutro solo debajo del texto, para que se lea sobre cualquier foto. */
+.hs--photo .hs-media::after {
+  content: ""; position: absolute; inset: 40% 0 0;
+  background: linear-gradient(to top, rgba(20, 14, 12, .55), rgba(20, 14, 12, 0));
+}
+.hs-title {
+  margin: 0;
+  max-width: 14ch;
+  font-family: var(--h-display);
+  font-weight: 500;
+  font-size: clamp(2.6rem, 7vw, 6.4rem);
+  line-height: .98;
+  letter-spacing: -.025em;
+}
+.hs-text {
+  margin: clamp(18px, 2.4vw, 28px) 0 0;
+  max-width: 44ch;
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hs-media img {
+      animation: hsZoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes hsZoom { from { transform: scale(1.18); } to { transform: scale(1); } }

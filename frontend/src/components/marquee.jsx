@@ -9,9 +9,9 @@ export default function Marquee({
 
   // Los items se construyen con el tiempo reactivo dentro del primero
   const items = [
-    { text: "⚡ Oferta relámpago", suffix: time, highlight: true },
-    { text: "🔒 Compra protegida" },
-    { text: "🚚 Envío gratis a todo el país" },
+    { text: "Oferta del día", suffix: time, highlight: true },
+    { text: "Compra protegida" },
+    { text: "Envío gratis a todo el país" },
   ];
 
   // La pista se duplica para el loop infinito (translateX -50%); la copia
