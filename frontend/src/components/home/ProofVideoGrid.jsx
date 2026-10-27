@@ -27,12 +27,11 @@ export default function ProofVideoGrid({ videos = VIDEOS }) {
       <div className="hp-inner">
         <Reveal as="header" className="hp-head hp-head--split">
           <div>
-            <p className="hp-eyebrow hp-eyebrow--ink">En uso, sin filtro</p>
-            <h2 className="hp-title hp-title--ink" id="hp-videos-title">
-              Así se ven <em>fuera del anuncio.</em>
+            <h2 className="hp-title" id="hp-videos-title">
+              Así se ven fuera del anuncio
             </h2>
           </div>
-          <p className="hp-lede hp-lede--ink">
+          <p className="hp-lede">
             Videos cortos de los productos funcionando. Tocá uno para ir a su página.
           </p>
         </Reveal>
@@ -48,13 +47,10 @@ export default function ProofVideoGrid({ videos = VIDEOS }) {
                   label={`Video: ${v.product}`}
                 />
                 <span className="hp-video-shade" aria-hidden="true" />
-                <span className="hp-video-index" aria-hidden="true">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <span className="hp-video-caption">
                   {v.label && <span className="hp-video-label">{v.label}</span>}
                   <span className="hp-video-product">{v.product}</span>
-                  <span className="hp-video-cta" aria-hidden="true">Ver producto →</span>
+                  <span className="hp-video-cta" aria-hidden="true">Ver producto</span>
                 </span>
               </Link>
             </li>

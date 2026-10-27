@@ -7,7 +7,7 @@ import { TAP_PRESS } from "../motion/motionPresets.js";
 /*
  * Carrusel de destacados con Embla (≈7 KB gzip, sin dependencias): swipe
  * nativo, flechas que se deshabilitan en los extremos y barra de progreso
- * ligada al scroll real. Cada card lleva su número de ranking.
+ * ligada al scroll real.
  * El progreso no pasa por React: el listener de `scroll` de Embla escribe el
  * `transform` directo en el nodo y la transición CSS lo suaviza (0 renders al
  * arrastrar; antes cada evento re-renderizaba la sección entera). Se probó
@@ -19,7 +19,7 @@ const MotionButton = m.button;
 
 const clamp01 = (n) => Math.max(0, Math.min(1, n || 0));
 
-export default function BestsellerCarousel({ title, eyebrow, products }) {
+export default function BestsellerCarousel({ title, subtitle, products }) {
   const [viewportRef, embla] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -62,8 +62,8 @@ export default function BestsellerCarousel({ title, eyebrow, products }) {
     <section className="hc-best" aria-labelledby="hc-best-title">
       <header className="hc-best-head">
         <div>
-          {eyebrow && <p className="hc-best-eyebrow">{eyebrow}</p>}
           <h2 className="hc-best-title" id="hc-best-title">{title}</h2>
+          {subtitle && <p className="hc-best-sub">{subtitle}</p>}
         </div>
         <div className="hc-best-nav">
           <MotionButton
@@ -91,11 +91,8 @@ export default function BestsellerCarousel({ title, eyebrow, products }) {
 
       <div className="hc-best-viewport" ref={viewportRef}>
         <ol className="hc-best-track">
-          {products.map((p, i) => (
+          {products.map((p) => (
             <li className="hc-best-slide" key={p._id}>
-              <span className="hc-best-rank" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
               <ProductCard product={p} reveal={false} />
             </li>
           ))}

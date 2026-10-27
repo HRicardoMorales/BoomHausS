@@ -32,11 +32,10 @@ export default function HomeNewsletter() {
       <div className="hp-inner">
         <Reveal as="div" className="hn-card">
           <div className="hn-copy">
-            <p className="hp-eyebrow hp-eyebrow--ink">Lista de ofertas</p>
-            <h2 className="hp-title hp-title--ink hn-title" id={`${id}-title`}>
-              Enterate <em>primero.</em>
+            <h2 className="hp-title" id={`${id}-title`}>
+              Enterate primero
             </h2>
-            <p className="hp-lede hp-lede--ink">
+            <p className="hp-lede">
               Un mail cuando entra un producto nuevo o baja un precio. Nada más, y te das de baja con un clic.
             </p>
           </div>

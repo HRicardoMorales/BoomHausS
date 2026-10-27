@@ -1,6 +1,6 @@
-// Cierre de la home (videos → beneficios → resultados → garantía →
-// newsletter). Vive en su propio chunk: nada de esto se ve en el primer
-// pantallazo y junto con `HomeReviews` suma los configs de landing que usa
+// Cierre de la home (videos → antes/después → cómo comprar → garantía).
+// Vive en su propio chunk: nada de esto se ve en el primer pantallazo y,
+// junto con `HomeReviews`, suma los configs de landing de
 // `landings/homeProof.js`. Se monta con <LazySection> desde `pages/home.jsx`.
 import ProofVideoGrid from "./ProofVideoGrid.jsx";
 import HomeBenefits from "./HomeBenefits.jsx";
@@ -16,8 +16,8 @@ export default function HomeClosing({ waLink }) {
   return (
     <>
       <ProofVideoGrid />
-      <HomeBenefits waLink={waLink} />
       <HomeTransformations />
+      <HomeBenefits waLink={waLink} />
       <HomeGuarantee waLink={waLink} />
     </>
   );

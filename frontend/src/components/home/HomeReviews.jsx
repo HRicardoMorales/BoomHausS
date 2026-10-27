@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { collectReviews } from "../../landings/homeProof.js";
+import { LANDING_CONFIGS } from "../../landings/index.js";
+import { BEAUTY_SLUGS } from "./beauty.js";
 import Reveal from "../motion/Reveal.jsx";
 import "./home-proof.css";
 
@@ -9,7 +11,12 @@ import "./home-proof.css";
  * Mobile: carrusel con scroll-snap nativo (sin JS). Desktop: masonry con
  * CSS columns, así las tarjetas largas no dejan huecos.
  */
-const REVIEWS = collectReviews();
+/* Belleza primero (la identidad de la home); si no alcanzan, todas. */
+const BEAUTY_CONFIGS = Object.fromEntries(
+  Object.entries(LANDING_CONFIGS).filter(([slug]) => BEAUTY_SLUGS.includes(slug))
+);
+const beautyReviews = collectReviews(BEAUTY_CONFIGS, { max: 6 });
+const REVIEWS = beautyReviews.length >= 3 ? beautyReviews : collectReviews(undefined, { max: 6 });
 
 function Stars({ value }) {
   return (
@@ -29,31 +36,25 @@ export default function HomeReviews({ reviews = REVIEWS }) {
 
   return (
     <section className="hp-reviews" aria-labelledby="hp-reviews-title">
-      <div className="hp-grain" aria-hidden="true" />
       <div className="hp-inner">
         <Reveal as="header" className="hp-head">
-          <p className="hp-eyebrow">Opiniones · {products} productos</p>
           <h2 className="hp-title" id="hp-reviews-title">
-            Lo dicen ellos, <em>no nosotros.</em>
+            Lo que cuentan quienes ya lo usan
           </h2>
           <p className="hp-lede">
-            Una opinión de cada producto, tal como aparece en su página. Tocá el nombre para verlo.
+            Opiniones de {products} productos, tal como aparecen en su página. Tocá el nombre para verlo.
           </p>
         </Reveal>
 
         <ul className="hp-review-list" aria-label="Opiniones de clientes">
           {reviews.map((r) => (
             <li key={r.id} className="hp-review">
-              <span className="hp-review-mark" aria-hidden="true">“</span>
               <Stars value={r.rating} />
               {r.title && <p className="hp-review-title">{r.title}</p>}
               <blockquote className="hp-review-text">
                 <p>{r.text}</p>
               </blockquote>
               <footer className="hp-review-foot">
-                <span className="hp-review-avatar" aria-hidden="true">
-                  {r.name.trim().charAt(0)}
-                </span>
                 <span className="hp-review-who">
                   <span className="hp-review-name">{r.name}</span>
                   <Link className="hp-review-product" to={r.href}>
