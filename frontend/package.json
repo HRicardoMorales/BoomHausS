@@ -13,7 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "screenshots": "node scripts/screenshots.mjs",
-    "knip": "knip"
+    "knip": "knip",
+    "lhci": "npx -y @lhci/cli@0.15.1 autorun",
+    "lhci:summary": "node scripts/lhci-summary.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

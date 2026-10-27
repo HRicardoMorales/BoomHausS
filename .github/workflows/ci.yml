@@ -79,6 +79,37 @@ jobs:
       - name: a11y · 1280 px
         run: npm run a11y -- --routes=/,/products/mock-producto,/cart,/checkout --width=1280
 
+  lighthouse:
+    name: Lighthouse · presupuesto de performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      # 4 rutas × 3 corridas en mobile simulado contra dist/ con la API mockeada
+      # (scripts/lhci-server.mjs). Usa el Chrome preinstalado del runner.
+      # Falla si se pasa un presupuesto marcado como error en lighthouserc.cjs.
+      - run: npm run lhci
+      - name: Tabla en el resumen del job
+        if: always()
+        run: npm run --silent lhci:summary >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: frontend/.lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore
+
   backend:
     name: Backend · sintaxis y tests
     runs-on: ubuntu-latest

@@ -126,7 +126,7 @@ export function makeFixtures({ realistic = false } = {}) {
   return { products, cart, orders };
 }
 
-function mockApi(url, fx = makeFixtures()) {
+export function mockApi(url, fx = makeFixtures()) {
   const { pathname } = new URL(url);
   const path = pathname.replace(/^\/api/, '');
   const slug = path.match(/^\/products\/slug\/([^/]+)/)?.[1];

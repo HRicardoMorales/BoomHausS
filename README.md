@@ -142,6 +142,19 @@ Cada una resolvió un problema concreto que estaba en el código.
 
 Los tamaños de bundle se publican en cada corrida de CI (resumen del job de frontend).
 
+### Lighthouse (laboratorio, sin maquillaje)
+
+Medido con [Lighthouse CI](frontend/lighthouserc.cjs) sobre el build de producción: perfil mobile de Lighthouse (Moto G Power, 4G lenta simulada, CPU ×4), mediana de 3 corridas, API mockeada en el mismo origen y hosts externos bloqueados para que el número dependa del código y no de la red. Pesos transferidos con gzip.
+
+| Ruta | Perf | A11y | SEO | LCP | TBT | CLS | JS | Total |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `/` | 60 | 100 | 100 | 3,7 s | 1,4 s | 0,017 | 227 KB | 407 KB |
+| `/products/:id` | 49 | 100 | 100 | 3,7 s | 0,5 s | **1,30** | 217 KB | 395 KB |
+| `/lp/escultor-led` | 74 | 96 | 100 | 3,8 s | 0,5 s | 0,001 | 238 KB | 454 KB |
+| `/cart` | 77 | 100 | — (noindex) | 3,1 s | 0,4 s | 0 | 221 KB | 401 KB |
+
+Los dos números malos quedan a la vista a propósito, porque son el próximo trabajo: el **CLS de la ficha** (el footer se pinta mientras carga el producto y después lo empuja hacia abajo) y el **TBT de la home** (tareas largas de React al hidratar el catálogo y las secciones). El job `lighthouse` de CI falla si el JS, el CSS o el peso total crecen más de ~15 %, si el LCP pasa de 5 s, si aparece CLS fuera de la ficha o si baja la accesibilidad; TBT y score, que dependen de la CPU del runner, solo avisan. Reportes HTML como artifact del job.
+
 ## Correrlo localmente
 
 Requisitos: Node 22 y una base de MongoDB (local o Atlas).
@@ -177,6 +190,7 @@ npm test          # Vitest: precios, carrito, estados de pedido, envíos
 npm run build
 npm run a11y      # axe sobre el build (requiere Chromium)
 npm run smoke     # E2E: 27 rutas × 390/1280 px — errores, <main>, desborde, ids duplicados
+npm run lhci      # Lighthouse CI con presupuestos (CHROME_PATH si no hay Chrome instalado)
 npm run screenshots  # capturas del README en docs/screenshots (--images=live para fotos reales)
 
 # Backend
@@ -186,7 +200,7 @@ npm test          # node:test + supertest sobre app.js real, sin Mongo ni red (~
 
 Los tests del backend corren contra el `app.js` real con los modelos mockeados: verifican, por ejemplo, que una inyección `{"$ne": null}` devuelva 400 **sin llegar a llamar al modelo**. Se validaron con mutaciones de control (romper el código a propósito y comprobar que el test falla).
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → knip → Vitest → build + tabla de tamaños gzip), **E2E** (build → `npm run smoke` en Chromium sobre todas las rutas, incluido el admin con sesión falsa, + axe WCAG 2.1 AA del recorrido de compra a 390 y 1280 px) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → knip → Vitest → build + tabla de tamaños gzip), **E2E** (build → `npm run smoke` en Chromium sobre todas las rutas, incluido el admin con sesión falsa, + axe WCAG 2.1 AA del recorrido de compra a 390 y 1280 px), **Lighthouse** (presupuestos de peso, LCP y CLS en 4 rutas, tabla en el resumen del job) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
 
 El smoke no se queda en "la página cargó": como `#root` tiene `overflow-x: clip`, un elemento más ancho que el celular no genera scroll sino que queda **cortado sin que nadie lo note**; el script busca elementos que se salen del viewport sin un ancestro que los recorte a propósito (carruseles), además de excepciones sin atrapar, `<main>` sin montar e `id` duplicados. Verificado inyectando cada falla en el build.
 
