@@ -1,6 +1,7 @@
 import SafeImg from "../SafeImg";
 import { FEATURE_SIZES } from "../landing/imageSizes";
 import Reveal from "../motion/Reveal";
+import RichText from "../ui/RichText";
 
 export default function StoryBlocks({ mc = {} }) {
   const blocks = mc.storyBlocks;
@@ -14,10 +15,7 @@ export default function StoryBlocks({ mc = {} }) {
             {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
             {b.textHtml ? (
-              <p
-                className="flow-p flow-p--rich"
-                dangerouslySetInnerHTML={{ __html: b.textHtml }}
-              />
+              <RichText className="flow-p flow-p--rich" html={b.textHtml} />
             ) : (
               <p className="flow-p">{b.text}</p>
             )}

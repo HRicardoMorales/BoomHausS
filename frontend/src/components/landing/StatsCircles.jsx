@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import "./StatsCircles.css";
+import RichText from "../ui/RichText";
 
 const DURATION_MS = 1400;
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
@@ -61,8 +62,7 @@ function StatRow({ target, text, reduceMotion }) {
       </div>
       {/* El porcentaje final va en texto para lectores de pantalla (el donut es decorativo). */}
       <span className="sc-sr-only">{target}%</span>
-      {/* `text` viene de la config estática de la landing (src/landings/*.js), no de usuarios. */}
-      <p className="sc-text" dangerouslySetInnerHTML={{ __html: text }} />
+      <RichText className="sc-text" html={text} />
     </div>
   );
 }

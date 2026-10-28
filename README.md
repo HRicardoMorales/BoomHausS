@@ -138,7 +138,8 @@ Cada una resolvió un problema concreto que estaba en el código.
 | `ProductDetail.jsx` | 5.008 líneas | ~800 |
 | `MundialLanding.jsx` | 3.725 líneas | 415 |
 | ESLint | 94 errores | 0 (incluye `jsx-a11y`) |
-| Tests | 0 | 52 frontend + 65 backend |
+| Tests | 0 | 268 frontend (Vitest) + 138 backend (`node:test`) |
+| `dangerouslySetInnerHTML` | 5 componentes | 0 (`<RichText>` con lista blanca + regla de ESLint que lo prohíbe) |
 
 Los tamaños de bundle se publican en cada corrida de CI (resumen del job de frontend).
 

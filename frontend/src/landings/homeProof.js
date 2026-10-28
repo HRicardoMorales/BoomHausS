@@ -90,25 +90,6 @@ export function collectProofVideos(configs = LANDING_CONFIGS, { max = 6 } = {}) 
 }
 
 /**
- * "<strong>x</strong>" de los textos de stats → segmentos `{ text, strong }`
- * para renderizar sin `dangerouslySetInnerHTML`. Cualquier otra etiqueta se
- * descarta (queda solo su texto).
- */
-function parseStrong(html = "") {
-  const out = [];
-  const re = /<strong>([\s\S]*?)<\/strong>/gi;
-  const clean = (s) => s.replace(/<[^>]*>/g, "");
-  let last = 0;
-  for (let m = re.exec(html); m; m = re.exec(html)) {
-    if (m.index > last) out.push({ text: clean(html.slice(last, m.index)), strong: false });
-    out.push({ text: clean(m[1]), strong: true });
-    last = m.index + m[0].length;
-  }
-  if (last < html.length) out.push({ text: clean(html.slice(last)), strong: false });
-  return out.filter((s) => s.text);
-}
-
-/**
  * Antes/después con estadísticas: solo las landings que publican **las dos**
  * fotos y al menos 2 stats (el kit tiene `beforeImg: ""` → afuera). Se toman
  * las 3 stats más altas y la nota al pie tal cual la publica la landing.
@@ -128,7 +109,7 @@ export function collectTransformations(configs = LANDING_CONFIGS, { max = 4 } = 
         .filter((s) => Number.isFinite(s?.target) && s.target > 0 && s.target <= 100 && s.text)
         .sort((a, b) => b.target - a.target)
         .slice(0, 3)
-        .map((s) => ({ value: s.target, parts: parseStrong(s.text) })),
+        .map((s) => ({ value: s.target, text: s.text })),
       note: cfg.statsFooterNote || "",
     }))
     .filter((t) => t.stats.length >= 2)

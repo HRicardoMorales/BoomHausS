@@ -52,6 +52,9 @@ export default defineConfig([
       'no-restricted-syntax': ['error', {
         selector: "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat'] Property[key.name='currency']",
         message: 'Usá moneyARS/moneyARSTight de utils/pricing.js en lugar de un Intl.NumberFormat de moneda.',
+      }, {
+        selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+        message: 'Usá <RichText html=…> (components/ui/RichText.jsx): renderiza <strong>/<em>/<br> sin inyectar HTML.',
       }],
     },
   },
