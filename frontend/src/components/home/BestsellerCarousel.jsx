@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { m } from "framer-motion";
 import ProductCard from "./ProductCard.jsx";
 import { TAP_PRESS } from "../motion/motionPresets.js";
+import { whenIdle } from "../../utils/lazyWithRetry.js";
 
 /*
  * Carrusel de destacados con Embla (≈7 KB gzip, sin dependencias): swipe
@@ -14,12 +15,37 @@ import { TAP_PRESS } from "../motion/motionPresets.js";
  * `useSpring` de Framer: +4,3 KB gz en el entry por un efecto que CSS ya da.
  * El orden lo decide la home: por ventas reales (GET /products/bestsellers)
  * cuando hay datos suficientes, si no por descuento con otro título.
+ * Embla se monta recién cuando el hilo queda ocioso (o al primer toque/foco):
+ * hasta entonces el viewport no recibe su ref, porque Embla mide los slides
+ * aunque se le pase `active: false`. Al iniciar mide con `offsetTop/offsetWidth`, lo que
+ * fuerza un layout de toda la página. Hecho dentro del commit del catálogo
+ * sumaba ~100 ms (CPU ×4) a una tarea ya larga; en idle el layout ya está
+ * hecho y la medición es una lectura barata. Hasta entonces las slides se ven
+ * igual (Embla solo agrega `transform`) y las flechas quedan deshabilitadas.
  */
 const MotionButton = m.button;
 
 const clamp01 = (n) => Math.max(0, Math.min(1, n || 0));
 
 export default function BestsellerCarousel({ title, eyebrow, products }) {
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    let raf = 0;
+    let timer = 0;
+    // Ocioso → próximo frame → tarea siguiente: así la activación cae justo
+    // después de un layout limpio y no se mezcla con otro commit grande.
+    const cancelIdle = whenIdle(() => {
+      raf = requestAnimationFrame(() => {
+        timer = setTimeout(() => setActive(true), 0);
+      });
+    });
+    return () => {
+      cancelIdle();
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+    };
+  }, []);
+  const activate = () => setActive(true);
   const [viewportRef, embla] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -89,7 +115,12 @@ export default function BestsellerCarousel({ title, eyebrow, products }) {
         </div>
       </header>
 
-      <div className="hc-best-viewport" ref={viewportRef}>
+      <div
+        className="hc-best-viewport"
+        ref={active ? viewportRef : undefined}
+        onPointerDownCapture={active ? undefined : activate}
+        onFocusCapture={active ? undefined : activate}
+      >
         <ol className="hc-best-track">
           {products.map((p, i) => (
             <li className="hc-best-slide" key={p._id}>

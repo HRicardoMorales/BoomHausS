@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import { logger } from "../utils/logger.js";
 
@@ -52,7 +52,12 @@ export function useCatalog() {
         if (isCancelled()) return;
         const raw = productsRes.data?.data ?? productsRes.data ?? [];
         const products = buildCatalog(raw, slugsRes.data?.data ?? []);
-        setState({ products, loading: false, fetchError: false, retryAttempt: 0 });
+        // Transición: React arma la grilla, el carrusel y los conteos en
+        // tramos de ~5 ms cediendo el hilo entre medio, en vez de una tarea
+        // larga que bloquea el scroll y el primer toque (TBT de la home).
+        startTransition(() => {
+          setState({ products, loading: false, fetchError: false, retryAttempt: 0 });
+        });
         return;
       } catch (e) {
         lastError = e;
