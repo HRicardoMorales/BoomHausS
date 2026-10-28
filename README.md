@@ -144,16 +144,18 @@ Los tamaños de bundle se publican en cada corrida de CI (resumen del job de fro
 
 ### Lighthouse (laboratorio, sin maquillaje)
 
-Medido con [Lighthouse CI](frontend/lighthouserc.cjs) sobre el build de producción: perfil mobile de Lighthouse (Moto G Power, 4G lenta simulada, CPU ×4), mediana de 3 corridas, API mockeada en el mismo origen y hosts externos bloqueados para que el número dependa del código y no de la red. Pesos transferidos con gzip.
+Medido con [Lighthouse CI](frontend/lighthouserc.cjs) sobre el build de producción: perfil mobile de Lighthouse (Moto G Power, 4G lenta simulada, CPU ×4), mediana de 3 corridas, API mockeada en el mismo origen y hosts externos bloqueados para que el número dependa del código y no de la red. Pesos transferidos con gzip. "Antes" = primera medición (2026-10-27); "ahora" = runner de GitHub Actions sobre `df8bf74` (2026-10-28).
 
-| Ruta | Perf | A11y | SEO | LCP | TBT | CLS | JS | Total |
+| Ruta | Perf antes → ahora | TBT antes → ahora | CLS antes → ahora | LCP | A11y | SEO | JS | Total |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | 60 | 100 | 100 | 3,7 s | 1,4 s | 0,017 | 227 KB | 407 KB |
-| `/products/:id` | 49 | 100 | 100 | 3,7 s | 0,5 s | **1,30** | 217 KB | 395 KB |
-| `/lp/escultor-led` | 74 | 96 | 100 | 3,8 s | 0,5 s | 0,001 | 238 KB | 454 KB |
-| `/cart` | 77 | 100 | — (noindex) | 3,1 s | 0,4 s | 0 | 221 KB | 401 KB |
+| `/` | 60 → **88** | 1,4 s → **39 ms** | 0,017 | 3,5 s | 100 | 100 | 227 KB | 407 KB |
+| `/products/:id` | 49 → **86** | 0,5 s → **27 ms** | 1,30 → **0** | 3,9 s | 100 | 100 | 218 KB | 395 KB |
+| `/lp/escultor-led` | 74 → **81** | 0,5 s → **107 ms** | 0,001 → 0 | 4,8 s | 96 | 100 | 238 KB | 454 KB |
+| `/cart` | 77 → **93** | 0,4 s → **44 ms** | 0 → 0,055 | 3,0 s | 100 | — (noindex) | 222 KB | 401 KB |
 
-Los dos números malos quedan a la vista a propósito, porque son el próximo trabajo: el **CLS de la ficha** (el footer se pinta mientras carga el producto y después lo empuja hacia abajo) y el **TBT de la home** (tareas largas de React al hidratar el catálogo y las secciones). El job `lighthouse` de CI falla si el JS, el CSS o el peso total crecen más de ~15 %, si el LCP pasa de 5 s, si aparece CLS fuera de la ficha o si baja la accesibilidad; TBT y score, que dependen de la CPU del runner, solo avisan. Reportes HTML como artifact del job.
+Cómo se bajaron (detalle en el historial): el **CLS de la ficha** venía del footer pintándose mientras cargaba el producto → esqueleto con las medidas reales del hero. El **TBT de la home** eran tres cosas medidas con traces de Chromium: el render del catálogo como una sola tarea larga (ahora en `startTransition`), Embla midiendo los slides en el mismo commit y forzando un layout de toda la página (ahora engancha en idle) y un `MutationObserver` global, código muerto, que corría `querySelectorAll` en cada tic del countdown.
+
+El job `lighthouse` de CI **falla** si el JS, el CSS o el peso total crecen más de ~15 %, si el LCP pasa de 5 s, si aparece CLS, si el TBT supera 300 ms o si baja la accesibilidad o el SEO; el score, que depende de la CPU del runner, solo avisa. Reportes HTML como artifact del job.
 
 ## Correrlo localmente
 

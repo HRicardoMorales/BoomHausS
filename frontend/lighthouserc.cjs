@@ -40,7 +40,12 @@ module.exports = {
       // Techos de regresión, no objetivos: están un ~15 % por encima de lo
       // medido el 2026-10-27 (tabla en el README). `error` = falla el job;
       // `warn` = se ve en el log. Lo determinista (pesos, CLS, LCP simulado)
-      // es error; lo que depende de la CPU del runner (TBT, score) es warn.
+      // es error; el score depende de la CPU del runner y queda en warn.
+      // TBT pasó a error el 2026-10-28: tras sacar el render del catálogo y la
+      // medición de Embla del arranque (4e45096) y el MutationObserver global
+      // (679acb8), dos runs de df8bf74 dieron medianas de 24–107 ms en las 4
+      // URLs. 300 ms deja ~3× de margen para el ruido del runner y aun así
+      // atrapa una regresión como la de antes (~490 ms en la home).
       assertMatrix: [
         {
           matchingUrlPattern: '.*',
@@ -50,7 +55,7 @@ module.exports = {
             'resource-summary:total:size': ['error', { maxNumericValue: 550 * 1024, aggregationMethod: 'median' }],
             'cumulative-layout-shift': ['error', { maxNumericValue: 0.1, aggregationMethod: 'median' }],
             'largest-contentful-paint': ['error', { maxNumericValue: 5000, aggregationMethod: 'median' }],
-            'total-blocking-time': ['warn', { maxNumericValue: 600, aggregationMethod: 'median' }],
+            'total-blocking-time': ['error', { maxNumericValue: 300, aggregationMethod: 'median' }],
             'categories:performance': ['warn', { minScore: 0.6, aggregationMethod: 'median' }],
             'categories:accessibility': ['error', { minScore: 0.9, aggregationMethod: 'median' }],
             'categories:best-practices': ['warn', { minScore: 0.9, aggregationMethod: 'median' }],
