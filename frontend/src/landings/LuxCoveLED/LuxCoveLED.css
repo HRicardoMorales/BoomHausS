@@ -30,7 +30,7 @@
   font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
   color: var(--led-text);
   background: var(--led-white);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   /* Evita que iOS Safari reescale el texto al volver a la pestaña */
   -webkit-text-size-adjust: 100%;
