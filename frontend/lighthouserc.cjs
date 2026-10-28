@@ -48,6 +48,7 @@ module.exports = {
             'resource-summary:script:size': ['error', { maxNumericValue: 280 * 1024, aggregationMethod: 'median' }],
             'resource-summary:stylesheet:size': ['error', { maxNumericValue: 50 * 1024, aggregationMethod: 'median' }],
             'resource-summary:total:size': ['error', { maxNumericValue: 550 * 1024, aggregationMethod: 'median' }],
+            'cumulative-layout-shift': ['error', { maxNumericValue: 0.1, aggregationMethod: 'median' }],
             'largest-contentful-paint': ['error', { maxNumericValue: 5000, aggregationMethod: 'median' }],
             'total-blocking-time': ['warn', { maxNumericValue: 600, aggregationMethod: 'median' }],
             'categories:performance': ['warn', { minScore: 0.6, aggregationMethod: 'median' }],
@@ -60,23 +61,6 @@ module.exports = {
           matchingUrlPattern: '^(?!.*/cart$).*',
           assertions: {
             'categories:seo': ['error', { minScore: 0.9, aggregationMethod: 'median' }],
-          },
-        },
-        {
-          // Las entradas que coinciden se suman (no se pisan): por eso el CLS
-          // de error excluye la ficha en vez de bajarlo a warn más abajo.
-          matchingUrlPattern: '^(?!.*/products/).*',
-          assertions: {
-            'cumulative-layout-shift': ['error', { maxNumericValue: 0.1, aggregationMethod: 'median' }],
-          },
-        },
-        {
-          // CLS 1,3 conocido en la ficha (el footer se ve mientras carga el
-          // producto y después baja): tarea en NIGHTLY.md. Al arreglarlo,
-          // borrar este bloque y la exclusión de arriba.
-          matchingUrlPattern: '/products/',
-          assertions: {
-            'cumulative-layout-shift': ['warn', { maxNumericValue: 0.1, aggregationMethod: 'median' }],
           },
         },
       ],

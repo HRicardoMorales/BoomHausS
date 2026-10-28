@@ -13,6 +13,7 @@ import "./ProductDetail.css";
 import { clampPct } from "../components/product/format";
 import { moneyARS, moneyARSTight } from "../utils/pricing.js";
 import UnavailableProductPage from "../components/product/UnavailableProductPage";
+import ProductDetailSkeleton from "../components/product/ProductDetailSkeleton";
 import WhatsAppTab from "../components/landing/WhatsAppTab";
 import BoxContents from "../components/product/BoxContents";
 import HowToSteps from "../components/product/HowToSteps";
@@ -208,14 +209,7 @@ function ProductDetail({ id, slug }) {
     setShowCheckout(true);
   };
 
-  if (loading && !hasLoaded)
-    return (
-      <main className="section">
-        <div className="container">
-          <div className="card">Cargando…</div>
-        </div>
-      </main>
-    );
+  if (loading && !hasLoaded) return <ProductDetailSkeleton />;
 
   if (blockingError || !effectiveProduct) {
     return (

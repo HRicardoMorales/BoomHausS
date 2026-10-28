@@ -1,0 +1,67 @@
+/* Esqueleto de la ficha: mismas medidas que .pd-hero-row / .pd-mediaMain--bigger
+   (ProductDetail.page.css). Si cambian allá, cambiarlas acá. */
+.pdsk {
+  /* Una pantalla completa: el footer queda abajo del pliegue mientras carga. */
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.pdsk__block {
+  display: block;
+  background: linear-gradient(100deg, var(--bg2) 30%, var(--white, #fff) 50%, var(--bg2) 70%);
+  background-size: 300% 100%;
+  animation: pdsk-shimmer 1.4s linear infinite;
+  border-radius: 10px;
+}
+
+.pdsk__img { height: 390px; border-radius: 0; }
+.pdsk__thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px 16px 0;
+}
+.pdsk__thumb { aspect-ratio: 1 / 1; }
+
+.pdsk__info {
+  display: grid;
+  gap: 14px;
+  padding: 22px 16px 32px;
+}
+.pdsk__title { height: 30px; width: 85%; }
+.pdsk__line { height: 14px; width: 100%; }
+.pdsk__line--md { width: 62%; }
+.pdsk__line--xs { width: 34%; }
+.pdsk__price { height: 34px; width: 45%; }
+.pdsk__option { height: 64px; border-radius: 14px; }
+.pdsk__cta { height: 54px; border-radius: 999px; }
+
+@media (min-width: 521px) {
+  .pdsk__img { height: 420px; }
+}
+
+@media (min-width: 981px) {
+  .pdsk__img { height: 520px; }
+}
+
+@media (min-width: 980px) {
+  .pdsk__row {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .pdsk__media { flex: 0 0 50%; max-width: 50%; }
+  .pdsk__img { height: 560px; border-radius: 16px; }
+  .pdsk__thumbs { padding: 10px 0 0; }
+  .pdsk__info { flex: 1; max-width: 50%; padding: 8px 28px 0 24px; }
+}
+
+@keyframes pdsk-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdsk__block { animation: none; }
+}
