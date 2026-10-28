@@ -101,12 +101,17 @@ jobs:
       - run: npm run lhci
       - name: Tabla en el resumen del job
         if: always()
-        run: npm run --silent lhci:summary >> "$GITHUB_STEP_SUMMARY" || true
+        # `tee`: la tabla queda también en el log del job (se puede leer sin
+        # abrir la UI de Actions, p. ej. desde la API de logs).
+        run: npm run --silent lhci:summary | tee -a "$GITHUB_STEP_SUMMARY" || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lighthouse-reports
           path: frontend/.lighthouseci/
+          # `.lighthouseci` es un directorio oculto: sin esto upload-artifact
+          # (v4.4+) lo ignora y los reportes nunca se subían.
+          include-hidden-files: true
           retention-days: 14
           if-no-files-found: ignore
 

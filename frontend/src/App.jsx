@@ -96,32 +96,6 @@ export default function App() {
   // precargamos ese chunk cuando el navegador queda ocioso.
   useEffect(() => whenIdle(() => { ProductDetail.preload(); }), []);
 
-  // Animación Reveal. Las rutas lazy montan su contenido después de este
-  // effect, así que además de los nodos actuales observamos los que se
-  // agreguen al DOM (MutationObserver).
-  useEffect(() => {
-    const root = document.querySelector('.app-shell');
-    if (!root || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-visible');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
-    );
-    const observeAll = () => {
-      root.querySelectorAll('.reveal:not(.is-visible)').forEach((el) => io.observe(el));
-    };
-    observeAll();
-    const mo = new MutationObserver(observeAll);
-    mo.observe(root, { childList: true, subtree: true });
-    return () => { mo.disconnect(); io.disconnect(); };
-  }, [location.pathname]);
-
   return (
     <div className="app-shell">
       <SkipLink targetId="contenido" />
