@@ -13,10 +13,12 @@ export default function Comparison() {
         <h2 className="ipl-ctabs-title">¿Y si uso otros métodos de depilación?</h2>
         <p className="ipl-ctabs-desc">Descubrí por qué la Depiladora IPL es mejor que tu método actual.</p>
 
-        <div className="ipl-ctabs-nav">
+        <div className="ipl-ctabs-nav" role="group" aria-label="Comparar con">
           {COMP_TABS.map(tab => (
             <button
               key={tab.id}
+              type="button"
+              aria-pressed={compTab === tab.id}
               className={`ipl-ctab-btn${compTab === tab.id ? ' active' : ''}`}
               onClick={() => setCompTab(tab.id)}
             >

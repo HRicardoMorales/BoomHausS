@@ -13,14 +13,16 @@ export default function ZoneProgress() {
         <p className="ipl-wkprog-kicker">Progreso semana a semana</p>
         <h2 className="ipl-section-title">Resultados desde casa</h2>
         <div className="ipl-wkprog-tabs-outer">
-          <div className="ipl-wkprog-tabs">
+          <div className="ipl-wkprog-tabs" role="group" aria-label="Zona del cuerpo">
             {ZONE_TABS.map((zone, i) => (
               <button
                 key={zone.id}
+                type="button"
+                aria-pressed={activeZone === i}
                 className={`ipl-wkprog-tab${activeZone === i ? ' ipl-wkprog-tab--active' : ''}`}
                 onClick={() => setActiveZone(i)}
               >
-                <span>{zone.emoji}</span>
+                <span aria-hidden="true">{zone.emoji}</span>
                 <span>{zone.label}</span>
               </button>
             ))}

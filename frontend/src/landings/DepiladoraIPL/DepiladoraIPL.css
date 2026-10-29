@@ -154,8 +154,20 @@
   border: 2px solid transparent;
   background: #f4f4f4;
   flex-shrink: 0;
+  /* reset de <button> */
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.ipl-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* El contenedor tiene overflow-x: auto y recorta un outline externo: anillo hacia adentro. */
+.ipl-thumb:focus-visible {
+  outline: 3px solid #1a73e8;
+  outline-offset: -3px;
+}
+.ipl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ipl-thumb-active { border-color: var(--ipl-accent); }
 
 /* Info */

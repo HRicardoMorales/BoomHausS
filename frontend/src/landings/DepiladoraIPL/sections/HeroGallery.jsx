@@ -19,18 +19,18 @@ export default function HeroGallery({ images }) {
           priority
         />
       </div>
-      <div className="ipl-thumbs">
+      <div className="ipl-thumbs" role="group" aria-label="Imágenes del producto">
         {images.map((img, i) => (
-          <div
+          <button
             key={i}
+            type="button"
             className={`ipl-thumb${i === activeIdx ? ' ipl-thumb-active' : ''}`}
             onClick={() => setActiveIdx(i)}
-            role="button" tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && setActiveIdx(i)}
-            aria-label={`Imagen ${i + 1}`}
+            aria-current={i === activeIdx ? 'true' : undefined}
+            aria-label={`Ver imagen ${i + 1} de ${images.length}`}
           >
             <SafeImg src={img.src} alt="" width={60} height={60} sizes="60px" widths={THUMB_WIDTHS} />
-          </div>
+          </button>
         ))}
       </div>
     </div>

@@ -1,3 +1,4 @@
+import InViewVideo from '../../../components/media/InViewVideo';
 import { VSTRIP_VIDEOS } from '../data';
 
 /* S4.5 — Videos de clientas */
@@ -15,7 +16,7 @@ export default function VideoStrip() {
             <div key={i} className="ipl-vstrip-item">
               <div className="ipl-vstrip-media">
                 {v.src
-                  ? <video src={v.src} autoPlay loop muted playsInline className="ipl-vstrip-video" />
+                  ? <InViewVideo src={v.src} className="ipl-vstrip-video" label={`Video de clienta: ${v.benefit}`} threshold={0.25} />
                   : <div className="ipl-vstrip-ph"><span className="ipl-vstrip-ph-ico">📹</span></div>
                 }
               </div>
