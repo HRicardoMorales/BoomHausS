@@ -30,7 +30,7 @@ export default function BeforeAfter() {
                 src={beforeAfterData[baIdx].src}
                 alt={beforeAfterData[baIdx].name}
                 sizes={BA_SIZES}
-                style={{ width: '100%', aspectRatio: '4/3', minHeight: 220, objectFit: 'cover', borderRadius: 0 }}
+                className="led-ba-photo"
               />
               <div className="led-ba-day-labels">
                 <span className="led-ba-day">Día 1</span>

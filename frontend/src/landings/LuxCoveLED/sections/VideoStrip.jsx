@@ -3,7 +3,7 @@ import { VSTRIP_VIDEOS } from '../data';
 /* S4 — Videos de clientes ("Inspírate") */
 export default function VideoStrip() {
   return (
-    <div className="led-section led-section--white" style={{ paddingTop: 32, paddingBottom: 32 }}>
+    <div className="led-section led-section--white led-vstrip-section">
       <div className="led-container">
         <div className="led-vstrip-header">
           <div className="led-vstrip-kicker">✦ CLIENTES SATISFECHOS</div>
@@ -20,7 +20,7 @@ export default function VideoStrip() {
                   loop
                   muted
                   playsInline
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }}
+                  className="led-vstrip-video"
                 />
               </div>
               <div className="led-vstrip-benefit">{v.benefit}</div>

@@ -11,7 +11,7 @@ export default function Guarantee({ onBuy, soldOut }) {
               sizes="160px"
               alt="Garantía 90 días"
               loading="lazy"
-              style={{ width: 160, height: 160, objectFit: 'contain' }}
+              className="led-guarantee-img"
             />
           </div>
           <h2 className="led-guarantee-title">Probalo sin riesgos</h2>

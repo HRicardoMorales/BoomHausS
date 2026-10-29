@@ -42,7 +42,7 @@ export default function LightsCarousel() {
                   height={120}
                   sizes="120px"
                   widths={[240, 360]}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  className="led-lights-img"
                 />
               </div>
               <span className="led-lights-name">{light.name}</span>

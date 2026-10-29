@@ -254,3 +254,48 @@ export const photoReviews = [
     name: 'Analía P.',
   },
 ];
+
+// S7–S9 — Bloques de modo (GIF + texto). `tone` elige el fondo de la sección
+// y `reverse` invierte el orden imagen/texto en desktop.
+const featGif = (file, v) => {
+  const base = `//www.luxcove.co/cdn/shop/files/${file}?v=${v}`;
+  return {
+    src: `${base}&width=750`,
+    srcSet: [360, 535, 750].map((w) => `${base}&width=${w} ${w}w`).join(', '),
+  };
+};
+
+export const FEATURE_BLOCKS = [
+  {
+    id: 'ems',
+    tone: 'white',
+    alt: 'Modo EMS',
+    ...featGif('GIF1-LFS-ezgif.com-video-to-gif-converter.gif', 1753723012),
+    title: 'Conseguí un lifting facial instantáneo en casa.',
+    paragraphs: [
+      'Nuestro modo EMS avanzado (Estimulación Muscular Eléctrica) estimula los músculos faciales, favoreciendo una apariencia más firme y tonificada.',
+      'Decile adiós a la piel flácida, la papada, el cuello de pavo y la doble mentón.',
+    ],
+  },
+  {
+    id: 'roja',
+    tone: 'pink',
+    reverse: true,
+    alt: 'Luz roja',
+    ...featGif('LFS-GIF31-ezgif.com-video-to-gif-converter.gif', 1753723174),
+    title: 'Suavizá las líneas finas y las arrugas.',
+    paragraphs: [
+      'Nuestro modo de luz roja estimula la producción de colágeno para suavizar las líneas de expresión, mejorar la textura de la piel y aumentar su elasticidad para lograr un brillo juvenil.',
+    ],
+  },
+  {
+    id: 'verde',
+    tone: 'white',
+    alt: 'Luz verde',
+    ...featGif('LFS-GIF3-ezgif.com-video-to-gif-converter.gif', 1753723244),
+    title: 'Unificá el tono y la textura de la piel.',
+    paragraphs: [
+      'Nuestro modo de luz verde actúa sobre la producción excesiva de melanina, reduciendo la hiperpigmentación y atenuando las manchas oscuras para un tono de piel más claro y uniforme.',
+    ],
+  },
+];

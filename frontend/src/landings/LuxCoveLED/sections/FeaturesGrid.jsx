@@ -17,12 +17,7 @@ export default function FeaturesGrid({ onBuy, soldOut }) {
                 height={56}
                 sizes="56px"
                 widths={THUMB_WIDTHS}
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 8,
-                  objectFit: 'contain'
-                }}
+                className="led-feature-img"
               />
               <div className="led-feature-title">{f.title}</div>
               <div className="led-feature-desc">{f.desc}</div>

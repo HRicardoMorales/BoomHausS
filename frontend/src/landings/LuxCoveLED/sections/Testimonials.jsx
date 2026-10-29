@@ -34,7 +34,7 @@ export default function Testimonials() {
               <div key={i} className="led-test-slide">
                 <div className="led-test-card">
                   <div className="led-review-avatar">
-                    <SafeImg src={t.avatar} alt="" width={42} height={42} sizes="42px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                    <SafeImg src={t.avatar} alt="" width={42} height={42} sizes="42px" widths={ICON_WIDTHS} className="led-review-avatar-img" />
                   </div>
                   <div className="led-review-stars">{'★'.repeat(t.stars)}</div>
                   <p className="led-test-text">"{t.text}"</p>

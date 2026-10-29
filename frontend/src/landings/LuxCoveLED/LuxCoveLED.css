@@ -1745,3 +1745,23 @@
 .led-img-placeholder--thumb { font-size: 10px; min-height: unset; height: 100%; }
 .led-hr-avatar > img,
 .led-hr-avatar > .safeimg-fallback { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* ── Estilos que antes eran style={{}} en sections/ ──────────
+   Dos clases (0,2,0) a propósito: SafeImg pasa className tanto al <img>
+   como al <div class="safeimg-fallback">, y `.safeimg-fallback.safeimg-fallback`
+   (entry, carga antes) también es 0,2,0 → acá gana por orden. */
+.led-feat-section--white { background: #fff; }
+.led-feat-section--pink  { background: var(--led-pink); }
+.led-feat-img .led-feat-media { width: 100%; height: 100%; min-height: 240px; object-fit: cover; }
+
+.led-ba-img .led-ba-photo { width: 100%; aspect-ratio: 4 / 3; min-height: 220px; object-fit: cover; border-radius: 0; }
+.led-stats-image .led-stats-photo { width: 100%; aspect-ratio: 4 / 3; min-height: 180px; object-fit: cover; border-radius: 12px; }
+.led-feature-item .led-feature-img { width: 56px; height: 56px; border-radius: 8px; object-fit: contain; }
+.led-guarantee-icon .led-guarantee-img { width: 160px; height: 160px; object-fit: contain; }
+.led-lights-img-wrap .led-lights-img,
+.led-review-avatar .led-review-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.led-trust-item .led-trust-icon { width: 44px; height: 44px; min-height: unset; border-radius: 8px; }
+.led-trust-item .led-trust-svg { flex-shrink: 0; }
+.led-pay-chip.led-pay-chip--mp { height: 22px; }
+.led-section.led-vstrip-section { padding-top: 32px; padding-bottom: 32px; }
+.led-vstrip-media .led-vstrip-video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
