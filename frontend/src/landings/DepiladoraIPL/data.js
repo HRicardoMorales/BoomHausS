@@ -244,7 +244,7 @@ export const FALLBACK_IMAGES = [
 /* Bloques de texto + imagen (S5–S7) */
 export const FEATURE_BLOCKS = [
   {
-    background: '#fff',
+    tone: 'white',
     img: 'https://pbs.twimg.com/media/HKf3n8RWQAQx12B?format=jpg&name=small',
     alt: 'Depiladora IPL en uso',
     kicker: '🔄 SE ACABÓ EL CICLO',
@@ -255,7 +255,7 @@ export const FEATURE_BLOCKS = [
     ],
   },
   {
-    background: 'var(--ipl-section-rose)',
+    tone: 'rose',
     img: 'https://cld.accentuate.io/7054457438389/1658770290456/ROSE-SKIN_326.jpg?v=1764772816782&options=w_512',
     alt: 'Depiladora IPL sin dolor',
     kicker: '✨ SIN DOLOR',
@@ -266,7 +266,7 @@ export const FEATURE_BLOCKS = [
     ],
   },
   {
-    background: '#fff',
+    tone: 'white',
     img: 'https://pbs.twimg.com/media/HKf5PG4XEAAF_95?format=jpg&name=small',
     alt: 'Depiladora IPL para todo el cuerpo',
     kicker: '🛡️ CERO RIESGO',

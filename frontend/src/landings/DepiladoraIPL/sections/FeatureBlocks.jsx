@@ -5,7 +5,7 @@ import { FEATURE_BLOCKS } from '../data';
 /* S5–S7 — Bloques imagen + texto (antes 3 copias casi iguales) */
 export default function FeatureBlocks() {
   return FEATURE_BLOCKS.map((block) => (
-    <div key={block.kicker} className="ipl-feat-section" style={{ background: block.background }}>
+    <div key={block.kicker} className={`ipl-feat-section ipl-feat-section--${block.tone}`}>
       <div className="ipl-feat-inner">
         <div className="ipl-feat-img">
           <SafeImg
@@ -14,7 +14,7 @@ export default function FeatureBlocks() {
             width={600}
             height={600}
             sizes={FEATURE_SIZES}
-            style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
+            className="ipl-feat-media"
           />
         </div>
         <div className="ipl-feat-text">

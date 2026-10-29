@@ -15,7 +15,7 @@ export default function VideoStrip() {
             <div key={i} className="ipl-vstrip-item">
               <div className="ipl-vstrip-media">
                 {v.src
-                  ? <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
+                  ? <video src={v.src} autoPlay loop muted playsInline className="ipl-vstrip-video" />
                   : <div className="ipl-vstrip-ph"><span className="ipl-vstrip-ph-ico">📹</span></div>
                 }
               </div>
