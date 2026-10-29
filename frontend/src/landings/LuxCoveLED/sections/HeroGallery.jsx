@@ -13,21 +13,21 @@ export default function HeroGallery({ images, activeIdx, onSelect }) {
           : <div className="led-img-placeholder led-img-placeholder--hero">{active?.alt}</div>
         }
       </div>
-      <div className="led-thumbs">
+      <div className="led-thumbs" role="group" aria-label="Imágenes del producto">
         {images.map((img, i) => (
-          <div
+          <button
             key={i}
+            type="button"
             className={`led-thumb${i === activeIdx ? ' led-thumb-active' : ''}`}
             onClick={() => onSelect(i)}
-            role="button" tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && onSelect(i)}
-            aria-label={`Imagen ${i + 1}`}
+            aria-current={i === activeIdx ? 'true' : undefined}
+            aria-label={`Ver imagen ${i + 1} de ${images.length}`}
           >
             {img.src
               ? <SafeImg src={img.src} alt="" width={70} height={70} sizes="70px" widths={THUMB_WIDTHS} />
-              : <div className="led-img-placeholder led-img-placeholder--thumb">{i + 1}</div>
+              : <span className="led-img-placeholder led-img-placeholder--thumb" aria-hidden="true">{i + 1}</span>
             }
-          </div>
+          </button>
         ))}
       </div>
     </div>
