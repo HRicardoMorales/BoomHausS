@@ -6,79 +6,28 @@ import api from '../../services/api';
 import './DepiladoraIPL.css';
 import SafeImg from '../../components/SafeImg';
 import { moneyARS } from '../../utils/pricing.js';
-import { HERO_SIZES, HALF_SIZES, FEATURE_SIZES, THUMB_WIDTHS, ICON_WIDTHS, HALF_WIDTHS, COMP_WIDTHS, REVIEW_WIDTHS, STEP_WIDTHS } from '../../components/landing/imageSizes';
+import { HERO_SIZES, THUMB_WIDTHS, ICON_WIDTHS } from '../../components/landing/imageSizes';
+import {
+  PRODUCT_SLUG, CHECKOUT_NAME, DEFAULT_PRICE, DEFAULT_COMPARE,
+  BUNDLE_PRODUCT_IMG, BUNDLE_RAZOR_IMG, BUNDLE_EBOOK_IMG,
+  BUNDLE_PRODUCT_NAME, BUNDLE_RAZOR_NAME, BUNDLE_EBOOK_NAME,
+  BENEFITS, PRODUCT_TABS, heroReviews, FALLBACK_IMAGES,
+} from './data';
+import AnnouncementBar from './sections/AnnouncementBar';
+import ZoneProgress from './sections/ZoneProgress';
+import ResultsStats from './sections/ResultsStats';
+import VideoStrip from './sections/VideoStrip';
+import FeatureBlocks from './sections/FeatureBlocks';
+import Comparison from './sections/Comparison';
+import Reviews from './sections/Reviews';
+import HowToUse from './sections/HowToUse';
+import Guarantee from './sections/Guarantee';
+import Faq from './sections/Faq';
+import Footer from './sections/Footer';
 
-/* ── Constantes ───────────────────────────────────────────── */
-const PRODUCT_SLUG   = 'Depiladora Permanente IPL En casa';
-const CHECKOUT_NAME  = 'Depiladora IPL Profesional';
-const DEFAULT_PRICE  = 88900;
-const DEFAULT_COMPARE = 189000;
-
-// 🖼 Imágenes del bundle — reemplazá con tus URLs
-const BUNDLE_PRODUCT_IMG = "https://pbs.twimg.com/media/HLTKZJmXwAAfbK5?format=jpg&name=small";
-const BUNDLE_RAZOR_IMG   = "https://acdn-us.mitiendanube.com/stores/006/731/084/products/chatgpt-image-3-jun-2026-14_48_12-b49e057d39ac8d5a9917805092514062-1024-1024.webp";
-const BUNDLE_EBOOK_IMG   = "https://nextcell.com.ar/wp-content/uploads/2026/02/D_NQ_NP_2X_736057-MLA54551293127_032023-F.webp";
-
-// ✏️ Textos debajo de cada imagen del bundle
-const BUNDLE_PRODUCT_NAME = "Depiladora IPL";
-const BUNDLE_RAZOR_NAME   = "Depiladora De Cejas De Regalo";
-const BUNDLE_EBOOK_NAME   = "Depiladora 4en1";
-
-/* Announcement bar */
-const annMsgs = [
-  '🔴 ¡OFERTA RELÁMPAGO ACTIVA!',
-  '🚚 ENVÍO GRATIS EN TODOS LOS PEDIDOS',
-  '⭐ +10.000 CLIENTAS SATISFECHAS',
-  '💰 GARANTÍA DE DEVOLUCIÓN 90 DÍAS',
-];
-
-/* Beneficios hero */
-const BENEFITS = [
-  'Sin dolor — tecnología de luz pulsada intensa',
-  'Resultados visibles desde la sesión 3 (~3 semanas)',
-  '80% menos vello en solo 6 sesiones',
-  'Piernas, axilas, bikini, brazos, bozo y mentón',
-  '5 niveles de intensidad para todo tipo de piel',
-  'Ahorrás cientos de dólares en depilación profesional',
-];
-
-/* Accordion */
-const PRODUCT_TABS = [
-  {
-    key: 'detalles',
-    title: 'Detalles del producto',
-    content: [
-      'La Depiladora IPL de Amelor usa tecnología de Luz Pulsada Intensa para actuar directamente sobre el folículo piloso, debilitándolo progresivamente hasta eliminar el crecimiento del vello de forma permanente.',
-      'Con 5 niveles de intensidad ajustables, podés personalizar el tratamiento según tu tipo de piel y zona del cuerpo. Funciona en piernas, axilas, bikini, brazos, bozo y mentón.',
-      'El kit incluye afeitadora eléctrica para preparar la zona antes de cada sesión, gafas protectoras certificadas y adaptador de corriente.',
-    ],
-  },
-  {
-    key: 'resultados',
-    title: '¿Cuándo veo resultados?',
-    content: [
-      'Desde la sesión 3 (≈3 semanas de uso), notarás reducción visible del vello y un crecimiento más lento y fino.',
-      'Al completar 6 sesiones (~6 semanas), la mayoría de las usuarias reporta una reducción del 70–80% del vello en las zonas tratadas.',
-      'Para mejores resultados: sesiones cada 2 semanas durante las primeras 6 sesiones, luego mantenimiento mensual o cuando notes nuevo crecimiento.',
-    ],
-  },
-  {
-    key: 'seguro',
-    title: '¿Es seguro?',
-    content: [
-      'Sí. La tecnología IPL doméstica es completamente segura cuando se usa siguiendo las instrucciones. Siempre usá las gafas protectoras incluidas durante el tratamiento.',
-      'No recomendado para pieles muy oscuras (Fitzpatrick VI) ni para zonas muy cercanas a los ojos. Consultá el manual completo antes del primer uso.',
-    ],
-  },
-  {
-    key: 'garantia',
-    title: 'Garantía y envíos',
-    content: [
-      'Ofrecemos devoluciones por 90 días y garantía de 1 año. Si no quedás satisfecha/o, te devolvemos el dinero sin preguntas.',
-      'Enviamos a todo el territorio argentino con seguimiento incluido. Tiempo estimado: 3 a 7 días hábiles.',
-    ],
-  },
-];
+/* Landing de la Depiladora IPL. Este archivo tiene el estado de compra
+   (producto, pack, checkout, barra fija) y compone el hero; cada bloque
+   visual vive en sections/ y los textos/URLs en data.js. */
 
 const accordionIcons = [
   <svg key="clip" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="3" width="12" height="15" rx="1.5" /><path d="M7 3V2a1 1 0 012 0v1h2V2a1 1 0 012 0v1" /><line x1="7" y1="8" x2="13" y2="8" /><line x1="7" y1="11" x2="13" y2="11" /><line x1="7" y1="14" x2="10" y2="14" /></svg>,
@@ -87,237 +36,16 @@ const accordionIcons = [
   <svg key="shield" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M10 2l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V5l7-3z" /><polyline points="7,10 9,12 13,8" /></svg>,
 ];
 
-/* Hero inline reviews */
-const heroReviews = [
-  { name: 'Valentina C.', avatar: '//www.luxcove.co/cdn/shop/files/the-face-of-a-40-year-old-woman.png?v=1739893013', stars: 5, text: 'Estoy sorprendida. Los resultados son increíbles a tan bajo costo. Calculo que en 3 meses no voy a tener nada. Sin dolor. No duden en comprar.' },
-  { name: 'Florencia M.', avatar: '//www.luxcove.co/cdn/shop/files/feeling-cute-today-25-v0-wiakf8p.png?v=1739893136', stars: 5, text: 'Es la segunda vez que compro este producto. Para mí es sensacional, práctico, cómodo y de excelente resultado. Ya no gasto en cera.' },
-  { name: 'Daniela G.', avatar: '//www.luxcove.co/cdn/shop/files/8713e5a4996b69964a57527507ac53ed.png?v=1739892933', stars: 5, text: 'Practicamente tenia barba y ahora que me depilo tarda 4 dias que es un monton. Resultado rapido. Sin dolor. Económico.' },
-];
-
-/* Stats circulares */
-const statsData = [
-  { pct: 91, text: <>Clientas que notaron <strong>reducción visible de vello</strong> desde la sesión 3.</> },
-  { pct: 88, text: <>Dicen que es <strong>mucho menos doloroso</strong> que la cera o el hilo.</> },
-  { pct: 93, text: <>No necesitaron <strong>volver al centro estético</strong> después de 8 semanas.</> },
-  { pct: 96, text: <>Lo <strong>recomendarían a una amiga</strong> sin dudarlo.</> },
-];
-
-/* Comparativa con tabs */
-const COMP_PRODUCT_IMG = "https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-5eb0c882-6441-4c5f-be58-70233fe427a6.webp?v=1741388066&width=600"; // reemplazá con imagen real de la depiladora IPL
-const COMP_TABS = [
-  {
-    id: 'otras', label: 'Otras marcas', competitorImg: 'https://media.glamour.es/photos/698b1cd03fb8e7c4414fe31e/3:4/w_748%2Cc_limit/Tria_4X_Hair_Removal_Laser_1.jpg',
-    points: [
-      { bad: '5 niveles de intensidad',         good: '8 niveles de intensidad' },
-      { bad: 'Sin pantalla y poco intuitiva',   good: 'Con pantalla LED y fácil de usar' },
-      { bad: '+45 minutos por sesión',           good: 'Solo 15 minutos por sesión' },
-      { bad: 'Materiales de mala calidad',       good: 'Robusta y con garantía de fábrica' },
-      { bad: '500.000 disparos',                 good: '1.000.000 disparos — 20 años de vida útil' },
-    ],
-  },
-  {
-    id: 'laser', label: 'Láser', competitorImg: 'https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-32a5bf71-9790-4151-9b59-49b8021d5411.webp?v=1741387678&width=600',
-    points: [
-      { bad: 'Tenés que ir al centro de estética', good: 'Hacé tu sesión desde tu casa' },
-      { bad: '1 sesión cada 4–6 semanas',           good: 'Hacé sesiones cuando quieras' },
-      { bad: 'Costo muy elevado',                    good: 'Bajo costo, única compra' },
-      { bad: 'Dolorosas y sin privacidad',           good: 'Sin dolor y con total intimidad' },
-      { bad: 'Si viajás, perdés el tratamiento',     good: 'Llevala a donde vayas' },
-    ],
-  },
-  {
-    id: 'rastrillo', label: 'Rastrillo', competitorImg: 'https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-0eb8947a-43ca-486a-861e-9b347697f6ea.webp?v=1741386584&width=600',
-    points: [
-      { bad: 'Rasurarse constantemente',                  good: 'No te rasurarás nunca más' },
-      { bad: 'Cortes, irritación y pelos encarnados',     good: 'Sin dolor y sin irritación' },
-      { bad: 'Gasto recurrente todos los meses',          good: 'Ahorrás mucho más a largo plazo' },
-      { bad: 'Contamina el medioambiente',                good: 'Sin desechos y ecoamigable' },
-      { bad: 'Difícil conseguir un corte a ras',          good: 'Piel suave y sedosa, siempre' },
-    ],
-  },
-  {
-    id: 'cera', label: 'Cera', competitorImg: 'https://lummia.com.co/cdn/shop/files/gempages_492674466489303942-1cb94be2-fc2f-4bf1-9838-db900ce5aac9.webp?v=1741387601&width=600',
-    points: [
-      { bad: 'Maltrata mucho tu piel',               good: 'Completamente libre de dolor' },
-      { bad: 'Gasto recurrente de por vida',          good: 'Una única compra para siempre' },
-      { bad: 'Requiere turno o kit engorroso',        good: 'Muy fácil de usar, sin líos' },
-      { bad: 'Tenés que depilarte cada semana',       good: 'Olvidate del vello para siempre' },
-      { bad: 'Muchas compras y desechos',             good: 'Una única compra, sin desechos' },
-    ],
-  },
-];
-
-/* ── Progreso semana a semana por zona corporal ────── */
-// 🖼 Reemplazá beforeSrc/afterSrc con fotos reales de antes/después de cada zona
-const ZONE_TABS = [
-  {
-    id: 'piernas', label: 'Piernas', emoji: '🦵',
-    problem: 'El área más grande — responde bien desde la semana 3',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Piernas_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Piernas_despues_v4_800x.png?v=1762967695",
-  },
-  {
-    id: 'axilas', label: 'Axilas', emoji: '✨',
-    problem: 'Zona pequeña — respuesta más rápida y visible',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Axila_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Axila_despues_v4_800x.png?v=1762967695",
-  },
-  {
-    id: 'bikini', label: 'Bikini', emoji: '👙',
-    problem: 'Zona sensible — sin dolor, sin pelos encarnados',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Bikini_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Bikini_despues_v4_800x.png?v=1762967695",
-  },
-  {
-    id: 'cara', label: 'Cara', emoji: '🫦',
-    problem: 'Bozo, mentón, patillas — sin dolor y sin sombra',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Cara_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Cara_despues_v4_800x.png?v=1762967695",
-  },
-  {
-    id: 'brazos', label: 'Brazos', emoji: '💪',
-    problem: 'Brazos y antebrazos — piel suave para siempre',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Brazos_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Brazos_despues_v4_800x.png?v=1762967695",
-  },
-  {
-    id: 'abdomen', label: 'Abdomen', emoji: '🌟',
-    problem: 'Perfecta para el verano — la línea del ombligo',
-    beforeSrc: "https://myshinnyskin.com/cdn/shop/files/Abdomen_antes_v4_800x.png?v=1762967695",
-    afterSrc:  "https://myshinnyskin.com/cdn/shop/files/Abdomen_despues_v4_800x.png?v=1762967695",
-  },
-];
-
-/* Pasos */
-const STEPS = [
-  { num: '1', title: 'Rasura', desc: 'Esto permite que la luz llegue directo a la raíz del vello, asegurando resultados.', img: 'https://myshinnyskin.com/cdn/shop/files/Rasura.png?v=1762974154' },
-  { num: '2', title: 'Depila', desc: 'La luz láser IPL debilita el folículo para que cada vez crezca menos vello hasta eliminarlo.', img: 'https://myshinnyskin.com/cdn/shop/files/Depila_clasica.png?v=1762974320' },
-  { num: '3', title: 'Repite', desc: 'Sé constante y ve cómo mejora el aspecto de tu piel y se elimina el vello para siempre.', img: 'https://myshinnyskin.com/cdn/shop/files/Repite.png?v=1762974402' },
-];
-
-/* Videos strip — reemplazá cada src con tu video real de resultados IPL */
-const VSTRIP_VIDEOS = [
-  { src: 'https://cdn.shopify.com/videos/c/vp/dcf0ea96e01a456bb397cabaab7e72e9/dcf0ea96e01a456bb397cabaab7e72e9.HD-720p-4.5Mbps-61798509.mp4', benefit: 'Sin dolor, desde el primer uso' },
-  { src: 'https://cdn.shopify.com/videos/c/vp/51361e4133b948aa93d2c89daf449dfa/51361e4133b948aa93d2c89daf449dfa.HD-720p-2.1Mbps-61798513.mp4', benefit: 'Vello notablemente reducido en semanas' },
-  { src: 'https://cdn.shopify.com/videos/c/vp/66ade865f1b14048a6780da0ed6ff8ca/66ade865f1b14048a6780da0ed6ff8ca.HD-720p-3.0Mbps-61798511.mp4', benefit: 'Piel lisa sin pelos encarnados' },
-];
-
-/* Reseñas — reemplazá reviewImg con la foto real de cada clienta */
-const REVIEWS = [
-  {
-    name: 'Jessica S.',
-    stars: 5,
-    reviewImg: 'https://images.loox.io/uploads/2024/9/11/e1xjtD-VD_mid.jpg',
-    text: 'No tengo fotos del antes y después. Pero me encantó, recomiendo el producto al 100%. En áreas como el rostro en específico el bigote, desapareció desde la segunda semana. Los brazos se ha eliminado en un 90% el vello; piernas vamos al 50% y apenas voy en mi semana 8 🤩 He tenido dudas durante el proceso y siempre me atienden de buena manera.',
-  },
-  {
-    name: 'Gabriela T.',
-    stars: 5,
-    reviewImg: 'https://images.loox.io/uploads/2023/5/3/Njzqz9myv_mid.jpg',
-    text: 'Quiero compartir mi experiencia, al principio dudé, pero todo el proceso fue seguro y rápido, al tercer día ya tenía mi paquete. Llevo un mes y medio usándola y el vello tarda 5 días en crecer actualmente y crece más delgado. Algunas zonas ya no crecen. ¡Estoy muy satisfecha!',
-  },
-  {
-    name: 'Angela R.',
-    stars: 5,
-    reviewImg: 'https://images.loox.io/uploads/2023/10/25/ShF_wb1Td_mid.jpg',
-    text: 'No tenía mucha fe al principio por miedo a que no fueran reales los resultados prometidos pero con el tiempo que tengo me asombré de lo útil y económico. ¡Lo recomiendo muchísimo!',
-  },
-  {
-    name: 'Alondra C.',
-    stars: 5,
-    reviewImg: 'https://images.loox.io/uploads/2023/6/13/W3KqgsE77_mid.jpg',
-    text: 'Llevo un mes y una semana usándola, he visto cambios pero todavía me sale el bellito aunque tarda más en salir. También tenía muchos granitos en las piernas y con la máquina poco a poco se me están quitando. La recomiendo.',
-  },
-  {
-    name: 'Mariana C.',
-    stars: 5,
-    reviewImg: 'https://images.loox.io/uploads/2022/3/22/4yweLfmf3_mid.jpg',
-    text: 'La empecé a utilizar hace cinco semanas aproximadamente y en las piernas ya casi no me salen, se tardan casi una semana o un poco más. En mi caso las zonas más rebeldes han sido el bikini y las axilas, pero aún así se nota menos vello corporal.',
-  },
-];
-
-/* FAQ */
-const faqs = [
-  { q: '¿Cuándo veo resultados?', a: 'Desde la sesión 3 (≈3 semanas) notarás reducción visible del vello y crecimiento más lento. La reducción máxima del 70–80% se logra al completar las 6 sesiones iniciales (~6 semanas).' },
-  { q: '¿Duele usarla?', a: 'No. A diferencia de la cera, el IPL no arranca el vello. Algunos usuarios sienten un leve calor en los niveles más altos, completamente tolerable.' },
-  { q: '¿Para qué zonas del cuerpo funciona?', a: 'Piernas, axilas, bikini, brazos, bozo y mentón. No usar cerca de los ojos ni en el cuero cabelludo.' },
-  { q: '¿Cuánto tiempo lleva cada sesión?', a: 'Axilas ~3 min, piernas enteras ~20 min. Con práctica, cuerpo completo en 30–45 minutos.' },
-  { q: '¿Es apta para todo tipo de piel?', a: 'Funciona mejor en pieles claras a medias con vello oscuro. No se recomienda para pieles muy oscuras (Fitzpatrick VI) ni para vello muy claro o canoso.' },
-  { q: '¿Cuántos pulsos tiene?', a: 'Más de 999.999 pulsos — equivale a años de uso. Con mantenimiento mensual, el dispositivo dura prácticamente de por vida.' },
-  { q: '¿Cada cuánto tengo que usarla?', a: 'Primeras 6 sesiones: cada 2 semanas. Después: mantenimiento 1 vez al mes o cuando notes nuevo crecimiento.' },
-  { q: '¿Puedo usarla en la zona del bikini?', a: 'Sí, está diseñada para la zona del bikini. Empezá con nivel bajo y aumentá según tu tolerancia. Evitá zonas muy sensibles.' },
-  { q: '¿Qué incluye el kit?', a: 'Depiladora IPL + afeitadora eléctrica con hojas de acero + gafas protectoras + adaptador de corriente. Todo lo que necesitás desde el primer día.' },
-  { q: '¿Necesito gafas protectoras?', a: 'Sí, siempre usá las gafas incluidas durante el tratamiento. El flash IPL es muy intenso y puede dañar la vista sin protección.' },
-  { q: '¿Cuánto tarda en llegar?', a: 'Enviamos a todo el territorio argentino. Tiempo estimado: 3 a 7 días hábiles con seguimiento incluido.' },
-  { q: '¿Puedo devolver si no me convence?', a: 'Sí, ofrecemos devolución sin preguntas dentro de los 90 días. Si no quedás satisfecha/o, te reembolsamos el 100%.' },
-];
-
-/* ── Sub-componente: Stats circulares ─────────────────────── */
-function IplStatsCircles({ items }) {
-  const circleRefs = useRef([]);
-  const animatedRef = useRef(items.map(() => false));
-  const [values, setValues] = useState(() => items.map(() => 0));
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          if (animatedRef.current[idx]) return;
-          animatedRef.current[idx] = true;
-          const target = items[idx].pct;
-          let current = 0;
-          const step = () => {
-            if (current <= target) {
-              setValues(prev => { const next = [...prev]; next[idx] = current; return next; });
-              current++;
-              requestAnimationFrame(step);
-            }
-          };
-          step();
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.1 }
-    );
-    circleRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <div className="ipl-sc-section">
-      <div className="ipl-sc-list">
-        {items.map((item, i) => (
-          <div key={i} className="ipl-sc-row" ref={el => circleRefs.current[i] = el} data-idx={i}>
-            <div className="ipl-sc-circle" style={{ '--ipl-sc-pct': `${values[i]}%` }}>
-              <span className="ipl-sc-pct">{values[i]}%</span>
-            </div>
-            <p className="ipl-sc-text">{item.text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ── Componente principal ─────────────────────────────────── */
 export default function DepiladoraIPL() {
   const [product, setProduct]           = useState(null);
   const [productReady, setProductReady] = useState(false);
   const [activeImg, setActiveImg]       = useState(0);
   const [openTab, setOpenTab]           = useState(null);
-  const [openFaq, setOpenFaq]           = useState(null);
   const [showCheckout, setShowCheckout] = useState(false);
-  const [annIdx, setAnnIdx]             = useState(0);
-  const [annVisible, setAnnVisible]     = useState(true);
   const [stickyVisible, setStickyVisible] = useState(false);
   const [hrIdx, setHrIdx]               = useState(0);
   const [selectedBundle, setSelectedBundle] = useState(0);
-  const [activeZone, setActiveZone]         = useState(2);
-  const [compTab, setCompTab]               = useState('otras');
-  const [reviewIdx, setReviewIdx]           = useState(0);
-  const reviewTouchX                        = useRef(null);
 
   const ctaRef   = useRef(null);
   const { addItem } = useCart();
@@ -339,14 +67,6 @@ export default function DepiladoraIPL() {
   }, []);
 
 
-  /* Announcement rotation */
-  useEffect(() => {
-    const t = setInterval(() => {
-      setAnnVisible(false);
-      setTimeout(() => { setAnnIdx(i => (i + 1) % annMsgs.length); setAnnVisible(true); }, 400);
-    }, 3000);
-    return () => clearInterval(t);
-  }, []);
 
   /* Hero review rotation */
   useEffect(() => {
@@ -413,16 +133,6 @@ export default function DepiladoraIPL() {
 
 
 
-  const FALLBACK_IMAGES = [
-    { src: 'https://pbs.twimg.com/media/HLTHxJ3XMAEJAU4?format=jpg&name=small', alt: 'Depiladora IPL — vista principal' },
-    { src: 'https://pbs.twimg.com/media/HKgHfXqWgAApELS?format=jpg&name=large', alt: 'Depiladora IPL — uso en piernas' },
-    { src: 'https://myshinnyskin.com/cdn/shop/files/3_a3c66998-a4ec-4c3c-a8aa-8d7cb0fde62c.png?v=1775490312&width=900', alt: 'Depiladora IPL — kit completo' },
-    { src: 'https://myshinnyskin.com/cdn/shop/files/5_782843b2-6902-4f3d-83fc-27f1a9dbc644.png?v=1775490312&width=900', alt: 'Depiladora IPL — niveles de intensidad' },
-    { src: 'https://pbs.twimg.com/media/HKgH8ehXcAA7xW4?format=jpg&name=large', alt: 'Depiladora IPL — vista principal' },
-    { src: 'https://pbs.twimg.com/media/HKgH9poWIAA14c2?format=jpg&name=large', alt: 'Depiladora IPL — uso en piernas' },
-    { src: 'https://pbs.twimg.com/media/HKgIUx_WAAA80i6?format=jpg&name=large', alt: 'Depiladora IPL — kit completo' },
-    { src: 'https://pbs.twimg.com/media/HKgIhvjWsAEnBjq?format=jpg&name=large', alt: 'Depiladora IPL — niveles de intensidad' },
-  ];
   const productImages = product?.images?.length
     ? product.images.map((src, i) => ({ src, alt: `Depiladora IPL — imagen ${i + 1}` }))
     : FALLBACK_IMAGES;
@@ -441,11 +151,7 @@ export default function DepiladoraIPL() {
         <title>Depiladora IPL Profesional | Luz pulsada en casa | Amelor</title>
 
         {/* ══ S1 — ANNOUNCEMENT BAR ══ */}
-        <div className="ipl-ann-bar">
-          <span className={`ipl-ann-msg ${annVisible ? 'visible' : 'hidden'}`}>
-            {annMsgs[annIdx]}
-          </span>
-        </div>
+        <AnnouncementBar />
 
         {/* ══ S2 — HERO ══ */}
         <div className="ipl-hero">
@@ -642,317 +348,23 @@ export default function DepiladoraIPL() {
         </div>
 
         {/* ══ S3.5 — ANTES / DESPUÉS POR ZONA ══ */}
-        <section className="ipl-wkprog-section">
-          <div className="ipl-container">
-            <p className="ipl-wkprog-kicker">Progreso semana a semana</p>
-            <h2 className="ipl-section-title">Resultados desde casa</h2>
-            <div className="ipl-wkprog-tabs-outer">
-              <div className="ipl-wkprog-tabs">
-                {ZONE_TABS.map((zone, i) => (
-                  <button
-                    key={zone.id}
-                    className={`ipl-wkprog-tab${activeZone === i ? ' ipl-wkprog-tab--active' : ''}`}
-                    onClick={() => setActiveZone(i)}
-                  >
-                    <span>{zone.emoji}</span>
-                    <span>{zone.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="ipl-wkprog-grid">
-              <div className="ipl-wkprog-item">
-                <SafeImg
-                  src={ZONE_TABS[activeZone].beforeSrc}
-                  alt={`Antes ${ZONE_TABS[activeZone].label}`}
-                  sizes={HALF_SIZES}
-                  widths={HALF_WIDTHS}
-                />
-                <div className="ipl-wkprog-chip ipl-wkprog-chip--before">Antes</div>
-              </div>
-              <div className="ipl-wkprog-item">
-                <SafeImg
-                  src={ZONE_TABS[activeZone].afterSrc}
-                  alt={`Después ${ZONE_TABS[activeZone].label}`}
-                  sizes={HALF_SIZES}
-                  widths={HALF_WIDTHS}
-                />
-                <div className="ipl-wkprog-chip ipl-wkprog-chip--after">Después</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ZoneProgress />
 
-        {/* ══ S4 — STATS CIRCULARES ══ */}
-        <div className="ipl-section ipl-section--white">
-          <div className="ipl-container">
-            <h2 className="ipl-section-title">Resultados reales, números reales.</h2>
-            <p className="ipl-section-sub">Basado en encuestas a clientas de Amelor con compra verificada.</p>
-            <IplStatsCircles items={statsData} />
-          </div>
-        </div>
+        <ResultsStats />
 
-        {/* ══ S4.5 — VIDEO STRIP ══ */}
-        <section className="ipl-vstrip-section">
-          <div className="ipl-container">
-            <div className="ipl-vstrip-header">
-              <div className="ipl-vstrip-kicker">✦ Clientas reales</div>
-              <h2 className="ipl-vstrip-title">Resultados que hablan solos ✨</h2>
-              <p className="ipl-vstrip-sub">Mirá cómo la Depiladora IPL transforma la piel de nuestras clientas.</p>
-            </div>
-            <div className="ipl-vstrip-row">
-              {VSTRIP_VIDEOS.map((v, i) => (
-                <div key={i} className="ipl-vstrip-item">
-                  <div className="ipl-vstrip-media">
-                    {v.src
-                      ? <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
-                      : <div className="ipl-vstrip-ph"><span className="ipl-vstrip-ph-ico">📹</span></div>
-                    }
-                  </div>
-                  <div className="ipl-vstrip-benefit">{v.benefit}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <VideoStrip />
 
-        {/* ══ S5 — HOOK "PAGÁS UNA VEZ" ══ */}
-        <div className="ipl-feat-section" style={{ background: '#fff' }}>
-          <div className="ipl-feat-inner">
-            <div className="ipl-feat-img">
-              <SafeImg
-                src="https://pbs.twimg.com/media/HKf3n8RWQAQx12B?format=jpg&name=small"
-                alt="Depiladora IPL en uso"
-                width={600}
-                height={600}
-                sizes={FEATURE_SIZES}
-                style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
-              />
-            </div>
-            <div className="ipl-feat-text">
-              <div className="ipl-feat-kicker">🔄 SE ACABÓ EL CICLO</div>
-              <h2 className="ipl-feat-title">Cera, esperá, vuelve a salir, cera de nuevo ¿y si esta fuera la última vez?</h2>
-              <p className="ipl-feat-desc">Depilarte con cera o cuchilla no resuelve nada, solo pausa el problema un par de semanas. La IPL actúa sobre la raíz del folículo, así que cada sesión te acerca a un resultado que dura.</p>
-              <p className="ipl-feat-desc">No es que hagas algo mal — es que nunca tuviste la herramienta correcta.</p>
-            </div>
-          </div>
-        </div>
+        <FeatureBlocks />
 
-        {/* ══ S6 — HOOK "SIN DOLOR" ══ */}
-        <div className="ipl-feat-section" style={{ background: 'var(--ipl-section-rose)' }}>
-          <div className="ipl-feat-inner">
-            <div className="ipl-feat-img">
-              <SafeImg
-                src="https://cld.accentuate.io/7054457438389/1658770290456/ROSE-SKIN_326.jpg?v=1764772816782&options=w_512"
-                alt="Depiladora IPL sin dolor"
-                width={600}
-                height={600}
-                sizes={FEATURE_SIZES}
-                style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
-              />
-            </div>
-            <div className="ipl-feat-text">
-              <div className="ipl-feat-kicker">✨ SIN DOLOR</div>
-              <h2 className="ipl-feat-title">Olvidate del dolor de la cera. Para siempre.</h2>
-              <p className="ipl-feat-desc">La tecnología IPL no arranca el vello — actúa sobre la raíz con pulsos de luz suaves. Sin tirones, sin irritación, sin pelos encarnados.</p>
-              <p className="ipl-feat-desc">Resultados visibles desde la sesión 3. Sin citas, sin traslados, sin apuros.</p>
-            </div>
-          </div>
-        </div>
+        <Comparison />
 
-        {/* ══ S7 — HOOK "PARA TODO EL CUERPO" ══ */}
-        <div className="ipl-feat-section" style={{ background: '#fff' }}>
-          <div className="ipl-feat-inner">
-            <div className="ipl-feat-img">
-              <SafeImg
-                src="https://pbs.twimg.com/media/HKf5PG4XEAAF_95?format=jpg&name=small"
-                alt="Depiladora IPL para todo el cuerpo"
-                width={600}
-                height={600}
-                sizes={FEATURE_SIZES}
-                style={{ width: '100%', height: '100%', minHeight: 280, objectFit: 'cover' }}
-              />
-            </div>
-            <div className="ipl-feat-text">
-              <div className="ipl-feat-kicker">🛡️ CERO RIESGO</div>
-              <h2 className="ipl-feat-title">Probalo en tu casa. Si no funciona, te devolvemos tu plata.</h2>
-              <p className="ipl-feat-desc">Tenés 90 días desde que lo recibís para comprobarlo vos misma. Si lo usaste y no notaste resultados, reembolso del 100%, sin letra chica.
-Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
-            </div>
-          </div>
-        </div>
+        <Reviews />
 
-        {/* ══ S9 — COMPARATIVA CON TABS ══ */}
-        <section className="ipl-ctabs-section">
-          <div className="ipl-container">
-            <h2 className="ipl-ctabs-title">¿Y si uso otros métodos de depilación?</h2>
-            <p className="ipl-ctabs-desc">Descubrí por qué la Depiladora IPL es mejor que tu método actual.</p>
+        <HowToUse />
 
-            <div className="ipl-ctabs-nav">
-              {COMP_TABS.map(tab => (
-                <button
-                  key={tab.id}
-                  className={`ipl-ctab-btn${compTab === tab.id ? ' active' : ''}`}
-                  onClick={() => setCompTab(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+        <Guarantee onBuy={handleBuy} soldOut={soldOut} />
 
-            {COMP_TABS.filter(tab => tab.id === compTab).map(tab => (
-              <div key={tab.id} className="ipl-ctab-content">
-                <div className="ipl-ctab-images">
-                  <div className="ipl-ctab-img-wrap">
-                    <SafeImg src={COMP_PRODUCT_IMG} alt="Depiladora IPL" width={170} height={227} sizes="170px" widths={COMP_WIDTHS} />
-                  </div>
-                  <div className="ipl-ctab-img-wrap">
-                    {tab.competitorImg
-                      ? <SafeImg src={tab.competitorImg} alt={tab.label} width={170} height={227} sizes="170px" widths={COMP_WIDTHS} />
-                      : <div className="ipl-ctab-img-ph">🖼</div>
-                    }
-                  </div>
-                </div>
-                <div className="ipl-ctab-points">
-                  {tab.points.map((pt, i) => (
-                    <div key={i} className={`ipl-ctab-row${i === tab.points.length - 1 ? ' last' : ''}`}>
-                      <div className="ipl-ctab-point ipl-ctab-point--good">
-                        <span className="ipl-ctab-icon">✅</span>
-                        <span>{pt.good}</span>
-                      </div>
-                      <div className="ipl-ctab-point ipl-ctab-point--bad">
-                        <span className="ipl-ctab-icon">❌</span>
-                        <span>{pt.bad}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ══ S10 — RESEÑAS CARRUSEL ══ */}
-        <div className="ipl-section ipl-section--rose">
-          <div className="ipl-container">
-            <h2 className="ipl-section-title">Lo que dicen nuestras clientas</h2>
-            <p className="ipl-section-sub">Reseñas verificadas de compradoras reales.</p>
-            <div
-              className="ipl-rev-carousel"
-              onTouchStart={e => { reviewTouchX.current = e.touches[0].clientX; }}
-              onTouchEnd={e => {
-                if (reviewTouchX.current === null) return;
-                const diff = reviewTouchX.current - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 40) {
-                  if (diff > 0) setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1));
-                  else setReviewIdx(i => Math.max(i - 1, 0));
-                }
-                reviewTouchX.current = null;
-              }}
-            >
-              <div className="ipl-rev-card">
-                <div className="ipl-review-img-wrap">
-                  {REVIEWS[reviewIdx].reviewImg
-                    ? <SafeImg src={REVIEWS[reviewIdx].reviewImg} alt={`Foto de la reseña de ${REVIEWS[reviewIdx].name}`} sizes="min(520px, 88vw)" widths={REVIEW_WIDTHS} />
-                    : <div className="ipl-review-img-ph">📷</div>
-                  }
-                </div>
-                <div className="ipl-review-body">
-                  <div className="ipl-review-top">
-                    <span className="ipl-review-name">{REVIEWS[reviewIdx].name}</span>
-                    <span className="ipl-review-stars">{'★'.repeat(REVIEWS[reviewIdx].stars)}</span>
-                  </div>
-                  <p className="ipl-review-text">{REVIEWS[reviewIdx].text}</p>
-                </div>
-              </div>
-              <div className="ipl-rev-nav">
-                <button className="ipl-rev-arrow" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}>‹</button>
-                <div className="ipl-rev-dots">
-                  {REVIEWS.map((_, i) => (
-                    <button key={i} type="button" className={`ipl-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} aria-label={`Ver reseña ${i + 1} de ${REVIEWS.length}`} aria-current={i === reviewIdx || undefined} />
-                  ))}
-                </div>
-                <button className="ipl-rev-arrow" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}>›</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ══ S11 — CÓMO USARLA ══ */}
-        <div className="ipl-section ipl-section--white ipl-how-section">
-          <div className="ipl-container">
-            <div className="ipl-how-kicker">FÁCIL Y SIN SALIR DE CASA</div>
-            <h2 className="ipl-section-title">¿Cómo se usa?</h2>
-            <div className="ipl-steps">
-              {STEPS.map((step, i) => (
-                <div key={i} className="ipl-step-item">
-                  <div className="ipl-step-img-wrap">
-                    {step.img
-                      ? <SafeImg src={step.img} alt="" width={90} height={90} sizes="90px" widths={STEP_WIDTHS} />
-                      : <span className="ipl-step-img-ph">{step.num}</span>
-                    }
-                  </div>
-                  <div className="ipl-step-content">
-                    <div className="ipl-step-label">Paso {step.num}</div>
-                    <h3 className="ipl-step-title">{step.title}</h3>
-                    <p className="ipl-step-desc">{step.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ══ S12 — GARANTÍA ══ */}
-        <div className="ipl-section ipl-section--white">
-          <div className="ipl-container">
-            <div className="ipl-guarantee">
-              <div className="ipl-guarantee-icon">
-                <SafeImg
-                  src="https://http2.mlstatic.com/D_NQ_NP_2X_762827-MLB111243573748_052026-F.webp"
-                  alt="Garantía 90 días"
-                  width={160}
-                  height={160}
-                  style={{ width: 160, height: 160, objectFit: 'contain' }}
-                />
-              </div>
-              <h2 className="ipl-guarantee-title">Probala sin riesgos</h2>
-              <p className="ipl-guarantee-text">
-                Estamos seguras de que vas a ver resultados reales. Pero si por alguna razón no quedás satisfecha/o,
-                devolvela en hasta 90 días y te reembolsamos el 100% del importe. Sin preguntas, sin vueltas.
-                Tu piel lisa te espera — sin riesgo.
-              </p>
-              <button className="ipl-btn-cta-center" onClick={handleBuy} disabled={soldOut}>
-                {soldOut ? 'AGOTADO' : 'AGREGAR AL CARRITO ➔'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ══ S13 — FAQ ══ */}
-        <div className="ipl-faq-section">
-          <div className="ipl-container">
-            <h2 className="ipl-faq-title">Preguntas frecuentes</h2>
-            <p className="ipl-faq-sub">Todo lo que necesitás saber sobre la Depiladora IPL.</p>
-            <div className="ipl-faq-list">
-              {faqs.map((faq, i) => (
-                <div key={i} className="ipl-faq-item">
-                  <button
-                    className="ipl-faq-trigger"
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    aria-expanded={openFaq === i}
-                  >
-                    <span className="ipl-faq-q">{faq.q}</span>
-                    <span className={`ipl-faq-arrow${openFaq === i ? ' open' : ''}`}>›</span>
-                  </button>
-                  <div className={`ipl-faq-body${openFaq === i ? ' open' : ''}`} aria-hidden={openFaq !== i}>
-                    <div className="ipl-faq-body-inner">{faq.a}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <Faq />
 
       </main>{/* /ipl-wrap */}
 
@@ -964,23 +376,7 @@ Envío gratis a todo el país y hasta 3 cuotas sin interés.</p>
       </div>
 
       {/* Footer */}
-      <footer className="ipl-footer">
-        <div className="ipl-footer-body">
-          <div className="ipl-footer-brand">
-            <div className="ipl-footer-logo">Amelor</div>
-            <p className="ipl-footer-tagline">Tecnología que mejora tu vida diaria</p>
-          </div>
-          <div className="ipl-footer-trust-row">
-            <div className="ipl-footer-ti"><span>🔒</span>Pago seguro</div>
-            <div className="ipl-footer-ti"><span>🚚</span>Envío gratis</div>
-            <div className="ipl-footer-ti"><span>🛡️</span>Garantía total</div>
-            <div className="ipl-footer-ti"><span>💳</span>3 cuotas sin interés</div>
-          </div>
-          <div className="ipl-footer-bottom">
-            <span>© 2026 Amelor · Todos los derechos reservados</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {showCheckout && (
         <CheckoutSheet
