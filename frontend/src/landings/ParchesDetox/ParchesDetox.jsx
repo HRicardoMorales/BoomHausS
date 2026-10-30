@@ -133,7 +133,7 @@ export default function ParchesDetoxLanding() {
             {/* Info de compra */}
             <div className="pdx-info">
               <div className="pdx-stars">
-                <span style={{ color: '#22C55E' }}>★★★★★</span>
+                <span className="pdx-stars-icons">★★★★★</span>
                 <span className="pdx-stars-count">4.8 / 5</span>
                 <span className="pdx-reviews-count">| Más de 10.000 noches transformadas</span>
               </div>

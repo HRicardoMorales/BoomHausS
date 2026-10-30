@@ -42,13 +42,13 @@ export default function Reviews() {
             </div>
           </div>
           <div className="pdx-rev-nav">
-            <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}>‹</button>
+            <button type="button" className="pdx-rev-arrow" aria-label="Reseña anterior" onClick={() => setReviewIdx(i => Math.max(i - 1, 0))} disabled={reviewIdx === 0}><span aria-hidden="true">‹</span></button>
             <div className="pdx-rev-dots">
               {REVIEWS.map((_, i) => (
                 <button key={i} type="button" className={`pdx-rev-dot${i === reviewIdx ? ' active' : ''}`} onClick={() => setReviewIdx(i)} aria-label={`Ver reseña ${i + 1} de ${REVIEWS.length}`} aria-current={i === reviewIdx || undefined} />
               ))}
             </div>
-            <button className="pdx-rev-arrow" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}>›</button>
+            <button type="button" className="pdx-rev-arrow" aria-label="Reseña siguiente" onClick={() => setReviewIdx(i => Math.min(i + 1, REVIEWS.length - 1))} disabled={reviewIdx === REVIEWS.length - 1}><span aria-hidden="true">›</span></button>
           </div>
         </div>
       </div>

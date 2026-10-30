@@ -1,4 +1,5 @@
 import SafeImg from '../../../components/SafeImg';
+import InViewVideo from '../../../components/media/InViewVideo';
 import { VSTRIP_VIDEOS } from '../data';
 
 /* S3 — Tira de videos/GIFs de clientes */
@@ -17,8 +18,8 @@ export default function VideoStrip() {
               <div className="pdx-vstrip-media">
                 {v.src
                   ? /\.(mp4|webm|ogg|mov)(\?|$)/i.test(v.src)
-                    ? <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
-                    : <SafeImg src={v.src} alt={v.benefit || `Video ${i + 1}`} width={300} height={533} sizes="(min-width: 900px) 300px, 33vw" widths={[240, 360, 480]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }} />
+                    ? <InViewVideo src={v.src} className="pdx-vstrip-video" label={`Video de cliente${v.benefit ? `: ${v.benefit}` : ` ${i + 1}`}`} threshold={0.25} />
+                    : <SafeImg src={v.src} alt={v.benefit || `Video ${i + 1}`} width={300} height={533} sizes="(min-width: 900px) 300px, 33vw" widths={[240, 360, 480]} className="pdx-vstrip-video" />
                   : <div className="pdx-vstrip-ph"><span className="pdx-vstrip-ph-ico">🌙</span></div>
                 }
               </div>

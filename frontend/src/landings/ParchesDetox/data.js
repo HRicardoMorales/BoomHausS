@@ -77,6 +77,43 @@ export const VSTRIP_VIDEOS = [
   { src: "https://cdn.shopify.com/s/files/1/0778/4303/8517/files/gempages_508979000853398631-1e1e15b6-6aaf-4796-b6be-a214e99db702.gif", benefit: '' },
 ];
 
+/* Bloques imagen + texto (S6–S7B). Los párrafos admiten <strong> y se
+   renderizan con <RichText> (lista blanca, sin dangerouslySetInnerHTML). */
+export const FEATURE_BLOCKS = [
+  {
+    tone: 'white',
+    img: 'https://cdn.shopify.com/s/files/1/0698/1468/1858/files/KINOKI001.webp?v=1728712902',
+    alt: 'Problemas que resuelven los Parches Detox',
+    kicker: '⚠️ ¿TE IDENTIFICÁS CON ESTO?',
+    title: 'Tu cuerpo te está mandando señales que no podés ignorar',
+    paragraphs: [
+      '¿<strong>Dolor de espalda</strong>, kilos que no bajan, <strong>estrés constante</strong> o ansiedad? No son problemas separados — son señales de <strong>acumulación de toxinas</strong> que tu cuerpo no puede eliminar solo. Los Parches Detox lo hacen por vos, <strong>noche a noche</strong>, sin cambiar nada de tu rutina.',
+    ],
+  },
+  {
+    tone: 'green',
+    reverse: true,
+    img: 'https://cdn.shopify.com/s/files/1/0698/1468/1858/files/PARCHE-BENEFICIOS_480x480_1_2abefb24-0283-4d39-9697-0ef9537237f2.webp?v=1727546498',
+    alt: 'Beneficios de los Parches Detox',
+    kicker: '✅ LA SOLUCIÓN',
+    title: '5 beneficios que sentís desde la primera noche',
+    paragraphs: [
+      'Los Parches Detox <strong>mejoran tu inmunidad</strong>, <strong>alivian el dolor y el estrés</strong>, mejoran la <strong>circulación sanguínea</strong> y eliminan las <strong>toxinas acumuladas</strong> en tu cuerpo — todo mientras dormís, sin que hagas absolutamente nada.',
+    ],
+  },
+  {
+    tone: 'white',
+    img: 'https://cdn.shopify.com/s/files/1/0778/4303/8517/files/508979000853398631-bf837f33-9e47-4290-8463-4662db21bf9f.gif',
+    alt: 'Transformación nocturna con Parches Detox',
+    kicker: '🌿 LO QUE PASA MIENTRAS DORMÍS',
+    title: 'Despertás distinto. Ligero. Con energía real.',
+    paragraphs: [
+      'La <strong>cúrcuma, jengibre y hojas de moxa</strong> activan la termogénesis plantar — el calor natural del pie moviliza lo que se acumuló durante el día. El parche lo absorbe todo, vos solo descansás.',
+      'Resultado: <strong>menos hinchazón</strong>, <strong>mejor circulación</strong>, noches más reparadoras y una mañana que se siente diferente desde el primer uso.',
+    ],
+  },
+];
+
 /* Reviews carousel */
 export const REVIEWS = [
   {

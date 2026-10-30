@@ -12,7 +12,7 @@ export default function Guarantee({ onBuy, soldOut }) {
               alt="Garantía 90 días"
               width={160}
               height={160}
-              style={{ width: 160, height: 160, objectFit: 'contain' }}
+              className="pdx-guarantee-img"
             />
           </div>
           <h2 className="pdx-guarantee-title">Cero riesgo. Cero excusas.</h2>

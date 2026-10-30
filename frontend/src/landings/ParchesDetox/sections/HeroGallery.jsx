@@ -20,18 +20,18 @@ export default function HeroGallery({ images }) {
           />
         )}
       </div>
-      <div className="pdx-thumbs">
+      <div className="pdx-thumbs" role="group" aria-label="Imágenes del producto">
         {images.map((img, i) => (
-          <div
+          <button
             key={i}
+            type="button"
             className={`pdx-thumb${i === activeImg ? ' pdx-thumb-active' : ''}`}
             onClick={() => setActiveImg(i)}
-            role="button" tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && setActiveImg(i)}
-            aria-label={`Imagen ${i + 1}`}
+            aria-current={i === activeImg ? 'true' : undefined}
+            aria-label={`Ver imagen ${i + 1} de ${images.length}`}
           >
             <SafeImg src={img.src} alt="" width={60} height={60} sizes="60px" widths={THUMB_WIDTHS} />
-          </div>
+          </button>
         ))}
       </div>
     </div>

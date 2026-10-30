@@ -15,7 +15,7 @@ export default function HeroReview() {
   return (
     <div className="pdx-hero-review">
       <div className="pdx-hr-avatar">
-        <SafeImg src={heroReviews[hrIdx].avatar} alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+        <SafeImg src={heroReviews[hrIdx].avatar} alt="" width={44} height={44} sizes="44px" widths={ICON_WIDTHS} className="pdx-hr-avatar-img" />
       </div>
       <div className="pdx-hr-content">
         <div className="pdx-hr-top">

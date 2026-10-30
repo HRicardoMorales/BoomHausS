@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useCountUp } from '../../../hooks/useCountUp.js';
+import { usePrefersReducedMotion } from '../../../hooks/usePrefersReducedMotion.js';
 
 /* Stats circulares */
 const statsData = [
@@ -8,49 +10,45 @@ const statsData = [
   { pct: 94, text: <>Lo <strong>recomendarían a un amigo</strong> sin dudarlo.</> },
 ];
 
-/* ── Subcomponente: Stats circulares ─────────────────────── */
-function PdxStatsCircles({ items }) {
-  const circleRefs = useRef([]);
-  const animatedRef = useRef(items.map(() => false));
-  const [values, setValues] = useState(() => items.map(() => 0));
+/* Una fila: cuenta de 0 al porcentaje una sola vez, al entrar en pantalla.
+   Antes cada fila sumaba 1 por frame con un setState sobre el array entero,
+   sin cancelar el rAF ni respetar reduced motion, y terminaba **un punto
+   arriba** (93 en vez de 92): el updater leía `current` después del `current++`. */
+function StatRow({ pct, text, instant }) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const idx = Number(entry.target.dataset.idx);
-          if (animatedRef.current[idx]) return;
-          animatedRef.current[idx] = true;
-          const target = items[idx].pct;
-          let current = 0;
-          const step = () => {
-            if (current <= target) {
-              setValues(prev => { const next = [...prev]; next[idx] = current; return next; });
-              current++;
-              requestAnimationFrame(step);
-            }
-          };
-          step();
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.1 },
-    );
-    circleRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      setSeen(true);
+    }, { threshold: 0.1 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
+  const value = useCountUp(pct, { active: seen, instant });
+  return (
+    <div className="pdx-sc-row" ref={ref}>
+      <div className="pdx-sc-circle" style={{ '--pdx-sc-pct': `${value}%` }} aria-hidden="true">
+        <span className="pdx-sc-pct">{value}%</span>
+      </div>
+      {/* El donut es decorativo: el lector de pantalla lee el valor final, no la cuenta. */}
+      <p className="pdx-sc-text"><span className="sr-only">{pct}%: </span>{text}</p>
+    </div>
+  );
+}
+
+function PdxStatsCircles({ items }) {
+  const instant = usePrefersReducedMotion();
   return (
     <div className="pdx-sc-section">
       <div className="pdx-sc-list">
         {items.map((item, i) => (
-          <div key={i} className="pdx-sc-row" ref={el => circleRefs.current[i] = el} data-idx={i}>
-            <div className="pdx-sc-circle" style={{ '--pdx-sc-pct': `${values[i]}%` }}>
-              <span className="pdx-sc-pct">{values[i]}%</span>
-            </div>
-            <p className="pdx-sc-text">{item.text}</p>
-          </div>
+          <StatRow key={i} pct={item.pct} text={item.text} instant={instant} />
         ))}
       </div>
     </div>
