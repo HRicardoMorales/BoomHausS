@@ -5,7 +5,7 @@ export default function Features() {
     <div className="amp-sec">
       <div className="amp-container">
         <h2 className="amp-sec-h2">Por qué elegir Anti-Moho PRO</h2>
-        <div className="amp-feat-grid" style={{ marginTop: 24 }}>
+        <div className="amp-feat-grid">
           {FEATURES.map((f, i) => (
             <div key={i} className="amp-feat-card">
               <div className="amp-feat-icon"><f.icon /></div>

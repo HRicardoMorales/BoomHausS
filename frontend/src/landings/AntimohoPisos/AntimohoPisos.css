@@ -210,7 +210,18 @@
   border: 2px solid transparent;
   cursor: pointer;
   opacity: .7;
+  /* reset de <button> */
+  padding: 0;
+  margin: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
+/* .amp-thumbs tiene overflow-x: auto y recorta un outline externo: anillo hacia adentro. */
+.amp-thumb:focus-visible { outline: 3px solid #1a73e8; outline-offset: -3px; opacity: 1; }
 .amp-thumb.active { border-color: var(--amp-red); opacity: 1; }
 .amp-thumb .amp-img-placeholder { min-height: unset; height: 100%; border-radius: 6px; font-size: 9px; padding: 2px; }
 
@@ -376,6 +387,7 @@
   text-transform: uppercase;
   margin-bottom: 8px;
 }
+.amp-eyebrow-stars { color: #FFC65C; }
 .amp-sec-h2 {
   text-align: center;
   font-size: 24px;
@@ -421,7 +433,7 @@
 .amp-vs-card p { font-size: 14px; line-height: 1.6; color: var(--amp-grey-text); margin: 0; }
 
 /* ── Features 4-grid (S7) ────────────────────────────────── */
-.amp-feat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.amp-feat-grid { margin-top: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .amp-feat-card { background: #fff; border: 1px solid var(--amp-border); border-radius: 12px; padding: 18px 14px; text-align: left; }
 .amp-feat-icon {
   width: 38px; height: 38px; border-radius: 10px;
@@ -455,7 +467,7 @@
 }
 
 /* ── Cómo usar (S9) ──────────────────────────────────────── */
-.amp-steps-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+.amp-steps-grid { margin-top: 24px; display: grid; grid-template-columns: 1fr; gap: 22px; }
 .amp-step { text-align: center; }
 .amp-step-num {
   width: 40px; height: 40px; margin: 0 auto 10px;
@@ -509,7 +521,7 @@
 .amp-guarantee-box p { color: rgba(255,255,255,.75); font-size: 13.5px; line-height: 1.6; margin: 0; }
 
 /* ── FAQ (S14) ───────────────────────────────────────────── */
-.amp-faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.amp-faq-list { max-width: 720px; margin: 24px auto 0; display: flex; flex-direction: column; gap: 10px; }
 .amp-faq-item { background: #fff; border: 1px solid var(--amp-border); border-radius: 10px; overflow: hidden; }
 .amp-faq-trigger {
   width: 100%;

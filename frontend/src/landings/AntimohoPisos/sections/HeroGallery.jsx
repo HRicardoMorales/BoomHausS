@@ -12,24 +12,24 @@ export default function HeroGallery({ images }) {
       <div className="amp-gallery-main">
         {images[activeImg]?.src
           ? <SafeImg src={images[activeImg].src} alt={images[activeImg].alt} width={800} height={800} sizes={HERO_SIZES} priority />
-          : <ImgPlaceholder label={images[activeImg]?.label} style={{ minHeight: 320 }} />
+          : <ImgPlaceholder label={images[activeImg]?.label} />
         }
       </div>
-      <div className="amp-thumbs">
+      <div className="amp-thumbs" role="group" aria-label="Imágenes del producto">
         {images.map((img, i) => (
-          <div
+          <button
             key={i}
+            type="button"
             className={`amp-thumb${i === activeImg ? ' active' : ''}`}
             onClick={() => setActiveImg(i)}
-            role="button" tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && setActiveImg(i)}
-            aria-label={`Imagen ${i + 1}`}
+            aria-current={i === activeImg ? 'true' : undefined}
+            aria-label={`Ver imagen ${i + 1} de ${images.length}`}
           >
             {img.src
               ? <SafeImg src={img.src} alt="" width={56} height={56} sizes="56px" widths={THUMB_WIDTHS} />
               : <ImgPlaceholder label={String(i + 1)} />
             }
-          </div>
+          </button>
         ))}
       </div>
     </div>

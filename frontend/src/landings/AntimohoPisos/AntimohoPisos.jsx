@@ -156,7 +156,7 @@ export default function AntimohoPisos() {
             {/* Info de compra */}
             <div className="amp-info">
               <div className="amp-stars-row">
-                <span>★★★★★</span>
+                <span role="img" aria-label="5 de 5 estrellas">★★★★★</span>
                 <span className="amp-stars-count">Miles de hogares ya lo probaron</span> {/* PLACEHOLDER */}
               </div>
 

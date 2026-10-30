@@ -5,7 +5,7 @@ export default function HowToUse() {
     <div className="amp-sec">
       <div className="amp-container">
         <h2 className="amp-sec-h2">Tres pasos para juntas como nuevas</h2>
-        <div className="amp-steps-grid" style={{ marginTop: 24 }}>
+        <div className="amp-steps-grid">
           {STEPS.map((s) => (
             <div key={s.num} className="amp-step">
               <div className="amp-step-num">{s.num}</div>
