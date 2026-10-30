@@ -1,356 +1,115 @@
 // frontend/src/pages/AdminCoupons.jsx
-import { useState, useEffect } from 'react';
-import api from '../services/api';
+// Admin de cupones. Esta página solo orquesta: datos y llamadas a la API en
+// `useAdminCoupons`; validación, payload y estado de cada cupón en
+// `couponForm.js`; la vista en `components/admin/coupons/`.
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './AdminCoupons.css';
 import { useConfirm } from '../components/ui/useConfirm.jsx';
-
-const fmt = (n) => '$' + Number(n).toLocaleString('es-AR');
-
-const EMPTY_FORM = { code: '', type: 'percent', value: '', minOrderAmount: '', maxUses: '', expiresAt: '' };
+import { useNotice } from '../components/ui/useNotice.jsx';
+import StatePanel from '../components/ui/StatePanel.jsx';
+import { useAdminCoupons } from '../hooks/admin/useAdminCoupons.js';
+import CouponForm from '../components/admin/coupons/CouponForm.jsx';
+import CouponTicket from '../components/admin/coupons/CouponTicket.jsx';
+import { couponSummary } from '../components/admin/coupons/couponForm.js';
 
 export default function AdminCoupons() {
   const { confirm, confirmDialog } = useConfirm();
-  const [coupons, setCoupons]     = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState('');
-  const [showForm, setShowForm]   = useState(false);
-  const [form, setForm]           = useState(EMPTY_FORM);
-  const [saving, setSaving]       = useState(false);
-  const [formError, setFormError] = useState('');
-  const [toggling, setToggling]   = useState(null); // id del cupón que se está toggling
+  const { notify, notice } = useNotice({ duration: 3200 });
+  const { coupons, loading, error, creating, pending, refresh, create, toggle, remove } = useAdminCoupons();
+  const [showForm, setShowForm] = useState(false);
+  const openerRef = useRef(null);
 
-  async function load() {
-    try {
-      setLoading(true);
-      const res = await api.get('/coupons');
-      setCoupons(res.data?.data || []);
-    } catch {
-      setError('No se pudieron cargar los cupones.');
-    } finally {
-      setLoading(false);
-    }
+  // Una sola "hora actual" para toda la lista (render puro, todas las filas
+  // evalúan el vencimiento igual). Basta con la de apertura de la página.
+  const [now] = useState(() => new Date());
+  const { total, live } = couponSummary(coupons, now);
+
+  function closeForm() {
+    setShowForm(false);
+    openerRef.current?.focus();
   }
 
-  useEffect(() => { load(); }, []);
-
-  async function toggleActive(coupon) {
-    setToggling(coupon._id);
-    try {
-      const res = await api.patch(`/coupons/${coupon._id}`, { isActive: !coupon.isActive });
-      setCoupons(prev => prev.map(c => c._id === coupon._id ? res.data.data : c));
-    } catch {
-      setError('No se pudo actualizar el cupón.');
-    } finally {
-      setToggling(null);
+  async function handleCreate(payload) {
+    const r = await create(payload);
+    if (r.ok) {
+      notify(`Cupón ${r.data?.code || payload.code} creado.`, { tone: 'success' });
+      closeForm();
     }
+    return r;
   }
 
-  async function deleteCoupon(id) {
-    const coupon = coupons.find(c => c._id === id);
+  async function handleToggle(c) {
+    const r = await toggle(c);
+    if (!r.ok) notify(r.message, { tone: 'error' });
+    else notify(c.isActive ? `${c.code} quedó apagado.` : `${c.code} quedó activado.`);
+  }
+
+  async function handleDelete(c) {
     const ok = await confirm({
-      title: coupon?.code ? `¿Eliminar el cupón ${coupon.code}?` : '¿Eliminar este cupón?',
+      title: `¿Eliminar el cupón ${c.code}?`,
       message: 'Deja de funcionar en el checkout al instante. Esta acción no se puede deshacer.',
       confirmLabel: 'Eliminar cupón',
       tone: 'danger',
     });
     if (!ok) return;
-    try {
-      await api.delete(`/coupons/${id}`);
-      setCoupons(prev => prev.filter(c => c._id !== id));
-    } catch {
-      setError('No se pudo eliminar el cupón.');
-    }
+    const r = await remove(c._id);
+    notify(r.ok ? `Cupón ${c.code} eliminado.` : r.message, { tone: r.ok ? 'info' : 'error' });
   }
-
-  async function handleCreate(e) {
-    e.preventDefault();
-    setFormError('');
-    if (!form.code.trim() || !form.value) {
-      setFormError('Código y descuento son obligatorios.');
-      return;
-    }
-    setSaving(true);
-    try {
-      const payload = {
-        code:           form.code.trim().toUpperCase(),
-        type:           form.type,
-        value:          Number(form.value),
-        minOrderAmount: form.minOrderAmount ? Number(form.minOrderAmount) : 0,
-        maxUses:        form.maxUses        ? Number(form.maxUses)        : null,
-        expiresAt:      form.expiresAt      || null,
-      };
-      const res = await api.post('/coupons', payload);
-      setCoupons(prev => [res.data.data, ...prev]);
-      setForm(EMPTY_FORM);
-      setShowForm(false);
-    } catch (err) {
-      setFormError(err?.response?.data?.message || 'Error al crear el cupón.');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  const isExpired = (c) => c.expiresAt && new Date() > new Date(c.expiresAt);
-  const isExhausted = (c) => c.maxUses !== null && c.usedCount >= c.maxUses;
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg, #f7f8fa)', padding: '0 0 60px' }}>
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 14px' }}>
-
-        {/* Header */}
-        <div style={{ padding: '22px 0 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+    <main className="section ac-page">
+      <div className="container ac-wrap">
+        <header className="ac-header">
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.35rem', letterSpacing: '-0.04em', fontWeight: 900 }}>
-              🏷️ Cupones
-            </h1>
-            <div style={{ fontSize: '.82rem', color: 'rgba(11,18,32,.45)', fontWeight: 700, marginTop: 3 }}>
-              {coupons.length} cupón{coupons.length !== 1 ? 'es' : ''}
-            </div>
-          </div>
-          <button
-            onClick={() => { setShowForm(s => !s); setFormError(''); }}
-            style={{
-              background: showForm ? 'rgba(11,18,32,.08)' : 'var(--primary, #0b5cff)',
-              color: showForm ? 'rgba(11,18,32,.7)' : '#fff',
-              border: 'none', borderRadius: 12, padding: '10px 18px',
-              fontWeight: 900, fontSize: '.9rem', cursor: 'pointer', flexShrink: 0,
-            }}
-          >
-            {showForm ? 'Cancelar' : '+ Nuevo cupón'}
-          </button>
-        </div>
-
-        {error && (
-          <div style={{ background: '#fff1f0', border: '1px solid #fca5a5', borderRadius: 12, padding: '10px 14px', color: '#b91c1c', fontSize: '.88rem', fontWeight: 700, marginBottom: 12 }}>
-            {error}
-          </div>
-        )}
-
-        {/* Formulario nuevo cupón */}
-        {showForm && (
-          <form
-            onSubmit={handleCreate}
-            style={{ background: '#fff', borderRadius: 16, padding: '18px 16px', marginBottom: 16, boxShadow: '0 2px 14px rgba(11,18,32,.07)' }}
-          >
-            <div style={{ fontWeight: 900, fontSize: '1rem', marginBottom: 14, letterSpacing: '-0.02em' }}>Nuevo cupón</div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div>
-                <label htmlFor="cpn-code" style={labelStyle}>Código</label>
-                <input
-                  id="cpn-code"
-                  style={inputStyle}
-                  placeholder="ej: PROMO10"
-                  value={form.code}
-                  onChange={e => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))}
-                  autoCapitalize="characters"
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div>
-                  <label htmlFor="cpn-type" style={labelStyle}>Tipo</label>
-                  <select
-                    id="cpn-type"
-                    style={inputStyle}
-                    value={form.type}
-                    onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-                  >
-                    <option value="percent">Porcentaje (%)</option>
-                    <option value="fixed">Monto fijo ($)</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="cpn-value" style={labelStyle}>{form.type === 'percent' ? 'Descuento (%)' : 'Descuento ($)'}</label>
-                  <input
-                    id="cpn-value"
-                    style={inputStyle}
-                    type="number"
-                    placeholder={form.type === 'percent' ? 'ej: 15' : 'ej: 5000'}
-                    value={form.value}
-                    onChange={e => setForm(f => ({ ...f, value: e.target.value }))}
-                    min="0"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="cpn-min" style={labelStyle}>Pedido mínimo ($) <span style={{ opacity: .5 }}>opcional</span></label>
-                <input
-                  id="cpn-min"
-                  style={inputStyle}
-                  type="number"
-                  placeholder="ej: 45000 — dejar vacío para sin mínimo"
-                  value={form.minOrderAmount}
-                  onChange={e => setForm(f => ({ ...f, minOrderAmount: e.target.value }))}
-                  min="0"
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div>
-                  <label htmlFor="cpn-max-uses" style={labelStyle}>Usos máximos <span style={{ opacity: .5 }}>opcional</span></label>
-                  <input
-                    id="cpn-max-uses"
-                    style={inputStyle}
-                    type="number"
-                    placeholder="vacío = ilimitado"
-                    value={form.maxUses}
-                    onChange={e => setForm(f => ({ ...f, maxUses: e.target.value }))}
-                    min="1"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="cpn-expires" style={labelStyle}>Vence el <span style={{ opacity: .5 }}>opcional</span></label>
-                  <input
-                    id="cpn-expires"
-                    style={inputStyle}
-                    type="date"
-                    value={form.expiresAt}
-                    onChange={e => setForm(f => ({ ...f, expiresAt: e.target.value }))}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {formError && (
-              <div style={{ marginTop: 10, color: '#b91c1c', fontSize: '.85rem', fontWeight: 700 }}>{formError}</div>
+            <Link className="ac-back" to="/admin">← Panel</Link>
+            <h1 className="ac-title">Cupones</h1>
+            {!loading && !error && (
+              <p className="ac-count">
+                <strong>{live}</strong> funcionando · {total} en total
+              </p>
             )}
-
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                marginTop: 14, width: '100%', background: 'var(--primary, #0b5cff)',
-                color: '#fff', border: 'none', borderRadius: 12, padding: '13px',
-                fontWeight: 900, fontSize: '1rem', cursor: saving ? 'not-allowed' : 'pointer',
-                opacity: saving ? .65 : 1,
-              }}
-            >
-              {saving ? 'Creando…' : 'Crear cupón'}
+          </div>
+          {!showForm && (
+            <button ref={openerRef} type="button" className="ac-new" onClick={() => setShowForm(true)} aria-expanded="false">
+              <span aria-hidden="true">+</span> Nuevo cupón
             </button>
-          </form>
-        )}
+          )}
+        </header>
 
-        {/* Lista de cupones */}
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(11,18,32,.4)', fontWeight: 700 }}>Cargando…</div>
+        {showForm && <CouponForm onCreate={handleCreate} creating={creating} onCancel={closeForm} />}
+
+        {loading && !coupons.length ? (
+          <ul className="ac-list" aria-busy="true" aria-label="Cargando cupones">
+            {[0, 1, 2].map((i) => <li key={i} className="ac-ticket ac-ticket--skeleton" />)}
+          </ul>
+        ) : error ? (
+          <StatePanel tone="error" size="inline" title="No se pudieron cargar los cupones" actions={
+            <button type="button" className="ac-new" onClick={refresh}>Reintentar</button>
+          }>
+            {error}
+          </StatePanel>
         ) : coupons.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(11,18,32,.4)', fontWeight: 700 }}>
-            No hay cupones. Creá el primero con el botón de arriba.
-          </div>
+          <StatePanel icon="bag" size="inline" title="Todavía no hay cupones">
+            Creá el primero con “Nuevo cupón”: el cliente lo escribe en el checkout y el descuento se valida en el servidor.
+          </StatePanel>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {coupons.map(c => {
-              const expired   = isExpired(c);
-              const exhausted = isExhausted(c);
-              const inactive  = !c.isActive || expired || exhausted;
-
-              return (
-                <div
-                  key={c._id}
-                  style={{
-                    background: '#fff',
-                    borderRadius: 16,
-                    padding: '14px 16px',
-                    boxShadow: '0 2px 10px rgba(11,18,32,.06)',
-                    opacity: inactive ? .65 : 1,
-                    borderLeft: `4px solid ${inactive ? '#e2e8f0' : '#22c55e'}`,
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 900, fontSize: '1.05rem', letterSpacing: '.04em', fontFamily: 'monospace' }}>
-                        {c.code}
-                      </div>
-                      <div style={{ fontWeight: 800, fontSize: '.88rem', color: '#166534', marginTop: 2 }}>
-                        {c.type === 'percent' ? `${c.value}% de descuento` : `${fmt(c.value)} de descuento`}
-                      </div>
-                      <div style={{ fontSize: '.78rem', color: 'rgba(11,18,32,.45)', fontWeight: 700, marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: '4px 10px' }}>
-                        {c.minOrderAmount > 0 && <span>Mín. {fmt(c.minOrderAmount)}</span>}
-                        <span>Usos: {c.usedCount}{c.maxUses !== null ? `/${c.maxUses}` : ' (ilimitado)'}</span>
-                        {c.expiresAt && <span>Vence: {new Date(c.expiresAt).toLocaleDateString('es-AR')}</span>}
-                      </div>
-                      <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        {!c.isActive  && <Tag color="#64748b">Desactivado</Tag>}
-                        {expired      && <Tag color="#dc2626">Expirado</Tag>}
-                        {exhausted    && <Tag color="#d97706">Usos agotados</Tag>}
-                        {!inactive    && <Tag color="#16a34a">Activo</Tag>}
-                      </div>
-                    </div>
-
-                    {/* Acciones */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0, alignItems: 'flex-end' }}>
-                      {/* Toggle activo */}
-                      <button
-                        onClick={() => toggleActive(c)}
-                        disabled={toggling === c._id}
-                        style={{
-                          background: c.isActive ? '#dcfce7' : 'rgba(11,18,32,.07)',
-                          color: c.isActive ? '#166534' : 'rgba(11,18,32,.5)',
-                          border: 'none', borderRadius: 999, padding: '6px 14px',
-                          fontWeight: 900, fontSize: '.82rem', cursor: 'pointer',
-                          minWidth: 80, textAlign: 'center',
-                        }}
-                      >
-                        {toggling === c._id ? '…' : c.isActive ? '✅ Activo' : '⭕ Inactivo'}
-                      </button>
-                      {/* Eliminar */}
-                      <button
-                        onClick={() => deleteCoupon(c._id)}
-                        style={{
-                          background: 'transparent', color: '#dc2626',
-                          border: 'none', padding: '4px 8px',
-                          fontWeight: 800, fontSize: '.78rem', cursor: 'pointer',
-                        }}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ul className="ac-list">
+            {coupons.map((c) => (
+              <CouponTicket
+                key={c._id}
+                coupon={c}
+                now={now}
+                busy={pending.has(c._id)}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+              />
+            ))}
+          </ul>
         )}
       </div>
       {confirmDialog}
+      {notice}
     </main>
   );
 }
-
-function Tag({ color, children }) {
-  return (
-    <span style={{
-      background: color + '1a',
-      color,
-      border: `1px solid ${color}44`,
-      borderRadius: 999,
-      padding: '2px 8px',
-      fontSize: '.72rem',
-      fontWeight: 800,
-    }}>
-      {children}
-    </span>
-  );
-}
-
-const labelStyle = {
-  display: 'block',
-  fontSize: '.78rem',
-  fontWeight: 800,
-  color: 'rgba(11,18,32,.55)',
-  marginBottom: 4,
-  letterSpacing: '.02em',
-};
-
-const inputStyle = {
-  width: '100%',
-  boxSizing: 'border-box',
-  padding: '11px 12px',
-  border: '1.5px solid rgba(11,18,32,.12)',
-  borderRadius: 10,
-  fontSize: '.92rem',
-  fontWeight: 700,
-  background: '#fafbfd',
-  outline: 'none',
-};

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  // Los scripts de Playwright (a11y, screenshots) se corren a mano con `node`.
+  // lighthouserc.cjs lo lee `@lhci/cli`, que se corre con npx (sin devDependency).
+  "entry": ["scripts/*.mjs", "lighthouserc.cjs"],
+  "ignore": [
+    // Plantilla para copiar al crear una landing (ver src/landings/index.js).
+    "src/landings/TEMPLATE.js",
+    // Newsletter oculto a propósito en la home: se reactiva cuando haya
+    // proveedor de email. No borrar.
+    "src/components/home/HomeNewsletter.jsx",
+    "src/services/newsletter.js"
+  ],
+  // Las fuentes variables se importan desde CSS (@import), que knip no lee.
+  "ignoreDependencies": ["@fontsource-variable/.+"]
+}

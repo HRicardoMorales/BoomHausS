@@ -34,6 +34,8 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
+      # Archivos, exports y dependencias sin uso (config en knip.jsonc).
+      - run: npm run knip
       - run: npm test
       - run: npm run build
       - name: Tamaño del bundle
@@ -49,6 +51,69 @@ jobs:
               printf '| `%s` | %s kB | %s kB |\n' "$(basename "$f")" "$((raw / 1024))" "$((gz / 1024))"
             done
           } >> "$GITHUB_STEP_SUMMARY"
+
+  e2e:
+    name: E2E · smoke y a11y en Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      # Versión de Chromium atada al playwright-core del lockfile.
+      - run: npx playwright-core install --with-deps --only-shell chromium
+      - run: npm run build
+      # Todas las rutas (tienda, landings y admin con sesión falsa) a 390 y 1280 px:
+      # pageerror, <main> montado, desborde horizontal e ids duplicados.
+      - run: npm run smoke
+      # axe WCAG 2.1 AA en el recorrido de compra; falla con violaciones serious/critical.
+      - name: a11y · 390 px
+        run: npm run a11y -- --routes=/,/products/mock-producto,/cart,/checkout --width=390
+      - name: a11y · 1280 px
+        run: npm run a11y -- --routes=/,/products/mock-producto,/cart,/checkout --width=1280
+
+  lighthouse:
+    name: Lighthouse · presupuesto de performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      # 4 rutas × 3 corridas en mobile simulado contra dist/ con la API mockeada
+      # (scripts/lhci-server.mjs). Usa el Chrome preinstalado del runner.
+      # Falla si se pasa un presupuesto marcado como error en lighthouserc.cjs.
+      - run: npm run lhci
+      - name: Tabla en el resumen del job
+        if: always()
+        # `tee`: la tabla queda también en el log del job (se puede leer sin
+        # abrir la UI de Actions, p. ej. desde la API de logs).
+        run: npm run --silent lhci:summary | tee -a "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: frontend/.lighthouseci/
+          # `.lighthouseci` es un directorio oculto: sin esto upload-artifact
+          # (v4.4+) lo ignora y los reportes nunca se subían.
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: ignore
 
   backend:
     name: Backend · sintaxis y tests

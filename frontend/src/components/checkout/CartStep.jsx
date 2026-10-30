@@ -172,7 +172,7 @@ function CartItemName({ name = "" }) {
 }
 
 /** Cupón discreto: link que despliega el campo; aplicado queda bloqueado con "Quitar". */
-export function CouponField({ applied, open, onToggle, input, onInputChange, applying, error, onApply, onRemove }) {
+function CouponField({ applied, open, onToggle, input, onInputChange, applying, error, onApply, onRemove }) {
   return (
     <>
       {!applied && (

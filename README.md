@@ -138,9 +138,25 @@ Cada una resolvió un problema concreto que estaba en el código.
 | `ProductDetail.jsx` | 5.008 líneas | ~800 |
 | `MundialLanding.jsx` | 3.725 líneas | 415 |
 | ESLint | 94 errores | 0 (incluye `jsx-a11y`) |
-| Tests | 0 | 52 frontend + 65 backend |
+| Tests | 0 | 268 frontend (Vitest) + 138 backend (`node:test`) |
+| `dangerouslySetInnerHTML` | 5 componentes | 0 (`<RichText>` con lista blanca + regla de ESLint que lo prohíbe) |
 
 Los tamaños de bundle se publican en cada corrida de CI (resumen del job de frontend).
+
+### Lighthouse (laboratorio, sin maquillaje)
+
+Medido con [Lighthouse CI](frontend/lighthouserc.cjs) sobre el build de producción: perfil mobile de Lighthouse (Moto G Power, 4G lenta simulada, CPU ×4), mediana de 3 corridas, API mockeada en el mismo origen y hosts externos bloqueados para que el número dependa del código y no de la red. Pesos transferidos con gzip. "Antes" = primera medición (2026-10-27); "ahora" = runner de GitHub Actions sobre `df8bf74` (2026-10-28).
+
+| Ruta | Perf antes → ahora | TBT antes → ahora | CLS antes → ahora | LCP | A11y | SEO | JS | Total |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `/` | 60 → **88** | 1,4 s → **39 ms** | 0,017 | 3,5 s | 100 | 100 | 227 KB | 407 KB |
+| `/products/:id` | 49 → **86** | 0,5 s → **27 ms** | 1,30 → **0** | 3,9 s | 100 | 100 | 218 KB | 395 KB |
+| `/lp/escultor-led` | 74 → **81** | 0,5 s → **107 ms** | 0,001 → 0 | 4,8 s | 96 | 100 | 238 KB | 454 KB |
+| `/cart` | 77 → **93** | 0,4 s → **44 ms** | 0 → 0,055 | 3,0 s | 100 | — (noindex) | 222 KB | 401 KB |
+
+Cómo se bajaron (detalle en el historial): el **CLS de la ficha** venía del footer pintándose mientras cargaba el producto → esqueleto con las medidas reales del hero. El **TBT de la home** eran tres cosas medidas con traces de Chromium: el render del catálogo como una sola tarea larga (ahora en `startTransition`), Embla midiendo los slides en el mismo commit y forzando un layout de toda la página (ahora engancha en idle) y un `MutationObserver` global, código muerto, que corría `querySelectorAll` en cada tic del countdown.
+
+El job `lighthouse` de CI **falla** si el JS, el CSS o el peso total crecen más de ~15 %, si el LCP pasa de 5 s, si aparece CLS, si el TBT supera 300 ms o si baja la accesibilidad o el SEO; el score, que depende de la CPU del runner, solo avisa. Reportes HTML como artifact del job.
 
 ## Correrlo localmente
 
@@ -176,6 +192,8 @@ npm run lint
 npm test          # Vitest: precios, carrito, estados de pedido, envíos
 npm run build
 npm run a11y      # axe sobre el build (requiere Chromium)
+npm run smoke     # E2E: 27 rutas × 390/1280 px — errores, <main>, desborde, ids duplicados
+npm run lhci      # Lighthouse CI con presupuestos (CHROME_PATH si no hay Chrome instalado)
 npm run screenshots  # capturas del README en docs/screenshots (--images=live para fotos reales)
 
 # Backend
@@ -185,7 +203,9 @@ npm test          # node:test + supertest sobre app.js real, sin Mongo ni red (~
 
 Los tests del backend corren contra el `app.js` real con los modelos mockeados: verifican, por ejemplo, que una inyección `{"$ne": null}` devuelva 400 **sin llegar a llamar al modelo**. Se validaron con mutaciones de control (romper el código a propósito y comprobar que el test falla).
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → Vitest → build + tabla de tamaños gzip) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y PR: frontend (`npm ci` → lint → knip → Vitest → build + tabla de tamaños gzip), **E2E** (build → `npm run smoke` en Chromium sobre todas las rutas, incluido el admin con sesión falsa, + axe WCAG 2.1 AA del recorrido de compra a 390 y 1280 px), **Lighthouse** (presupuestos de peso, LCP y CLS en 4 rutas, tabla en el resumen del job) y backend (`npm ci` → `node --check` sobre todo `src/` → `node:test`), en paralelo, con caché por lockfile y sin secretos.
+
+El smoke no se queda en "la página cargó": como `#root` tiene `overflow-x: clip`, un elemento más ancho que el celular no genera scroll sino que queda **cortado sin que nadie lo note**; el script busca elementos que se salen del viewport sin un ancestro que los recorte a propósito (carruseles), además de excepciones sin atrapar, `<main>` sin montar e `id` duplicados. Verificado inyectando cada falla en el build.
 
 ## Estructura del repo
 
@@ -207,8 +227,9 @@ frontend/
     landings/           # configs de cada landing (datos, no código)
     hooks/  utils/  context/  routes/  styles/
   scripts/a11y.mjs      # auditoría axe sobre el build
+  scripts/smoke.mjs     # E2E smoke de todas las rutas (CI)
   scripts/screenshots.mjs  # capturas mobile/desktop para el README
-  scripts/lib/harness.mjs  # preview + API mockeada compartidos por ambos
+  scripts/lib/harness.mjs  # preview + API mockeada compartidos por los tres
 .github/workflows/ci.yml
 ```
 

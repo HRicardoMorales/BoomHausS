@@ -1,5 +1,6 @@
 import SafeImg from "../../SafeImg";
 import "./WineStorySections.css";
+import RichText from "../../ui/RichText";
 
 /*
  * Bloques narrativos opcionales de las landings "wine" (masajeadores EMS y
@@ -17,7 +18,7 @@ export function CirculacionSection({ data: d }) {
       <h2 className="circ-title">{d.title}</h2>
       {d.img && <SafeImg className="circ-img" src={d.img} alt={d.imgAlt || ""} sizes={WIDE_SIZES} />}
       {d.quote && <p className="circ-quote">{d.quote}</p>}
-      {d.textHtml && <p className="circ-text" dangerouslySetInnerHTML={{ __html: d.textHtml }} />}
+      {d.textHtml && <RichText className="circ-text" html={d.textHtml} />}
       {d.buenaNoticia && <h2 className="circ-title-buena">{d.buenaNoticia}</h2>}
       {d.img2 && <SafeImg className="circ-img" src={d.img2} alt={d.img2Alt || ""} sizes={WIDE_SIZES} />}
       {d.title2 && <h2 className="circ-title2">{d.title2}</h2>}

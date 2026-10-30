@@ -1,0 +1,27 @@
+/* Botón flotante de WhatsApp (antes un <style> inline en WhatsAppButton.jsx). */
+.wa-float-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 8000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.22);
+  text-decoration: none;
+  transition: transform .15s, box-shadow .15s, bottom .3s ease;
+}
+.wa-float-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(0,0,0,.32);
+}
+@media (max-width: 767px) {
+  .wa-float-btn { bottom: 16px; right: 16px; width: 50px; height: 50px; }
+}
+/* En mobile, con la barra de compra sticky de la ficha visible, sube por encima. */
+.wa-float-btn--lifted { bottom: calc(72px + 16px); }

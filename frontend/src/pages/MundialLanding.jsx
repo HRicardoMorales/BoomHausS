@@ -13,7 +13,7 @@ import { useCart } from '../hooks/useCart';
 import { trackWithCapi } from "../lib/metaPixel";
 import { CheckoutSheet } from "./CheckoutSheet";
 import MC from "../landings/mundial-revendedores.js";
-import { moneyARS } from "../components/landing/mundial/utils";
+import { moneyARSTight } from "../utils/pricing.js";
 import { Band, MundialWave, SectionHeader } from "../components/landing/mundial/LandingChrome";
 import WhatsAppTab from "../components/landing/WhatsAppTab";
 import { HeroSection, SocialProofBar, TrustStrip } from "../components/landing/mundial/HeroSection";
@@ -214,7 +214,7 @@ export default function MundialLanding() {
     if (projectedTotal >= MIN_ORDER) return true;
     const missing = MIN_ORDER - projectedTotal;
     setMinOrderWarning(
-      `Te faltan ${moneyARS(missing)} para llegar al mínimo de ${moneyARS(MIN_ORDER)}. Sumá más packs y el envío sale gratis.`
+      `Te faltan ${moneyARSTight(missing)} para llegar al mínimo de ${moneyARSTight(MIN_ORDER)}. Sumá más packs y el envío sale gratis.`
     );
     // Auto-clear después de 5s
     setTimeout(() => setMinOrderWarning(""), 5000);

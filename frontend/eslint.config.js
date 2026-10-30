@@ -47,7 +47,20 @@ export default defineConfig([
       // con el teclado (axe: scrollable-region-focusable); el patrón WAI es
       // role="region" + aria-label + tabIndex={0}.
       'jsx-a11y/no-noninteractive-tabindex': ['error', { tags: [], roles: ['tabpanel', 'region'] }],
+      // La plata se formatea solo en utils/pricing.js (moneyARS/moneyARSTight).
+      // Había 15 copias con criterios distintos para NaN y espacios.
+      'no-restricted-syntax': ['error', {
+        selector: "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat'] Property[key.name='currency']",
+        message: 'Usá moneyARS/moneyARSTight de utils/pricing.js en lugar de un Intl.NumberFormat de moneda.',
+      }, {
+        selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+        message: 'Usá <RichText html=…> (components/ui/RichText.jsx): renderiza <strong>/<em>/<br> sin inyectar HTML.',
+      }],
     },
+  },
+  {
+    files: ['src/utils/pricing.js'],
+    rules: { 'no-restricted-syntax': 'off' },
   },
   {
     // CheckoutSheet: pasos 1-4 inalcanzables y con lógica de pago (ver

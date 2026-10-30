@@ -18,3 +18,6 @@ frontend/.env.production
 
 # Archivos subidos por usuarios (comprobantes de pago): nunca al repo
 backend/uploads/
+
+# Lighthouse CI (reportes locales)
+frontend/.lighthouseci/

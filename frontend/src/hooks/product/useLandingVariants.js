@@ -49,4 +49,3 @@ export function useLandingVariants(config) {
   };
 }
 
-export default useLandingVariants;

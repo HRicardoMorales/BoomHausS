@@ -2,9 +2,7 @@
    Funciones puras: la página y la tarjeta comparten la misma verdad y se
    pueden testear sin montar nada. */
 
-import { formatARS } from "../product/format.js";
-
-export const money = (n) => formatARS(Number(n) || 0);
+export { moneyARS as money } from "../../utils/pricing.js";
 
 const DATE_FMT = new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const TIME_FMT = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit" });

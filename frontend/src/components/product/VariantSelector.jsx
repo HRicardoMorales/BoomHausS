@@ -1,6 +1,6 @@
 import SafeImg from "../SafeImg";
 import { THUMB_WIDTHS } from "../landing/imageSizes";
-import { moneyARS } from "./format";
+import { moneyARSTight } from "../../utils/pricing.js";
 
 /**
  * Selector de variantes en dos niveles (modelo → color) con miniatura.
@@ -41,7 +41,7 @@ export default function VariantSelector({
               </div>
               <div className="vsel2-name">{v.name}</div>
               {v.bundles?.[0]?.price && (
-                <div className="vsel2-from">desde {moneyARS(v.bundles[0].price)}</div>
+                <div className="vsel2-from">desde {moneyARSTight(v.bundles[0].price)}</div>
               )}
             </button>
           );

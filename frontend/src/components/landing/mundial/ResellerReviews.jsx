@@ -29,7 +29,7 @@ export function MundialMiniReviews() {
 /* =========================
    RESELLER REVIEWS — mismo layout que ProductDetail (rv- carousel)
 ========================= */
-export function StarsInline({ rating = 5 }) {
+function StarsInline({ rating = 5 }) {
   return (
     <div className="rv-stars">
       {Array.from({ length: 5 }).map((_, i) => (

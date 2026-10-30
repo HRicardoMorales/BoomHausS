@@ -4,24 +4,20 @@
 // pantalla. Sirve para precargar recursos de una sección justo antes de que
 // el usuario llegue, en vez de al montar la página.
 //
-// Ojo: con `html, body { overflow-x: hidden }` el <body> pasa a ser el
-// contenedor de scroll. Con el root implícito (viewport) el `rootMargin` no
-// se aplica a ese recorte y el aviso llegaría tarde, así que usamos como root
-// el ancestro con scroll más cercano.
+// Root: el viewport. Desde que el recorte horizontal vive en `#root` con
+// `overflow-x: clip` (que no crea contenedor de scroll), el documento es
+// siempre el que scrollea, así que no hace falta buscar el ancestro con
+// scroll. Antes se recorría el árbol con `getComputedStyle` (+ `scrollHeight`)
+// al montar cada sección: recálculo de estilos forzado en pleno arranque de la
+// home para terminar devolviendo `null` en todos los casos (medido con
+// Playwright en `/` y `/lp/escultor-led`).
+//
+// Si algún día se usa dentro de un panel con scroll propio (un sheet), pasar
+// ese nodo en `root`: el `rootMargin` solo se aplica sobre el root.
 
 import { useEffect, useState } from 'react';
 
-function scrollParent(el) {
-  for (let node = el?.parentElement; node && node !== document.documentElement; node = node.parentElement) {
-    const { overflowY } = getComputedStyle(node);
-    if (/(auto|scroll|overlay)/.test(overflowY) && node.scrollHeight > node.clientHeight) {
-      return node;
-    }
-  }
-  return null; // viewport
-}
-
-export default function useNearViewport(ref, { margin = 600 } = {}) {
+export default function useNearViewport(ref, { margin = 600, root = null } = {}) {
   // Sin IntersectionObserver (navegadores muy viejos) se precarga de una.
   const [near, setNear] = useState(() => typeof IntersectionObserver === 'undefined');
 
@@ -35,11 +31,11 @@ export default function useNearViewport(ref, { margin = 600 } = {}) {
           observer.disconnect();
         }
       },
-      { root: scrollParent(el), rootMargin: `${margin}px 0px` },
+      { root, rootMargin: `${margin}px 0px` },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [ref, margin, near]);
+  }, [ref, margin, root, near]);
 
   return near;
 }

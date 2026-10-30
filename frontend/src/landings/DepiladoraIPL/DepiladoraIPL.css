@@ -23,10 +23,21 @@
   font-family: 'Inter', sans-serif;
   color: var(--ipl-text);
   background: var(--ipl-white);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+/* LCP: las 11 secciones bajo el hero no se maquetan ni se pintan hasta
+   acercarse al viewport (mismo patrón que .led-wrap). `auto` en el tamaño
+   intrínseco recuerda el alto real una vez medido (el scroll no salta al
+   volver); 650px es el alto medio medido en 390 px, para que la barra de
+   scroll no se achique mientras se baja. La barra fija y el footer viven
+   fuera de `.ipl-wrap`: la contención
+   (que crea bloque contenedor para `position: fixed`) no los afecta. */
+.ipl-wrap > .ipl-hero ~ * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 650px;
 }
 .ipl-wrap button,
 .ipl-wrap input,
@@ -154,8 +165,20 @@
   border: 2px solid transparent;
   background: #f4f4f4;
   flex-shrink: 0;
+  /* reset de <button> */
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.ipl-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* El contenedor tiene overflow-x: auto y recorta un outline externo: anillo hacia adentro. */
+.ipl-thumb:focus-visible {
+  outline: 3px solid #1a73e8;
+  outline-offset: -3px;
+}
+.ipl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ipl-thumb-active { border-color: var(--ipl-accent); }
 
 /* Info */
@@ -1062,3 +1085,18 @@
   margin: 0;
   line-height: 1.55;
 }
+
+/* ── Estilos que antes eran style={{}} en el hero y en sections/ ──
+   Dos clases (0,2,0) a propósito: SafeImg pasa className tanto al <img>
+   como al <div class="safeimg-fallback">, y `.safeimg-fallback.safeimg-fallback`
+   (entry, carga antes) también es 0,2,0 → acá gana por orden. */
+.ipl-feat-section--white { background: #fff; }
+.ipl-feat-section--rose  { background: var(--ipl-section-rose); }
+.ipl-stars .ipl-stars-icons { color: #F472B6; }
+.ipl-hr-avatar .ipl-hr-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ipl-trust-item .ipl-trust-icon { width: 44px; height: 44px; border-radius: 8px; }
+.ipl-trust-item .ipl-trust-svg { flex-shrink: 0; }
+.ipl-pay-chip.ipl-pay-chip--mp { height: 22px; }
+.ipl-feat-img .ipl-feat-media { width: 100%; height: 100%; min-height: 280px; object-fit: cover; }
+.ipl-guarantee-icon .ipl-guarantee-img { width: 160px; height: 160px; object-fit: contain; }
+.ipl-vstrip-media .ipl-vstrip-video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }

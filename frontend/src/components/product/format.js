@@ -12,24 +12,6 @@ export const FALLBACK_IMG =
   </svg>
 `);
 
-export function formatARS(n) {
-  try {
-    return new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    }).format(n);
-  } catch {
-    return `$${n}`;
-  }
-}
-
-export function moneyARS(n) {
-  const num = Number(n);
-  if (Number.isNaN(num)) return "$0";
-  return `$${Math.round(num).toLocaleString("es-AR")}`;
-}
-
 export function clampPct(n) {
   const x = Number(n);
   if (Number.isNaN(x)) return 0;

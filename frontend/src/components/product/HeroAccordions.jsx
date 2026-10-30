@@ -1,10 +1,10 @@
 import { useId, useState } from "react";
+import RichText from "../ui/RichText";
 
 /* =========================
    Mini acordeones del bloque de compra.
-   Cada ítem trae `html` (texto fijo escrito en el config de la landing) o
-   `text` (texto plano, p. ej. la descripción corta: se renderiza como texto,
-   nunca como HTML).
+   Cada ítem trae `html` (texto del config de la landing con <strong>/<em>/<br>,
+   ver `RichText`) o `text` (texto plano, p. ej. la descripción corta).
 ========================= */
 export default function HeroAccordions({ items = [] }) {
   const [openIdx, setOpenIdx] = useState(null);
@@ -35,7 +35,7 @@ export default function HeroAccordions({ items = [] }) {
                 {typeof item.text === "string" ? (
                   <p className="hacc-content hacc-content--text">{item.text}</p>
                 ) : (
-                  <div className="hacc-content" dangerouslySetInnerHTML={{ __html: item.html }} />
+                  <RichText as="div" className="hacc-content" html={item.html} />
                 )}
               </div>
             </div>

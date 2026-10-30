@@ -1,81 +1,46 @@
 // frontend/src/pages/Cart.jsx
-import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
-import SafeImg from '../components/SafeImg.jsx';
 import StatePanel from '../components/ui/StatePanel.jsx';
+import { useConfirm } from '../components/ui/useConfirm.jsx';
+import CartLine from '../components/cart/CartLine.jsx';
+import CartSummary from '../components/cart/CartSummary.jsx';
+import { cartCount, cartSavings, unitsLabel } from '../components/cart/cartLine.js';
+import '../components/cart/Cart.css';
 
-function money(n) {
-    const num = Number(n);
-    if (Number.isNaN(num)) return '$0';
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
-}
-
-function moneyARS(n) {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(n) || 0);
-}
-
-// Identifica items que provienen de la landing de la lámpara magnética
-function isLamparaItem(it) {
-    return String(it?.productId || '').includes('lampara-magnetica');
-}
-
+/**
+ * Carrito. Solo orquesta: los totales salen de `useCart` (cartMath) y la
+ * presentación de cada línea de `cartLine.js`. El scroll al inicio lo hace
+ * `ScrollToTop` en el router (antes se repetía acá).
+ */
 function Cart() {
-    const { items, totalPrice, updateQty, removeItem, clearCart, calcItemTotal } = useCart();
-    const isEmpty = !Array.isArray(items) || items.length === 0;
+    const { items, totalPrice, updateQty, removeItem, clearCart } = useCart();
+    const { confirm, confirmDialog } = useConfirm();
+    const list = Array.isArray(items) ? items : [];
+    const count = cartCount(list);
 
-    // ✅ 1. Scroll al inicio siempre que se carga la página
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
-    const totalItems = useMemo(() => {
-        return items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
-    }, [items]);
+    async function handleClear() {
+        const ok = await confirm({
+            title: '¿Vaciar el carrito?',
+            message: `Se quitan ${unitsLabel(count)}. Vas a tener que volver a agregarlos desde la tienda.`,
+            confirmLabel: 'Vaciar',
+            tone: 'danger',
+        });
+        if (ok) clearCart();
+    }
 
     return (
-        <main className="section" style={{ paddingBottom: '4rem' }}>
+        <main className="cart-page">
             <div className="container">
-
-                {/* Estilos responsivos inyectados */}
-                <style>{`
-                    .cart-grid {
-                        margin-top: 1rem;
-                        display: grid;
-                        grid-template-columns: 1fr; /* Celular: 1 columna */
-                        gap: 1.5rem;
-                        align-items: start;
-                    }
-                    /* PC: 2 columnas */
-                    @media (min-width: 900px) {
-                        .cart-grid {
-                            grid-template-columns: 1.2fr 0.8fr;
-                        }
-                    }
-                    /* Ajuste para inputs en celular */
-                    .qty-input {
-                        width: 50px;
-                        text-align: center;
-                        padding: 5px;
-                    }
-                `}</style>
-
-                <section className="card reveal" style={{ padding: '1.2rem' }}>
-                    <span className="badge">Carrito</span>
-                    <h1 style={{ margin: '0.65rem 0 0.25rem', letterSpacing: '-0.05em' }}>
-                        Tu carrito
-                    </h1>
-                    <p className="muted" style={{ marginTop: '0.35rem', lineHeight: 1.7 }}>
-                        Revisá tu compra y avanzá al checkout.
+                <header className="cart-head">
+                    <p className="cart-head__eyebrow">
+                        {list.length ? unitsLabel(count) : 'Carrito'}
                     </p>
+                    <h1 className="cart-head__title">Tu carrito</h1>
+                    <Link className="cart-head__back" to="/products">← Seguir comprando</Link>
+                </header>
 
-                    <div style={{ marginTop: '0.9rem', display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-                        <Link className="btn btn-ghost" to="/products">← Seguir viendo</Link>
-                        <Link className="btn btn-ghost" to="/my-orders">Mis pedidos</Link>
-                    </div>
-                </section>
-
-                {isEmpty ? (
+                {list.length === 0 ? (
                     <StatePanel
                         size="inline"
                         icon="bag"
@@ -86,216 +51,32 @@ function Cart() {
                         <p>Todavía no agregaste nada. Lo que sumes queda guardado en este dispositivo aunque cierres la página.</p>
                     </StatePanel>
                 ) : (
-                    // ✅ 2. Usamos la clase .cart-grid definida arriba para responsive
-                    <section className="reveal cart-grid">
-
-                        {/* COLUMNA IZQUIERDA: PRODUCTOS */}
-                        <div className="card" style={{ padding: '1.2rem' }}>
-                            <span className="badge">Productos</span>
-
-                            <div style={{ marginTop: '0.9rem', display: 'grid', gap: '1rem' }}>
-                                {items.map((it) => {
-                                    const qty = Number(it.quantity) || 1;
-                                    const price = Number(it.price) || 0;
-                                    const lineTotal = typeof calcItemTotal === 'function' ? calcItemTotal(it) : qty * price;
-
-                                    const hasBundle2 = it?.promo?.type === 'bundle2';
-                                    const discountPct = Number(it?.promo?.discountPct) || 0;
-
-                                    const isLampara = isLamparaItem(it);
-                                    const saving = isLampara && it.compareAtPrice && it.bundleTotal
-                                        ? Number(it.compareAtPrice) - Number(it.bundleTotal)
-                                        : 0;
-
-                                    return (
-                                        <article
-                                            key={it.productId}
-                                            className="card"
-                                            style={{
-                                                padding: '1rem',
-                                                display: 'grid',
-                                                gridTemplateColumns: '80px 1fr',
-                                                gap: '1rem',
-                                                alignItems: 'start'
-                                            }}
-                                        >
-                                            {/* Imagen */}
-                                            <div
-                                                style={{
-                                                    width: 80,
-                                                    height: 80,
-                                                    borderRadius: 14,
-                                                    overflow: 'hidden',
-                                                    border: '1px solid var(--border)',
-                                                    background: 'rgba(255,255,255,0.02)'
-                                                }}
-                                            >
-                                                {it.imageUrl ? (
-                                                    <SafeImg
-                                                        src={it.imageUrl}
-                                                        alt={it.name}
-                                                        name={it.name}
-                                                        width={80}
-                                                        height={80}
-                                                        sizes="80px"
-                                                        widths={[80, 160]}
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                                                    />
-                                                ) : (
-                                                    <div className="muted" style={{ padding: '0.9rem', fontSize: '0.7rem' }}>Sin foto</div>
-                                                )}
-                                            </div>
-
-                                            {/* Info */}
-                                            <div style={{ display: 'grid', gap: '0.5rem' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                    <div style={{ fontWeight: 700, lineHeight: 1.2 }}>
-                                                        {it.name}
-                                                    </div>
-                                                    <div style={{ fontWeight: 900 }}>
-                                                        {money(lineTotal)}
-                                                    </div>
-                                                </div>
-
-                                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', fontSize: '0.9rem' }}>
-                                                    <span>{money(price)} c/u</span>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-ghost"
-                                                        style={{ padding: '2px 8px', fontSize: '0.8rem', height: 'auto' }}
-                                                        onClick={() => removeItem(it.productId)}
-                                                    >
-                                                        Quitar
-                                                    </button>
-                                                </div>
-
-                                                {hasBundle2 && (
-                                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                                                        <span className="badge" style={{ fontSize: '0.7rem' }}>Promo x2</span>
-                                                        <span className="muted" style={{ fontSize: '0.8rem' }}>-{discountPct}% llevando 2</span>
-                                                    </div>
-                                                )}
-
-                                                {/* Controles de cantidad — ocultos para items de lámpara magnética */}
-                                                {isLampara ? (
-                                                    <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
-                                                        Cantidad: <strong>{qty}</strong>
-                                                        {' · '}
-                                                        <Link to="/lp/lampara-magnetica" style={{ color: 'var(--primary)', fontSize: '0.76rem' }}>
-                                                            Cambiar cantidad
-                                                        </Link>
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '5px' }}>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-ghost"
-                                                            style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
-                                                            onClick={() => updateQty(it.productId, Math.max(1, qty - 1))}
-                                                        >
-                                                            −
-                                                        </button>
-                                                        <input
-                                                            value={qty}
-                                                            onChange={(e) => {
-                                                                const v = Number(e.target.value);
-                                                                if (!Number.isFinite(v)) return;
-                                                                updateQty(it.productId, v);
-                                                            }}
-                                                            inputMode="numeric"
-                                                            aria-label={`Cantidad de ${it.name}`}
-                                                            className="qty-input input"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-ghost"
-                                                            style={{ padding: '5px 12px', fontSize: '1.2rem', lineHeight: 1 }}
-                                                            onClick={() => updateQty(it.productId, qty + 1)}
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-                                                )}
-
-                                                {/* Info de ahorro y confianza — solo para lámpara magnética */}
-                                                {isLampara && (
-                                                    <div style={{
-                                                        marginTop: '6px',
-                                                        padding: '10px 12px',
-                                                        borderRadius: '10px',
-                                                        background: 'rgba(16,185,129,.07)',
-                                                        border: '1px solid rgba(16,185,129,.18)',
-                                                        display: 'grid',
-                                                        gap: '4px',
-                                                        fontSize: '0.80rem',
-                                                        fontWeight: 700,
-                                                        color: '#065f46',
-                                                    }}>
-                                                        {saving > 0 && (
-                                                            <span>✅ Ahorrás {moneyARS(saving)} con esta oferta</span>
-                                                        )}
-                                                        <span>🚚 Envío gratis a todo el país</span>
-                                                        <span>🛡️ Garantía 30 días sin riesgo</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </article>
-                                    );
-                                })}
-                            </div>
-
-                            <div style={{ marginTop: '1.5rem' }}>
-                                <button className="btn btn-ghost" type="button" onClick={clearCart} style={{ width: '100%' }}>
+                    <div className="cart-grid">
+                        <section className="cart-lines" aria-labelledby="cart-lines-title">
+                            <h2 id="cart-lines-title" className="sr-only">Productos</h2>
+                            <ul className="cart-lines__list">
+                                {list.map((it) => (
+                                    <CartLine
+                                        key={it.productId}
+                                        item={it}
+                                        onQty={updateQty}
+                                        onRemove={removeItem}
+                                    />
+                                ))}
+                            </ul>
+                            <div className="cart-lines__foot">
+                                <Link to="/my-orders" className="cart-lines__link">Ver mis pedidos</Link>
+                                <button type="button" className="cart-lines__clear" onClick={handleClear}>
                                     Vaciar carrito
                                 </button>
                             </div>
-                        </div>
+                        </section>
 
-                        {/* COLUMNA DERECHA/ABAJO: RESUMEN */}
-                        <aside
-                            className="card"
-                            style={{
-                                padding: '1.2rem',
-                                position: 'sticky',
-                                top: 90,
-                                borderRadius: 18,
-                                border: '1px solid var(--border)',
-                                background: 'rgba(255,255,255,0.03)'
-                            }}
-                        >
-                            <span className="badge">Resumen</span>
-
-                            <div style={{ marginTop: '0.85rem', display: 'grid', gap: '0.45rem' }}>
-                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>Productos:</span> <strong>{totalItems}</strong>
-                                </div>
-                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>Subtotal:</span> <strong>{money(totalPrice)}</strong>
-                                </div>
-                                <div className="muted" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>Envío:</span> <strong>A coordinar</strong>
-                                </div>
-                            </div>
-
-                            <div style={{ marginTop: '0.9rem', paddingTop: '0.9rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div className="muted" style={{ fontWeight: 900 }}>Total</div>
-                                <div style={{ fontWeight: 950, fontSize: '1.6rem', letterSpacing: '-0.04em' }}>
-                                    {money(totalPrice)}
-                                </div>
-                            </div>
-
-                            <div style={{ marginTop: '1.2rem', display: 'grid', gap: '0.8rem' }}>
-                                <Link className="btn btn-primary" to="/checkout" style={{ textAlign: 'center', padding: '12px' }}>
-                                    Ir a checkout →
-                                </Link>
-                                <Link className="btn btn-ghost" to="/products" style={{ textAlign: 'center' }}>
-                                    Seguir comprando
-                                </Link>
-                            </div>
-                        </aside>
-                    </section>
+                        <CartSummary count={count} total={totalPrice} savings={cartSavings(list)} />
+                    </div>
                 )}
             </div>
+            {confirmDialog}
         </main>
     );
 }

@@ -10,8 +10,10 @@ import StatsCircles from "../components/landing/StatsCircles";
 import RatingSummary from "../components/product/RatingSummary";
 import CountdownTimer from "../components/landing/CountdownTimer";
 import "./ProductDetail.css";
-import { formatARS, moneyARS, clampPct } from "../components/product/format";
+import { clampPct } from "../components/product/format";
+import { moneyARS, moneyARSTight } from "../utils/pricing.js";
 import UnavailableProductPage from "../components/product/UnavailableProductPage";
+import ProductDetailSkeleton from "../components/product/ProductDetailSkeleton";
 import WhatsAppTab from "../components/landing/WhatsAppTab";
 import BoxContents from "../components/product/BoxContents";
 import HowToSteps from "../components/product/HowToSteps";
@@ -207,14 +209,7 @@ function ProductDetail({ id, slug }) {
     setShowCheckout(true);
   };
 
-  if (loading && !hasLoaded)
-    return (
-      <main className="section">
-        <div className="container">
-          <div className="card">Cargando…</div>
-        </div>
-      </main>
-    );
+  if (loading && !hasLoaded) return <ProductDetailSkeleton />;
 
   if (blockingError || !effectiveProduct) {
     return (
@@ -338,8 +333,8 @@ function ProductDetail({ id, slug }) {
               {/* Precio: antes tachado + ahora grande + descuento — oculto cuando hay bundle picker */}
               {!MC.bundles && (
                 <div className="hero-priceRow">
-                  <span className="hero-was">{moneyARS(compareAt)}</span>
-                  <span className="hero-now">{moneyARS(price)}</span>
+                  <span className="hero-was">{moneyARSTight(compareAt)}</span>
+                  <span className="hero-now">{moneyARSTight(price)}</span>
                   <span className="hero-off">Descuento {discountPct}%</span>
                 </div>
               )}
@@ -497,8 +492,8 @@ function ProductDetail({ id, slug }) {
         <div className="sticky-pro-left">
           <div className="sticky-prices">
             {totalQty > 1 && <span className="sticky-qty">{totalQty}x</span>}
-            <span className="sticky-old">{formatARS(oldTotal)}</span>
-            <span className="sticky-now">{formatARS(displayTotal)}</span>
+            <span className="sticky-old">{moneyARS(oldTotal)}</span>
+            <span className="sticky-now">{moneyARS(displayTotal)}</span>
           </div>
           <div className="sticky-count">
             <span className="sticky-countLabel">TERMINA EN</span>

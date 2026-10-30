@@ -1,6 +1,7 @@
 // frontend/src/components/admin/home/metrics.js
 // Lógica pura del dashboard del admin: formato, normalización de las tres
 // respuestas de /api/metrics y geometría del sparkline. Sin React ni API.
+import { moneyARS as money } from '../../../utils/pricing.js';
 
 export const RANGES = [
   { key: 'hoy', label: 'Hoy' },
@@ -9,12 +10,7 @@ export const RANGES = [
   { key: 'mes', label: 'Este mes' },
 ];
 
-const ARS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
-
-export function money(n) {
-  const num = Number(n);
-  return ARS.format(Number.isFinite(num) ? num : 0);
-}
+export { money };
 
 const count = (v) => {
   const n = Number(v);

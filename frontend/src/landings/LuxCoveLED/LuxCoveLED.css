@@ -30,11 +30,21 @@
   font-family: 'Montserrat', 'Montserrat Fallback', sans-serif;
   color: var(--led-text);
   background: var(--led-white);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   /* Evita que iOS Safari reescale el texto al volver a la pestaña */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+/* LCP: las 13 secciones bajo el hero (~12 pantallas en mobile) no se maquetan
+   ni se pintan hasta acercarse al viewport. `auto` en el tamaño intrínseco
+   recuerda el alto real una vez medido (el scroll no salta al volver); 660px
+   es el alto medio medido en 390 px (con 900 la página se achicaba ~3.000 px
+   al bajar). La barra fija vive fuera de `.led-wrap`: la contención no la
+   afecta. */
+.led-wrap > .led-hero ~ * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 660px;
 }
 /* Evita doble-tap zoom en botones e inputs en iOS */
 .led-wrap button,
@@ -193,8 +203,20 @@
   cursor: pointer;
   background: #f5f5f5;
   transition: border-color 0.15s ease;
+  /* reset de <button> */
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .led-thumb.led-thumb-active { border-color: #000; }
+/* El contenedor tiene overflow-x: auto y recorta un outline externo: anillo hacia adentro. */
+.led-thumb:focus-visible {
+  outline: 3px solid #1a73e8;
+  outline-offset: -3px;
+}
 .led-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Info column */
@@ -1738,3 +1760,30 @@
   color: rgba(46,42,57,.72);
   font-family: 'Montserrat', sans-serif;
 }
+
+/* Antes inline en LuxCoveLED.jsx / sections del hero */
+.led-stars-icons { color: #FFC6C6; }
+.led-img-placeholder--hero { min-height: 280px; }
+.led-img-placeholder--thumb { font-size: 10px; min-height: unset; height: 100%; }
+.led-hr-avatar > img,
+.led-hr-avatar > .safeimg-fallback { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* ── Estilos que antes eran style={{}} en sections/ ──────────
+   Dos clases (0,2,0) a propósito: SafeImg pasa className tanto al <img>
+   como al <div class="safeimg-fallback">, y `.safeimg-fallback.safeimg-fallback`
+   (entry, carga antes) también es 0,2,0 → acá gana por orden. */
+.led-feat-section--white { background: #fff; }
+.led-feat-section--pink  { background: var(--led-pink); }
+.led-feat-img .led-feat-media { width: 100%; height: 100%; min-height: 240px; object-fit: cover; }
+
+.led-ba-img .led-ba-photo { width: 100%; aspect-ratio: 4 / 3; min-height: 220px; object-fit: cover; border-radius: 0; }
+.led-stats-image .led-stats-photo { width: 100%; aspect-ratio: 4 / 3; min-height: 180px; object-fit: cover; border-radius: 12px; }
+.led-feature-item .led-feature-img { width: 56px; height: 56px; border-radius: 8px; object-fit: contain; }
+.led-guarantee-icon .led-guarantee-img { width: 160px; height: 160px; object-fit: contain; }
+.led-lights-img-wrap .led-lights-img,
+.led-review-avatar .led-review-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.led-trust-item .led-trust-icon { width: 44px; height: 44px; min-height: unset; border-radius: 8px; }
+.led-trust-item .led-trust-svg { flex-shrink: 0; }
+.led-pay-chip.led-pay-chip--mp { height: 22px; }
+.led-section.led-vstrip-section { padding-top: 32px; padding-bottom: 32px; }
+.led-vstrip-media .led-vstrip-video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }

@@ -1,5 +1,6 @@
 import SafeImg from "../SafeImg";
 import { resolveMedia } from "../../utils/resolveMedia";
+import RichText from "../ui/RichText";
 
 /*
  * Bloques "texto + medio" alternados de las landings (config: `storyBlocks`).
@@ -32,7 +33,7 @@ export default function StoryFlow({
             {b.badge && <div className="flow-badge">{b.badge}</div>}
             <h3 className="flow-title">{b.title}</h3>
             {b.textHtml
-              ? <p className="flow-p flow-p--rich" dangerouslySetInnerHTML={{ __html: b.textHtml }} />
+              ? <RichText className="flow-p flow-p--rich" html={b.textHtml} />
               : <p className="flow-p">{b.text}</p>}
           </div>
           <div className="flow-media">

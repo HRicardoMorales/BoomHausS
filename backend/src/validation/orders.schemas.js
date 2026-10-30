@@ -62,4 +62,49 @@ const createOrderBody = z.looseObject({
   notes: optionalText(1000, 'Las notas pueden tener hasta 1000 caracteres.', 'Notas inválidas.'),
 });
 
-module.exports = { createOrderBody };
+// Query de GET /api/orders (admin). Sin `cursor`, `limit`, `q` ni `status`
+// → lista completa (lo que consume hoy el admin); con alguno → paginado.
+// `?limit=1&limit=2` llega como array → 400, igual que un cursor inventado.
+const { CURSOR_RE, DEFAULT_LIMIT, MAX_LIMIT } = require('../services/orderListing');
+const { PAYMENT_STATUSES, MAX_QUERY } = require('../services/orderSearch');
+
+// Búsqueda y estado de pago: compartidos por el listado y por /stats.
+const searchFields = {
+  q: z
+    .string({ error: 'Búsqueda inválida.' })
+    .trim()
+    .max(MAX_QUERY, `La búsqueda puede tener hasta ${MAX_QUERY} caracteres.`)
+    .optional(),
+  status: z
+    .enum(['todos', ...PAYMENT_STATUSES], { error: 'Estado de pago inválido.' })
+    .optional(),
+};
+
+const listOrdersQuery = z
+  .object({
+    cursor: z
+      .string({ error: 'Cursor inválido.' })
+      .regex(CURSOR_RE, 'Cursor inválido.')
+      .optional(),
+    limit: z
+      .string({ error: `limit debe ser un número entre 1 y ${MAX_LIMIT}.` })
+      .regex(/^\d{1,3}$/, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`)
+      .transform(Number)
+      .pipe(z.number().int().min(1, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`).max(MAX_LIMIT, `limit debe ser un número entre 1 y ${MAX_LIMIT}.`))
+      .optional(),
+    ...searchFields,
+  })
+  .transform(({ cursor, limit, q, status }) => ({
+    paginated: [cursor, limit, q, status].some((v) => v !== undefined),
+    cursor,
+    limit: limit ?? DEFAULT_LIMIT,
+    q: q || '',
+    status: status ?? 'todos',
+  }));
+
+// Query de GET /api/orders/stats: mismos filtros que el listado, sin paginar.
+const orderStatsQuery = z
+  .object(searchFields)
+  .transform(({ q, status }) => ({ q: q || '', status: status ?? 'todos' }));
+
+module.exports = { createOrderBody, listOrdersQuery, orderStatsQuery };

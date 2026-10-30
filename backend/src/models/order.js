@@ -68,4 +68,15 @@ const orderSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Índices para las consultas que existen (Mongo los crea al arrancar con
+// autoIndex; en una colección chica es instantáneo):
+// - listado admin y paginación por cursor: sort { createdAt: -1, _id: -1 }
+// - "Mis pedidos" y el job de carrito abandonado ("¿compró desde X?"):
+//   { customerEmail, createdAt }
+// - "Los más vendidos" (pedidos pagos) y filtros por estado del admin:
+//   { paymentStatus, createdAt }
+orderSchema.index({ createdAt: -1, _id: -1 });
+orderSchema.index({ customerEmail: 1, createdAt: -1 });
+orderSchema.index({ paymentStatus: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Order', orderSchema);

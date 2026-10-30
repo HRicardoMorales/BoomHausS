@@ -14,6 +14,8 @@ import Home from './pages/home.jsx';
 import RouteFallback from './components/RouteFallback.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { lazyWithRetry, whenIdle } from './utils/lazyWithRetry.js';
+import { prefetchProductBySlug } from './services/productBySlug.js';
+import { LANDING_PRODUCT_SLUGS } from './routes/landingProducts.js';
 
 import AdminRoute from './components/AdminRoute.jsx';
 import { getStoredAuth } from './utils/auth';
@@ -43,15 +45,24 @@ const AdminOrders = lazyWithRetry(() => import('./pages/AdminOrders.jsx'));
 const AdminProducts = lazyWithRetry(() => import('./pages/AdminProducts.jsx'));
 const AdminCoupons = lazyWithRetry(() => import('./pages/AdminCoupons.jsx'));
 
+// Landings dedicadas: el GET del producto sale junto con el chunk (no después
+// de montarlo). La landing toma esa promesa con `fetchProductBySlug`.
+function lazyWithProduct(slug, importer) {
+  return lazyWithRetry(() => {
+    prefetchProductBySlug(slug);
+    return importer();
+  });
+}
+
 const MundialLanding = lazyWithRetry(() => import('./pages/MundialLanding.jsx'));
-const ParchesDetoxLanding = lazyWithRetry(() => import('./landings/ParchesDetox/ParchesDetox.jsx'));
+const ParchesDetoxLanding = lazyWithProduct(LANDING_PRODUCT_SLUGS.parchesDetox, () => import('./landings/ParchesDetox/ParchesDetox.jsx'));
 const SillonPuffLanding = lazyWithRetry(() => import('./pages/SillonPuffLanding.jsx'));
 const KitBelleza6en1Landing = lazyWithRetry(() => import('./pages/KitBelleza6en1Landing.jsx'));
 const MasajeadorEmsEyesLanding = lazyWithRetry(() => import('./pages/MasajeadorEmsEyesLanding.jsx'));
 const MasajeadorFacialIonesLanding = lazyWithRetry(() => import('./pages/MasajeadorFacialIonesLanding.jsx'));
-const LuxCoveLED = lazyWithRetry(() => import('./landings/LuxCoveLED/LuxCoveLED'));
-const DepiladoraIPL = lazyWithRetry(() => import('./landings/DepiladoraIPL/DepiladoraIPL'));
-const AntimohoPisos = lazyWithRetry(() => import('./landings/AntimohoPisos/AntimohoPisos'));
+const LuxCoveLED = lazyWithProduct(LANDING_PRODUCT_SLUGS.luxCoveLED, () => import('./landings/LuxCoveLED/LuxCoveLED'));
+const DepiladoraIPL = lazyWithProduct(LANDING_PRODUCT_SLUGS.depiladoraIPL, () => import('./landings/DepiladoraIPL/DepiladoraIPL'));
+const AntimohoPisos = lazyWithProduct(LANDING_PRODUCT_SLUGS.antimohoPisos, () => import('./landings/AntimohoPisos/AntimohoPisos'));
 
 function PrivateRoute({ children }) {
   const location = useLocation();
@@ -93,34 +104,17 @@ export default function App() {
   }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta (ej: ir a checkout)
 
   // Desde la home, el siguiente paso casi siempre es la ficha de producto:
-  // precargamos ese chunk cuando el navegador queda ocioso.
-  useEffect(() => whenIdle(() => { ProductDetail.preload(); }), []);
-
-  // Animación Reveal. Las rutas lazy montan su contenido después de este
-  // effect, así que además de los nodos actuales observamos los que se
-  // agreguen al DOM (MutationObserver).
+  // precargamos ese chunk cuando el navegador queda ocioso. En `/lp/*` no:
+  // desde una landing se va al checkout, no a la ficha (y en `/lp/:slug` la
+  // ficha ya es la ruta). Ahí la precarga (ficha + configs de 5 landings) caía
+  // entre el loader y el render del hero y retrasaba el LCP.
+  const entryPath = location.pathname;
   useEffect(() => {
-    const root = document.querySelector('.app-shell');
-    if (!root || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-visible');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
-    );
-    const observeAll = () => {
-      root.querySelectorAll('.reveal:not(.is-visible)').forEach((el) => io.observe(el));
-    };
-    observeAll();
-    const mo = new MutationObserver(observeAll);
-    mo.observe(root, { childList: true, subtree: true });
-    return () => { mo.disconnect(); io.disconnect(); };
-  }, [location.pathname]);
+    if (entryPath.startsWith('/lp/')) return undefined;
+    return whenIdle(() => { ProductDetail.preload(); });
+    // Solo al entrar al sitio: es una precarga, no depende de la navegación.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="app-shell">

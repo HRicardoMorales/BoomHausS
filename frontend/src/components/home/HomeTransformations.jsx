@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState } from "react";
+import { Fragment, useId, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import BeforeAfterSlider from "../landing/BeforeAfterSlider.jsx";
 import useNearViewport from "../../hooks/useNearViewport.js";
@@ -6,6 +6,7 @@ import { useCountUp } from "../../hooks/useCountUp.js";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion.js";
 import { collectTransformations } from "../../landings/homeProof.js";
 import Reveal from "../motion/Reveal.jsx";
+import RichText from "../ui/RichText.jsx";
 
 /*
  * Antes/después + estadísticas. Todo sale de las landings (`beforeAfter` y
@@ -122,7 +123,7 @@ function Stat({ stat, active, instant, delay }) {
       </span>
       <p className="ht-stat-text">
         <span className="sr-only">{stat.value}% — </span>
-        {stat.parts.map((p, i) => (p.strong ? <strong key={i}>{p.text}</strong> : <span key={i}>{p.text}</span>))}
+        <RichText as={Fragment} html={stat.text} />
       </p>
       <span className="ht-stat-bar" aria-hidden="true" />
     </li>

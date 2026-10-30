@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
-import logger from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import StatePanel from './ui/StatePanel.jsx';
 
 const CHUNK_ERROR = /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Loading chunk/i;

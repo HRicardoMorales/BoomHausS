@@ -28,7 +28,7 @@ export default function AuthLayout({
   return (
     <main className={`section authPage${side ? "" : " authPage--compact"}`}>
       <div className="container">
-        <header className="card reveal authHeader">
+        <header className="card authHeader">
           <div className="authHeaderTop">
             <span className="badge">{badge}</span>
             <div className="authHeaderBrand">
@@ -43,7 +43,7 @@ export default function AuthLayout({
           <p className="muted authSubtitle">{subtitle}</p>
         </header>
 
-        <div className="reveal authGrid">
+        <div className="authGrid">
           <section className="card authCard" aria-label={title}>
             {error ? (
               <div className="authAlert" role="alert">
