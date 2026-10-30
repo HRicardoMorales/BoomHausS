@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { preload } from 'react-dom';
+import montserratLatin from '@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2?url';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
-import api from '../../services/api';
+import { fetchProductBySlug } from '../../services/productBySlug';
 import mc from '../escultor-led';
 import './LuxCoveLED.css';
 import LandingFooter from '../../components/landing/LandingFooter.jsx';
@@ -37,6 +39,14 @@ import Faq from './sections/Faq';
    pack, checkout, barra fija) y compone el hero; cada bloque visual vive en
    sections/ y los textos/URLs en data.js. */
 
+/* LCP: el título del hero (el elemento LCP) usa Montserrat, y el navegador
+   solo descubre la fuente al maquetar ese texto (después de que llega el
+   producto). Pedirla al evaluar el chunk la adelanta ~400 ms con CPU ×4 y el
+   título no espera la fuente para su pintado final. Mismo archivo hasheado que
+   pide el @font-face de fonts-montserrat.css (latin; latin-ext solo si hace
+   falta). `preload` de React 19 deduplica e inserta el <link> en <head>. */
+preload(montserratLatin, { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' });
+
 /* ── Componente principal ─────────────────────────────────── */
 export default function LuxCoveLED() {
   const [searchParams] = useSearchParams();
@@ -66,7 +76,7 @@ export default function LuxCoveLED() {
 
   /* API fetch */
   useEffect(() => {
-    api.get(`/products/slug/${PRODUCT_SLUG}`)
+    fetchProductBySlug(PRODUCT_SLUG)
       .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => setProductReady(true));
   }, []);

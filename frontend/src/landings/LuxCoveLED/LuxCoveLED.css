@@ -36,6 +36,14 @@
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+/* LCP: las 13 secciones bajo el hero (~12 pantallas en mobile) no se maquetan
+   ni se pintan hasta acercarse al viewport. `auto` en el tamaño intrínseco
+   recuerda el alto real una vez medido (el scroll no salta al volver). La
+   barra fija vive fuera de `.led-wrap`: la contención no la afecta. */
+.led-wrap > .led-hero ~ * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
 /* Evita doble-tap zoom en botones e inputs en iOS */
 .led-wrap button,
 .led-wrap input,

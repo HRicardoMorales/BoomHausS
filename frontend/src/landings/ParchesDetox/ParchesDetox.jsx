@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
-import api from '../../services/api';
+import { fetchProductBySlug } from '../../services/productBySlug';
 import mc from '../parches-detox';
 import './ParchesDetox.css';
 import { moneyARS } from '../../utils/pricing.js';
@@ -44,7 +44,7 @@ export default function ParchesDetoxLanding() {
 
   /* API fetch */
   useEffect(() => {
-    api.get(`/products/slug/${PRODUCT_SLUG}`)
+    fetchProductBySlug(PRODUCT_SLUG)
       .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => setProductReady(true));
   }, []);

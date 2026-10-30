@@ -22,7 +22,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
-import api from '../../services/api';
+import { fetchProductBySlug } from '../../services/productBySlug';
 import './AntimohoPisos.css';
 import {
   PRODUCT_SLUG, CHECKOUT_NAME, GUARANTEE_DAYS,
@@ -86,7 +86,7 @@ export default function AntimohoPisos() {
   /* Intenta traer precio/stock real si el producto ya existe en el admin
      con este slug. Si no existe, sigue con los BUNDLES placeholder. */
   useEffect(() => {
-    api.get(`/products/slug/${PRODUCT_SLUG}`)
+    fetchProductBySlug(PRODUCT_SLUG)
       .then((r) => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => setProductReady(true));
   }, []);

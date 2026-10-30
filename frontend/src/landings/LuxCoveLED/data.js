@@ -1,10 +1,11 @@
 /* Datos de la landing del Escultor LED (sin JSX). Los textos y URLs se
    editan acá; las secciones en sections/ solo los renderizan. */
+import { LANDING_PRODUCT_SLUGS } from '../../routes/landingProducts.js';
 /* ── Constantes ───────────────────────────────────────────── */
 // Nombre del producto: la fuente de verdad es la BD (product.name).
 // mc.checkoutName es solo fallback si el fetch falla. NO hardcodear
 // "X en 1" aca — se cambia desde admin → productos → escultor-led.
-export const PRODUCT_SLUG = 'escultor-led';
+export const PRODUCT_SLUG = LANDING_PRODUCT_SLUGS.luxCoveLED;
 export const DEFAULT_PRICE = 39900;
 export const DEFAULT_COMPARE = 115000;
 

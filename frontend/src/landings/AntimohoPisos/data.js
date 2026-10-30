@@ -1,13 +1,14 @@
 // Textos, precios placeholder y listas de la landing Anti-Moho PRO.
 // Sin JSX: los íconos se referencian como componentes desde ./icons.
 // ⚠️ Buscá "PLACEHOLDER" / "EDITAR" antes de publicar (ver AntimohoPisos.jsx).
+import { LANDING_PRODUCT_SLUGS } from '../../routes/landingProducts.js';
 import {
   IconShield, IconDropletOff, IconStanding, IconHome, IconTruck,
   IconLock, IconPackage, IconRefresh, IconSparkle,
 } from './icons';
 
 /* ── Constantes de producto ──────────────────────────────────────────── */
-export const PRODUCT_SLUG   = 'antimoho-pisos';
+export const PRODUCT_SLUG   = LANDING_PRODUCT_SLUGS.antimohoPisos;
 export const CHECKOUT_NAME  = 'Anti-Moho PRO — Kit para Pisos y Juntas'; // EDITAR
 export const BRAND_NAME     = 'RENOVA'; // Marca usada SOLO en esta landing (no BoomHausS)
 export const CONTACT_EMAIL  = 'contacto@renova.com'; // PLACEHOLDER — reemplazar

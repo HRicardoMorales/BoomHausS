@@ -1,7 +1,8 @@
 /* Datos de la landing de la Depiladora IPL (sin JSX). Los textos y URLs se
    editan acá; las secciones en sections/ solo los renderizan. */
+import { LANDING_PRODUCT_SLUGS } from '../../routes/landingProducts.js';
 /* ── Constantes ───────────────────────────────────────────── */
-export const PRODUCT_SLUG   = 'Depiladora Permanente IPL En casa';
+export const PRODUCT_SLUG   = LANDING_PRODUCT_SLUGS.depiladoraIPL;
 export const CHECKOUT_NAME  = 'Depiladora IPL Profesional';
 export const DEFAULT_PRICE  = 88900;
 export const DEFAULT_COMPARE = 189000;

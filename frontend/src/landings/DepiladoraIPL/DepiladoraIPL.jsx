@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
-import api from '../../services/api';
+import { fetchProductBySlug } from '../../services/productBySlug';
 import './DepiladoraIPL.css';
 import { moneyARS } from '../../utils/pricing.js';
 import {
@@ -46,7 +46,7 @@ export default function DepiladoraIPL() {
 
   /* API fetch */
   useEffect(() => {
-    api.get(`/products/slug/${PRODUCT_SLUG}`)
+    fetchProductBySlug(PRODUCT_SLUG)
       .then(r => { setProduct(r.data?.data || r.data); setProductReady(true); })
       .catch(() => setProductReady(true));
   }, []);

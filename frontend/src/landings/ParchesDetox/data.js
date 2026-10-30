@@ -1,9 +1,10 @@
 /* Datos de la landing de los Parches Detox (sin JSX). Los textos y URLs se
    editan acá; las secciones en sections/ solo los renderizan. */
+import { LANDING_PRODUCT_SLUGS } from '../../routes/landingProducts.js';
 import mc from '../parches-detox';
 
 /* ── Constantes ─────────────────────────────────────────────── */
-export const PRODUCT_SLUG  = 'parches-detox';
+export const PRODUCT_SLUG  = LANDING_PRODUCT_SLUGS.parchesDetox;
 export const CHECKOUT_NAME = 'Parches Plantares Detox Kinoki';
 export const DEFAULT_PRICE   = 58000;
 export const DEFAULT_COMPARE = 96700;
