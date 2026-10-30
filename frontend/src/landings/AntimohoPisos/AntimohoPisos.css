@@ -29,7 +29,7 @@
   font-family: 'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--amp-text);
   background: var(--amp-white);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
