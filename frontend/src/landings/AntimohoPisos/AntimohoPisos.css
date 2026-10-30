@@ -34,6 +34,17 @@
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+/* LCP: las 12 secciones bajo el hero no se maquetan ni se pintan hasta
+   acercarse al viewport (mismo patrón que .led-wrap). `auto` en el tamaño
+   intrínseco recuerda el alto real una vez medido (el scroll no salta al
+   volver); 530px es el alto medio medido en 390 px, para que la barra de
+   scroll no se achique mientras se baja. La barra fija y el footer viven
+   fuera de `.amp-wrap`: la contención
+   (que crea bloque contenedor para `position: fixed`) no los afecta. */
+.amp-wrap > .amp-hero ~ * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 530px;
+}
 .amp-wrap button,
 .amp-wrap input,
 .amp-wrap label {

@@ -19,6 +19,8 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { preload } from 'react-dom';
+import bricolageLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import { CheckoutSheet } from '../../pages/CheckoutSheet';
 import { useCart } from '../../hooks/useCart';
 import { trackWithCapi } from '../../lib/metaPixel';
@@ -71,6 +73,13 @@ function galleryFrom(product) {
   if (!Array.isArray(product?.images) || !product.images.length) return FALLBACK_GALLERY;
   return product.images.map((src, i) => ({ src, alt: `${CHECKOUT_NAME} — foto ${i + 1}` }));
 }
+
+/* LCP: el título del hero (el elemento LCP) usa Bricolage Grotesque, que el
+   navegador recién descubre al maquetar ese texto. Pedirla al evaluar el chunk
+   la adelanta (mismo patrón que LuxCoveLED con Montserrat). Mismo archivo
+   hasheado que pide el @font-face de fonts-bricolage.css (latin); `preload` de
+   React 19 deduplica e inserta el <link> en <head>. */
+preload(bricolageLatin, { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' });
 
 /* ── Componente principal ────────────────────────────────────────────── */
 export default function AntimohoPisos() {
