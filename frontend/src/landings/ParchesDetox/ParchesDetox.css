@@ -24,7 +24,7 @@
   font-family: 'Inter', sans-serif;
   color: var(--pdx-text);
   background: var(--pdx-white);
-  overflow-x: hidden;
+  overflow-x: clip; /* hidden crea un scroll container y rompe position: sticky */
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
